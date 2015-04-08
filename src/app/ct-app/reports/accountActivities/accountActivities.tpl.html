@@ -1,0 +1,87 @@
+<div class="bg-light lter b-b wrapper-md">
+    <h1 class="m-n font-thin h3">ACCOUNT ACTIVITY REPORT</h1>
+</div>
+<div class="wrapper-md">
+    <p class="m-b"><i class="fa fa-question-circle"></i> The table displays the hours worked per week. You can filter by the Zone, Job, and a date range.</p>
+
+    <div class="panel panel-default">
+        <div class="row wrapper">
+            <div class="col-sm-2 ">
+                <div  class="form-control " ui-select2="selectzone" value="" placeholder="Select Zone" ng-model="reportFilters.zone">
+                </div>
+
+            </div>
+           <div class="col-sm-2">
+                <div >
+                    <input class="form-control " ng-disabled="reportFilters.zone=='' || reportFilters.zone==null || reportFilters.zone[0].id =='all'" ui-select2="selectJob" value="" placeholder="Job " ng-model="reportFilters.job">
+
+                </div>
+
+            </div>
+            <div class="col-sm-3" ng-controller="DatepickerDemoCtrl">
+                <div class="input-group w-md">
+                    <input type="text" class="form-control" readonly placeholder="Select Start Date" datepicker-popup="{{format}}" ng-model="reportFilters.from" is-open="opened" datepicker-options="dateOptions" close-text="Close" />
+                    <span class="input-group-btn">
+                      <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-sm-3" ng-controller="DatepickerDemoCtrl">
+                <div class="input-group w-md">
+                    <input type="text" class="form-control" readonly placeholder="Select End Date" datepicker-popup="{{format}}" ng-model="reportFilters.to" is-open="opened" datepicker-options="dateOptions" close-text="Close" />
+                    <span class="input-group-btn">
+                      <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-sm-2 ">
+                <button class="btn btn-md btn-info" type="button" ng-click="updateTableData()">Search</button>
+                <button class="btn btn-md btn-warning" type="button" ng-click="clearSearch()">Clear</button>
+            </div>
+        </div>
+        <div class="row wrapper" ng-if="showSearchErrorMsg">
+            <div class="col-sm-12">
+                <span class="alert alert-danger" ng-if="showSearchErrorMsg">{{Search_Errmsg}}</span>
+            </div>
+        </div>
+        <!--<div class="row wrapper" ng-if="show_norecord==1">
+            <div class="col-sm-12" ng-bind-html="norecord"> {{norecord }}</div>
+
+        </div>-->
+        <div class="row wrapper" ng-if="show_norecord==1 || show_activities_loader">
+            <div class="col-sm-12">
+                <div ng-if="show_norecord==1" ng-bind-html="norecord"> {{norecord }}</div>
+                <div ng-if="show_activities_loader" show-loader="show_activities_loader"></div>
+            </div>
+        </div>
+        <div class="row wrapper" ng-if="show_norecord==2">
+            <div class="col-sm-12">
+                <wj-flex-grid items-source="accountDetails">
+                    <wj-flex-grid-column header="Date" is-read-only="true" binding="timestamp" width="*"> </wj-flex-grid-column>
+                    <wj-flex-grid-column header="Total Calls" is-read-only="true" binding="totalcalls" format="n0" aggregate="Sum"> </wj-flex-grid-column>
+
+                </wj-flex-grid>
+
+                <div class="row wrapper">
+                    <wj-menu value="accountDetails.pageSize" header="Rows per Page">
+                        <wj-menu-item value="10"> 10</wj-menu-item>
+                        <wj-menu-item value="25"> 25</wj-menu-item>
+                        <wj-menu-item value="50"> 50</wj-menu-item>
+                        <wj-menu-item value="100"> 100</wj-menu-item>
+                    </wj-menu>
+                    <div class="btn-group col-md-8" ng-show="accountDetails.pageSize > 0">
+                        <button type="button" class="btn btn-default" ng-disabled="accountDetails.pageIndex <= 0" ng-click="accountDetails.moveToFirstPage()"> <span class="glyphicon glyphicon-fast-backward"></span> </button>
+                        <button type="button" class="btn btn-default" ng-disabled="accountDetails.pageIndex <= 0" ng-click="accountDetails.moveToPreviousPage()"> <span class="glyphicon glyphicon-step-backward"></span> </button>
+                        <button type="button" class="btn btn-default" disabled style="width:100px"> {{accountDetails.pageIndex+1}} / {{accountDetails.pageCount}} </button>
+                        <button type="button" class="btn btn-default" ng-disabled="accountDetails.pageIndex >= accountDetails.pageCount - 1" ng-click="accountDetails.moveToNextPage()"> <span class="glyphicon glyphicon-step-forward"></span> </button>
+                        <button type="button" class="btn btn-default" ng-disabled="accountDetails.pageIndex >= accountDetails.pageCount - 1" ng-click="accountDetails.moveToLastPage()"> <span class="glyphicon glyphicon-fast-forward"></span> </button>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+        </div>
+    </div>
+</div>

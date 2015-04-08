@@ -1,0 +1,110 @@
+<div class="bg-light lter b-b wrapper-md">
+    <h1 class="m-n font-thin h3">Job List</h1>
+
+</div>
+
+<div class="wrapper-md">
+    <div class="panel panel-default">
+        <div class="row wrapper">
+            
+            <div class="col-sm-3">
+                <div class="form-control " placeholder="Select Zone" ui-select2="selectZone" value="" ng-model="reportFilters.zone"></div>
+            </div>
+            <div class="col-sm-3">
+                <input class="form-control " ui-select2="Selectfield" value="" placeholder="Select Field" ng-model="reportFilters.field">
+            </div>
+          
+            <div class="col-sm-3">
+
+                <div ng-controller="DatepickerDemoCtrl">
+
+                    <div class="input-group">
+                        <input type="text" placeholder="Select Start Date" class="form-control" readonly datepicker-popup="{{format}}" ng-model="reportFilters.startDate" is-open="opened" datepicker-options="dateOptions" close-text="Close" />
+                        <span class="input-group-btn">
+                      <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="col-sm-3">
+
+                <div ng-controller="DatepickerDemoCtrl">
+
+                    <div class="input-group">
+                        <input type="text" placeholder="Select End Date" class="form-control" readonly datepicker-popup="{{format}}" ng-model="reportFilters.endDate" is-open="opened" datepicker-options="dateOptions" close-text="Close" />
+                        <span class="input-group-btn">
+                      <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row wrapper">
+            <div class="col-sm-6">
+                <button class="btn btn-md btn-info" type="button" ng-click="updateTableData()">Search</button>
+                <button class="btn btn-md btn-warning" type="button" ng-click="clearSearch()">Clear</button>
+                <span class="alert alert-danger" ng-if="showerrorMsg">{{error_msg}}</span>
+
+            </div>
+            <div class="col-sm-6">
+                <div class=" pull-right">
+                   
+                    <a ng-disabled="noRecord==1" download="JobList.xlsx" class="btn btn-md btn-info" id="export" ng-click="exportExcel()">Export Excel</a>
+                    
+                </div>
+            </div>
+
+        </div>
+        <div class="row wrapper" ng-if="noRecord==1 || show_activities_loader">
+            <div class="col-sm-12">
+                <div ng-if="noRecord==1" ng-bind-html="norecord"> {{norecord }}</div>
+                <div ng-if="show_activities_loader" show-loader="show_activities_loader"></div>
+            </div>
+        </div>
+        <div class="row wrapper" ng-if="showRecord==1">
+            <wj-flex-grid control="ctx.flexGrid" items-source="JobDetails">
+                 <wj-flex-grid-column header="Job Code" is-read-only="true" binding="job_code" > </wj-flex-grid-column>
+                <wj-flex-grid-column header="Job Name" is-read-only="true" binding="job_name" width="*"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Address line 1" is-read-only="true" binding="job_address1"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="City" is-read-only="true" binding="job_city"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="State" is-read-only="true" binding="job_state"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Zip" is-read-only="true" binding="job_zip" > </wj-flex-grid-column>
+                <wj-flex-grid-column header="Authorized Phone" is-read-only="true" binding="authorized_phone_format" > </wj-flex-grid-column>
+                <wj-flex-grid-column header="Current Status" is-read-only="true" binding="status"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Created Date" is-read-only="true" binding="created_on"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Last Clocked IN" is-read-only="true" binding="last_clocked_in_date" > </wj-flex-grid-column>
+                <wj-flex-grid-column header="Last Scheduled" is-read-only="true" binding="last_scheduled_date"> </wj-flex-grid-column>
+            </wj-flex-grid>
+            <div class="row wrapper">
+                <wj-menu value="JobDetails.pageSize" header="Rows per Page">
+                    <wj-menu-item value="10"> 10</wj-menu-item>
+                    <wj-menu-item value="25"> 25</wj-menu-item>
+                    <wj-menu-item value="50"> 50</wj-menu-item>
+                    <wj-menu-item value="100"> 100</wj-menu-item>
+                </wj-menu>
+
+
+
+
+                <div class="btn-group col-md-8" ng-show="JobDetails.pageSize > 0">
+                    <button type="button" class="btn btn-default" ng-disabled="JobDetails.pageIndex <= 0" ng-click="JobDetails.moveToFirstPage()"> <span class="glyphicon glyphicon-fast-backward"></span> </button>
+                    <button type="button" class="btn btn-default" ng-disabled="JobDetails.pageIndex <= 0" ng-click="JobDetails.moveToPreviousPage()"> <span class="glyphicon glyphicon-step-backward"></span> </button>
+                    <button type="button" class="btn btn-default" disabled style="width:100px"> {{JobDetails.pageIndex+1}} / {{JobDetails.pageCount}} </button>
+                    <button type="button" class="btn btn-default" ng-disabled="JobDetails.pageIndex >= JobDetails.pageCount - 1" ng-click="JobDetails.moveToNextPage()"> <span class="glyphicon glyphicon-step-forward"></span> </button>
+                    <button type="button" class="btn btn-default" ng-disabled="JobDetails.pageIndex >= JobDetails.pageCount - 1" ng-click="JobDetails.moveToLastPage()"> <span class="glyphicon glyphicon-fast-forward"></span> </button>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+    </div>
+</div>

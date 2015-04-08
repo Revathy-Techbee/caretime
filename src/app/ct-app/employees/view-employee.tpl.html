@@ -1,0 +1,293 @@
+<div class="modal-header">
+    <h3 class="modal-title">Employee Detail</h3>
+</div>
+<div class="modal-body">
+    <tabset class="tab-container">
+        <tab>
+            <tab-heading>
+                <i class="glyphicon glyphicon-info-sign"></i> General
+            </tab-heading>
+            <div class="table-responsive">
+                <table class="table table-striped b-t b-light">
+                    <tr>
+                        <th colspan="2">
+                            Employee Name
+                        </th>
+                        <td colspan="2">
+                            {{employee.last_name}}, {{employee.first_name}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            Username
+                        </th>
+                        <td colspan="2">
+                            {{employee.username}}
+                        </td>
+                    </tr>
+                    <tr class="hide">
+                        <th colspan="2">
+                            Email
+                        </th>
+                        <td colspan="2">
+                            {{employee.email}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            Access Code
+                        </th>
+                        <td colspan="2">
+                            {{employee.access_code}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            Employee Zone
+                        </th>
+                        <td colspan="2">
+
+                            <span ng-bind-html="employee.zone_detail | parseToJson:0:'zone'"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            Language
+                        </th>
+                        <td colspan="2">
+                            <span ng-bind-html="employee.language | parseToJson:0:'language'"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            Employee Level
+                        </th>
+                        <td colspan="2" ng-bind-html="employee.is_supervisor | checklevel">
+                            {{employee.is_supervisor | checklevel}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            Agency Emp. ID
+                        </th>
+                        <td colspan="2" >
+                            {{employee.agency_empid}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            Current Status
+                        </th>
+                        <td colspan="2" ng-bind-html="employee.status | checkstatus">
+                            {{employee.status | checkstatus}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            Clock OUT Safeguard
+                        </th>
+                       
+                        <td colspan="2">
+                            {{employee.clock_out_safe_hour}}
+                        </td>
+                    </tr>
+                </table>
+
+
+
+
+            </div>
+        </tab>
+        <tab>
+            <tab-heading>
+                <i class="glyphicon glyphicon-user"></i> Personal
+            </tab-heading>
+            <div class="table-responsive">
+                <table class="table table-striped b-t b-light">
+                    <tr>
+                        <th colspan="2">
+                            Addresss
+                        </th>
+                        <td colspan="2">
+                            {{employee.primary_address1}} {{employee.primary_address2}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            Zip / City / State
+                        </th>
+                        <td colspan="2">
+                            {{employee.primary_zip}} {{employee.primary_city}} {{employee.primary_state}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            View on Google map
+                        </th>
+                        <td colspan="2">
+                            <a ng-href="{{employee.map_url}}" class="btn btn-sm btn-info" target="_blank">Click here to View</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            Time Zone
+                        </th>
+                        <td colspan="2">
+                            {{employee.primary_timezone}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Work Phone
+                        </th>
+                        <td>
+                            <span ng-if="employee.primary_phone && employee.primary_county=='United States'"> {{employee.primary_phone | phoneFormat}}  </span>
+                            <span ng-if="employee.primary_phone && employee.primary_county!='United States'"> {{employee.primary_phone}}  </span> <span ng-if="!employee.primary_phone">-</span>
+                        </td>
+                        <th>
+                            Others
+                        </th>
+                        <td ng-bind-html="employee.secondary_phone |  SecPhoneParseToJson">
+                            <span ng-if="employee.secondary_phone">{{employee.secondary_phone |  SecPhoneParseToJson}}</span><span ng-if="!employee.secondary_phone">-</span>
+                        </td>
+                    </tr>
+                   
+                    <tr>
+                        <th colspan="2">
+                            Pay Class
+                        </th>
+                        <td colspan="2">
+                            {{employee.pay_class | payclass }}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>
+                            Hire Date
+                        </th>
+                        <td>
+                            {{employee.hire_date | onlydate}}
+                        </td>
+                        <th>
+                            Birth Date
+                        </th>
+                        <td>
+                            {{employee.birth_date | onlydate}}
+                        </td>
+                    </tr>
+
+                </table>
+
+
+
+
+            </div>
+        </tab>
+        <tab>
+            <tab-heading>
+                <i class="glyphicon  glyphicon-plus"></i> Advanced
+            </tab-heading>
+            <div class="table-responsive">
+                <table class="table table-striped b-t b-light">
+                    <tr>
+                        <th colspan="2" class="col-sm-4">
+                            Notes
+                        </th>
+                        <td colspan="2">
+                            {{employee.notes}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            External code
+                        </th>
+                        <td colspan="2">
+                            <span ng-bind-html="employee.external_code | parseToJson:0:'externalCode'"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            Preferred Method of Communication
+                        </th>
+                        <td colspan="2">
+
+                            <span ng-bind-html="employee.preferred_communication | parseToJson:0:'preferCommunication'"></span>
+
+
+
+                        </td>
+                    </tr>
+                     <tr>
+                        <th colspan="2">
+                            Track Location
+                        </th>
+                        <td colspan="2">
+                            <span ng-bind-html="employee.track_location | yesOrNo"></span>
+                        </td>
+                    </tr>
+
+
+                </table>
+            </div>
+        </tab>
+
+       <tab>
+            <tab-heading>
+                <i class="glyphicon  glyphicon-plus"></i> Certification
+            </tab-heading>
+            <div class="table-responsive">
+                <table class="table table-striped b-t b-light" ng-repeat="certificate in employee.certificates">
+                    <tr>
+                        <th colspan="2" class="col-sm-4">
+                            Certificate Name
+                        </th>
+                        <td colspan="2">
+                            {{certificate.name}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            Certificate Date
+                        </th>
+                        <td colspan="2">
+                            {{certificate.ctdate | onlydate }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            Renewal Date
+                        </th>
+                        <td colspan="2">
+                            {{certificate.renewaldate | onlydate}}
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            Uploaded certificate
+                        </th>
+                        <td colspan="2">
+                            <span ng-repeat="item in certificate.files">
+	                	 {{item.name}} 
+	                	 </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            Notes
+                        </th>
+                        <td colspan="2">
+                            {{certificate.notes }}
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+        </tab> <!---->
+    </tabset>
+
+
+    <div class="modal-footer">
+        <button class="btn btn-default btn-rounded" ng-click="cancel()">Close</button>
+        <button class="btn btn-primary btn-rounded" ng-click="ok()">Edit</button>
+    </div>

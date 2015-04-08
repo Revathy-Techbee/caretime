@@ -1,0 +1,50 @@
+<div class="container w-xxl w-auto-xs">
+    <a href class="navbar-brand block m-t">{{app.name}}</a>
+    <div class="m-b-lg">
+        <div class="wrapper text-center">
+            <strong>Set Your Password</strong>
+        </div>
+
+        <form name="empLogin" class="form-validation form-horizontal" rc-submit="employeeLogin()" novalidate>
+
+            <div class="form-group" ng-class="{'has-error': rc.empLogin.needsAttention(empLogin.username)}">
+                <div class="col-sm-12">
+                    <input readonly placeholder="UserName" name="username" ng-model="username" class="form-control" required="">
+                    <span class="help-block" ng-show="empLogin.username.$error.required && rc.empLogin.needsAttention(empLogin.username)">Username is required.</span>
+                </div>
+            </div>
+
+            <div class="form-group" ng-class="{'has-error': rc.empLogin.needsAttention(empLogin.password1)}">
+                <div class="col-sm-12">
+                    <input type="password" placeholder="Set Password" id="password1" name="password1" ng-model="password1" class="form-control" required="">
+                    <span class="help-block" ng-show="empLogin.password1.$error.required && rc.empLogin.needsAttention(empLogin.password1)">Password is required.</span>
+                </div>
+            </div>
+            <div class="form-group" ng-class="{'has-error': rc.empLogin.needsAttention(empLogin.password2)}">
+                <div class="col-sm-12">
+                    <input type="password" placeholder="Confirm Password" id="password2" name="password2" ng-model="password2" class="form-control" required="">
+                    <span class="help-block" ng-show="empLogin.password2.$error.required && rc.empLogin.needsAttention(empLogin.password2)">Confirm Password is required.</span>
+                </div>
+            </div>
+            <div class="alert alert-danger" ng-show="empLogin.password2.$error.pwmatch">
+                <span>Passwords don't match.</span>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <div class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
+                        {{ErrorMsg}}
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-lg btn-primary btn-block">Set Password</button>
+            <div class="line line-dashed"></div>
+            <p class="text-center"><small>Already have an account?</small>
+            </p>
+            <a ui-sref="access.signin" class="btn btn-lg btn-default btn-block">Sign in</a>
+
+        </form>
+    </div>
+    <div class="text-center" ng-include="'partials/page_footer.tpl.html'"></div>
+</div>

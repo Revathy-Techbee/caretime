@@ -1,0 +1,18 @@
+<div >
+    <div class="btn-group btn-block animate-if" dropdown is-open="dropdown_options.is_open">
+        <button type="button" class="btn btn-default dropdown-toggle btn-block {{ dropdown_options.btn_class }}"  ng-disabled="dropdown_options.disable_btn"
+                ng-class="{'btn-lg' : dropdown_options.big_btn}" data-toggle="dropdown">
+            <span class="dropdown-label"></span><span class="caret"></span>
+        </button>
+        <ul ng-if="!dropdown_options.is_key_value" class="dropdown-menu apply-max" role="menu">
+            <li data-ng-repeat="item in array_list" data-value="{{ item }}" data-name="{{ item }}">
+                <a href="javascript:void(0);">{{ item }}</a>
+            </li>
+        </ul>
+        <ul ng-if="dropdown_options.is_key_value" class="dropdown-menu apply-max" role="menu">
+            <li data-ng-repeat="item in array_list" data-value="{{ getValue(item, dropdown_options.key_value)}}" data-name="{{ getValue(item, dropdown_options.key_name) }}">
+                <a href="javascript:void(0);">{{ getValue(item, dropdown_options.key_name) }}</a>
+            </li>
+        </ul>
+    </div>
+</div>

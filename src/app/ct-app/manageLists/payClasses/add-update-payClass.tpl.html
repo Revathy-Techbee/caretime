@@ -1,0 +1,52 @@
+<div>
+    <div class="bg-light lter b-b wrapper-md">
+        <h1 class="m-n font-thin h3">{{pageTitle}} Pay Class</h1>
+    </div>
+    <div class="wrapper-md" style="background:#FFF;">
+        <div>
+            <p class="m-b"><em class="text-danger">Required fields are in Red</em>
+            </p>
+            <progressbar value="100" class="progress-xs" type="success"></progressbar>
+            <form name="addUpdatePayClassForm" class="form-validation form-horizontal general" rc-submit="payClassManage()" novalidate>
+                <div class="form-group" ng-class="{'has-error': rc.addUpdatePayClassForm.needsAttention(addUpdatePayClassForm.name)}">
+                    <label class="col-sm-2 control-label text-danger">Employee class Name</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control w-md" capitalize required="" placeholder="PayClass Name" name="name" ng-model="payClass.pay_class">
+                        <span class="help-block" ng-show="addUpdatePayClassForm.name.$error.required && rc.addUpdatePayClassForm.needsAttention(addUpdatePayClassForm.name)">Employee class name is required.</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Status</label>
+                    <div class="col-sm-10">
+                        <label class="radio-inline i-checks">
+                            <input type="radio" name="status" value="1" ng-model="payClass.status"><i></i> Active
+                        </label>
+                        <label class="radio-inline i-checks">
+                            <input type="radio" name="status" value="0" ng-model="payClass.status"><i></i> Inactive
+                        </label>
+                    </div>
+                </div>
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <button type="submit" class="btn btn-primary  btn-rounded">Save Changes</button>
+                        <button type="button" ng-click='cancelPayClass()' class="btn btn-default  btn-rounded pull-right">Cancel</button>
+                        <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">{{ErrorMsg}}</span>
+                    </div>
+                </div>
+                <div class="form-group" ng-show="payClass_id">
+                    <div class="col-sm-12">
+                        <div class="alert alert-info">
+                            <p>Created by: {{payClass.created_by | AddEditUser}}, Created date is: <em class="ng-binding">{{payClass.created_on | date:'medium'}}</em>
+                            </p>
+                            <p ng-show="payClass.editedOn">
+                                Edited by: {{payClass.edited_by | AddEditUser}}, Last Edited date is: <em class="ng-binding">{{payClass.editedOn | date:'medium' }}</em>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

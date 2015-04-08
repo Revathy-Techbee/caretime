@@ -1,0 +1,168 @@
+<div>
+    <div class="bg-light lter b-b wrapper-md">
+        <h1 class="m-n font-thin h3">{{pageTitle}} Job  Authorization</h1>
+    </div>
+    <div class="wrapper-md" style="background:#FFF;">
+        <div>
+            <p class="m-b">Enter Payor authorization work hours for a job</p>
+            <progressbar value="100" class="progress-xs" type="success"></progressbar>
+            <form name="job_Authorization_form" class="form-validation form-horizontal job_Authorization" rc-submit="saveJobAuthorization()" novalidate>
+                <div class="form-group" ng-class="{'has-error': rc.job_Authorization_form.needsAttention(job_Authorization_form.zone_name)}">
+
+                    <label class="col-sm-2 control-label text-danger"> Select Zone</label>
+                    <div class="col-sm-4">
+                        <div>
+                            <input class="form-control " required="" name="zone_name" ui-select2="selectzone" value="" placeholder="Select Zone" ng-model="jobAuthorization.zone">
+                            <span class="help-block" ng-show="job_Authorization_form.zone_name.$error.required
+                                && rc.job_Authorization_form.needsAttention(job_Authorization_form.zone_name)">Zone is required.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" ng-class="{'has-error': rc.job_Authorization_form.needsAttention(job_Authorization_form.job_name)}">
+                    <label class="col-sm-2 control-label text-danger"> Select Job</label>
+                    <div class="col-sm-4">
+                        <div>
+                            <input class="form-control "  name="job_name" required=""  ng-disabled="!jobAuthorization.zone" ui-select2="selectJob" value="" placeholder="Select Job " ng-model="jobAuthorization.job">
+                            <span class="help-block" ng-show="job_Authorization_form.job_name.$error.required
+                                && rc.job_Authorization_form.needsAttention(job_Authorization_form.job_name)">Job is required.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" ng-class="{'has-error': rc.job_Authorization_form.needsAttention(job_Authorization_form.payor_name)}">
+                    <label class="col-sm-2 control-label text-danger">Payor </label>
+                    <div class="col-sm-4">
+                        <div>
+                            <input class="form-control " required="" name="payor_name" ui-select2="selectPayors" value="" placeholder="Select Payor" ng-model="jobAuthorization.payor">
+                            <span class="help-block" ng-show="job_Authorization_form.payor_name.$error.required
+                                && rc.job_Authorization_form.needsAttention(job_Authorization_form.payor_name)">Payor is required.</span>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label"> Payor Ref Number </label>
+                    <div class="col-sm-4">
+                        <input ctype="text" class="form-control"  placeholder="Payor Ref Number " ng-model="jobAuthorization.payor_ref_number" capitalize>
+                    </div>
+                    <label class="col-sm-2 control-label">Payor Medicare Id </label>
+                    <div class="col-sm-4">
+                        <input ctype="text" class="form-control"  placeholder="Payor Medicare Id" ng-model="jobAuthorization.payor_medicare_id" capitalize>
+                    </div>
+                </div>
+                <div class="form-group" ng-class="{'has-error': rc.job_Authorization_form.needsAttention(job_Authorization_form.skill_name)}">
+                    <label class="col-sm-2 control-label text-danger">Select Skill?</label>
+                    <div class="col-sm-4">
+                        <div>
+                            <input class="form-control " required="" name="skill_name"  ui-select2="selectSkills" value="" placeholder="Select Skill" ng-model="jobAuthorization.skill">
+                            <span class="help-block" ng-show="job_Authorization_form.skill_name.$error.required
+                                && rc.job_Authorization_form.needsAttention(job_Authorization_form.skill_name)">Skill is required.</span>
+                        </div>
+                    </div>
+                    <label class="col-sm-2 control-label text-danger">Select Activity?</label>
+                    <div class="col-sm-4" ng-class="{'has-error': rc.job_Authorization_form.needsAttention(job_Authorization_form.activity_name)}">
+                        <div>
+                            <input class="form-control " required="" name="activity_name" ui-select2="selectActivity" value="" placeholder="Select Activity" ng-model="jobAuthorization.acitivity">
+                            <span class="help-block" ng-show="job_Authorization_form.activity_name.$error.required && rc.job_Authorization_form.needsAttention(job_Authorization_form.activity_name)">Activity is required.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div ng-class="{'has-error': rc.job_Authorization_form.needsAttention(job_Authorization_form.startdate)}">
+                    <label class="col-sm-2 control-label text-danger">Start Date</label>
+                    <div class="col-sm-4"  ng-controller="DatepickerDemoCtrl">
+                        <div class="input-group ">
+                            <input type="text" class="form-control" required="" name="startdate" readonly datepicker-popup="{{format}}" ng-model="jobAuthorization.startdate" is-open="opened" datepicker-options="dateOptions" close-text="Close" ng-change="calculateTotalhrs()" />
+                            <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                        </div>
+                        <span class="help-block" ng-show="job_Authorization_form.startdate.$error.required && rc.job_Authorization_form.needsAttention(job_Authorization_form.startdate)">Start Date is required.</span>
+
+                    </div>
+                    </div>
+                    <div ng-class="{'has-error': rc.job_Authorization_form.needsAttention(job_Authorization_form.enddate)}">
+                    <label class="col-sm-2 control-label text-danger">End Date</label>
+                    <div class="col-sm-4" ng-controller="DatepickerDemoCtrl">
+                        <div class="input-group ">
+                            <input type="text" class="form-control" required="" name="enddate" readonly datepicker-popup="{{format}}" ng-model="jobAuthorization.enddate" is-open="opened" datepicker-options="dateOptions" close-text="Close" ng-change="calculateTotalhrs()" />
+                            <span class="input-group-btn">
+                      <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                        </div>
+                         <span class="help-block" ng-show="job_Authorization_form.enddate.$error.required && rc.job_Authorization_form.needsAttention(job_Authorization_form.enddate)">End Date is required.</span>
+                    </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                     <div ng-class="{'has-error': rc.job_Authorization_form.needsAttention(job_Authorization_form.hours)}">
+                    <label class="col-sm-2 control-label text-danger">Authorized Hours</label>
+                    <div class="col-sm-4">
+
+                        <input type="text" class="form-control" required="" name="hours" ng-change="calculateTotalhrs()" placeholder="Authorized Hours" ng-pattern="/\d+(\.\d{1,2})?/" ng-model="jobAuthorization.hours">
+                        <span class="help-block" ng-show="job_Authorization_form.hours.$error.required && rc.job_Authorization_form.needsAttention(job_Authorization_form.hours)">Authorized Hours is required.</span>
+
+                    </div>
+                    </div>
+                    <div ng-class="{'has-error': rc.job_Authorization_form.needsAttention(job_Authorization_form.frequancy)}">
+                    <label class="col-sm-2 control-label text-danger">Frequency</label>
+                    <div class="col-sm-4" >
+                        <div>
+                            <input class="form-control " required="" name="frequancy" ng-change="calculateTotalhrs()" ui-select2="frequancy" value="" placeholder="Select Frequency" ng-model="jobAuthorization.frequancy">
+                            <span class="help-block" ng-show="job_Authorization_form.frequancy.$error.required && rc.job_Authorization_form.needsAttention(job_Authorization_form.frequancy)"> Frequency is required.</span>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Total hours</label>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" placeholder="Total hours" readonly ng-model="jobAuthorization.total_hours">
+                    </div>
+                    <label class="col-sm-2 control-label"> Status </label>
+                    <div class="col-sm-4">
+                        <label class="radio-inline i-checks">
+                            <input type="radio" name="a" value=1 ng-model="jobAuthorization.status"><i></i> Active
+                        </label>
+                        <label class="radio-inline i-checks">
+                            <input type="radio" name="a" value=0 ng-model="jobAuthorization.status"><i></i> Inactive
+                        </label>
+
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Notes </label>
+                    <div class="col-sm-4">
+                        <textarea cols="34" ng-show="pageTitle=='Update'" ng-model="jobAuthorization.notes" capitalize="" rows="4" class="ng-pristine ng-valid"></textarea>
+                        <textarea cols="44" ng-show="pageTitle=='Add New'" ng-model="jobAuthorization.notes" capitalize="" rows="4" class="ng-pristine ng-valid"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <button type="submit" class="btn btn-primary  btn-rounded" ng-disabled="savedisable == 1">Save Changes</button>
+                        
+                        <button type="button" class="btn btn-default btn-rounded pull-right" ng-click='cancelAuthorization()'>Cancel</button>
+                        <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
+                                  
+                                  {{ErrorMsg}}
+                          </span>
+                    </div>
+                </div>
+                <div class="form-group" ng-show="authorization_id">
+                    <div class="col-sm-12">
+                         <div class="alert alert-info">
+                            <p>Created by: {{jobAuthorization.created_by | AddEditUser}}, Created date is: <em class="ng-binding">{{jobAuthorization.created_on | date:'medium'}}</em>
+                            </p>
+                            <p ng-show="jobAuthorization.editedOn">
+                                Edited by: {{jobAuthorization.edited_by | AddEditUser}}, Last Edited date is: <em class="ng-binding">{{jobAuthorization.editedOn | date:'medium' }}</em>
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

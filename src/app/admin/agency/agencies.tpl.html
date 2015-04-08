@@ -1,0 +1,80 @@
+<div class="bg-light lter b-b wrapper-md">
+    <h1 class="m-n font-thin h3">Agency List <a ui-sref="admin.AddUpdateAgency" class="btn btn-sm btn-info pull-right" type="button">Add Agency</a></h1>
+
+</div>
+<div class="wrapper-md">
+    <div class="panel panel-default">
+        <div class="row wrapper">
+
+            <div class="col-sm-3">
+                <input type="text" class="input-md form-control" placeholder="Search Text" ng-model="config.general.searchtxt" ui-keypress="{13:'updateTableData(true)'}" capitalize>
+            </div>
+            <div class="col-sm-9">
+                <button class="btn btn-md btn-info" type="button" ng-click="updateTableData(true)">Search</button>
+                <button class="btn btn-md btn-warning" type="button" ng-click="clearSearch()">Clear</button>
+                <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
+                        {{ErrorMsg}}
+                </span>
+            </div>
+        </div>
+        <div class="table-wrapper table-responsive">
+            <table class="table table-striped b-t b-light table-bordered" ct-table-sort="sortField" sort-order="sortType" callback="applyProgramSort()">
+                <thead>
+                    <tr>
+                        <th id="id" class="sort-item asc">Agency Code &nbsp;<i class="fa fa-sort fa-sort-up"></i>
+                        </th>
+                        <th id="agency_name" class="sort-item asc" style="width:20%;">Agency Name &nbsp;<i class="fa fa-sort fa-sort-up"></i>
+                        </th>
+                        <th id="primary_city" class="sort-item asc">City &nbsp;<i class="fa fa-sort fa-sort-up"></i>
+                        </th>
+                        <th id="primary_state" class="sort-item asc">State &nbsp;<i class="fa fa-sort fa-sort-up"></i>
+                        </th>
+                        <th id="contact_name" class="sort-item asc">Contact Name &nbsp;<i class="fa fa-sort fa-sort-up"></i>
+                        </th>
+                        <th id="contact_name" class="sort-item asc">Date Created &nbsp;<i class="fa fa-sort fa-sort-up"></i>
+                        </th>
+                        <th id="contact_name" class="sort-item asc">Last Logged In &nbsp;<i class="fa fa-sort fa-sort-up"></i>
+                        </th>
+                        <th id="status" class="sort-item">Status &nbsp;<i class="fa fa-sort"></i>
+                        </th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody infinite-scroll='getNextData()' infinite-scroll-disabled='disable_infinite_scroll' infinite-scroll-distance='0'>
+                    <tr ng-repeat="detail in agencyDetailList" class="animate-repeat">
+                        <td>{{detail.id | generateAgencyCode}}</td>
+                        <td>{{detail.agency_name}}</td>
+                        <td>{{detail.primary_city}}</td>
+                        <td>{{detail.primary_state}}</td>
+                        <td>{{detail.contact_name}}</td>
+                        <td>{{detail.created_on | datewithtimeformat}}</td>
+                        <td>{{detail.last_logged_in | datewithtimeformat}}</td>
+                        <td ng-bind-html="detail.status | checkAgencystatus">{{detail.status | checkAgencystatus}}</td>
+                        <td>
+                            <button ng-click="enableEditView(detail.id)" class="btn btn-rounded btn-sm btn-icon btn-default"><i class="fa fa-pencil"></i>
+                            </button>
+                            <button ng-click="enableView(detail.id)" class="btn btn-rounded btn-sm btn-icon btn-default"><i class="fa fa-eye"></i>
+                            </button>
+                             <button ng-click="resendEmail(detail)" class="btn btn-rounded btn-sm btn-icon btn-default"><i class="fa fa-envelope"></i>
+                            <button ng-click="generatePassword(detail)" class="btn btn-rounded btn-sm btn-icon btn-default"><i class="fa fa-key"></i>
+                             
+                            </button>
+                        </td>
+                    </tr>
+                    <tr ng-if="config.show_agencies_loader">
+                        <td colspan="4">
+                            <div show-loader="config.show_agencies_loader"></div>
+                        </td>
+                    </tr>
+                    <tr ng-if="!config.show_agencies_loader && agencyDetailList.length==0">
+                        <td colspan='4' class="alert alert-danger">
+                            <center> No Records Found.</center>
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>

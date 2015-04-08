@@ -1,0 +1,471 @@
+<div>
+    <div class="modal-header">
+        <h3 class="modal-title">{{shiftTitle}} Shift</h3>
+    </div>
+    <div class="modal-body">
+        <tabset class="tab-container">
+            <tab heading="Time and Employee" disabled="basic.$invalid" active="empSteps.basic">
+                <form name="basic" class="form-validation form-horizontal basic" rc-submit="scheduleManage('basic')" novalidate>
+
+                    <div class="form-group" ng-class="{'has-error': rc.basic.needsAttention(basic.zone_name)}">
+                        <label class="col-sm-3 control-label text-danger">Job Zone</label>
+                        <div class="col-sm-8">
+                            <div>
+                                <input class="w-md" ui-select2="selectZone" value="" placeholder="Enter Job Zone" required ng-model="shift.zone" name="zone_name" required="" ng-change="generateShiftcode()">
+                                <span class="help-block" ng-show="basic.zone_name.$error.required
+                                && rc.basic.needsAttention(basic.zone_name)">Job Zone is required.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': rc.basic.needsAttention(basic.job)}">
+                        <label class="col-sm-3 control-label text-danger">Job</label>
+                        <div class="col-sm-4">
+                            <div>
+                                <input class="w-md" ng-disabled="!shift.zone " ng-change="Authorization('job')" ui-select2="selectJob" value="" placeholder="Enter Job" name="job" required="" ng-model="shift.job">
+                                <span class="help-block" ng-show="basic.job.$error.required
+                                && rc.basic.needsAttention(basic.job)">Job is required.</span>
+                            </div>
+                        </div>
+                       <label class="col-sm-2 control-label" ng-if="listAuth">Authorization</label>
+                        <div class="col-sm-3" ng-if="listAuth">
+                            <div>
+                                <input class="form-control" ng-disabled="!shift.job " ui-select2="selectAuthorization" value="" ng-change="getAuthorizationNotes()" placeholder="Enter Authorization" ng-model="shift.authorization">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': rc.basic.needsAttention(basic.empzone_name)}">
+                        <label class="col-sm-3 control-label text-danger">Employee Zone</label>
+                        <div class="col-sm-4">
+                            <div>
+                                <input class="w-md" ui-select2="selectEmpZone" value="" placeholder="Enter Employee Zone" required ng-model="shift.empZone" name="empzone_name" required="">
+                                <span class="help-block" ng-show="basic.empzone_name.$error.required
+                                && rc.basic.needsAttention(basic.empzone_name)">Employee Zone is required.</span>
+                            </div>
+                        </div>
+                        <label class="col-sm-2 control-label" ng-if="shift.authorization_notes">Notes</label>
+                        <div class="col-sm-3" ng-if="shift.authorization_notes">
+
+                            <p class="col-sm-12 m-t-sm">{{shift.authorization_notes}}</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': rc.basic.needsAttention(basic.employee)}">
+                        <label class="col-sm-3 control-label text-danger">Employee</label>
+                        <div class="col-sm-4">
+                            <div>
+                                <input class="w-md" ng-disabled="!shift.empZone" ui-select2="selectEmployee" value="" placeholder="Employee " name="employee" required="" ng-model="shift.employee">
+                                <span class="help-block" ng-show="basic.employee.$error.required
+                                && rc.basic.needsAttention(basic.employee)">Employee is required.</span>
+                            </div>
+                        </div>
+                     
+                    </div>
+
+                    <input type="hidden" class="form-control w-md" ng-model="shift.shift_code" placeholder="Shift Code" readonly="">
+
+                    
+
+                    <div class="form-group" ng-class="{'has-error': rc.basic.needsAttention(basic.inAt)}">
+                        <label class="col-sm-3 control-label text-danger">Starts at</label>
+                        <div class="col-sm-9">
+                            <div class="input-group w-md col-sm-9">
+
+                                <input type="text" ng-blur="Authorization('job')" readonly class="form-control" date-time ng-model="shift.inAt" required="true" partial="true" name="inAt" required="" max-view="date" view="date">
+                                <span class="help-block" ng-show="basic.inAt.$error.required
+                                && rc.basic.needsAttention(basic.inAt)">Starts at is required.</span>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': rc.basic.needsAttention(basic.duration)}">
+                        <label class="col-sm-3 control-label text-danger">Duration</label>
+                        <div class="col-sm-8 w-md">
+                            <input type="text" class="form-control" ng-model="shift.duration" name="duration" required="" ng-pattern="/^[0-9]{1,7}(\.[0-9]+)?$/" ng-keyup="calcuateDiff()" placeholder="Duration hours">
+                            <span class="help-block" ng-show="basic.duration.$error.required
+                                && rc.basic.needsAttention(basic.duration)">Duration is required.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': rc.basic.needsAttention(basic.outAt)}">
+                        <label class="col-sm-3 control-label text-danger">End at</label>
+                        <div class="col-sm-9">
+                            <div class="input-group col-sm-10 w-md">
+                                <input type="text" readonly name="outAt" class="form-control" date-time ng-model="shift.outAt" required="true" required="" partial="true" max-view="date" view="date">
+                                <span class="help-block" ng-show="basic.outAt.$error.required
+                                && rc.basic.needsAttention(basic.outAt)">End at is required.</span>
+                            </div>
+
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Notes</label>
+                        <div class="col-sm-8">
+                            <textarea capitalize rows="4" ng-model="shift.notes" cols="45"></textarea>
+                        </div>
+                    </div>
+
+
+                    <div class="line line-dashed b-b line-lg pull-in"></div>
+                    <div class="form-group">
+                        <div class="col-sm-10">
+                            <button type="submit" class="btn btn-default btn-rounded">Next</button>
+                            <button type="button" class="btn btn-default btn-rounded" ng-if="shiftId" ng-click="removeShifts()">Remove</button>
+                            <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">                  
+                            {{ErrorMsg}}
+                          </span>
+                        </div>
+                        <div class="col-sm-2">
+
+                            <button type="button" class="btn btn-default btn-rounded" ng-click='cancel()'>Cancel</button>
+
+                        </div>
+                    </div>
+                  
+                    <div class="form-group" ng-if="WarningClass || showShiftError">
+                        <div class="col-sm-12">
+                            <div class="alert alert-warning" ng-if="WarningClass">
+                                Please Note Authorization Ends on {{ shift.authorization.enddate }}, there is no Shift added after {{shift.authorization.enddate}}
+                            </div>
+                            <div class="alert alert-danger" ng-if="showShiftError">
+                               {{ShiftErrorMsg}}
+                              
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-show="shiftId != ''">
+                        <div class="col-sm-12">
+                            <div class="alert alert-info">
+                                <p>Created by: {{shift.created_by | AddEditUser}}, Created date is: <em class="ng-binding">{{shift.created_on | date:'medium'}}</em>
+                                </p>
+                                <p ng-show="shift.editedOn">
+                                    Edited by: {{shift.edited_by | AddEditUser}}, Last Edited date is: <em class="ng-binding">{{shift.editedOn | date:'medium' }}</em>
+                                </p>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                </form>
+
+            </tab>
+            <tab heading="Recurrence" disabled="basic.$invalid" active="empSteps.recurrence">
+
+                <form name="recurrence" class="form-validation form-horizontal recurrence" ng-submit="scheduleManage('recurrence')" novalidate>
+
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Recurrence </label>
+                        <div class="col-sm-10">
+                            <label class="radio-inline i-checks">
+                                <input type="radio" name="a" value="1" ng-model="shift.recurrence.is"><i></i> Yes
+                            </label>
+                            <label class="radio-inline i-checks">
+                                <input type="radio" name="a" value="0" ng-model="shift.recurrence.is"><i></i> No
+                            </label>
+
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-group" ng-if="shift.recurrence.is=='1'">
+
+                            <div class="col-sm-3">
+                                <div class="radio">
+                                    <label class="i-checks">
+                                        <input type="radio" checked="" value="0" ng-model="shift.recurrence.type" name="rec">
+                                        <i></i> Daily
+                                    </label>
+                                </div>
+                                <div class="radio">
+                                    <label class="i-checks">
+                                        <input type="radio" checked="" value="1" ng-model="shift.recurrence.type" name="rec">
+                                        <i></i> Weekly
+                                    </label>
+                                </div>
+                                <div class="radio">
+                                    <label class="i-checks">
+                                        <input type="radio" checked="" value="2" ng-model="shift.recurrence.type" name="rec">
+                                        <i></i> Monthy
+                                    </label>
+                                </div>
+
+                            </div>
+
+                            <div class="col-sm-9">
+
+                                <div class="row" ng-if="shift.recurrence.type==0">
+                                    <div class="col-sm-12">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="radio">
+                                                    <label class="i-checks">
+                                                        <input type="radio" checked="" value="1" ng-model="shift.recurrence.daily.isdayLimit" name="recDT">
+                                                        <i></i> Every &nbsp;
+                                                    </label>
+
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3 radio">
+                                                <input type="text" required="" class="col-sm-8" ng-model="shift.recurrence.daily.dayLimit">
+
+                                            </div>
+                                            <div class="col-sm-3 radio">
+                                                Days
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="radio">
+                                            <label class="i-checks">
+                                                <input type="radio" checked="" value="2" ng-model="shift.recurrence.daily.isdayLimit" name="recDT">
+                                                <i></i> Every Weekday
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" ng-if="shift.recurrence.type==1">
+
+                                    <div class="col-sm-12">
+                                        <label class="col-sm-4 control-label">Recur every &nbsp;</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" required="" class="col-sm-10" ng-model="shift.recurrence.week.weeklimt">
+                                        </div>
+                                        <label class="col-sm-3 control-label">Week(s) on</label>
+                                    </div>
+
+                                    <div class="line"></div>
+                                    <div class="line line-dashed b-b line-lg pull-in"></div>
+                                    <div class="col-sm-12">
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <label class="checkbox-inline i-checks">
+                                                    <input value="1" type="checkbox" ng-model="shift.recurrence.week.isSun" name="w1"><i></i> Sunday
+                                                </label>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <label class="checkbox-inline i-checks">
+                                                    <input value="1" type="checkbox" ng-model="shift.recurrence.week.isMon" name="w2"><i></i> Monday
+                                                </label>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <label class="checkbox-inline i-checks">
+                                                    <input value="1" type="checkbox" ng-model="shift.recurrence.week.isTue" name="w3"><i></i> Tuesday
+                                                </label>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <label class="checkbox-inline i-checks">
+                                                    <input value="1" type="checkbox" ng-model="shift.recurrence.week.isWed" name="w4"><i></i> Wednesday
+                                                </label>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <label class="checkbox-inline i-checks">
+                                                    <input value="1" type="checkbox" ng-model="shift.recurrence.week.isThur" name="w5"><i></i> Thursday
+                                                </label>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <label class="checkbox-inline i-checks">
+                                                    <input value="1" type="checkbox" ng-model="shift.recurrence.week.isFri" name="w6"><i></i> Friday
+                                                </label>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <label class="checkbox-inline i-checks">
+                                                    <input value="1" type="checkbox" ng-model="shift.recurrence.week.isSat" name="w7"><i></i> Saturday
+                                                </label>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                                <div class="row" ng-if="shift.recurrence.type==2">
+
+                                    <div class="col-sm-12">
+
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <label class="radio-inline i-checks">
+                                                    <input type="radio" ng-model="shift.recurrence.month.isDay" value="1" name="mon1" class="ng-valid ng-dirty inputSmall"><i></i> Day
+                                                </label>
+                                                <label class="radio-inline">
+                                                    <input type="text" ng-model="shift.recurrence.month.thDay" value="1" name="a" class="ng-valid ng-dirty inputSmall"><i></i> of every
+                                                </label>
+                                                <label class="radio-inline">
+                                                    <input type="text" ng-model="shift.recurrence.month.thMonth" value="1" name="a" class="ng-valid ng-dirty inputSmall"><i></i> months(s)
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="row hide">
+                                            <div class="col-sm-12">
+                                                <label class="radio-inline i-checks">
+                                                    <input type="radio" ng-model="shift.recurrence.month.isDay" value="2" name="mon1" class="ng-valid ng-dirty inputSmall"><i></i> The
+                                                </label>
+                                                <label class="radio-inline">
+
+                                                    <select ng-model="shift.recurrence.month.thEDay" class="">
+                                                        <option value="1">First</option>
+                                                        <option value="2">Second</option>
+                                                        <option value="3">Third</option>
+                                                        <option value="4">Fourth</option>
+
+                                                    </select>
+                                                </label>
+                                                <label class="radio-inline">
+                                                    <select ng-model="shift.recurrence.month.thEEDay" class="">
+                                                        <option value="weekday">Weekday</option>
+                                                        <option value="weekend">Weekend day</option>
+                                                        <option value="1">Sunday</option>
+                                                        <option value="2">Monday</option>
+                                                        <option value="3">Wednesday</option>
+                                                        <option value="4">Thursday</option>
+                                                        <option value="5">Friday</option>
+                                                        <option value="6">Saturday</option>
+                                                    </select>
+                                                    &nbsp; of every
+
+
+                                                </label>
+                                                <label class="radio-inline">
+                                                    <input type="text" ng-model="shift.recurrence.month.thEMonth" value="1" name="a" class="ng-valid ng-dirty inputSmall"><i></i> months(s)
+                                                </label>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div class="line line-dashed b-b line-lg pull-in"  ng-if="shift.recurrence.is=='1'"></div>
+                        <div class="form-group" ng-if="shift.recurrence.is=='1'">
+                            <div class="col-sm-12">
+                                <label class="radio-inline i-checks">
+                                    <input type="radio" ng-model="shift.recurrence.end.isendOccur" ng-click="shift.recurrence.end.date=''" value="1" name="ef" class="ng-valid ng-dirty inputSmall"><i></i> End After
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="text" ng-model="shift.recurrence.end.occurcount" value="1" name="a" class="ng-valid ng-dirty inputSmall"><i></i> occurrences
+                                </label>
+                                <label class="radio-inline i-checks">
+                                    <input type="radio" ng-model="shift.recurrence.end.isendOccur" value="2" ng-click="shift.recurrence.end.occurcount=''" name="ef" class="ng-valid ng-dirty inputSmall"><i></i> End on
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="text" ng-model="shift.recurrence.end.date" name="a" class="ng-valid ng-dirty" date-time partial="true" max-view="date" min-view="date" view="date"><i></i>
+                                </label>
+                                <!--
+                                    <div  ng-controller="DatepickerDemoCtrl">
+                                    <div class="input-group w-md">
+                                        <input type="text" class="form-control" min-date="{{dt}}" datepicker-popup="{{format}}" is-open="opened" datepicker-options="dateOptions" close-text="Close" ng-model="shift.recurrence.end.date" />
+                                    <span class="input-group-btn">
+                                    <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                    </span>
+                                    </div>
+                                 -->
+
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="line line-dashed b-b line-lg pull-in"></div>
+                    <div class="form-group">
+                        <div class="col-sm-10">
+                            <button type="button" class="btn btn-default btn-rounded" ng-click="scheduleManagePrev('recurrence')">Prev</button>
+                            <button type="submit" class="btn btn-primary btn-rounded" ng-disabled="savedisable == 1">Save changes</button>
+                            <button type="button" class="btn btn-default btn-rounded" ng-if="shiftId" ng-click="removeShifts()">Remove</button>
+                            <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
+                        {{ErrorMsg}}
+                         </span>
+                        </div>
+                        <div class="col-sm-2">
+
+                            <button type="button" class="btn btn-default btn-rounded" ng-click='cancel()'>Cancel</button>
+
+                        </div>
+
+                    </div>
+                   
+                    <div class="form-group" ng-if="WarningClass || showShiftError">
+                        <div class="col-sm-12">
+                            <div class="alert alert-warning" ng-if="WarningClass">
+                                Please Note Authorization Ends on {{ shift.authorization.enddate }}, there is no Shift added after {{shift.authorization.enddate}}
+                            </div>
+                            <div class="alert alert-danger" ng-if="showShiftError">
+                               {{ShiftErrorMsg}}
+                              
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-show="shiftId != ''">
+                        <div class="col-sm-12">
+                            <div class="alert alert-info">
+                                <p>Created by: {{shift.created_by | AddEditUser}}, Created date is: <em class="ng-binding">{{shift.created_on | date:'medium'}}</em>
+                                </p>
+                                <p ng-show="shift.editedOn">
+                                    Edited by: {{shift.edited_by | AddEditUser}}, Last Edited date is: <em class="ng-binding">{{shift.editedOn | date:'medium' }}</em>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </tab>
+
+
+
+
+        </tabset>
+
+
+        <div class="modal-body">
+
+            <h3>Summary</h3>
+            <ul>
+                <li>Employee : {{shift.employee.text }}</li>
+                <li>Scheduled Time : {{shift.inAt | date:'medium' }} - {{shift.outAt | date:'medium' }}</li>
+                <li>Duration : {{shift.duration }} hours</li>
+                <li>Recurrence : <span ng-if="shift.recurrence.is==0">No</span>
+                    <span ng-if="shift.recurrence.is==1">
+                    <span ng-if="shift.recurrence.type==0">Daily</span>
+                    <span ng-if="shift.recurrence.type==1">Weekly</span>
+                    <span ng-if="shift.recurrence.type==2">Monthy</span>
+                    </span>
+                </li>
+                <ul ng-if="shift.recurrence.is==1">
+                    <li ng-if="shift.recurrence.type==0">
+                        <span ng-if="shift.recurrence.daily.isdayLimit==1">Every {{shift.recurrence.daily.dayLimit}} Days</span>
+                        <span ng-if="shift.recurrence.daily.isdayLimit==2">Every Weekday {{shift.recurrence.daily.dayLimit}} Days</span>
+                    </li>
+                    <li ng-if="shift.recurrence.type==1">
+                        Every {{shift.recurrence.week.weeklimt}} Week(s) on
+                        <span ng-if="shift.recurrence.week.isSun"> Sunday</span>
+                        <span ng-if="shift.recurrence.week.isMon"> Monday</span>
+                        <span ng-if="shift.recurrence.week.isTue"> Tuesday</span>
+                        <span ng-if="shift.recurrence.week.isWed"> Wednesday</span>
+                        <span ng-if="shift.recurrence.week.isThur"> Thursday</span>
+                        <span ng-if="shift.recurrence.week.isFri"> Friday</span>
+                        <span ng-if="shift.recurrence.week.isSat"> Saturday</span>
+                    </li>
+                    <li ng-if="shift.recurrence.type==2">
+                        <span ng-if="shift.recurrence.month.isDay==1">{{shift.recurrence.month.thDay}} of every {{shift.recurrence.month.thMonth}} Month(s)</span>
+                        <span ng-if="shift.recurrence.month.isDay==2">{{shift.recurrence.month.thEDay}}, {{shift.recurrence.month.thEEDay}} of every {{shift.recurrence.month.thEMonth}} months</span>
+                    </li>
+                    <li ng-if="shift.recurrence.end.isendOccur==1"><span>End after {{shift.recurrence.end.occurcount}} Occurrences</span>
+                    </li>
+                    <li ng-if="shift.recurrence.end.isendOccur==2"><span>End On {{shift.recurrence.end.date | onlydateMMDDYYYY}}</span>
+                    </li>
+                </ul>
+                <li>Alerts :
+                    <span ng-if="shift.alerts==0">None</span>
+                    <span ng-if="shift.alerts==1">Minutes</span>
+                    <span ng-if="shift.alerts==2">Date and Time</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,91 @@
+<div class="bg-light lter b-b wrapper-md">
+    <h1 class="m-n font-thin h3">Activity Reporting</h1>
+
+</div>
+
+<div class="wrapper-md">
+    <div class="panel panel-default">
+        <div class="row wrapper">
+            <div class="col-sm-3 ">              
+                <input class="form-control " placeholder="Select Job/Employee" ui-select2="Selectfield" ng-model="logFilters.filterName" >
+            </div>
+            <div class="col-sm-3">
+                <!--<input class="form-control " placeholder="Select zone" ng-disabled="logFilters.filterName== '' || logFilters.filterName.id== 'all' " ui-select2="selectZoneOptions" value="" ng-model="logFilters.zoneName"> -->
+                <div class="form-control " placeholder="Select zone" ng-disabled="logFilters.filterName.id== 'all' " ui-select2="selectZoneOptions" value="" ng-model="logFilters.zoneName"></div>
+            </div>
+            
+            <div class="col-sm-3">
+                <input class="form-control " placeholder="Select Value" ui-select2="getFilterValue" ng-model="logFilters.filterValue" ng-disabled="logFilters.zoneName==null ||logFilters.zoneName=='' || logFilters.zoneName[0].id =='all' ||logFilters.filterName.id=='all' || logFilters.filterName==''">
+            </div>
+            <div class="col-sm-3" >
+                <input class="form-control " ui-select2="selectCallStatus" value="" placeholder="Select Call Status" ng-model="logFilters.callStatus">
+            </div>
+            
+        </div>
+         <div class="row wrapper">
+            <div class="col-sm-6">
+                <button class="btn btn-md btn-info" type="button" ng-click="updateTableData(true)">Search</button>
+                <button class="btn btn-md btn-warning" type="button" ng-click="clearSearch()">Clear</button>
+                <span class="alert alert-danger" ng-if="showerrorMsg">{{error_msg}}</span>
+            </div>
+             <div class="col-sm-6">
+                <div class=" pull-right">
+                     <div class="col-sm-4"  ng-if="show_download_loader" >
+                    <div ng-if="show_download_loader" show-loader="show_download_loader"></div>
+                    </div>
+                     <a ng-disabled="noRecord==1" download="ActivityReport.xlsx" class="btn btn-md btn-info" id="export" ng-click="exportExcel()">Export Excel</a>
+                    <a ng-disabled="noRecord==1" class="btn btn-md btn-info"  ng-click="downloadpdf()">Download PDF</a>
+                </div>
+            </div>
+         </div>
+      
+        <div class="row wrapper" ng-if="noRecord==1 || show_activities_loader">
+            <div class="col-sm-12">
+                <div ng-if="noRecord==1" ng-bind-html="norecord"> {{norecord }}</div>
+                <div ng-if="show_activities_loader" show-loader="show_activities_loader"></div>
+            </div>
+        </div>
+        <div class="row wrapper" ng-if="showRecord==1">
+            <wj-flex-grid control="ctx.flexGrid" items-source="calllogListDetail">
+                <wj-flex-grid-column header="Employee " is-read-only="true" binding="employee_code" width="*"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Job" is-read-only="true" binding="job_code"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Log Type" is-read-only="true" binding="log_type"> </wj-flex-grid-column>
+
+                <wj-flex-grid-column header="Work Duration" is-read-only="true" binding="call_duriation"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Date" is-read-only="true" binding="timestamp"> </wj-flex-grid-column>
+                 <wj-flex-grid-column header="Phone Number" is-read-only="true" binding="phone_number"> </wj-flex-grid-column>
+                  <wj-flex-grid-column header="Call Status" is-read-only="true" binding="call_status"> </wj-flex-grid-column>
+               
+               
+            <wj-flex-grid-column header="Entered By" is-read-only="true" binding="created_by"> </wj-flex-grid-column>
+
+
+            </wj-flex-grid>
+            <div class="row wrapper">
+                <wj-menu value="calllogListDetail.pageSize" header="Rows per Page">
+                    <wj-menu-item value="10"> 10</wj-menu-item>
+                    <wj-menu-item value="25"> 25</wj-menu-item>
+                    <wj-menu-item value="50"> 50</wj-menu-item>
+                    <wj-menu-item value="100"> 100</wj-menu-item>
+                </wj-menu>
+
+
+
+
+                <div class="btn-group col-md-8" ng-show="calllogListDetail.pageSize > 0">
+                    <button type="button" class="btn btn-default" ng-disabled="calllogListDetail.pageIndex <= 0" ng-click="calllogListDetail.moveToFirstPage()"> <span class="glyphicon glyphicon-fast-backward"></span> </button>
+                    <button type="button" class="btn btn-default" ng-disabled="calllogListDetail.pageIndex <= 0" ng-click="calllogListDetail.moveToPreviousPage()"> <span class="glyphicon glyphicon-step-backward"></span> </button>
+                    <button type="button" class="btn btn-default" disabled style="width:100px"> {{calllogListDetail.pageIndex+1}} / {{calllogListDetail.pageCount}} </button>
+                    <button type="button" class="btn btn-default" ng-disabled="calllogListDetail.pageIndex >= calllogListDetail.pageCount - 1" ng-click="calllogListDetail.moveToNextPage()"> <span class="glyphicon glyphicon-step-forward"></span> </button>
+                    <button type="button" class="btn btn-default" ng-disabled="calllogListDetail.pageIndex >= calllogListDetail.pageCount - 1" ng-click="calllogListDetail.moveToLastPage()"> <span class="glyphicon glyphicon-fast-forward"></span> </button>
+                </div>
+            </div>
+        </div>  
+
+
+
+
+
+      
+    </div>
+</div>

@@ -1,0 +1,222 @@
+<div class="hbox hbox-auto-xs hbox-auto-sm">
+    <!-- main -->
+    <div class="col">
+        <!-- main header -->
+        <div class="bg-light lter b-b wrapper-md">
+            <div class="row">
+                <div class="col-sm-6 col-xs-12">
+                    <h1 class="m-n font-thin h3 text-black">Main Dashboard</h1>
+                    <small class="text-muted">{{dashboardOverview}}</small>
+                </div>
+                <div class="col-sm-6 text-right hidden-xs">
+
+                </div>
+            </div>
+        </div>
+        <!-- / main header -->
+        <div class="wrapper-md">
+            <!-- stats -->
+            <div class="row">
+                <div class="col-md-12 bg-light lter  wrapper-md">
+                    <div class="col-md-7">
+                        <div class="">
+                            <h1 class="m-n font-thin h3">DASHBOARD AS OF {{currentDateonly }} at {{currentTime }}</h1>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <button class="btn btn-md btn-info" type="button" ng-click="updateDetails()">REFRESH</button>
+                        <button class="btn btn-md btn-info" type="button" ng-click="getdetails(1)">-1 day</button>
+                        <button class="btn btn-md btn-info" type="button" ng-click="getdetails(2)">-2 days</button>
+                        <button class="btn btn-md btn-info" type="button" ng-click="getdetails(3)">-3 days</button>
+
+                    </div>
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row row-sm text-center">
+                        <div class="col-xs-4">
+                            <div class="panel padder-v bg-default item">
+                                <div class="h1 text-primary font-thin h1">
+                                    <div class="spinner" ng-show="loading"></div>{{jobShiftCount}}</div>
+                                <span class="text-muted text-xs">Total Scheduled Visits(SHIFTS)</span>
+                                <div class="top text-right">
+                                    <i class="fa fa-medkit text-muted m-r-sm"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="panel padder-v bg-default item">
+                                <div class="h1 text-primary font-thin h1">{{totalClockin}}</div>
+                                <span class="text-muted text-xs">Total Clock-IN</span>
+                                <div class="top text-right">
+                                    <i class="fa fa-medkit text-muted m-r-sm"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <a href class="block panel padder-v bg-default item">
+                                <span class="text-primary font-thin h1 block">{{totalClockout}}</span>
+                                <span class="text-muted text-xs">Total Clock-OUT</span>
+                                <span class="top text-right">
+                                 <i class="fa fa-medkit text-muted m-r-sm"></i>
+                                </span>
+                            </a>
+                        </div>
+                        <div class="col-xs-4">
+                            <a href class="block panel padder-v bg-default item">
+                                <span class="text-success font-thin h1 block">{{totalOnClockin}}</span>
+                                <span class="text-success text-xs">ON-TIME CLOCK IN</span>
+                                <span class="top text-right">
+                  <i class="fa fa-users text-muted m-r-sm"></i>
+                </span>
+                            </a>
+                        </div>
+                        <div class="col-xs-4">
+                            <a href class="block panel padder-v bg-default item">
+                                <span class="text-warning font-thin h1 block">{{totalLateClockin}}</span>
+                                <span class="text-warning text-xs">LATE CLOCK IN</span>
+                                <span class="top text-right">
+                  <i class="fa fa-users text-muted m-r-sm"></i>
+                </span>
+                            </a>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="panel padder-v bg-default item">
+                                <div class="text-danger font-thin h1">{{totalNotClockin}}</div>
+                                <span class="text-danger text-xs">NOT CLOCK IN</span>
+                                <div class="top text-right">
+                                    <i class="fa fa-users text-muted m-r-sm"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="row wrapper" ng-if="noRecord==1 || show_activities_loader">
+                <div class="col-sm-12">
+                    <div ng-if="noRecord==1" ng-bind-html="norecord"> {{norecord }}</div>
+                    <div ng-if="show_activities_loader" show-loader="show_activities_loader"></div>
+                </div>
+            </div>
+            <div class="row wrapper" ng-if="showRecord==1">
+                <div class="col-md-12">
+                    <wj-flex-chart class="custom-flex-chart" items-source="Chartdetails" binding-x="date_time" chart-type="SplineSymbols">
+                        <wj-flex-chart-axis wj-property="axisX" axis-line="true" major-grid="true" label-Angle="45">
+                        </wj-flex-chart-axis>
+                        <wj-flex-chart-axis wj-property="axisY" axis-line="false" major-grid="true">
+                        </wj-flex-chart-axis>
+                        <wj-flex-chart-series name="Clock In" binding="clockin"></wj-flex-chart-series>
+                        <wj-flex-chart-series name="Clock Out" binding="clockout"></wj-flex-chart-series>
+
+                        <wj-flex-chart-legend position="Bottom"></wj-flex-chart-legend>
+                    </wj-flex-chart>
+                </div>
+            </div>
+
+            <div class="row wrapper" ng-if="showRecord==1">
+                <div class="col-md-12">
+                    <wj-flex-grid items-source="calllogListDetail">
+                        <wj-flex-grid-column header="Employee " is-read-only="true" binding="employee_code" width="*"> </wj-flex-grid-column>
+                        <wj-flex-grid-column header="Job" is-read-only="true" binding="job_code"> </wj-flex-grid-column>
+                        <wj-flex-grid-column header="Log Type" is-read-only="true" binding="log_type"> </wj-flex-grid-column>
+                        <wj-flex-grid-column header="Work Duration" is-read-only="true" binding="call_duriation"> </wj-flex-grid-column>
+                        <wj-flex-grid-column header="Time Stamp" is-read-only="true" binding="timestamp"> </wj-flex-grid-column>
+                        <wj-flex-grid-column header="Call Status" is-read-only="true" binding="call_status"> </wj-flex-grid-column>
+                    </wj-flex-grid>
+                    <div class="row wrapper">
+                        <wj-menu value="calllogListDetail.pageSize" header="Rows per Page">
+                            <wj-menu-item value="10"> 10</wj-menu-item>
+                            <wj-menu-item value="25"> 25</wj-menu-item>
+                            <wj-menu-item value="50"> 50</wj-menu-item>
+                            <wj-menu-item value="100"> 100</wj-menu-item>
+                        </wj-menu>
+                        <div class="btn-group col-md-8" ng-show="calllogListDetail.pageSize > 0">
+                            <button type="button" class="btn btn-default" ng-disabled="calllogListDetail.pageIndex <= 0" ng-click="calllogListDetail.moveToFirstPage()"> <span class="glyphicon glyphicon-fast-backward"></span> </button>
+                            <button type="button" class="btn btn-default" ng-disabled="calllogListDetail.pageIndex <= 0" ng-click="calllogListDetail.moveToPreviousPage()"> <span class="glyphicon glyphicon-step-backward"></span> </button>
+                            <button type="button" class="btn btn-default" disabled style="width:100px"> {{calllogListDetail.pageIndex+1}} / {{calllogListDetail.pageCount}} </button>
+                            <button type="button" class="btn btn-default" ng-disabled="calllogListDetail.pageIndex >= calllogListDetail.pageCount - 1" ng-click="calllogListDetail.moveToNextPage()"> <span class="glyphicon glyphicon-step-forward"></span> </button>
+                            <button type="button" class="btn btn-default" ng-disabled="calllogListDetail.pageIndex >= calllogListDetail.pageCount - 1" ng-click="calllogListDetail.moveToLastPage()"> <span class="glyphicon glyphicon-fast-forward"></span> </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+    <!-- / main -->
+    <!-- right col -->
+    <div class="col w-md bg-white-only b-l bg-auto bg-auto-right no-border-xs">
+        <tabset class="nav-tabs-alt" justified="true">
+            <tab>
+                <tab-heading>
+                    <i class="glyphicon glyphicon-user text-md text-muted wrapper-sm"></i>
+                </tab-heading>
+                <div class="wrapper-md">
+                    <div class="m-b-sm text-md">Latest Jobs</div>
+                    <ul class="list-group no-bg no-borders pull-in">
+                        <li class="list-group-item" ng-repeat="job in jobLatest">
+                            <div class="clear">
+                                <div><a href>{{job.job_name}}</a>
+                                </div>
+                                <small class="text-muted">{{job.job_city}}, {{job.job_state}}</small>
+                            </div>
+                        </li>
+
+                    </ul>
+                    <div class="text-center">
+                        <a ui-sref="ctApp.jobs" class="btn btn-sm btn-primary padder-md m-b">More Job</a>
+                    </div>
+                </div>
+            </tab>
+            <tab>
+                <tab-heading>
+                    <i class="glyphicon glyphicon-time text-md text-muted wrapper-sm"></i>
+                </tab-heading>
+                <div class="wrapper-md">
+                    <div class="m-b-sm text-md">Latest Activity</div>
+                    <ul class="list-group no-borders pull-in auto">
+                        <li class="list-group-item" ng-repeat="emp in LatestActivity">
+                            <a href class="text-muted"><i class="fa fa-clock-o pull-right m-t-sm text-sm"></i></a>
+                            <div class="clear">
+                                <div><a href="">{{ emp.employee_name }} </a>
+                                </div>
+                                <small class="text-muted">{{emp.clockin | MMDDYYYY}}</small>
+                                <small class="text-muted"> - {{emp.clockout | MMDDYYYY}}</small>
+                            </div>
+                        </li>
+
+                    </ul>
+                    <div class="text-center">
+                        <a ui-sref="ctApp.employeeActivity" class="btn btn-sm btn-primary padder-md m-b">More Activities</a>
+                    </div>
+                </div>
+            </tab>
+        </tabset>
+        <div class="padder-md">
+            <!-- streamline -->
+            <div class="m-b text-md">Recent Shifts</div>
+            <div class="streamline b-l">
+                <div class="sl-item b-success b-l" ng-repeat="shift in shiftLatest">
+                    <div class="m-l">
+                        <div class="text-default">{{shift.created_on | MMDDYYYY}}</div>
+                        <p><a href class="text-muted">CO:</a><a href class="text-info"> {{shift.employee |  parseToJson:'text'}}</a>
+                            <br />
+                            <a href class="text-muted">PA:</a><a href class="text-success"> {{shift.job |  parseToJson:'text'}}</a>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+            <!-- / streamline -->
+            <div class="text-center">
+                <a ui-sref="ctApp.schedules" class="btn btn-sm btn-primary padder-md m-b">See All Shifts</a>
+            </div>
+        </div>
+    </div>
+    <!-- / right col -->
+</div>

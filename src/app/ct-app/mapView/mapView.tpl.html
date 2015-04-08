@@ -1,0 +1,99 @@
+<div >
+<div class="row wrapper">
+<div class="form-group">
+    <label class="col-sm-2 control-label"> <h4>Select Zone/Filters</h4></label>
+
+   <div class="col-sm-3">
+    <div >                      
+        <input class="form-control w-md"  ui-select2="selectOptions" value="" ng-model="filterTerm" placeholder="Select a zone" >
+    </div>                      
+   </div>
+   
+   <div class="col-sm-3">
+    <div >                      
+        <input ng-disabled="filterTerm == ''" class="form-control w-md"  ui-select2="selectJob" value="" ng-model="filterJob" placeholder="Select a job">
+    </div>                      
+   </div>
+   
+
+   <div class="col-sm-2">
+       <button class="btn btn-md btn-info" type="button" ng-click="getRecords()">Search</button>
+       <button class="btn btn-md btn-warning" type="button" ng-click="clearSearch()">Clear</button>
+    </div>
+</div>
+</div>
+
+<div class="row wrapper">
+
+
+
+<div class="test col-sm-12" style="position: relative; height: 500px">
+    <div id='map'></div>
+    <div id='directions'> 
+    <div id="newroutes">
+        <h4 ng-if="jobsMapListSelected.properties"> Distance from Job [{{jobsMapListSelected.properties.code}}] - {{jobsMapListSelected.properties.name}}, {{jobsMapListSelected.properties.city}}, {{jobsMapListSelected.properties.state}}, {{jobsMapListSelected.properties.zip}} </h4>
+        <div class="newroute" ng-repeat="detail in newdetails.employee" id="newrouteItems">
+            <div>
+                <span ng-if="detail.properties.name">{{detail.properties.name}} [{{detail.properties.code}}]</span>
+                <span ng-if="detail.properties.address1">, {{detail.properties.address1}}</span>
+                <span ng-if="detail.properties.city">, {{detail.properties.city}}</span>
+                <span ng-if="detail.properties.state">, {{detail.properties.state}}</span>
+                <span ng-if="detail.properties.zip">, {{detail.properties.zip}}</span>
+            </div>
+            <div class="routeSummary" ng-if="detail.route.summary">Route summary: {{detail.route.summary}}</div>
+            <div class="routeDistDur" ng-if="detail.route.distdur">
+                Dist &amp; Duration:  {{detail.route.distdur}}
+            </div>
+            <div class="addShiftCont">
+                <span class="inline"><a href="javascript:void(0);" title="" ng-click="addshift(detail)" class="btn btn-primary">Add Shift</a></span>
+            </div>
+        </div>
+    </div>
+      
+    </div>
+</div>
+<div class="col-sm-12">
+  
+ <div class="table-responsive jobsListClass" >
+
+      <table class="table table-striped b-t b-light">
+
+        <thead ng-hide="searchAlert == true">
+         <tr>
+         
+          <th ng-click="sortMe('last_name', 'last_name')" class="sortable last_name">Employee Name &nbsp;<i class="fa fa-sort"></i></th>
+          <th ng-click="sortMe('primary_address1', 'primary_address1')" class="sortable primary_address1">Address &nbsp;<i class="fa fa-sort"></i></th>
+          <th ng-click="sortMe('primary_city', 'primary_city')" class="sortable primary_city">City &nbsp;<i class="fa fa-sort"></i></th>
+          <th ng-click="sortMe('primary_state', 'primary_state')" class="sortable primary_state">State &nbsp;<i class="fa fa-sort"></i></th>
+          <th ng-click="sortMe('primary_zip', 'primary_zip')" class="sortable primary_zip">Zip &nbsp;<i class="fa fa-sort"></i></th>
+          <th ng-click="sortMe('primary_phone', 'primary_phone')" class="sortable primary_phone">Work Phone &nbsp;<i class="fa fa-sort"></i></th>
+         </tr>
+        </thead>
+        <tbody>
+        <tr>
+         <td colspan='6' ng-show="searchAlert == true" ng-if="empMapList.length > 0">Please Select a Zone to get employee     </td>
+        </tr>
+        
+        <tr ng-repeat="emp in empMapList" ng-hide="searchAlert == true" ng-click="showPopUp(emp.leafletid)">
+           <td class="job_title">{{emp.properties.name}}</td>
+           <td>{{emp.properties.address1}}</td>
+           <td>{{emp.properties.city}}</td>
+           <td>{{emp.properties.state}}</td>
+           <td>{{emp.properties.zip}}</td>
+           <td>{{emp.properties.phone}}</td>
+          </tr>
+          
+          
+         <tr>
+          <td colspan='6' ng-if="empMapList.length == '0' && searchAlert ==false">No employees in {{filterTerm.text}} </td>
+         </tr>
+        </tbody> 
+        </table>
+  </div>    
+  <p ng-if="empMapList.length > 0"> Employees Count: {{empMapList.length}}</p>
+   
+</div>
+</div>
+
+
+</div>

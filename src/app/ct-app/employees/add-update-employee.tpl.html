@@ -1,0 +1,678 @@
+<div>
+    <div class="bg-light lter b-b wrapper-md">
+        <h1 class="m-n font-thin h3">{{pageTitle}} {{labels.Employees }}</h1>
+    </div>
+    <div class="wrapper-md">
+        <div>
+            <tabset class="tab-container">
+                <tab heading="General" active="empSteps.general" select="empSteps.percent=50">
+                    <p class="m-b"><i class="fa fa-question-circle"></i> Enter Employees ({{labels.Employees}}) general details. <em class="text-danger">Required fields are in RED.</em>
+                    </p>
+                    <progressbar value="empSteps.percent" class="progress-xs" type="success"></progressbar>
+                    <form name="general" class="form-validation form-horizontal general" rc-submit="employeeManage('general')" novalidate>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label text-danger"> Employee Name</label>
+                            <div class="col-sm-10">
+                                <div class="row">
+                                    <div class="col-md-6" ng-class="{'has-error': rc.general.needsAttention(general.firstname)}">
+                                        <input type="text" required="" name="firstname" class="form-control" capitalize placeholder="First Name" ng-model="employee.firstname" ng-keyup="generateUsername()">
+                                        <span class="help-block" ng-show="general.firstname.$error.required
+                                && rc.general.needsAttention(general.firstname)">First Name is required.</span>
+                                    </div>
+                                    <div class="col-md-6" ng-class="{'has-error': rc.general.needsAttention(general.lastname)}">
+                                        <input type="text" class="form-control" capitalize name="lastname" required="" placeholder="Last Name" ng-model="employee.lastname" ng-keyup="generateUsername()">
+                                        <span class="help-block" ng-show="general.lastname.$error.required
+                                && rc.general.needsAttention(general.lastname)">Last Name is required.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+                        <div class="form-group" ng-class="{'has-error': rc.general.needsAttention(general.zone)}">
+                            <label class="col-sm-2 control-label text-danger">Employee Zone</label>
+                            <div class="col-sm-10">
+                                <div>
+                                    <input class="w-md" required="" name="zone" ui-select2="selectZone" value="" required="" ng-model="employee.zone">
+                                    <em class="m-b-none text-muted">The Zone the Employee is associated with.</em>
+                                    <span class="help-block" ng-show="general.zone.$error.required
+                                && rc.general.needsAttention(general.zone)">Employee Zone is required.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Language</label>
+                            <div class="col-sm-10">
+                                <select ui-select2 multiple class="w-md" ng-model="employee.language">
+                                    <option value="English" selected="">English</option>
+                                    <option value="Spanish">Spanish</option>
+                                    <option value="German">German</option>
+                                    <option value="French">French</option>
+                                    <option value="Italian">Italian</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Employee Level</label>
+                            <div class="col-sm-10" ng-if="islevelAccess">
+
+                                <select ui-select2 class="w-md" ng-model="employee.level">
+                                    <option value="0">Nursing</option>
+                                    <option value="2">HR</option>
+                                    <option value="3">Office Clerical</option>
+                                    <option value="4">Office Manager</option>
+                                    <option value="5">On Call</option>
+                                    <option value="6">Corporate Billing Department</option>
+                                    <option value="7">Scheduler</option>
+                                    <option value="8">Basic</option>
+                                </select>
+
+                            </div>
+                            <div class="col-sm-10" ng-if="!islevelAccess">
+                                <input ng-bind-html="employee.level | checklevel" class="form-control w-md" type="text" readonly value="{{employee.level | checklevel}}">
+                            </div>
+                        </div>
+
+
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Employee Skill</label>
+                            <div class="col-sm-10">
+                                <div>
+                                    <input type="text" class="w-md" ui-select2="selectSkill" value="" placeholder="Select Skill" ng-model="employee.skill">
+
+                                </div>
+                            </div>
+
+                        </div>
+                         <div class="form-group">
+                            <label class="col-sm-2 control-label">Agency Emp. ID</label>
+                            <div class="col-sm-10">
+                                <div>
+                                    <input type="text" class="form-control w-md"  placeholder="Agency Emp. ID" ng-model="employee.agency_empid">
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+                        <div class="form-group" ng-class="{'has-error': rc.general.needsAttention(general.curStatus)}">
+                            <label class="col-sm-2 control-label text-danger">Current Status</label>
+                            <div class="col-sm-10">
+                                <label class="radio-inline i-checks">
+                                    <input type="radio" name="curStatus" required="" value="1" ng-model="employee.curStatus"><i></i> Active
+                                </label>
+                                <label class="radio-inline i-checks">
+                                    <input type="radio" name="curStatus" required="" value="0" ng-model="employee.curStatus"><i></i> Inactive
+                                </label>
+                                <label class="radio-inline i-checks">
+                                    <input type="radio" name="curStatus" required="" value="2" ng-model="employee.curStatus"><i></i> Terminated
+                                </label>
+                                <span class="help-block" ng-show="general.curStatus.$error.required
+                                && rc.general.needsAttention(general.curStatus)">Current Status is required.</span>
+                            </div>
+
+
+                        </div>
+
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Clock OUT Safeguard</label>
+                            <div class="col-sm-10">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <input capitalize type="text" class="form-control w-md" placeholder="Enter Hours" ng-pattern="/^[0-9]+$/" ng-model="employee.clockOutSafeguardHours" ng-change="changeSafeguard()" >
+                                        <em class="m-b-none text-muted">Number of hours before the system will CLOCK-OUT the Employee</em>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <button type="submit" class="btn btn-default btn-rounded">Next</button>
+                                <button type="button" ng-if="pageTitle=='Update'" class="btn btn-primary  btn-rounded" ng-click="employeeManage('general', false)">Save changes</button>
+                                <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
+                                  
+                                  {{ErrorMsg}}
+                          </span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="pull-right">
+                                    <button type="button" class="btn btn-default btn-rounded" ng-click='cancelEmployee()'>Cancel</button>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="form-group" ng-show="employee_id">
+                            <div class="col-sm-12">
+
+
+
+                                <div class="alert alert-info">
+                                    <p>Employee: <em class="ng-binding">{{employee.accesscode}}</em>, User Name: <em class="ng-binding">{{employee.username}}</em>
+                                    </p>
+                                    <p>Created by: {{employee.created_by | AddEditUser}}, Created date is: <em class="ng-binding">{{employee.created_on | date:'medium'}}</em>
+                                    </p>
+                                    <p ng-show="employee.editedOn">
+                                        Edited by: {{employee.edited_by | AddEditUser}}, Last Edited date is: <em class="ng-binding">{{employee.editedOn | date:'medium' }}</em>
+                                    </p>
+                                     <p ><span ng-show="employee.last_clockedin"  >Last Clocked In :<em class="ng-binding"> {{employee.last_clockedin}}</em></span><span ng-show="employee.last_scheduled"  >  Last Scheduled On : <em class="ng-binding">{{employee.last_scheduled}}</em></span>
+                                    </p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </form>
+                </tab>
+
+                <tab heading="Personal" disabled="general.$invalid" active="empSteps.personal" select="empSteps.percent=40">
+                    <p class="m-b"><i class="fa fa-question-circle"></i> Continue entering Employees ({{labels.Employees}}) address and contact details. <em class="text-danger">Required fields are in RED.</em>
+                    </p>
+                    <progressbar value="empSteps.percent" class="progress-xs" type="success"></progressbar>
+                    <form name="personal" class="form-validation form-horizontal personal" rc-submit="employeeManage('personal')" novalidate>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Address Line </label>
+                            <div class="col-sm-10">
+                                <input type="text" id="Autocomplete2" capitalize class="form-control" placeholder="Enter Address line" ng-model="employee.address1" ng-autocomplete options="options" details="details" ng-enter="addressline()">
+                                <em class="help-block m-b-none text-muted">Google Map will validate the address as you type it.</em>
+                            </div>
+                            <div class="line"></div>
+                            <label class="col-sm-2 control-label">Address Line 2</label>
+                            <div class="col-sm-10">
+                                <input type="text" capitalize class="form-control" placeholder="Address line 2 (optional)" ng-model="employee.address2">
+                            </div>
+                            <div class="line"></div>
+                            <label class="col-sm-2 control-label">Zip/County/City/State </label>
+                            <div class="col-sm-10">
+                                <div class="row">
+                                    <div class="col-md-3">
+
+                                        <input type="text" capitalize class="form-control" placeholder="ZIP" ng-model="employee.zip" ng-pattern="/^[0-9]+$/">
+
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" class="form-control" capitalize placeholder="County" ng-model="employee.county">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="text" class="form-control" capitalize placeholder="City" ng-model="employee.city">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="text" class="form-control" capitalize placeholder="State" ng-model="employee.state">
+                                    </div>
+
+                                </div>
+
+                                <div class="row" ng-show="showZipError">
+                                    <div class="line"></div>
+                                    <div class="col-sm-12">
+                                        <div role="alert" class="alert ng-isolate-scope alert-warning alert-dismissable" type="warning">
+                                            <div><span class="ng-binding ng-scope">No match found, but continue adding the data</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="line"></div>
+                            <label class="col-sm-2 control-label">Country</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" capitalize name="country" required="" placeholder="Country" readonly="" ng-model="employee.country">
+                            </div>
+                            <div class="col-sm-6">
+                                <a ng-click="mapView(employee)"  target="_blank" ng-disabled="!employee.address1">Click here to View Map in Google</a>
+                            </div>
+                            <div class="line"></div>
+                            <div ng-class="{'has-error': rc.personal.needsAttention(personal.timezone)}">
+                                <label class="col-sm-2 control-label text-danger">Time Zone</label>
+                                <div class="col-sm-10">
+                                    
+                                        <input type="text" ng-model="employee.timezone" readonly="" name="timezone" capitalize required="" placeholder="Time Zone" class="form-control">
+                                        <em class="help-block m-b-none text-muted">The Time Zone is required for Schedules/Shifts and IVR. </em>
+                                        <span class="help-block" ng-show="personal.timezone.$error.required
+                                && rc.personal.needsAttention(personal.timezone)">Time Zone is required.</span>
+                                    
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                        <div class="form-group" ng-class="{'has-error': rc.personal.needsAttention(personal.workphone)}">
+                            <label class="col-sm-2 control-label text-danger">Work Phone </label>
+                            <div class="col-sm-4">
+
+                                <input type="text" name="workphone" class="form-control" ng-if="employee.country=='United States'"  ui-mask="(999) 999-9999" required="" ui-mask-use-viewvalue="false" ng-model="employee.workphone">
+
+                                 <input type="text" name="workphone" class="form-control" ng-if="employee.country!='United States'"  required="" ng-pattern="/^[0-9]+$/" ng-model="employee.workphone">
+                                <em class="help-block m-b-none text-muted">This phone will be used for alert notification.</em>
+                                <span class="help-block" ng-show="personal.workphone.$error.required && rc.personal.needsAttention(personal.workphone)">Work Phone is required.</span>
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Home Phone</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" ui-mask="(999) 999-9999" ui-mask-use-viewvalue="false" ng-model="employee.Secphone.homephone">
+                            </div>
+                        </div>
+                        <div class="form-group">
+
+                            <label class="col-sm-2 control-label">Other Phone</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" ui-mask="(999) 999-9999" ui-mask-use-viewvalue="false" ng-model="employee.Secphone.otherphone">
+                            </div>
+                        </div>
+
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Choose Pay Class</label>
+                            <div class="col-sm-10">
+                                <div>
+                                    <input class="w-md" ui-select2="selectPayClass" value="" ng-model="employee.payclass">
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Hire Date </label>
+                            <div class="col-sm-10" ng-controller="DatepickerDemoCtrl">
+                                <div class="input-group w-md">
+                                    <input readonly="" type="text" class="form-control" max-date="{{dt}}" datepicker-popup="{{format}}" ng-model="employee.hiredate" is-open="opened" datepicker-options="dateOptions" close-text="Close" />
+                                    <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                          </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-class="{'has-error': rc.personal.needsAttention(personal.birthdate)}">
+                            <label class="col-sm-2 control-label text-danger">Birthday</label>
+                            <div class="col-sm-10" ng-controller="DatepickerDemoCtrl">
+                                <div class="input-group w-md">
+                                    <input required="" readonly="" type="text" class="form-control" max-date="{{dt}}" datepicker-popup="{{format}}" ng-model="employee.birthdate" is-open="opened" datepicker-options="dateOptions" close-text="Close" name="birthdate" />
+                                    <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                          </span>
+                                </div>
+                                <em class="help-block m-b-none text-muted">Required for Mobile authentication.</em>
+                                <span class="help-block" ng-show="personal.birthdate.$error.required
+                                && rc.personal.needsAttention(personal.birthdate)">Birthday is required.</span>
+                            </div>
+                        </div>
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <button type="button" class="btn btn-default btn-rounded" ng-click="employeeManagePrev('personal')">Prev</button>
+                                <button type="submit" class="btn btn-default btn-rounded">Next</button>
+                                <button type="button" ng-if="pageTitle=='Update'" class="btn btn-primary  btn-rounded" ng-click="employeeManage('personal', false)">Save changes</button>
+                                <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
+                                  {{ErrorMsg}}
+                      </span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="pull-right">
+                                    <button type="button" class="btn btn-default btn-rounded" ng-click='cancelEmployee()'>Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-show="employee_id">
+                            <div class="col-sm-12">
+
+
+
+                                <div class="alert alert-info">
+                                    <p>Employee: <em class="ng-binding">{{employee.accesscode}}</em>, User Name: <em class="ng-binding">{{employee.username}}</em>
+                                    </p>
+                                    <p>Created by: {{employee.created_by | AddEditUser}}, Created date is: <em class="ng-binding">{{employee.created_on | date:'medium'}}</em>
+                                    </p>
+                                    <p ng-show="employee.editedOn">
+                                        Edited by: {{employee.edited_by | AddEditUser}}, Last Edited date is: <em class="ng-binding">{{employee.editedOn | date:'medium' }}</em>
+                                    </p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </form>
+                </tab>
+
+                <tab heading="Advanced" disabled="general.$invalid" active="empSteps.advanced" select="empSteps.percent=60">
+                    <p class="m-b"><i class="fa fa-question-circle"></i> Continue entering Employees ({{labels.Employees}}) notes and External Codes.</p>
+                    <progressbar value="empSteps.percent" class="progress-xs" type="success"></progressbar>
+                    <form name="advanced" class="form-validation form-horizontal Advanced" ng-submit="employeeManage('advanced')" novalidate>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Notes</label>
+                            <div class="col-sm-10">
+                                <textarea rows="4" capitalize ng-model="employee.notes" cols="50"></textarea>
+                            </div>
+                        </div>
+
+                         <div class="form-group">
+                            <label class="col-sm-2 control-label">External Code 1</label>
+                            <div class="col-sm-10">
+                                <input type="text" capitalize class="form-control" ng-model="employee.externalCode.code1" placeholder="Extenal Code 1">
+                                <em class="help-block m-b-none text-muted">Custom fields for the agency to use.</em>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">External Code 2</label>
+                            <div class="col-sm-10">
+                                <input type="text" capitalize class="form-control" ng-model="employee.externalCode.code2" placeholder="Extenal Code 2">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">External Code 3</label>
+                            <div class="col-sm-10">
+                                <input type="text" capitalize class="form-control" ng-model="employee.externalCode.code3" placeholder="Extenal Code 3">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Preferred Method of Communication</label>
+                            <div class="col-sm-10">
+
+                                <div class="row">
+                                    <div class="col-sm-12 form-group">
+                                        <div class="col-md-3">
+                                            <div class="checkbox">
+                                                <label class="i-checks">
+                                                    <input type="checkbox" value="1" ng-model="employee.communication.isVoice">
+                                                    <i></i> Voice Message
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <!-- <input type="text" class="col-md-7" ng-model="employee.communication.voice" ng-if="employee.communication.isVoice" ng-init="employee.communication.voice=employee.workphone" required="" ui-mask="(999) 999-9999" ui-mask-use-viewvalue="false"> -->
+                                            <input type="text" class="col-md-7" ng-model="employee.communication.voice" ng-if="employee.communication.isVoice" ng-init="employee.communication.voice= employee.communication.text!= null && employee.communication.voice!='' ?employee.communication.voice:employee.workphone" ui-mask="(999) 999-9999" ui-mask-use-viewvalue="false">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12 form-group">
+                                        <div class="col-md-3">
+                                            <div class="checkbox">
+                                                <label class="i-checks">
+                                                    <input type="checkbox" value="1" checked="" ng-model="employee.communication.isText">
+                                                    <i></i> Text/SMS
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="text" class="col-md-7" ng-model="employee.communication.text" ng-init="employee.communication.text=employee.communication.text!= null && employee.communication.text!= '' ?employee.communication.text:employee.workphone" ng-if="employee.communication.isText" ui-mask="(999) 999-9999" ui-mask-use-viewvalue="false">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12 form-group">
+                                        <div class="col-md-3">
+                                            <div class="checkbox">
+                                                <label class="i-checks">
+                                                    <input type="checkbox" value="1" checked="" ng-model="employee.communication.isEmail">
+                                                    <i></i> Email
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <input type="email" class="col-md-7" ng-model="employee.communication.email" ng-init="employee.communication.email=employee.communication.email != null && employee.communication.email !=''?employee.communication.email:employee.email" ng-if="employee.communication.isEmail">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                         <div class="form-group" >
+                            <label class="col-sm-2 control-label text-danger">Track Location</label>
+                            <div class="col-sm-10">
+                                <label class="radio-inline i-checks">
+                                    <input type="radio" name="track_location" required="" value="1" ng-model="employee.track_location"><i></i> Yes
+                                </label>
+                                <label class="radio-inline i-checks">
+                                    <input type="radio" name="track_location" required="" value="0" ng-model="employee.track_location"><i></i> No
+                                </label>
+                               
+                            </div>
+                        </div>
+
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <button type="button" class="btn btn-default btn-rounded" ng-click="employeeManagePrev('advanced')">Prev</button>
+                                <button type="submit" class="btn btn-default btn-rounded">Next</button>
+                                <button type="button" class="btn btn-primary  btn-rounded" ng-disabled="savedisable == 1" ng-click="employeeManage('advanced', false)">Save changes</button>
+                                <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
+                                  {{ErrorMsg}}
+                        </span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="pull-right">
+                                    <button type="button" class="btn btn-default btn-rounded" ng-click='cancelEmployee()'>Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-show="employee_id">
+                            <div class="col-sm-12">
+
+
+
+                                <div class="alert alert-info">
+                                    <p>Employee: <em class="ng-binding">{{employee.accesscode}}</em>, User Name: <em class="ng-binding">{{employee.username}}</em>
+                                    </p>
+                                    <p>Created by: {{employee.created_by | AddEditUser}}, Created date is: <em class="ng-binding">{{employee.created_on | date:'medium'}}</em>
+                                    </p>
+                                    <p ng-show="employee.editedOn">
+                                        Edited by: {{employee.edited_by | AddEditUser}}, Last Edited date is: <em class="ng-binding">{{employee.editedOn | date:'medium' }}</em>
+                                    </p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </form>
+                </tab>
+
+                <tab heading="Certification" disabled="pageTitle=='Add New'" active="empSteps.certification" select="empSteps.percent=80">
+                    <p class="m-b"><i class="fa fa-question-circle"></i> Enter upto three certifications for the Employee. You can upload a PDF for each certification entered.
+                    </p>
+
+                    <progressbar value="empSteps.percent" class="progress-xs" type="success"></progressbar>
+                    <form name="certification" enctype="multipart/form-data" target="take_the_upload" method="post" class="form-validation form-horizontal certification" novalidate>
+
+
+                        <div ng-repeat="(key, certificate) in employee.certificates" class="certificateCont wrapper-md">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Certificate Name </label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" capitalize placeholder="Enter Certificate Name" ng-model="certificate.name">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Certificate Date</label>
+                                <div class="col-sm-10" ng-controller="DatepickerDemoCtrl">
+                                    <div class="input-group w-md">
+                                        <input type="text" class="form-control" max-date="{{dt}}" datepicker-popup="{{format}}" ng-model="certificate.ctdate" is-open="opened" readonly datepicker-options="dateOptions" close-text="Close" />
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                         </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Renewal Date</label>
+                                <div class="col-sm-10" ng-controller="DatepickerDemoCtrl">
+                                    <div class="input-group w-md">
+                                        <input type="text" readonly class="form-control" datepicker-popup="{{format}}" ng-model="certificate.renewaldate" is-open="opened" datepicker-options="dateOptions" close-text="Close" />
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Notes</label>
+                                <div class="col-sm-10">
+                                    <textarea rows="4" capitalize ng-model="certificate.notes" cols="50"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">Upload certificate</label>
+                                <div class="col-sm-10">
+                                    <div new-Uploader uploadPath="uploads" rel="{{key}}" uploadtarget="upload_iframe1">Click to Add File</div>
+
+                                </div>
+                            </div>
+
+                            <div id="main_content" align="left">
+                                <div id="uploadedFilesCont">
+                                    <div class="test" id="UPD_listingCont" ng-repeat="file in certificate.files" ng-show="certificate.files.length">
+
+
+                                        <div class="fuObject" data-target="{{file.path}}" data-type="file">
+
+                                            <table class="table table-striped bg-white b-a">
+                                                <tbody>
+                                                    <tr>
+                                                        <td><img src="assets/gfx/file-pdf.png" /> {{file.name | uppercase }} </td>
+                                                        <td><a href="javascript:void(0);" class="downloadFile floatRight" ng-click="downloadCurrFile(file.path)"><i class="fa fa-eye text-muted"></i> View File</a>
+                                                        </td>
+                                                        <td><a href="javascript:void(0);" class="deleteFile floatRight" ng-click="deleteCurrFile(file, $parent.key, key)"><i class="fa fa-trash-o text-muted"></i> Delete File</a>
+                                                        </td>
+                                                        <td><i class="fa fa-clock-o text-muted"></i> {{file.last_modified}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="cClear"></div>
+                                    <div class="line line-lg b-b b-light"></div>
+
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <div class="col-sm-8">
+                                </div>
+                                <div class="col-sm-4 textRight">
+                                    <span ng-show="$index > 0"><a href="" class="btn btn-rounded btn-sm btn-icon btn-primary" ng-click="removeCertificate(key)"><i class="fa fa-trash-o"></i></a></span>
+                                    <span ng-show="$index > employee.certificatesaddshow && $index < employee.certificatesMax-1"><a href="" class="btn btn-rounded btn-sm btn-icon btn-primary" ng-click="addCertificate($index, key, $event)"><i class="fa fa-plus"></i></a></span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <button type="button" class="btn btn-default btn-rounded" ng-click="employeeManagePrev('certification')">Prev</button>
+                                <button type="button" ng-if="adminUser" ng-click="employeeManage('certification')" class="btn btn-default btn-rounded">Next</button>
+                                <button type="button" class="btn btn-primary  btn-rounded" ng-click="employeeManage('certification', false)">Save changes</button>
+                                <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
+                                    {{ErrorMsg}}
+                                </span>
+
+                            </div>
+
+
+
+                            <div class="col-sm-2">
+                                <div class="pull-right">
+                                    <button type="button" class="btn btn-default btn-rounded" ng-click='cancelEmployee()'>Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-show="employee_id">
+                            <div class="col-sm-12">
+
+
+
+                                <div class="alert alert-info">
+                                    <p>Employee: <em class="ng-binding">{{employee.accesscode}}</em>, User Name: <em class="ng-binding">{{employee.username}}</em>
+                                    </p>
+                                    <p>Created by: {{employee.created_by | AddEditUser}}, Created date is: <em class="ng-binding">{{employee.created_on | date:'medium'}}</em>
+                                    </p>
+                                    <p ng-show="employee.editedOn">
+                                        Edited by: {{employee.edited_by | AddEditUser}}, Last Edited date is: <em class="ng-binding">{{employee.editedOn | date:'medium' }}</em>
+                                    </p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </form>
+                    <iframe id="take_the_upload" name="take_the_upload" style="display: none"></iframe>
+
+                </tab>
+
+                <tab heading="Authorization" disabled="pageTitle=='Add New'" active="empSteps.authorization" select="empSteps.percent=100">
+                    <p class="m-b"><i class="fa fa-question-circle"></i> Enter Employee's email address. Login credentials will be sent to this email address.
+                    </p>
+                    <progressbar value="empSteps.percent" class="progress-xs" type="success"></progressbar>
+                    <form name="authorization" class="form-validation form-horizontal  authorization" ng-submit="employeeManage('authorization')" novalidate>
+
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Enter Email Address</label>
+                            <div class="col-sm-8">
+                                <input type="email" class="form-control" id="email" name="email" ng-model="employee.email" placeholder="Full Email address including domain.">
+                                <em class="help-block m-b-none text-muted">Example: Jane.Smith@Gmail.com</em>
+                            </div>
+                            <div class="cpl-sm-2">
+                                <button type="button" class="btn btn-info" ng-click="sendAuthorization()">Send</button>
+                            </div>
+                        </div>
+
+
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <button type="button" class="btn btn-default btn-rounded" ng-click="employeeManagePrev('authorization')">Prev</button>
+                                <button type="button" class="btn btn-primary  btn-rounded" ng-click="employeeManage('authorization', false)">Save changes</button>
+                                <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
+                                  {{ErrorMsg}}
+                        </span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="pull-right">
+                                    <button type="button" class="btn btn-default btn-rounded" ng-click='cancelEmployee()'>Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" ng-show="employee_id">
+                            <div class="col-sm-12">
+                                <div class="alert alert-info">
+                                    <p>Employee: <em class="ng-binding">{{employee.accesscode}}</em>, User Name: <em class="ng-binding">{{employee.username}}</em>
+                                    </p>
+                                    <p>Created by: {{employee.created_by | AddEditUser}}, Created date is: <em class="ng-binding">{{employee.created_on | date:'medium'}}</em>
+                                    </p>
+                                    <p ng-show="employee.editedOn">
+                                        Edited by: {{employee.edited_by | AddEditUser}}, Last Edited date is: <em class="ng-binding">{{employee.editedOn | date:'medium' }}</em>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </tab>
+
+            </tabset>
+        </div>
+    </div>
+</div>

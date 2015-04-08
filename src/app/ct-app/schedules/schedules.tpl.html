@@ -1,0 +1,68 @@
+<div>
+ 
+  <div class="hbox hbox-auto-xs hbox-auto-sm">
+    <div class="col wrapper-md">
+      <div class="clearfix m-b">
+      
+      <div class="pull-left">
+        <button type="button" class="btn btn-sm btn-primary btn-addon" ng-click="addEvent()">
+          <i class="fa fa-plus"></i>Add
+        </button>
+        </div> 
+      <div class="col-sm-8">
+          <div class="col-sm-3" >
+              <input  class="form-control"  ui-select2="shiftZoneOptions" value=""  ng-model="shiftFilters.zoneName" placeholder="Select a Zone">
+            </div>
+	      <div class="col-sm-3" >
+             
+         <input class="form-control" ui-select2="Selectfield" value="" ng-model="shiftFilters.filterName" ng-disabled="shiftFilters.zoneName=='' || shiftFilters.zoneName.id =='all'"  placeholder="Select Job/Employee">
+              
+            </div>
+	      <div class="col-sm-3">
+          
+
+              <input  class="form-control"  ui-select2="shiftFilterOptions" value=""  placeholder="Select a Name" ng-model="shiftFilters.filterValue" ng-disabled="!shiftFilters.filterName || shiftFilters.filterName.id =='all'">
+    </div>
+	      <div class="col-sm-3">
+		      <button class="btn btn-sm btn-info" type="button" ng-click="filterCalender('calendar1')">Search</button>
+		      <button class="btn btn-sm btn-warning" type="button" ng-click="clearSearch('calendar1')">Clear</button>
+	      </div>
+      </div> 
+      <div class="col-sm-3">
+       <span class="alert alert-danger" ng-if="showerrorMsg">{{error_msg}}</span>
+      </div>
+
+        
+      </div>
+      <div class="pos-rlt">
+        <div class="fc-overlay"> <!-- ng-repeat="event in events" -->
+          <div class="panel bg-white b-a pos-rlt">
+            <span class="arrow"></span>
+            <div class="h4 font-thin m-b-sm">{{event.title}}</div>
+            <div class="line b-b b-light"></div>
+            <div><i class="icon-calendar text-muted m-r-xs"></i> {{event.start | date:'medium'}}</div>
+            <div class="ng-hide" ng-show='event.end'><i class="icon-clock text-muted m-r-xs"></i> {{event.end | date:'medium'}}</div>
+            <div class="ng-hide" ng-show='event.location'><i class="icon-pointer text-muted m-r-xs"></i> {{event.location}}</div>
+            <div class="m-t-sm">{{event.info}}</div>
+            <div class="m-t-sm">{{event.url}}</div>
+          </div>
+        </div>
+        <div class="calendar schduleCal" ng-model="eventSources" calendar="calendar1" id="calendar" config="uiConfig.calendar" ui-calendar="uiConfig.calendar">
+	        
+        </div>
+      </div>
+    </div>
+    <div class="col w-md w-auto-xs bg-light dk bg-auto b-l hide" id="aside">
+      <div class="wrapper">
+        <div ng-repeat="e in events" class="bg-white-only r r-2x m-b-xs wrapper-sm {{e.className[0]}}">          
+          <input ng-model="e.title" class="form-control m-t-n-xs no-border no-padder no-bg">
+          <a class="pull-right text-xs text-muted" ng-click="remove($index)"><i class="fa fa-trash-o"></i></a>
+          </div>
+		
+		       
+          <div class="text-xs text-muted">{{e.start | date:"MMM dd"}} - {{e.end | date:"MMM dd"}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

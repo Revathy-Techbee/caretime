@@ -1,0 +1,52 @@
+<div>
+    <div class="bg-light lter b-b wrapper-md">
+        <h1 class="m-n font-thin h3">{{pageTitle}} Skill</h1>
+    </div>
+    <div class="wrapper-md" style="background:#FFF;">
+        <div>
+            <p class="m-b"><em class="text-danger">Required fields are in Red</em>
+            </p>
+            <progressbar value="100" class="progress-xs" type="success"></progressbar>
+            <form name="addUpdateSkillForm" class="form-validation form-horizontal general" rc-submit="skillManage()" novalidate>
+                <div class="form-group" ng-class="{'has-error': rc.addUpdateSkillForm.needsAttention(addUpdateSkillForm.name)}">
+                    <label class="col-sm-2 control-label text-danger"> Name</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control w-md" capitalize required="" placeholder="Skill Name" name="name" ng-model="skill.name">
+                        <span class="help-block" ng-show="addUpdateSkillForm.name.$error.required && rc.addUpdateSkillForm.needsAttention(addUpdateSkillForm.name)">Skill name is required.</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Status</label>
+                    <div class="col-sm-10">
+                        <label class="radio-inline i-checks">
+                            <input type="radio" name="a" value="1" ng-model="skill.status"><i></i> Active
+                        </label>
+                        <label class="radio-inline i-checks">
+                            <input type="radio" name="a" value="0" ng-model="skill.status"><i></i> Inactive
+                        </label>
+                    </div>
+                </div>
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <button type="submit" class="btn btn-primary  btn-rounded">Save Changes</button>
+                        <button type="button" ng-click='cancelSkill()' class="btn btn-default  btn-rounded pull-right">Cancel</button>
+                        <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">{{ErrorMsg}}</span>
+                    </div>
+                </div>
+                <div class="form-group" ng-show="skill_id">
+                    <div class="col-sm-12">
+                        <div class="alert alert-info">
+                            <p>Created by: {{skill.created_by | AddEditUser}}, Created date is: <em class="ng-binding">{{skill.created_on | date:'medium'}}</em>
+                            </p>
+                            <p ng-show="skill.editedOn">
+                                Edited by: {{skill.edited_by | AddEditUser}}, Last Edited date is: <em class="ng-binding">{{skill.editedOn | date:'medium' }}</em>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

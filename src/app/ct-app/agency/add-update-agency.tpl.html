@@ -1,0 +1,381 @@
+<div class="bg-light lter b-b wrapper-md">
+    <h1 class="m-n font-thin h3">Agency Detail</h1>
+</div>
+<div class="wrapper-md">
+
+    <div>
+        <tabset class="tab-container">
+            <tab heading="General" active="empSteps.general" select="empSteps.percent=50">
+                <p class="m-b">Agency Detail General details. <em class="text-danger">Required fields are in Red</em></p>
+                <progressbar value="empSteps.percent" class="progress-xs" type="success"></progressbar>
+                <form name="general" class="form-validation form-horizontal agency" rc-submit="agencyManage('general')" novalidate>
+                    <div class="form-group" ng-class="{'has-error': rc.general.needsAttention(general.agency_name)}">
+                        <label class="col-sm-2 control-label text-danger"> Agency Name</label>
+                        <div class="col-sm-10">
+                            <div class="row">
+                                <div class="col-md-12">
+
+                                    <input type="text" capitalize class="form-control" name="agency_name" required="" placeholder="Agency Name" ng-model="agency.agency_name">
+                                    <span class="help-block" ng-show="general.agency_name.$error.required
+                                && rc.general.needsAttention(general.agency_name)">Agency Name is required.</span>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label"> Agency Code <i class="fa fa-question-circle" popover="Agency Code is a generated unique code" popover-trigger="mouseenter" popover-placement="right"></i></label>
+                        <div class="col-sm-10">
+
+                            <input type="text" capitalize class="form-control" readonly="" disabled="" placeholder="Agency Name" ng-model="agency.agency_id">
+
+
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': rc.general.needsAttention(general.address)}">
+                        <label class="col-sm-2 control-label text-danger">Address1</label>
+                        <div class="col-sm-10">
+                            <!-- <input type="text" class="form-control" ng-model="agency.primary_address1" required=""  placeholder="Address line 1"> -->
+                            <input type="text" id="Autocomplete2" capitalize class="form-control" placeholder="Address line 1" name="address" required="" ng-model="agency.primary_address1" ng-autocomplete options="options" details="details" ng-keypress="preventNext($event)">
+                            <span class="help-block" ng-show="general.address.$error.required
+                                && rc.general.needsAttention(general.address)">Address1 is required.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Address2</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" capitalize ng-model="agency.primary_address2" placeholder="Address line 2">
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': rc.general.needsAttention(general.primary_zip)}">
+                        <label class="col-sm-2 control-label text-danger">Zip/County/City/State</label>
+                        <div class="col-sm-10">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <!--
+								   <input type="text" capitalize class="form-control" ng-change="getZipDetail()" ng-required="true" name="primary_zip" required="" ng-maxlength="5" placeholder="ZIP" ng-model="agency.primary_zip" ng-pattern="/^[0-9]+$/">
+								   -->
+                                    <input type="text" capitalize class="form-control" ng-required="true" name="primary_zip" required=""  placeholder="ZIP" ng-model="agency.primary_zip" ng-pattern="/^[0-9]+$/">
+                                    <span class="help-block" ng-show="general.primary_zip.$error.required
+                                && rc.general.needsAttention(general.primary_zip)">Zip is required.</span>
+
+
+                                </div>
+                                <div class="col-md-3">
+                                    <input type="text" class="form-control" capitalize placeholder="County" ng-model="agency.primary_county" name="primary_county" required="">
+                                    <span class="help-block" ng-show="general.primary_county.$error.required
+                                && rc.general.needsAttention(general.primary_county)">County is required.</span>
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control" capitalize placeholder="City" ng-model="agency.primary_city" name="primary_city" required="">
+                                    <span class="help-block" ng-show="general.primary_city.$error.required
+                                && rc.general.needsAttention(general.primary_city)">City is required.</span>
+                                </div>
+                                <div class="col-md-2">
+                                    <input type="text" class="form-control" capitalize name="primary_state" required="" placeholder="State" ng-model="agency.primary_state">
+                                    <span class="help-block" ng-show="general.primary_state.$error.required
+                                && rc.general.needsAttention(general.primary_state)">State is required.</span>
+                                </div>
+
+                            </div>
+
+                            <div class="row" ng-show="showZipError">
+                                <div class="line"></div>
+                                <div class="col-sm-12">
+                                    <div role="alert" class="alert ng-isolate-scope alert-warning alert-dismissable" type="warning">
+                                        <div><span class="ng-binding ng-scope">No match found, but continue adding the data</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="line line-dashed b-b line-lg pull-in"></div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Country</label>
+                        <div class="col-sm-5">
+                            <input type="text" class="form-control" capitalize name="country" required="" placeholder="Country" readonly="" ng-model="agency.country">
+                            <!--<a ng-href="{{agency.url}}" class="btn btn-sm btn-info" target="_blank">Click here to View</a>-->
+                        </div>
+                        <div class="col-sm-5">
+                            <a ng-click="mapView(agency)"  target="_blank" ng-disabled="agency.primary_address1==''">Click here to View Map in Google</a>
+                        </div>
+                    </div>
+                    <div class="line"></div>
+
+                    <div class="form-group" ng-class="{'has-error': rc.general.needsAttention(general.contact_name)}">
+                        <label class="col-sm-2 control-label text-danger">Contact Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" capitalize class="form-control" name="contact_name" required="" placeholder="Contact Name" ng-model="agency.contact_name">
+                            <span class="help-block" ng-show="general.contact_name.$error.required
+                                && rc.general.needsAttention(general.contact_name)">Contact Name is required.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': rc.general.needsAttention(general.contact_email)}">
+                        <label class="col-sm-2 control-label text-danger">Contact Email</label>
+                        <div class="col-sm-10">
+                            <input type="email" capitalize class="form-control" name="contact_email" required="" placeholder="Contact Email" ng-model="agency.contact_email">
+                            <span class="help-block" ng-show="general.contact_email.$error.required
+                                && rc.general.needsAttention(general.contact_email)">Contact Email is required.</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Contact Phone</label>
+                        <div class="col-sm-10">
+                            <input type="text" ng-if="agency.country=='United States'" class="form-control" ui-mask="(999) 999-9999" ui-mask-use-viewvalue="true" ng-model="agency.contact_phone">
+                            <input type="text" ng-if="agency.country!='United States'" ng-pattern="/^[0-9]+$/" class="form-control" ng-model="agency.contact_phone">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Telephone / fax</label>
+                        <div class="col-sm-10">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" placeholder="Telephone" ng-model="agency.telephone">
+                                </div>
+                                <div class="col-md-6">
+                                    <input type="text" class="form-control" placeholder="fax" ng-model="agency.fax">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Timezone</label>
+                        <div class="col-sm-10">
+                            <div class="row">
+                                <div class="col-md-6">
+                                                 
+                                        <input type="text" readonly ng-model="agency.timezone" placeholder="Time Zone" class="form-control">
+                                    
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="checkbox">
+                                        <label class="i-checks">
+                                            <input type="checkbox" value="1" ng-model="agency.daylight_time_format">
+                                            <i></i> Observe Daylight Saving Time?
+                                        </label>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Enable Alert</label>
+                        <div class="col-sm-10">
+                            <div class="checkbox">
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="agency.enable_alert">
+                                    <i></i> Used to disable company alerts during holidays - check to enable (default), uncheck to disable alerts
+                                </label>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="line line-dashed b-b line-lg pull-in"></div>
+                    <div class="form-group">
+                        <div class="col-sm-6">
+                            <button type="submit" class="btn btn-default btn-rounded">Next</button>
+
+                            <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
+						          
+						          {{ErrorMsg}}
+						  </span>
+                        </div>
+                        <div class="col-sm-4">
+
+                        </div>
+                    </div>
+                    <div class="form-group" ng-show="agency.agency_id">
+                        <div class="col-sm-12">
+                            <div class="alert alert-info">
+                                <p>Created by: {{agency.created_by | AddEditUser}}, Created date is: <em class="ng-binding">{{agency.created_on | date:'medium'}}</em>
+                                </p>
+                                <p ng-show="agency.editedOn">
+                                    Edited by: {{agency.edited_by | AddEditUser}}, Last Edited date is: <em class="ng-binding">{{agency.editedOn | date:'medium' }}</em>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </tab>
+
+
+            <tab heading="Configuration" disabled="general.$invalid" active="empSteps.configuration" select="empSteps.percent=100">
+                <p class="m-b">Congratulations! You got to the last step!. <em class="text-danger">Required fields are in Red</em></p>
+                <progressbar value="empSteps.percent" class="progress-xs" type="success"></progressbar>
+                <form name="configuration" class="form-validation form-horizontal configuration" rc-submit="agencyManage('configuration')" novalidate>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Greetings</label>
+                        <div class="col-sm-10">
+                            <textarea capitalize rows="4" ng-model="agency.ivr_greetings" cols="50"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-class="{'has-error': rc.configuration.needsAttention(configuration.ivr_number)}">
+                        <label class="col-sm-2 control-label text-danger">IVR Number</label>
+                        <div class="col-sm-10">
+                            <input type="text"  ng-if="agency.country=='United States'" name="ivr_number" class="form-control" ui-mask="(999) 999-9999" required="" ui-mask-use-viewvalue="false" ng-model="agency.ivr_number">
+
+                             <input type="text"  ng-if="agency.country!='United States'" name="ivr_number" class="form-control" ng-pattern="/^[0-9]+$/" required=""  ng-model="agency.ivr_number">
+                            <span class="help-block" ng-show="configuration.ivr_number.$error.required
+                                && rc.configuration.needsAttention(configuration.ivr_number)">IVR Number is required.</span>
+                        </div>
+                    </div>
+
+                    <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                    <!-- <div class="form-group">
+			          <label class="col-sm-2 control-label">External Code1</label>
+			          <div class="col-sm-10">
+			             <input type="text"  capitalize class="form-control"    placeholder="Enter custom code" ng-model="agency.external_code.code1" >
+			          </div>
+			        </div>
+					
+					 <div class="form-group">
+			          <label class="col-sm-2 control-label">External Code2</label>
+			          <div class="col-sm-10">
+			             <input type="text" capitalize  class="form-control"   placeholder="Enter custom code" ng-model="agency.external_code.code2" >
+			          </div>
+			        </div>
+			        
+			        
+			        <div class="line line-dashed b-b line-lg pull-in"></div> -->
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Label for Zones</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" capitalize placeholder=" Label for Zones" ng-model="agency.labels.zones">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Label for Jobs</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" capitalize placeholder="Label for Jobs" ng-model="agency.labels.jobs">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Label for Employees</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" capitalize placeholder="Label for Employees" ng-model="agency.labels.employees">
+                        </div>
+                    </div>
+
+                    <div class="line line-dashed b-b line-lg pull-in"></div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Payroll Period</label>
+                        <div class="col-sm-10">
+                            <label class="radio-inline i-checks">
+                                <input type="radio" name="a" value="0" ng-model="agency.pay_period"><i></i> Weekly
+                            </label>
+                            <label class="radio-inline i-checks">
+                                <input type="radio" name="a" value="1" ng-model="agency.pay_period"><i></i> Bi-Weekly
+                            </label>
+                            <label class="radio-inline i-checks">
+                                <input type="radio" name="a" value="2" ng-model="agency.pay_period"><i></i> Monthly
+                            </label>
+                            <label class="radio-inline i-checks">
+                                <input type="radio" name="a" value="3" ng-model="agency.pay_period"><i></i> Semi monthly
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Work Week</label>
+                        <div class="col-sm-10">
+
+                            <div>
+                                <select ui-select2 class="form-control w-md" ng-model="agency.work_week">
+                                    <option value="0">Sunday</option>
+                                    <option value="1">Monday</option>
+                                    <option value="2">Tuesday</option>
+                                    <option value="3">Wednesday</option>
+                                    <option value="4">Thursday</option>
+                                    <option value="5">Friday</option>
+                                    <option value="6">Saturday</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                    <!--<div class="form-group">
+						<label class="col-sm-2 control-label">Digits for Zone Code</label>
+						<div class="col-sm-10">
+			  				<input type="number" readonly data-min='4' data-max="6" class="form-control"   placeholder="Size of Zone code" ng-model="agency.config_zone_code" >
+                    	</div>
+                    </div>
+                    <div class="form-group">
+						<label class="col-sm-2 control-label">Digits for Employee Code</label>
+						<div class="col-sm-10">
+			  				<input type="number" readonly data-min='4' data-max="6" class="form-control"   placeholder="Size of Employee code" ng-model="agency.config_employee_code" >
+                    	</div>
+                    </div>
+                    			        <div class="form-group">
+						<label class="col-sm-2 control-label">Digits for Job Code</label>
+						<div class="col-sm-10">
+			  				<input type="number"  readonly data-min='4' data-max="6" class="form-control" placeholder="Size of job Code" ng-model="agency.config_job_code" >
+                    	</div>
+                    </div>-->
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Clock-in Notification Duration</label>
+                        <div class="col-sm-10">
+                            <div>
+                                <select ui-select2 class="form-control w-md" ng-model="agency.notify_interval">
+                                    <option value="15">15 Min</option>
+                                    <option value="30">30 Min</option>
+
+
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                    <div class="form-group">
+                        <div class="col-sm-8">
+                            <button type="button" class="btn btn-default btn-rounded" ng-click="agencyManagePrev('configuration')">Prev</button>
+                            <button type="submit" class="btn btn-primary  btn-rounded">Save Changes</button>
+                            <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
+						          
+						          {{ErrorMsg}}
+						  </span>
+                        </div>
+                        <div class="col-sm-4">
+                            <button type="button" ng-click='previous_state()' class="btn btn-default  btn-rounded pull-right">Cancel</button>
+                        </div>
+                    </div>
+                    <div class="form-group" ng-show="agency.agency_id">
+                        <div class="col-sm-12">
+                            <div class="alert alert-info">
+
+                                <p>Created by: {{agency.created_by | AddEditUser}}, Created date is: <em class="ng-binding">{{agency.created_on | date:'medium'}}</em>
+                                </p>
+                                <p ng-show="agency.editedOn">
+                                    Edited by: {{agency.edited_by | AddEditUser}}, Last Edited date is: <em class="ng-binding">{{agency.editedOn | date:'medium' }}</em>
+                                </p>
+
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                </form>
+            </tab>
+    </div>
+</div>

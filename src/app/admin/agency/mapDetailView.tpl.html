@@ -1,0 +1,14 @@
+<div class="modal-header">
+    <h3 class="modal-title">{{title}}, {{county}}, {{primary_state}}</h3>
+</div>
+<div class="modal-body">
+
+<iframe id="jobMapId" width="567" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" ng-src="{{currentProjectUrl}}" mozbrowser remote></iframe> 
+
+</div>
+    	      
+    	     
+<div class="modal-footer">              
+   <a ng-href="{{fullMapUrl}}" class="btn btn-sm btn-info" target="_blank">VIEW IN GOOGLE MAP</a>
+    <button class="btn btn-default" ng-click="cancel()">CANCEL</button>
+</div>

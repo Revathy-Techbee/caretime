@@ -1,0 +1,78 @@
+<div class="bg-light lter b-b wrapper-md">
+    <h1 class="m-n font-thin h3">{{labels.Zones }} List
+        <a ng-if="addAccess" ui-sref="ctApp.addUpdateZone" class="btn btn-md btn-info pull-right" type="button">Add {{labels.Zones }}</a></h1>
+</div>
+<div class="wrapper-md">
+
+
+
+    <div class="panel panel-default">
+
+        <div class="row wrapper">
+
+            <div class="col-sm-3">
+                <div class="input-group col-sm-12">
+
+                    <ui-select ng-model="config.general.filterDBField" theme="select2" style="min-width: 225px;">
+                        <ui-select-match placeholder="Optional filter for search">{{$select.selected.name}}</ui-select-match>
+                        <ui-select-choices repeat="item in zoneSearchOption">
+                            <div ng-bind-html="item.name"></div>
+                        </ui-select-choices>
+                    </ui-select>
+
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <input type="text" class="input-md form-control" capitalize placeholder="Search Text" ui-keypress="{13:'updateTableData(true)'}" ng-model="config.general.searchtxt">
+            </div>
+            <div class="col-sm-3">
+                <button class="btn btn-md btn-info" type="button" ng-click="updateTableData(true)">Search</button>
+                <button class="btn btn-md btn-warning" type="button" ng-click="clearSearch()">Clear</button>
+            </div>
+        </div>
+
+        <div class="table-wrapper table-responsive">
+            <table class="table table-striped b-t b-light table-bordered word-break"
+                   ct-table-sort="sortField"
+                   sort-order="sortType"
+                   callback="applyProgramSort()">
+                <thead>
+                <tr>
+                    <th id="zone_name"  class="sort-item asc" style="width:30%;">Zone Name &nbsp;<i class="fa fa-sort fa-sort-up"></i></th>
+                    <th id="zone_code" class="sort-item">Zone Code &nbsp;<i class="fa fa-sort"></i></th>
+                    <th id="supervisor_detail"  class="sort-item" >Supervisor &nbsp;<i class="fa fa-sort"></i></th>
+                    <th>Action</th>
+                </tr>
+                </thead>
+                <tbody infinite-scroll='getNextData()'
+                       infinite-scroll-disabled='disable_infinite_scroll'
+                       infinite-scroll-distance='0'>
+                <tr ng-repeat="detail in zoneDetailList" class="animate-repeat">
+                    <td>{{detail.zone_name}}</td>
+                    <td><a>{{detail.zone_code}} </a></td>
+                    <td>{{detail.supervisor_detail | payclass}}</td>
+                    <td>
+                        <button ng-click="enableEditView(detail.id)"  class="btn btn-rounded btn-sm btn-icon btn-default" title="Edit Zone"><i class="fa fa-pencil"></i></button>
+                        <!--<button ng-click="enableEdit(detail.id,true)"  class="btn btn-default" title="View Dashboard"><i class="fa fa-dashboard"></i></button>-->
+                    </td>
+
+                </tr>
+
+                <tr ng-if="config.show_zones_loader" >
+                    <td colspan="4">
+                        <div show-loader="config.show_zones_loader"></div>
+                    </td>
+                </tr>
+                <tr ng-if="!config.show_zones_loader && zoneDetailList.length==0">
+                    <td colspan='4' class="alert alert-danger">
+                        <center> No Records Found.</center>
+                    </td>
+                </tr>
+
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+
+</div>

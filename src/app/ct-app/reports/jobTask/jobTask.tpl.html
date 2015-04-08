@@ -1,0 +1,110 @@
+<div class="bg-light lter b-b wrapper-md">
+    <h1 class="m-n font-thin h3">Job Task Report</h1>
+
+</div>
+
+<div class="wrapper-md">
+    <div class="panel panel-default">
+        <div class="row wrapper">
+            <div class="col-sm-3">
+                <div class="form-control " placeholder="Select zone" ui-select2="selectZone" value="" ng-model="reportFilters.zone">
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <div>
+                    <input class="form-control " placeholder="Select Job" ui-select2="selectJob" ng-model="reportFilters.job" ng-disabled="reportFilters.zone=='' || reportFilters.zone==null || reportFilters.zone[0].id =='all'">
+                </div>
+
+            </div>
+            <div class="col-sm-3">
+
+                <div ng-controller="DatepickerDemoCtrl">
+
+                    <div class="input-group">
+                        <input type="text" placeholder="Select Start Date" class="form-control" readonly datepicker-popup="{{format}}" ng-model="reportFilters.startDate" is-open="opened" datepicker-options="dateOptions" close-text="Close" />
+                        <span class="input-group-btn">
+                      <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="col-sm-3">
+
+                <div ng-controller="DatepickerDemoCtrl">
+
+                    <div class="input-group">
+                        <input type="text" placeholder="Select End Date" class="form-control" readonly datepicker-popup="{{format}}" ng-model="reportFilters.endDate" is-open="opened" datepicker-options="dateOptions" close-text="Close" />
+                        <span class="input-group-btn">
+                      <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row wrapper">
+            <div class="col-sm-6">
+                <button class="btn btn-md btn-info" type="button" ng-click="updateTableData()">Search</button>
+                <button class="btn btn-md btn-warning" type="button" ng-click="clearSearch()">Clear</button>
+                <span class="alert alert-danger" ng-if="showerrorMsg">{{error_msg}}</span>
+
+            </div>
+            <div class="col-sm-6">
+                <div class="pull-right">
+                   
+                    <a ng-disabled="noRecord==1" download="JobTaskReport.xlsx" class="btn btn-md btn-info" id="export" ng-click="exportExcel()">Export Excel</a>
+
+                </div>
+            </div>
+            
+
+        </div>
+
+        <div class="row wrapper" ng-if="noRecord==1 || show_activities_loader">
+            <div class="col-sm-12">
+                <div ng-if="noRecord==1" ng-bind-html="norecord"> {{norecord }}</div>
+                <div ng-if="show_activities_loader" show-loader="show_activities_loader"></div>
+            </div>
+        </div>
+        <div class="row wrapper" ng-if="showRecord==1">
+            <wj-flex-grid control="ctx.flexGrid" items-source="TaskDetails">
+                <wj-flex-grid-column header="Employee" is-read-only="true" binding="employee_code" width="*"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Job" is-read-only="true" binding="job_code"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Task" is-read-only="true" binding="task_code"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Duration" is-read-only="true" binding="duration"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Created Date" is-read-only="true" binding="created_date"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Modified Date" is-read-only="true" binding="modified_date"> </wj-flex-grid-column>
+            </wj-flex-grid>
+            <div class="row wrapper">
+                <wj-menu value="TaskDetails.pageSize" header="Rows per Page">
+                    <wj-menu-item value="10"> 10</wj-menu-item>
+                    <wj-menu-item value="25"> 25</wj-menu-item>
+                    <wj-menu-item value="50"> 50</wj-menu-item>
+                    <wj-menu-item value="100"> 100</wj-menu-item>
+                </wj-menu>
+
+
+
+
+                <div class="btn-group col-md-8" ng-show="TaskDetails.pageSize > 0">
+                    <button type="button" class="btn btn-default" ng-disabled="TaskDetails.pageIndex <= 0" ng-click="TaskDetails.moveToFirstPage()"> <span class="glyphicon glyphicon-fast-backward"></span> </button>
+                    <button type="button" class="btn btn-default" ng-disabled="TaskDetails.pageIndex <= 0" ng-click="TaskDetails.moveToPreviousPage()"> <span class="glyphicon glyphicon-step-backward"></span> </button>
+                    <button type="button" class="btn btn-default" disabled style="width:100px"> {{TaskDetails.pageIndex+1}} / {{TaskDetails.pageCount}} </button>
+                    <button type="button" class="btn btn-default" ng-disabled="TaskDetails.pageIndex >= TaskDetails.pageCount - 1" ng-click="TaskDetails.moveToNextPage()"> <span class="glyphicon glyphicon-step-forward"></span> </button>
+                    <button type="button" class="btn btn-default" ng-disabled="TaskDetails.pageIndex >= TaskDetails.pageCount - 1" ng-click="TaskDetails.moveToLastPage()"> <span class="glyphicon glyphicon-fast-forward"></span> </button>
+                </div>
+            </div>
+        </div>  
+
+
+
+
+
+      
+    </div>
+</div>

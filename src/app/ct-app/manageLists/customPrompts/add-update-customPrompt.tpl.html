@@ -1,0 +1,71 @@
+<div>
+    <div class="bg-light lter b-b wrapper-md">
+        <h1 class="m-n font-thin h3">{{pageTitle}} Custom Prompt</h1>
+    </div>
+    <div class="wrapper-md" style="background:#FFF;">
+        <div>
+            <p class="m-b"><strong>Prompt Text</strong> is the question stated in the IVR dialog. <strong>Prompt Answer</strong> is the answer choices stated in the IVR dialog. Example: For answers, 1 for Yes and 2 for No, only enter YES,NO as the input field. <em class="text-danger">Required fields are in Red</em>
+            </p>
+            <progressbar value="100" class="progress-xs" type="success"></progressbar>
+            <form name="addUpdateCustomPromptForm" class="form-validation form-horizontal general" rc-submit="customPromptManage()" novalidate>
+                <div class="form-group" ng-class="{'has-error': rc.addUpdateCustomPromptForm.needsAttention(addUpdateCustomPromptForm.name)}">
+                    <label class="col-sm-2 control-label text-danger"> Prompt Name</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" name="prompt_name" required="" placeholder="Prompt Name " ng-model="customPrompt.prompt_name" capitalize>
+                        <span class="help-block" ng-show="addUpdateCustomPromptForm.prompt_name.$error.required && rc.addUpdateCustomPromptForm.needsAttention(addUpdateCustomPromptForm.prompt_name)"> Prompt Name is required.</span>
+                    </div>
+                </div>
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+                <div class="form-group" ng-class="{'has-error': rc.addUpdateCustomPromptForm.needsAttention(addUpdateCustomPromptForm.name)}">
+                    <label class="col-sm-2 control-label text-danger">Prompt Text </label>
+                    <div class="col-sm-10">
+                        <input ctype="text" class="form-control" name="prompt_text" required="" placeholder="The question stated in the IVR." ng-model="customPrompt.prompt_text" capitalize>
+                        <em class="m-b-none text-muted">Example: Did you feed the patient?</em>
+                        <span class="help-block" ng-show="addUpdateCustomPromptForm.prompt_text.$error.required && rc.addUpdateCustomPromptForm.needsAttention(addUpdateCustomPromptForm.prompt_text)">Prompt Text is required.</span>
+                    </div>
+                </div>
+                <div class="form-group" ng-class="{'has-error': rc.addUpdateCustomPromptForm.needsAttention(addUpdateCustomPromptForm.name)}">
+                    <label class="col-sm-2 control-label text-danger">Prompt Answers</label>
+                    <div class="col-sm-10">
+                        <input ctype="text" class="form-control" name="prompt_answers" required="" placeholder="Answer choices stated in IVR." ng-model="customPrompt.prompt_answers" capitalize>
+                        <em class="m-b-none text-muted">Enter prompt answers separated by comma with no space before or after comma</em>
+                        <span class="help-block" ng-show="addUpdateCustomPromptForm.prompt_answers.$error.required && rc.addUpdateCustomPromptForm.needsAttention(addUpdateCustomPromptForm.prompt_answers)">Paytype name is required.</span>
+                    </div>
+                </div>
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label text-danger">Status </label>
+                    <div class="col-sm-10">
+                        <label class="radio-inline i-checks">
+                            <input type="radio" name="a" value=1 ng-model="customPrompt.status"><i></i> Active
+                        </label>
+                        <label class="radio-inline i-checks">
+                            <input type="radio" name="a" value=0 ng-model="customPrompt.status"><i></i> Inactive
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <button type="submit" class="btn btn-primary  btn-rounded">Save Changes</button>
+                        <button type="button" ng-click='cancelCustomPrompt()' class="btn btn-default  btn-rounded pull-right">Cancel</button>
+                        <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
+                                  
+                                  {{ErrorMsg}}
+                          </span>
+                    </div>
+                </div>
+                <div class="form-group" ng-show="customPrompt_id">
+                    <div class="col-sm-12">
+                        <div class="alert alert-info">
+                            <p>Created by: {{customPrompt.created_by | AddEditUser}}, Created date is: <em class="ng-binding">{{customPrompt.created_on | date:'medium'}}</em>
+                            </p>
+                            <p ng-show="customPrompt.updated_on">
+                                Edited by: {{customPrompt.edited_by | AddEditUser}}, Last Edited date is: <em class="ng-binding">{{customPrompt.updated_on | date:'medium' }}</em>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

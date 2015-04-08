@@ -1,0 +1,657 @@
+<div>
+    <div class="bg-light lter b-b wrapper-md">
+
+        <h1 class="m-n font-thin h3">{{pageTitle}} {{labels.Jobs }}</h1>
+
+    </div>
+
+    <div class="wrapper-md">
+
+        <div>
+
+            <tabset class="tab-container">
+
+                <tab heading="Basic Setup" active="jobSteps.basic" select="jobSteps.percent=20">
+
+                    <p class="m-b"><i class="fa fa-question-circle"></i> Enter the basic details about the Job. <em class="text-danger">Required fields are in Red</em> </p>
+
+                    <progressbar value="jobSteps.percent" class="progress-xs" type="success"></progressbar>
+
+                    <form name="basic" class="form-validation form-horizontal" rc-submit="jobManage('basic')" novalidate>
+
+                        <div class="form-group" ng-class="{'has-error': rc.basic.needsAttention(basic.job_name)}">
+
+                            <label class="col-sm-2 control-label text-danger"> Job Name</label>
+
+                            <div class="col-sm-10">
+
+                                <input type="text" class="form-control" capitalize name="job_name" required="" placeholder="Job Name" ng-model="job.job_name">
+                                <span class="help-block" ng-show="basic.job_name.$error.required
+                                && rc.basic.needsAttention(basic.job_name)">Job Name is required.</span>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="form-group" ng-class="{'has-error': rc.basic.needsAttention(basic.job_zone)}">
+                            <label class="col-sm-2 control-label text-danger">Job Zone</label>
+
+                            <div class="col-sm-10">
+                                <div>
+                                    <input class="w-md" ui-select2="selectZone" value="" placeholder="Enter Zone" name="job_zone" required=""  ng-model="job.job_zone">
+                                     <span class="help-block" ng-show="basic.job_zone.$error.required
+                                && rc.basic.needsAttention(basic.job_zone)">Job Zone is required.</span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label class="col-sm-2 control-label">Contact Name</label>
+
+                            <div class="col-sm-10">
+
+                                <input type="text" class="form-control" capitalize ng-model="job.contact_name" placeholder="Contact Name">
+
+                            </div>
+
+                        </div>
+
+                        
+
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Employee Charting </label>
+                            <div class="col-sm-10">
+                                <label class="radio-inline i-checks">
+                                    <input type="radio" name="employee_chart" value="1" ng-model="job.employee_chart"><i></i> Yes
+                                </label>
+                                <label class="radio-inline i-checks">
+                                    <input type="radio" name="employee_chart" value="0" ng-model="job.employee_chart"><i></i> No
+                                </label>
+
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Scheduled Visits Only </label>
+                            <div class="col-sm-10">
+                                <label class="radio-inline i-checks">
+                                    <input type="radio" name="a" value="1" ng-model="job.visitonly"><i></i> Yes
+                                </label>
+                                <label class="radio-inline i-checks">
+                                    <input type="radio" name="a" value="0" ng-model="job.visitonly"><i></i> No
+                                </label>
+
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Status</label>
+                            <div class="col-sm-10">
+                                <label class="radio-inline i-checks">
+                                    <input type="radio" name="b" value="1" ng-model="job.status"><i></i> Active
+                                </label>
+                                <label class="radio-inline i-checks">
+                                    <input type="radio" name="b" value="0" ng-model="job.status"><i></i> Inactive
+                                </label>
+
+                            </div>
+                        </div>
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                        <div class="form-group">
+
+                            <div class="col-sm-10">
+
+                                <button type="submit" class="btn btn-default btn-rounded">Next</button>
+
+                                <button type="button" class="btn btn-primary btn-rounded" ng-disabled="savedisable == 1" ng-click="jobManage('basic', false)">Save changes</button>
+
+                                <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
+
+                                    {{ErrorMsg}}
+
+                                 </span>
+
+                            </div>
+
+                            <div class="col-sm-2">
+
+                                <div class="pull-right">
+                                    <button type="button" class="btn btn-default btn-rounded" ng-click='cancelJob()'>Cancel</button>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div class="form-group" ng-show="job_id">
+                            <div class="col-sm-12">
+
+                                <div class="alert alert-info">
+                                    <p>Job: <em class="ng-binding">{{job.job_name}} ({{job.job_code}}) </em>
+                                    </p>
+                                    <p>Created by: {{job.created_by | AddEditUser}}, Created date is: <em class="ng-binding">{{job.created_on | date:'medium'}}</em>
+                                    </p>
+                                    <p ng-show="job.editedOn">
+                                        Edited by: {{job.edited_by | AddEditUser}}, Last Edited date is: <em class="ng-binding">{{job.editedOn | date:'medium' }}</em>
+                                    </p>
+                                    <p><span ng-show="job.last_clockedin" >Last Clocked In :<em class="ng-binding"> {{job.last_clockedin}}</em></span><span ng-show="job.last_scheduled" >  Last Scheduled On : <em class="ng-binding">{{job.last_scheduled}}</em></span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+                    </form>
+
+                </tab>
+
+
+
+
+
+                <tab heading="Location" disabled="basic.$invalid" active="jobSteps.location" select="jobSteps.percent=40">
+
+                    <p class="m-b"><i class="fa fa-question-circle"></i> Add address/location details. We use Google Map to validate the address. </p>
+
+                    <progressbar value="jobSteps.percent" class="progress-xs" type="success"></progressbar>
+
+                    <form name="location" class="form-validation form-horizontal location" rc-submit="jobManage('location')" novalidate>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Address Line</label>
+                            <div class="col-sm-10">
+                                <input type="text" id="Autocomplete2" capitalize class="form-control" placeholder="Enter Address line" ng-model="job.job_address1" ng-autocomplete options="options" details="details" ng-keypress="preventNext($event)">
+                                 <em class="help-block m-b-none text-muted">Google Map will validate the address as you type it.</em>
+                            </div>
+                            <div class="line"></div>
+                            <label class="col-sm-2 control-label">Address Line 2</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" capitalize placeholder="Address line 2 (optional)" ng-model="job.job_address2">
+                            </div>
+                            <div class="line"></div>
+                            <label class="col-sm-2 control-label">Zip/County/City/State</label>
+                            <div class="col-sm-10">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <input type="text" class="form-control" placeholder="ZIP" ng-model="job.zip" ng-pattern="/^[0-9]+$/">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" class="form-control" capitalize placeholder="County" ng-model="job.county">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="text" class="form-control" capitalize placeholder="City" ng-model="job.city">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <input type="text" class="form-control" capitalize placeholder="State" ng-model="job.state">
+                                    </div>
+
+                                </div>
+
+                                <div class="row" ng-show="showZipError">
+                                    <div class="line"></div>
+                                    <div class="col-sm-12">
+                                        <div role="alert" class="alert ng-isolate-scope alert-warning alert-dismissable" type="warning">
+                                            <div><span class="ng-binding ng-scope">No match found, but continue adding the data</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="line"></div>
+                            <label class="col-sm-2 control-label">Country</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" capitalize name="country" required="" placeholder="Country" readonly="" ng-model="job.country">
+                            </div>
+                            <div class="col-sm-6">
+                                <a ng-click="mapView(job)"  target="_blank" ng-disabled="job.job_address1==''">Click here to View Map in Google</a>
+                            </div>
+                            <div class="line"></div>
+                            <div ng-class="{'has-error': rc.location.needsAttention(location.timezone)}">
+                            <label class="col-sm-2 control-label text-danger">Time Zone</label>
+                            <div class="col-sm-10">
+                                    <input type="text" readonly capitalize name="timezone" required="" ng-model="job.timezone" placeholder="Time Zone" class="form-control">
+                                    <em class="help-block m-b-none text-muted">The Time Zone is required for Schedules/Shifts and IVR. </em>
+                                     <span class="help-block" ng-show="location.timezone.$error.required
+                                && rc.location.needsAttention(location.timezone)">Time Zone is required.</span>
+                                
+                            </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Authorized Phone </label>
+                            <div class="col-sm-4">
+                                <div class="row m-b" ng-repeat="authorized in job.workphones">
+                                    <div class="col-sm-8 padding-r-none">
+                                        <input type="text" class="form-control"  ng-if="job.country=='United States'" ui-mask="(999) 999-9999" ui-mask-use-viewvalue="false" ng-model="authorized.phone" />
+                                         <input type="text" class="form-control"  ng-if="job.country!='United States'" ng-pattern="/^[0-9]+$/" ng-model="authorized.phone" />
+                                    </div>
+
+                                    <div class="col-sm-4">
+                                        <span ><a href="" class="btn btn-rounded btn-sm btn-icon btn-primary" ng-click="removeAuthorizedPhone($index)"><i class="fa fa-trash-o"></i></a></span>
+                                        <span ng-show="$index > job.workphones.addshow && $index < job.workphonesMax-1"><a href="" class="btn btn-rounded btn-sm btn-icon btn-primary" ng-click="addAuthorizedPhone($index)"><i class="fa fa-plus"></i></a></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <button type="button" class="btn btn-default btn-rounded" ng-click="jobManagePrev('location')">Prev</button>
+                                <button type="submit" class="btn btn-default btn-rounded">Next</button>
+                                <button type="button" class="btn btn-primary btn-rounded" ng-click="jobManage('location', false)" ng-disabled="savedisable == 1">Save changes</button>
+
+                                <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
+                                     {{ErrorMsg}}
+                                </span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="pull-right">
+                                    <button type="button" class="btn btn-default btn-rounded" ng-click='cancelJob()'>Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-show="job_id">
+                            <div class="col-sm-12">
+                                <div class="alert alert-info">
+                                    <p>Job: <em class="ng-binding">{{job.job_name}} ({{job.job_code}}) </em>
+                                    </p>
+                                    <p>Created by: {{job.created_by | AddEditUser}}, Created date is: <em class="ng-binding">{{job.created_on | date:'medium'}}</em>
+                                    </p>
+                                    <p ng-show="job.editedOn">
+                                        Edited by: {{job.edited_by | AddEditUser}}, Last Edited date is: <em class="ng-binding">{{job.editedOn | date:'medium' }}</em>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </form>
+
+                </tab>
+
+
+                <tab heading="Advanced" disabled="basic.$invalid" active="jobSteps.advanced" select="jobSteps.percent=60">
+
+                    <p class="m-b"><i class="fa fa-question-circle"></i> Add advanced details ablut this Job.</p>
+
+                    <progressbar value="jobSteps.percent" class="progress-xs" type="success"></progressbar>
+
+                    <form name="advanced" class="form-validation form-horizontal advanced" ng-submit="jobManage('advanced')" novalidate>
+
+                    
+                        <div class="form-group">
+
+                            <label class="col-sm-2 control-label">External Code 1</label>
+
+                            <div class="col-sm-10">
+
+                                <input type="text" capitalize class="form-control" ng-model="job.external_code.code1" placeholder="Extenal Code 1">
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="form-group">
+
+                            <label class="col-sm-2 control-label">External Code 2</label>
+
+                            <div class="col-sm-10">
+
+                                <input type="text" class="form-control" capitalize ng-model="job.external_code.code2" placeholder="Extenal Code 2">
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label class="col-sm-2 control-label">External Code 3</label>
+
+                            <div class="col-sm-10">
+
+                                <input type="text" class="form-control" capitalize ng-model="job.external_code.code3" placeholder="Extenal Code 3">
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+                        <div class="form-group">
+
+                            <label class="col-sm-2 control-label">Service Item</label>
+
+                            <div class="col-sm-10">
+                                <div>
+                                    <input class="w-md" ui-select2="selectServiceItem" value="" placeholder="Service Item" ng-model="job.service_item">
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        <div class="form-group">
+
+                            <label class="col-sm-2 control-label">Pay Type</label>
+
+                            <div class="col-sm-10">
+                                <div>
+                                    <input class="w-md" ui-select2="selectPayType" value="" placeholder="Pay Type" ng-model="job.pay_type">
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Late Clock-in Notification</label>
+                            <div class="col-sm-10">
+                                <label class="radio-inline i-checks">
+                                    <input type="radio" name="a" value="1" ng-model="job.late_notify"><i></i> Yes
+                                </label>
+                                <label class="radio-inline i-checks">
+                                    <input type="radio" name="a" value="0" ng-model="job.late_notify"><i></i> No
+                                </label>
+
+                            </div>
+                        </div>
+                         <div class="form-group">
+                            
+                                <label class="col-sm-2 control-label">Job Group</label>
+                                <div class="col-sm-4">
+                                    <input type="text" class="form-control w-md"  placeholder="Job Group" ng-pattern="/^[0-9]+$/" ng-model="job.jobgroup" ng-change="checkjobgroup()" ng-minlength="jobcode_length">
+                                   
+                                </div>
+                                <div class="col-sm-6">
+                                     <span>{{job.jobDes_Name}}</span>
+                                </div>
+                            
+                            <!--<div class="col-sm-6">
+                                <label class="col-sm-2 control-label">Job Description</label>
+                                <div class="col-sm-10">
+                                    <div>
+                                        <input type="text" class="form-control w-md"  ng-model="employee.jobDes_Name">
+
+                                    </div>
+                                </div>
+                            </div> -->
+
+                        </div>
+
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+                        <div class="form-group">
+                            <div class="col-sm-10">
+                                <button type="button" class="btn btn-default btn-rounded" ng-click="jobManagePrev('advanced')" ng-disabled="savedisable == 1">Prev</button>
+                                <button type="submit" class="btn btn-default btn-rounded" ng-disabled="savedisable == 1">Next</button>
+
+                                <button type="button" class="btn btn-primary btn-rounded" ng-disabled="savedisable == 1" ng-click="jobManage('advanced', false)">Save changes</button>
+
+                                <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
+                                     {{ErrorMsg}}
+                                 </span>
+                            </div>
+                            <div class="col-sm-2">
+                                <div class="pull-right">
+                                    <button type="button" class="btn btn-default btn-rounded" ng-click='cancelJob()'>Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group" ng-show="job_id">
+                            <div class="col-sm-12">
+                                <div class="alert alert-info">
+                                    <p>Job: <em class="ng-binding">{{job.job_name}} ({{job.job_code}}) </em>
+                                    </p>
+                                    <p>Created by: {{job.created_by | AddEditUser}}, Created date is: <em class="ng-binding">{{job.created_on | date:'medium'}}</em>
+                                    </p>
+                                    <p ng-show="job.editedOn">
+                                        Edited by: {{job.edited_by | AddEditUser}}, Last Edited date is: <em class="ng-binding">{{job.editedOn | date:'medium' }}</em>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+
+                </tab>
+
+
+                <tab heading="Notes" disabled="basic.$invalid" active="jobSteps.notes" select="jobSteps.percent=75">
+
+                    <p class="m-b"><i class="fa fa-question-circle"></i> Add a note. This is optional.</p>
+
+                    <progressbar value="jobSteps.percent" class="progress-xs" type="success"></progressbar>
+
+                    <form name="notes" class="form-validation form-horizontal notes" ng-submit="jobManage('notes')" novalidate>
+
+                        <div class="form-group">
+
+                            <label class="col-sm-2 control-label">Notes</label>
+
+                            <div class="col-sm-10">
+
+                                <textarea rows="4" capitalize ng-model="job.job_notes" cols="50"></textarea>
+
+                            </div>
+
+                        </div>
+
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                        <div class="form-group">
+
+                            <div class="col-sm-10">
+
+                                <button type="button" class="btn btn-default btn-rounded" ng-click="jobManagePrev('notes')">Prev</button>
+
+                                <button type="submit" class="btn btn-default btn-rounded">Next</button>
+                                <button type="button" ng-click="jobManage('notes', false)" class="btn btn-primary btn-rounded" ng-disabled="savedisable == 1">Save changes</button>
+
+                                <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
+
+                                    {{ErrorMsg}}
+
+                                </span>
+
+                            </div>
+
+                            <div class="col-sm-2">
+                                <div class="pull-right">
+                                    <button type="button" class="btn btn-default btn-rounded" ng-click='cancelJob()'>Cancel</button>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group" ng-show="job_id">
+                            <div class="col-sm-12">
+                                <div class="alert alert-info">
+                                    <p>Job: <em class="ng-binding">{{job.job_name}} ({{job.job_code}}) </em>
+                                    </p>
+                                    <p>Created by: {{job.created_by | AddEditUser}}, Created date is: <em class="ng-binding">{{job.created_on | date:'medium'}}</em>
+                                    </p>
+                                    <p ng-show="job.editedOn">
+                                        Edited by: {{job.edited_by | AddEditUser}}, Last Edited date is: <em class="ng-binding">{{job.editedOn | date:'medium' }}</em>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+
+                </tab>
+                <tab heading="Custom Prompts" disabled="basic.$invalid" active="jobSteps.customPrompt" select="jobSteps.percent=85">
+
+                    <p class="m-b"><i class="fa fa-question-circle"></i> If custom Prompts are required for this Job,select one or more prompts. The Order the Prompts are,will be the order the IVR will use.</p>
+
+                    <progressbar value="jobSteps.percent" class="progress-xs" type="success"></progressbar>
+
+                    <form name="notes" class="form-validation form-horizontal location" ng-submit="jobManage('customPrompt')" novalidate>
+
+                        <div class="form-group">
+
+                            <label class="col-sm-2 control-label">When?</label>
+
+                            <div class="col-sm-10">
+                                <label class="radio-inline i-checks">
+                                    <input type="radio" name="a" value=1 ng-model="job.logtype"><i></i> During Clock-in
+                                </label>
+                                <label class="radio-inline i-checks">
+                                    <input type="radio" name="a" value=2 ng-model="job.logtype"><i></i> During Clock-out
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+
+
+                        <div class="form-group">
+
+                            <label class="col-sm-2 control-label">Add Prompts</label>
+
+                            <div class="col-sm-10">
+                                <div class="row m-b" ng-repeat="custom_prompt in job.customPrompt">
+                                    <div class="col-sm-4 padding-r-none">
+                                        <div>
+                                            
+                                            <ui-select ng-model="custom_prompt.prompt" theme="select2" class="col-md-12 padlr0">
+                                        <ui-select-match placeholder="Select Prompt">
+                                            {{$select.selected.text}}
+                                        </ui-select-match>
+                                            <ui-select-choices repeat="prompt in prompts track by $index" refresh="refreshSelectPrompt($select.search)" refresh-delay="0">
+                                            <div ng-bind-html="prompt.text"></div>
+                                        </ui-select-choices>
+                                        </ui-select>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <span ><a href="" class="btn btn-rounded btn-sm btn-icon btn-primary" ng-click="removeprompt($index)"><i class="fa fa-trash-o"></i></a></span>
+                                        <span ng-show="$index > job.customPrompt.addshow && $index < job.customPromptMax-1"><a href="" class="btn btn-rounded btn-sm btn-icon btn-primary" ng-click="addprompt($index)"><i class="fa fa-plus"></i></a></span>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                        <div class="form-group">
+
+                            <div class="col-sm-10">
+
+                                <button type="button" class="btn btn-default btn-rounded" ng-click="jobManagePrev('customPrompt')">Prev</button>
+
+                                <button type="submit" class="btn btn-primary btn-rounded" ng-disabled="savedisable == 1">Save changes</button>
+
+                                <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
+
+                                    {{ErrorMsg}}
+
+                                 </span>
+
+                            </div>
+
+                            <div class="col-sm-2">
+                                <div class="pull-right">
+                                    <button type="button" class="btn btn-default btn-rounded" ng-click='cancelJob()'>Cancel</button>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group" ng-show="job_id">
+                            <div class="col-sm-12">
+                                <div class="alert alert-info">
+                                    <p>Job: <em class="ng-binding">{{job.job_name}} ({{job.job_code}}) </em>
+                                    </p>
+                                    <p>Created by: {{job.created_by | AddEditUser}}, Created date is: <em class="ng-binding">{{job.created_on | date:'medium'}}</em>
+                                    </p>
+                                    <p ng-show="job.editedOn">
+                                        Edited by: {{job.edited_by | AddEditUser}}, Last Edited date is: <em class="ng-binding">{{job.editedOn | date:'medium' }}</em>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+
+                </tab>
+
+                <tab heading=" Authorization History" disabled="basic.$invalid" active="jobSteps.authorizations" select="jobSteps.percent=100">
+
+                    <p class="m-b"><i class="fa fa-question-circle"></i> Authorizations received for this Job/ Patient</p>
+
+                    <progressbar value="jobSteps.percent" class="progress-xs" type="success"></progressbar>
+
+
+                    <div class="table-responsive" style="max-height: 350px; overflow-y: scroll;">
+                        <table class="table table-striped b-t b-light">
+                            <thead>
+                                <tr>
+                                    <th class="sortable id"> IDs </i>
+                                    </th>
+
+                                    <th class="sortable payor">Payor </i>
+                                    </th>
+                                    <th class="sortable skill">Skill </i>
+                                    </th>
+                                    <th class="sortable acitivity">Activity </i>
+                                    </th>
+
+                                    <th class="sortable authorization_start_date">Date </i>
+                                    </th>
+                                    <th class="sortable hours">Total Authorized Hours </i>
+                                    </th>
+                                    <th class="sortable status">Status </i>
+                                    </th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="detail in authorizations">
+
+                                    <td>{{detail.id}}</td>
+                                    <td>{{detail.payor_detail | parseToJson:0:'text' }}</td>
+                                    <td>{{detail.skill_detail |  parseToJson:0:'text'}}</td>
+                                    <td>{{detail.acitivity_detail |  parseToJson:0:'text' }}</td>
+                                    <td>{{detail.authorization_start_date |onlydate }} &nbsp; - &nbsp; {{detail.authorization_end_date |onlydate }}</td>
+                                    <td>{{detail.total_hours}}</td>
+                                    <td ng-bind-html="detail.status | checkstatus">{{detail.status | checkstatus}}</td>
+                                </tr>
+                                <tr ng-if="authorizations.length==0">
+                                    <td colspan='7' class="alert alert-danger">
+                                        <center> No Records Found.</center>
+                                    </td>
+                                </tr>
+
+
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                </tab> 
+
+
+            </tabset>
+
+        </div>
+
+    </div>
+</div>

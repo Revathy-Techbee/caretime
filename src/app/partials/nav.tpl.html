@@ -1,0 +1,195 @@
+<!-- first -->
+
+<ul class="nav" ng-controller="NavCtrl">
+  <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
+    <span >
+      NAVIGATION 
+    </span>
+  </li>
+  <li data-access-level="accessLevels.adminAgency">
+    <a ui-sref="admin.agency({'agencyService':{{ServiceName}}})">
+      <i class="glyphicon glyphicon-dashboard icon text-primary-dker">
+      </i>
+      <span>
+        AGENCY LIST
+      </span>
+    </a>
+  </li>
+
+  <li data-access-level="accessLevels.mainDashboard">
+    <a ui-sref="ctApp.mainDashboard">
+      <i class="glyphicon glyphicon-dashboard icon text-primary-dker">
+      </i>
+      <span>
+        DASHBOARD
+      </span>
+    </a>
+  </li>
+  <li class="line dk">
+  </li>
+  <li data-access-level="accessLevels.agencyDetail">
+    <a ui-sref="ctApp.AddUpdateAgency({'agencyId':{{AgencyID}}})" >
+      <i class="glyphicon glyphicon-record icon text-primary-lter">
+      </i>
+      <span>
+        AGENCY DETAIL 
+      </span>
+    </a>
+  </li>
+  
+  <li>
+    <a href class="auto">
+      <span class="pull-right text-muted">
+        <i class="fa fa-fw fa-angle-right text">
+        </i>
+        <i class="fa fa-fw fa-angle-down text-active">
+        </i>
+      </span>
+      <i class="glyphicon glyphicon-pushpin icon text-primary-lter">
+      </i>
+      <span>
+        MANAGE LISTS
+      </span>
+    </a>
+    <ul class="nav nav-sub dk">
+      
+      <li>
+        <a ui-sref="ctApp.payTypes"  data-access-level="accessLevels.payTypes">
+          <span>
+            Pay Types
+          </span>
+        </a>
+      </li>
+      <li>
+        <a ui-sref="ctApp.serviceItems" data-access-level="accessLevels.serviceItems">
+          <span>
+            Service Items
+          </span>
+        </a>
+      </li>
+      <li>
+        <a ui-sref="ctApp.customPrompts" data-access-level="accessLevels.customPrompts">
+          <span>
+            Custom Prompts
+          </span>
+        </a>
+      </li>
+      <li>
+        <a ui-sref="ctApp.payors" data-access-level="accessLevels.payors">
+          <span>
+            Payors
+          </span>
+        </a>
+      </li>
+      <li>
+        <a ui-sref="ctApp.activities" data-access-level="accessLevels.activities">
+          <span>
+            Activities
+          </span>
+        </a>
+      </li>
+      <li>
+        <a ui-sref="ctApp.skills" data-access-level="accessLevels.skills">
+          <span>
+            Skills
+          </span>
+        </a>
+      </li>
+      <li>
+        <a ui-sref="ctApp.payClasses" data-access-level="accessLevels.payClasses">
+          <span>
+            Pay Classes
+          </span>
+        </a>
+      </li>
+      <li>
+        <a ui-sref="ctApp.tasks" data-access-level="accessLevels.tasks">
+          <span>
+            Tasks
+          </span>
+        </a>
+      </li>
+      <li>
+        <a ui-sref="ctApp.observations" data-access-level="accessLevels.observations">
+          <span>
+            Observations
+          </span>
+        </a>
+      </li>
+    </ul>
+  </li>
+  
+  <li class="line dk">
+  </li>
+  <li ui-sref-active="ctApp.zones" data-access-level="accessLevels.zones" >
+    <a ui-sref="ctApp.zones" >
+      <i class="glyphicon glyphicon-map-marker icon text-primary-dker">
+      </i>
+      <span ng-if="labels.Zones == ''" translate="aside.nav.ZONES">
+        Zones
+      </span>
+      <span ng-if="labels.Zones !== ''">
+        {{labels.Zones}}
+      </span>
+      
+    </a>
+  </li>
+  <li data-access-level="accessLevels.employees" >
+    <a ui-sref="ctApp.employees">
+      <i class="glyphicon glyphicon-user icon text-primary-dker">
+      </i>
+      <span ng-if="labels.Employees == ''" translate="aside.nav.EMPLOYEES">
+        Employees
+      </span>
+      <span ng-if="labels.Employees !== ''" >
+        {{labels.Employees}}
+      </span>
+    </a>
+  </li>
+  <li data-access-level="accessLevels.jobs">
+    <a ui-sref="ctApp.jobs">
+      <i class="glyphicon glyphicon-barcode icon text-primary-dker">
+      </i>
+      <span ng-if="labels.Jobs == ''" translate="aside.nav.JOBS">
+        Jobs
+      </span>
+      <span ng-if="labels.Jobs !== ''" >
+        {{labels.Jobs}}
+      </span>
+    </a>
+  </li>
+  <li data-access-level="accessLevels.authorizations">
+    <a ui-sref="ctApp.authorizations">
+      <i class="glyphicon glyphicon-check icon text-primary-dker">
+      </i>
+      <span>
+        AUTHORIZATION
+      </span>
+    </a>
+  </li>
+  
+  <li class="line dk">
+  </li>
+  
+  <li data-access-level="accessLevels.schedules">
+    <a ui-sref="ctApp.schedules">
+      <i class="glyphicon glyphicon-calendar icon text-primary-dker">
+      </i>
+      <span>
+        SCHEDULING
+      </span>
+    </a>
+  </li>
+  <li data-access-level="accessLevels.mapView" >
+    <a ui-sref="ctApp.mapView">
+      <i class="glyphicon glyphicon-map-marker icon text-primary-dker">
+      </i>
+      <span>
+        MAP VIEW
+      </span>
+    </a>
+  </li>
+ 
+</ul>
+<!-- / third -->
+

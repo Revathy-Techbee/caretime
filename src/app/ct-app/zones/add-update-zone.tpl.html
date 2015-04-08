@@ -1,0 +1,147 @@
+<div>
+    <div class="bg-light lter b-b wrapper-md">
+        <h1 class="m-n font-thin h3">{{pageTitle}} {{labels.Zones }} </h1>
+    </div>
+    <div class="wrapper-md" style="background:#FFF;">
+        <div>
+            <tabset class="tab-container">
+
+                <tab heading="Basic Setup" active="zoneSteps.general" select="zoneSteps.percent=50">
+
+                    <p class="m-b"><i class="fa fa-question-circle"></i> Enter the basic details about the Job. <em class="text-danger">Required fields are in Red</em> </p>
+                    <progressbar value="zoneSteps.percent" class="progress-xs" type="success"></progressbar>
+                    <form name="addUpdateZoneForm" class="form-validation form-horizontal general" rc-submit="zoneManage('general')" novalidate>
+                        <div class="form-group " ng-class="{'has-error': rc.addUpdateZoneForm.needsAttention(addUpdateZoneForm.zone_name)}">
+                            <label class="col-sm-2 control-label text-danger"> Zone Name *</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" required="" capitalize placeholder="Zone Name" name="zone_name" ng-model="zone.zone_name">
+                                <span class="help-block" ng-show="addUpdateZoneForm.zone_name.$error.required
+                                && rc.addUpdateZoneForm.needsAttention(addUpdateZoneForm.zone_name)">Zone name is required.</span>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Supervisor </label>
+                            <div class="col-sm-4">
+                                <div>
+                                    <ui-select ng-model="zone.supervisor" theme="select2" class="col-md-12 padlr0">
+                                        <ui-select-match placeholder="Supervisor">
+                                            {{$select.selected.text}}
+                                        </ui-select-match>
+                                        <ui-select-choices repeat="supervisor in supervisors track by $index" refresh="refreshSupervisors($select.search)" refresh-delay="0">
+                                            <div ng-bind-html="supervisor.text"></div>
+                                        </ui-select-choices>
+                                    </ui-select>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">IVR Number</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" ui-mask="(999) 999-9999" ui-mask-use-viewvalue="false" ng-model="zone.ivr_number">
+                            </div>
+                        </div>
+                        <div class="col-sm-4 col-sm-offset-2">
+                            <div show-loader="show_zone_form_loader"></div>
+                        </div>
+
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                                <button type="submit" class="btn btn-default btn-rounded">Next</button>
+                                <button type="button" ng-click="cancelZone()" class="btn btn-default  btn-rounded pull-right">Cancel</button>
+                                <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
+                                     {{ErrorMsg}}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info" ng-show="zone_id">
+                                    <p>Zone Code: <em class="ng-binding">{{zone.zone_code}} </em> 
+                                    </p>
+                                    <p>Created by: {{zone.created_by | AddEditUser}}, Created date is: <em class="ng-binding">{{zone.created_on | date:'medium'}}</em>
+                                    </p>
+                                    <p ng-show="zone.editedOn">
+                                        Edited by: {{zone.edited_by | AddEditUser}}, Last Edited date is: <em class="ng-binding">{{zone.editedOn | date:'medium' }}</em>
+                                    </p>
+                                </div>
+                    </form>
+                </tab>
+                <tab heading="Notify" disabled="addUpdateZoneForm.$invalid" active="zoneSteps.notify" select="zoneSteps.percent=100">
+
+                    <p class="m-b"><i class="fa fa-question-circle"></i> Add one or more people that needed to be alerted on missed clock-ins</p>
+                    <progressbar value="zoneSteps.percent" class="progress-xs" type="success"></progressbar>
+                    
+
+                    <form name="notify" class="form-validation form-horizontal notify" ng-submit="zoneManage('notify')" novalidate>
+
+                        <!-- <div class="form-group"   ng-if="noemployee=='1'">
+                        <div class="col-sm-12" ng-bind-html="norecord"> {{norecord }}</div>
+           
+                        </div> 
+                        <div class="form-group" ng-if="noemployee=='0'">-->
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Add Employee</label>
+                            <div class="col-sm-5">
+
+                                <div class="row m-b" ng-repeat="empname in zone.notify_empname">
+
+                                    <div class="col-sm-8 padding-r-none">
+
+                                       
+                                         <div>
+                                    <ui-select ng-model="empname.Employee" theme="select2" class="col-md-12 padlr0">
+                                        <ui-select-match placeholder="Select Employee">
+                                            {{$select.selected.text}}
+                                        </ui-select-match>
+                                        <ui-select-choices repeat="NotifyEmployee in NotifyEmployees track by $index" refresh="refreshNotifyEmp($select.search)" refresh-delay="0">
+                                            <div ng-bind-html="NotifyEmployee.text"></div>
+                                        </ui-select-choices>
+                                    </ui-select>
+
+                                </div>
+                                    </div>
+
+                                    <div class="col-sm-4">
+                                        <span ><a href="" class="btn btn-rounded btn-sm btn-icon btn-primary" ng-click="removeEmpdetails($index)"><i class="fa fa-trash-o"></i></a></span>
+                                        <span ng-show="$index > zone.notify_empname.addshow && $index < zone.notify_empMax-1"><a href="" class="btn btn-rounded btn-sm btn-icon btn-primary" ng-click="addEmpdetails($index)"><i class="fa fa-plus"></i></a></span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                         <div class="line line-dashed b-b line-lg pull-in"></div>
+                        <div class="form-group">
+                            <div class="col-sm-12">
+                            <button type="button" class="btn btn-default btn-rounded" ng-click="zoneManagePrev('notify')">Prev</button>
+                                <button type="submit" class="btn btn-primary  btn-rounded" ng-disabled="savedisable == 1">Save Changes</button>
+                                <button class="btn btn-default  btn-rounded pull-right" ng-click="cancelZone()" type="button">Cancel</button>
+                                <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
+                                  
+                                  {{ErrorMsg}}
+                          </span>
+                            </div>
+                        </div>
+                       
+                       <div class="alert alert-info" ng-show="zone_id">
+                                    <p>Zone Code: <em class="ng-binding">{{zone.zone_code}} </em> 
+                                    </p>
+                                    <p>Created by: {{zone.created_by | AddEditUser}}, Created date is: <em class="ng-binding">{{zone.created_on | date:'medium'}}</em>
+                                    </p>
+                                    <p ng-show="zone.editedOn">
+                                        Edited by: {{zone.edited_by | AddEditUser}}, Last Edited date is: <em class="ng-binding">{{zone.editedOn | date:'medium' }}</em>
+                                    </p>
+                                </div>
+                         
+
+                     
+                    </form>
+                </tab>
+
+            </tabset>
+        </div>
+    </div>
+</div>

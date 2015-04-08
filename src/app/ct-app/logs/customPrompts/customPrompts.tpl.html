@@ -1,0 +1,148 @@
+<style type="text/css">
+    svg {
+    
+    width: 100%;
+}
+</style>
+<div class="bg-light lter b-b wrapper-md">
+    <h1 class="m-n font-thin h3">CUSTOM PROMPT LOG</h1>
+
+</div>
+
+<div class="wrapper-md">
+
+
+
+    <div class="panel panel-default">
+
+        <div class="row wrapper">
+
+            <div class="col-sm-2">
+
+                <div class="form-control " placeholder="Select Zone" ui-select2="selectZoneOptions" value="" ng-model="logFilters.zoneName">
+                </div>
+
+            </div>
+
+            <div class="col-sm-2">
+
+                <div>
+
+
+                    <input class="form-control " placeholder="Select Employee" ui-select2="selectEmployee" ng-model="logFilters.filterValue" ng-disabled="logFilters.zoneName=='' || logFilters.zoneName==null || logFilters.zoneName[0].id =='all'">
+                </div>
+
+            </div>
+            <div class="col-sm-3">
+
+                <div ng-controller="DatepickerDemoCtrl">
+
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Select Start Date"
+ readonly datepicker-popup="{{format}}" ng-model="logFilters.startDate" is-open="opened" datepicker-options="dateOptions" close-text="Close" />
+                        <span class="input-group-btn">
+                      <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="col-sm-3">
+
+                <div ng-controller="DatepickerDemoCtrl">
+
+                    <div class="input-group">
+                        <input type="text" class="form-control" readonly placeholder="Select End Date" datepicker-popup="{{format}}" ng-model="logFilters.endDate" is-open="opened" datepicker-options="dateOptions" close-text="Close" />
+                        <span class="input-group-btn">
+                      <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="col-sm-2">
+                <button class="btn btn-md btn-info" type="button" ng-click="updateTableData(true)">Search</button>
+                <button class="btn btn-md btn-warning" type="button" ng-click="clearSearch()">Clear</button>
+
+            </div>
+
+        </div>
+
+        <div class="row wrapper" ng-if="showerrorMsg">
+            <div class="col-sm-12">
+
+                <span class="alert alert-danger" ng-if="showerrorMsg">{{error_msg}}</span>
+
+            </div>
+
+        </div>
+        <div class="row wrapper" ng-if="noRecord==1 || show_activities_loader">
+            <div class="col-sm-12">
+                <div ng-if="noRecord==1" ng-bind-html="norecord"> {{norecord }}</div>
+                <div ng-if="show_activities_loader" show-loader="show_activities_loader"></div>
+            </div>
+        </div>
+
+        <div class="row wrapper" ng-if="showRecord==1">
+            <div class="col-sm-12">
+                <wj-flex-grid items-source="customPromptListDetail" selection-mode="Row">
+
+                    <wj-flex-grid-column header="Job" width="*" is-read-only="true" binding="job_code"> </wj-flex-grid-column>
+                    <wj-flex-grid-column header="Clock In" is-read-only="true" binding="clockin"> </wj-flex-grid-column>
+
+                    <wj-flex-grid-column header="Clock Out" is-read-only="true" binding="clockout"> </wj-flex-grid-column>
+                    <wj-flex-grid-column header="Total Hours" is-read-only="true" binding="work_duration"> </wj-flex-grid-column>
+                    <wj-flex-grid-column header="(h m)" is-read-only="true" binding="work_duration_formated"> </wj-flex-grid-column>
+                    <wj-flex-grid-column header="Total Hrs(Rounded)" is-read-only="true" binding="work_duration_rounded"> </wj-flex-grid-column>
+                    <wj-flex-grid-column header="(h m)" is-read-only="true" binding="work_duration_rounded_formated"> </wj-flex-grid-column>
+
+                </wj-flex-grid>
+                <div class="row wrapper">
+                    <wj-menu value="customPromptListDetail.pageSize" header="Rows per Page">
+                        <wj-menu-item value="10"> 10</wj-menu-item>
+                        <wj-menu-item value="25"> 25</wj-menu-item>
+                        <wj-menu-item value="50"> 50</wj-menu-item>
+                        <wj-menu-item value="100"> 100</wj-menu-item>
+                    </wj-menu>
+
+
+
+
+                    <div class="btn-group col-md-8" ng-show="customPromptListDetail.pageSize > 0">
+                        <button type="button" class="btn btn-default" ng-disabled="customPromptListDetail.pageIndex <= 0" ng-click="customPromptListDetail.moveToFirstPage()"> <span class="glyphicon glyphicon-fast-backward"></span> </button>
+                        <button type="button" class="btn btn-default" ng-disabled="customPromptListDetail.pageIndex <= 0" ng-click="customPromptListDetail.moveToPreviousPage()"> <span class="glyphicon glyphicon-step-backward"></span> </button>
+                        <button type="button" class="btn btn-default" disabled style="width:100px"> {{customPromptListDetail.pageIndex+1}} / {{customPromptListDetail.pageCount}} </button>
+                        <button type="button" class="btn btn-default" ng-disabled="customPromptListDetail.pageIndex >= customPromptListDetail.pageCount - 1" ng-click="customPromptListDetail.moveToNextPage()"> <span class="glyphicon glyphicon-step-forward"></span> </button>
+                        <button type="button" class="btn btn-default" ng-disabled="customPromptListDetail.pageIndex >= customPromptListDetail.pageCount - 1" ng-click="customPromptListDetail.moveToLastPage()"> <span class="glyphicon glyphicon-fast-forward"></span> </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row wrapper" ng-if="showdetails==1">
+            <div class="panel-heading">
+                <div class="h4 text-info font-thick h4"><span class="text-muted">Results for: </span> {{activity_details}}</div>
+            </div>
+            <div class="col-sm-12" ng-if="prompt_norecord==''" >
+                <wj-flex-grid items-source="allpromptdetails">
+
+                    <wj-flex-grid-column header="When" is-read-only="true" binding="prompt_when"> </wj-flex-grid-column>
+                    <wj-flex-grid-column header="Prompt ID" is-read-only="true" binding="id"> </wj-flex-grid-column>
+                    <wj-flex-grid-column header="Prompt Name"   is-read-only="true" binding="prompt_name"> </wj-flex-grid-column>
+                    <wj-flex-grid-column header="Prompt" width="*" is-read-only="true" binding="prompt_text"> </wj-flex-grid-column>
+                    <wj-flex-grid-column header="Result" is-read-only="true" binding="AnsWithId"> </wj-flex-grid-column>
+                </wj-flex-grid>
+             
+            </div>
+            <div class="col-sm-12" ng-if="prompt_norecord!=''" ng-bind-html="prompt_norecord"> {{prompt_norecord }}</div>
+
+        </div>
+        </div>
+
+
+
+
+
+    </div>
+</div>

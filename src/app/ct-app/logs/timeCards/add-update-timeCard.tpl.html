@@ -1,0 +1,195 @@
+<div>
+    <div class="bg-light lter b-b wrapper-md">
+        <h1 class="m-n font-thin h3">{{pageTitle}} TIME CARD</h1>
+    </div>
+    <div class="wrapper-md">
+
+        <div>
+
+            <p class="m-b">Manually add a Time Card for an employee. A clock-in and a clock-out record will be created. The status will be recorded as maunally entered. <em class="text-danger">Required fields are in Red</em>
+            </p>
+
+            <progressbar value="100" class="progress-xs" type="success"></progressbar>
+
+            <form name="addtimecard" class="form-validation form-horizontal addtimecard" rc-submit="savetimecard()" novalidate>
+                <div class="form-group">
+                    <label ng-if="pageTitle=='Add New' || timecard.txtzone" class="col-sm-2 control-label text-danger">Zone</label>
+                    <div class="col-sm-10">
+                        <div ng-if="pageTitle=='Add New'">
+                            <div ng-class="{'has-error': rc.addtimecard.needsAttention(addtimecard.zone_name)}">
+                                <input required="" class="form-control w-md" ui-select2="selectZoneOptions" ng-model="timecard.zone" required="" ng-change="getFilterValue()">
+                                <span class="help-block" ng-show="addtimecard.zone_name.$error.required
+                                && rc.addtimecard.needsAttention(addtimecard.zone_name)">Zone is required.</span>
+
+                            </div>
+                        </div>
+                        <div ng-if="pageTitle=='Update' && timecard.txtzone">
+                            <input type="text" Readonly class="form-control w-md" ng-model="timecard.txtzone">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" ng-class="{'has-error': rc.addtimecard.needsAttention(addtimecard.employee_code)}">
+                    <label class="col-sm-2 control-label  text-danger"> Employee Code</label>
+                    <div class="col-sm-10">
+                        <div ng-if="pageTitle=='Add New'">
+                            <div>
+
+
+                                <input ng-disabled="pageTitle=='Update'" name="employee_code" required="" class="form-control w-md" ui-select2="selectEmployeeOptions" ng-model="timecard.employee_code">
+
+                                <span class="help-block" ng-show="addtimecard.employee_code.$error.required
+                                && rc.addtimecard.needsAttention(addtimecard.employee_code)">Employee Code is required.</span>
+                            </div>
+                        </div>
+                        <div ng-if="pageTitle=='Update'">
+                            <input type="text" Readonly class="form-control w-md" ng-model="timecard.employee_code ">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" ng-class="{'has-error': rc.addtimecard.needsAttention(addtimecard.job_code)}">
+                    <label class="col-sm-2 control-label text-danger"> Job Code</label>
+                    <div class="col-sm-10">
+                        <div ng-if="pageTitle=='Add New'">
+
+                            <div>
+
+                                <input ng-disabled="pageTitle=='Update'" name="job_code" required="" class="form-control w-md" ui-select2="selectJobOptions" ng-model="timecard.job_code">
+
+                                <span class="help-block" ng-show="addtimecard.job_code.$error.required
+                                && rc.addtimecard.needsAttention(addtimecard.job_code)">Job Code is required.</span>
+
+                            </div>
+                        </div>
+                        <div ng-if="pageTitle=='Update'">
+                            <input type="text" Readonly class="form-control w-md" ng-model="timecard.jobNamecode">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" ng-if="pageTitle=='Update'">
+                    <label class="col-sm-2 control-label text-danger">Current Date/time</label>
+                    <div class="col-sm-10">
+                        <div class="input-group w-md">
+                            <input type="text" Readonly class="form-control w-md" ng-model="timecard.current_date">
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" ng-if="pageTitle=='Add New' || log_type=='1'" ng-class="{'has-error': rc.addtimecard.needsAttention(addtimecard.clock_in)}">
+                    <label class="col-sm-2 control-label text-danger" ng-if="pageTitle=='Update'">New Date/time</label>
+                    <label class="col-sm-2 control-label text-danger" ng-if="pageTitle=='Add New'">Clock-in Date/time</label>
+                    <div class="col-sm-10">
+                        <div class="input-group w-md" appendcalendar>
+                            <input type="text" readonly class="form-control w-md" date-time ng-model="timecard.clock_in" name="clock_in" required="true" partial="true" max-view="date" view="date">
+                            <span class="input-group-btn">
+                            
+                                <button class="btn btn-default"  type="button"><i class="glyphicon glyphicon-calendar"></i></button>
+                               
+                            </span>
+                        </div>
+                        <span class="help-block" ng-show="addtimecard.clock_in.$error.required
+                                && rc.addtimecard.needsAttention(addtimecard.clock_in)">Date/time is required.</span>
+                    </div>
+                </div>
+
+
+                <div class="form-group" ng-if="pageTitle=='Add New' || log_type=='2'" ng-class="{'has-error': rc.addtimecard.needsAttention(addtimecard.clock_out)}">
+                    <label class="col-sm-2 control-label text-danger" ng-if="pageTitle=='Update'">New Date/time</label>
+                    <label class="col-sm-2 control-label text-danger" ng-if="pageTitle=='Add New'">Clock-out Date/time</label>
+                    <div class="col-sm-10">
+                        <div class="input-group w-md" appendcalendar>
+                            <input type="text" readonly name="clock_out" class="form-control " date-time ng-model="timecard.clock_out" required="true" partial="true" max-view="date" view="date">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default"   type="button"><i class="glyphicon glyphicon-calendar"></i></button>
+                           </span>
+                        </div>
+                        <span class="help-block" ng-show="addtimecard.clock_out.$error.required
+                                && rc.addtimecard.needsAttention(addtimecard.clock_out)">Date/time is required.</span>
+                    </div>
+                </div>
+                <div class="form-group" ng-if="pageTitle=='Add New' || log_type=='2'">
+                    <label class="col-sm-2 control-label"> Work Duration</label>
+                    <div class="col-sm-10">
+                        <input type="text" Readonly class="form-control w-md" ng-model="timecard.duration" required="" ng-pattern="/\d+(\.\d{1,2})?/" ng-keyup="calcuateDiff()" placeholder="Call Duration">
+                    </div>
+                </div>
+                <div class="form-group" >
+                    <label class="col-sm-2 control-label"> Authorization </label>
+                    <div class="col-sm-4">
+                        <input class="form-control w-md" ng-disabled="timecard.job_code=='' || !timecard.clock_in " ui-select2="selectAuthorization" value="" ng-change="getAuthorizationNotes()" placeholder="Enter Authorization" ng-model="timecard.authorization">
+                        
+                    </div>
+                    
+                    <label class="col-sm-1 control-label" ng-if="timecard.authorization_notes"> Notes</label>
+                    <div class="col-sm-3" ng-if="timecard.authorization_notes">
+                        <p class="col-sm-12 m-t-sm">{{timecard.authorization_notes}}</p>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <label class="col-sm-2 control-label">Notes</label>
+                    <div class="col-sm-10">
+                        <textarea rows="4" capitalize ng-model="timecard.notes" cols="50" placeholder="Notes"></textarea>
+
+                    </div>
+                </div>
+
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+                <div class="form-group">
+                    <div class="col-sm-10">
+                        <button type="submit" class="btn btn-primary  btn-rounded" ng-disabled="savedisable == 1">Save changes</button>
+                        <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
+                                  {{ErrorMsg}}
+                        </span>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="pull-right">
+
+                            <button type="button" ng-show="pageTitle=='Add New'" class="btn btn-default btn-rounded" ng-click='cancel()'>Cancel</button>
+                            <button type="button" ng-show="pageTitle!='Add New'" class="btn btn-default btn-rounded" ng-click='modelclose()'>Cancel</button>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" ng-if="showWarningMsg">
+                    <div class="col-sm-12">
+                        <div class="alert alert-{{WarningClass}}">
+                            Please Note there is a log entry exist at
+                            <div ng-repeat="avaliabledate in existdate">
+                                {{avaliabledate.clockin | datewithtimeformat}} - {{avaliabledate.clockout| datewithtimeformat}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" ng-if="authWarning">
+                    <div class="col-sm-12">
+                        <div class="alert alert-warning">
+
+                        Please Note Authorization Ends  on {{ timecard.authorization.enddate }}, there is no Time card added  after {{timecard.authorization.enddate}}
+
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" ng-show="timecardId">
+                    <div class="col-sm-12">
+
+                        <div class="alert alert-info">
+                            <p>Created by: {{timecard.created_by | AddEditUser}}, Created date is: <em class="ng-binding">{{timecard.created_on | date:'medium'}}</em>
+                            </p>
+                            <p ng-show="timecard.editedOn">
+                                Edited by: {{timecard.edited_by | AddEditUser}}, Last Edited date is: <em class="ng-binding">{{timecard.editedOn | date:'medium' }}</em>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>

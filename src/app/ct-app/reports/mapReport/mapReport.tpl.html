@@ -1,0 +1,131 @@
+<div class="bg-light lter b-b wrapper-md">
+    <h1 class="m-n font-thin h3">Mobile Map Report</h1>
+</div>
+
+<!--<div class="wrapper-md">
+    <div class="panel panel-default"> -->
+<div class="row wrapper">
+    <div class="col-sm-3">
+        <div class="form-control " placeholder="Select zone" ui-select2="selectZone" value="" ng-model="reportFilters.zone">
+        </div>
+    </div>
+    <div class="col-sm-3">
+        <div>
+            <input class="form-control " placeholder="Select Job" ui-select2="selectJob" ng-model="reportFilters.job" ng-disabled="reportFilters.zone==null || reportFilters.zone=='' || reportFilters.zone[0].id =='all'">
+        </div>
+
+    </div>
+    <div class="col-sm-3">
+
+        <div ng-controller="DatepickerDemoCtrl">
+
+            <div class="input-group">
+                <input type="text" placeholder="Select Start Date" class="form-control" readonly datepicker-popup="{{format}}" ng-model="reportFilters.startDate" is-open="opened" datepicker-options="dateOptions" close-text="Close" />
+                <span class="input-group-btn">
+                      <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="col-sm-3">
+
+        <div ng-controller="DatepickerDemoCtrl">
+
+            <div class="input-group">
+                <input type="text" placeholder="Select End Date" class="form-control" readonly datepicker-popup="{{format}}" ng-model="reportFilters.endDate" is-open="opened" datepicker-options="dateOptions" close-text="Close" />
+                <span class="input-group-btn">
+                      <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="row wrapper">
+    <div class="col-sm-6">
+        <button class="btn btn-md btn-info" type="button" ng-click="getRecords()">Search</button>
+        <button class="btn btn-md btn-warning" type="button" ng-click="clearSearch()">Clear</button>
+        <span class="alert alert-danger" ng-if="showerrorMsg">{{error_msg}}</span>
+
+    </div>
+
+
+</div>
+
+<div class="row wrapper">
+    <div class="col-sm-12" style="position: relative; height: 500px">
+        <div id='map'></div>
+        <div id='directions'>
+            <div id="newroutes">
+                <h4 ng-if="jobsMapListSelected.properties"> Distance from Job [{{jobsMapListSelected.properties.code}}] - {{jobsMapListSelected.properties.name}}, {{jobsMapListSelected.properties.city}}, {{jobsMapListSelected.properties.state}}, {{jobsMapListSelected.properties.zip}} </h4>
+                <div class="newroute" ng-repeat="detail in newdetails.employee" id="newrouteItems">
+                    <div>
+                        <span ng-if="detail.properties.jobcode">{{detail.properties.jobcode}}</span>
+                        <span ng-if="detail.properties.empcode">, {{detail.properties.empcode}}</span>
+                        <span ng-if="detail.properties.timestamp">, {{detail.properties.timestamp}}</span>
+                        <span ng-if="detail.properties.logtype">, {{detail.properties.logtype}}</span>
+                    </div>
+                    <div class="routeSummary" ng-if="detail.route.summary">Route summary: {{detail.route.summary}}</div>
+                    <div class="routeDistDur" ng-if="detail.route.distdur">
+                        Dist &amp; Duration: {{detail.route.distdur}}
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="col-sm-12">
+
+        <div class="table-responsive">
+
+            <table class="table table-striped b-t b-light">
+
+                <thead ng-hide="searchAlert == true">
+                    <tr>
+
+                        <th ng-click="sortMe('job_code', 'job_code')" class="sortable job_code">Job &nbsp;<i class="fa fa-sort"></i>
+                        </th>
+                        <th ng-click="sortMe('employee_code', 'employee_code')" class="sortable employee_code">Employee &nbsp;<i class="fa fa-sort"></i>
+                        </th>
+                        <th ng-click="sortMe('timestamp', 'timestamp')" class="sortable timestamp">Timestamp &nbsp;<i class="fa fa-sort"></i>
+                        </th>
+                        <th ng-click="sortMe('log_type', 'log_type')" class="sortable log_type">Log Type &nbsp;<i class="fa fa-sort"></i>
+                        </th>
+                        <th >Location</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan='6' ng-show="searchAlert == true" ng-if="logMapList.length > 0">Please Select a Zone to get list </td>
+                    </tr>
+
+                    <tr ng-repeat="emp in logMapList" ng-hide="searchAlert == true" ng-click="showPopUp(emp.leafletid)">
+                        <td class="job_title">{{emp.properties.jobcode}}</td>
+                        <td>{{emp.properties.empcode}}</td>
+                        <td>{{emp.properties.timestamp}}</td>
+                        <td>{{emp.properties.logtype}}</td>
+                        <td><a ng-href="{{emp.properties.location}}" class="btn btn-sm btn-info" target="_blank">Click here to View</a></td>
+
+                    </tr>
+
+
+                    <tr>
+                        <td colspan='6' ng-if="logMapList.length == '0' && searchAlert ==false">No Logs in {{reportFilters.job.text}} </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p ng-if="logMapList.length > 0"> Employees Count: {{logMapList.length}}</p>
+
+    </div>
+</div>
+
+<!--  </div>
+</div> -->

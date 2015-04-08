@@ -1,0 +1,108 @@
+<div class="bg-light lter b-b wrapper-md">
+    <h1 class="m-n font-thin h3"> Employee Weekly Hours Report</h1>
+</div>
+
+<div class="wrapper-md">
+
+    <p class="m-b"><i class="fa fa-question-circle"></i> The table displays the hours worked per week. You can filter by the Zone, Employee, and a date range.</p>
+
+    <div class="panel panel-default">
+
+        <div class="row wrapper">
+
+            <div class="col-sm-3 ">
+                
+                    <div class="form-control " ui-select2="selectzone" value="" placeholder="Select Zone" ng-model="reportFilters.zone">
+                </div>
+
+            </div>
+
+
+            <div class="col-sm-3">
+
+
+                <div>
+                    <input class="form-control " ng-disabled="reportFilters.zone=='' || reportFilters.zone==null ||reportFilters.zone[0].id =='all'" ui-select2="selectEmployee" value="" placeholder="Select Employee " ng-model="reportFilters.employee">
+
+                </div>
+
+            </div>
+
+
+            <div class="col-sm-3" ng-controller="DatepickerDemoCtrl">
+                <div class="input-group w-md">
+                    <input type="text" class="form-control" readonly placeholder="Select Start Date" datepicker-popup="{{format}}" ng-model="reportFilters.from" is-open="opened" datepicker-options="dateOptions" close-text="Close" />
+                    <span class="input-group-btn">
+                      <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                </div>
+            </div>
+            <div class="col-sm-3" ng-controller="DatepickerDemoCtrl">
+                <div class="input-group w-md">
+                    <input type="text" class="form-control" readonly placeholder="Select End Date" datepicker-popup="{{format}}" ng-model="reportFilters.to" is-open="opened" datepicker-options="dateOptions" close-text="Close" />
+                    <span class="input-group-btn">
+                      <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                </div>
+            </div>
+           
+        </div>
+        <div class="row wrapper" >
+            <div class="col-sm-6">
+                 <button class="btn btn-md btn-info" type="button" ng-click="updateTableData(true)">Search</button>
+                <button class="btn btn-md btn-warning" type="button" ng-click="clearSearch()">Clear</button>
+                <span class="alert alert-danger" ng-if="showSearchErrorMsg">{{Search_Errmsg}}</span>
+            </div>
+            <div class="col-sm-6">
+                <div class=" pull-right">
+                    
+                    <a ng-disabled="show_norecord==1" download="EmpWeeklyHrsReport.xlsx" class="btn btn-md btn-info" id="export" ng-click="exportExcel()">Export Excel</a>
+
+                </div>
+            </div>
+        </div>
+        <div class="row wrapper" ng-if="show_norecord==1 || show_activities_loader">
+            <div class="col-sm-12">
+                <div ng-if="show_norecord==1" ng-bind-html="norecord"> {{norecord }}</div>
+                <div ng-if="show_activities_loader" show-loader="show_activities_loader"></div>
+            </div>
+        </div>
+        <div class="row wrapper" ng-if="show_norecord==2">
+            <div class="col-sm-12">
+                <wj-flex-grid control="ctx.flexGrid" items-source="EmpReport">
+                    <wj-flex-grid-column header="Employee Name" is-read-only="true" binding="empname" width="*"> </wj-flex-grid-column>
+                    <wj-flex-grid-column header="Regular Hours" is-read-only="true" binding="regularhours" format="n2" aggregate="Sum"> </wj-flex-grid-column>
+                    <wj-flex-grid-column header="Over 40 Hours" is-read-only="true" binding="overhours" format="n2" aggregate="Sum"> </wj-flex-grid-column>
+                    <wj-flex-grid-column header="Total Hours" is-read-only="true" binding="totalhours" format="n2" aggregate="Sum"> </wj-flex-grid-column>
+                    <wj-flex-grid-column header="Week" is-read-only="true" binding="weekno"> </wj-flex-grid-column>
+                    <wj-flex-grid-column header="Week Start" is-read-only="true" binding="weekstart"> </wj-flex-grid-column>
+                    <wj-flex-grid-column header="Week End" is-read-only="true" binding="weekend"> </wj-flex-grid-column>
+                </wj-flex-grid>
+
+                <div class="row wrapper">
+                    <wj-menu value="EmpReport.pageSize" header="Rows per Page">
+                        <wj-menu-item value="10"> 10</wj-menu-item>
+                        <wj-menu-item value="25"> 25</wj-menu-item>
+                        <wj-menu-item value="50"> 50</wj-menu-item>
+                        <wj-menu-item value="100"> 100</wj-menu-item>
+                    </wj-menu>
+
+
+
+
+                    <div class="btn-group col-md-8" ng-show="EmpReport.pageSize > 0">
+                        <button type="button" class="btn btn-default" ng-disabled="EmpReport.pageIndex <= 0" ng-click="EmpReport.moveToFirstPage()"> <span class="glyphicon glyphicon-fast-backward"></span> </button>
+                        <button type="button" class="btn btn-default" ng-disabled="EmpReport.pageIndex <= 0" ng-click="EmpReport.moveToPreviousPage()"> <span class="glyphicon glyphicon-step-backward"></span> </button>
+                        <button type="button" class="btn btn-default" disabled style="width:100px"> {{EmpReport.pageIndex+1}} / {{EmpReport.pageCount}} </button>
+                        <button type="button" class="btn btn-default" ng-disabled="EmpReport.pageIndex >= EmpReport.pageCount - 1" ng-click="EmpReport.moveToNextPage()"> <span class="glyphicon glyphicon-step-forward"></span> </button>
+                        <button type="button" class="btn btn-default" ng-disabled="EmpReport.pageIndex >= EmpReport.pageCount - 1" ng-click="EmpReport.moveToLastPage()"> <span class="glyphicon glyphicon-fast-forward"></span> </button>
+                    </div>
+                </div>
+
+            </div>
+
+
+
+        </div>
+    </div>
+</div>

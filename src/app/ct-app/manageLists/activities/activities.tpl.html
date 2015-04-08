@@ -1,0 +1,58 @@
+<div class="bg-light lter b-b wrapper-md">
+    <h1 class="m-n font-thin h3">Activities List <a ui-sref="ctApp.addUpdateActivity" class="btn btn-sm btn-info pull-right" type="button">Add Activity</a></h1>
+
+</div>
+<div class="wrapper-md">
+    <div class="panel panel-default">
+        <div class="row wrapper">
+
+            <div class="col-sm-3">
+                <input type="text" class="input-md form-control" placeholder="Search Text" ng-model="config.general.searchtxt" ui-keypress="{13:'updateTableData(true)'}" capitalize>
+            </div>
+            <div class="col-sm-3">
+                <button class="btn btn-md btn-info" type="button" ng-click="updateTableData(true)">Search</button>
+                <button class="btn btn-md btn-warning" type="button" ng-click="clearSearch()">Clear</button>
+            </div>
+        </div>
+        <div class="table-wrapper table-responsive">
+            <table class="table table-striped b-t b-light table-bordered" ct-table-sort="sortField" sort-order="sortType" callback="applyProgramSort()">
+                <thead>
+                    <tr>
+                        <th id="name" class="sort-item asc" style="width:30%;">Name &nbsp;<i class="fa fa-sort fa-sort-up"></i>
+                        </th>
+                        <th id="edited_on" class="sort-item">Updated On &nbsp;<i class="fa fa-sort"></i>
+                        </th>
+                        <th id="status" class="sort-item">Status &nbsp;<i class="fa fa-sort"></i>
+                        </th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody infinite-scroll='getNextData()' infinite-scroll-disabled='disable_infinite_scroll' infinite-scroll-distance='0'>
+                    <tr ng-repeat="detail in activityDetailList" class="animate-repeat">
+                        <td>{{detail.name}}</td>
+                        <td>{{detail.edited_on | MMDDYYYY}}</td>
+                        <td ng-bind-html="detail.status | checkstatus">{{detail.status | checkstatus}}</td>
+                        <td>
+                            <button ng-click="enableEditView(detail.id)" class="btn btn-rounded btn-sm btn-icon btn-default"><i class="fa fa-pencil"></i>
+                            </button>
+                            <button ng-click="enableDelete(detail.id)" class="btn btn-rounded btn-sm btn-icon btn-default"><i class="fa fa-trash-o"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    <tr ng-if="config.show_activities_loader">
+                        <td colspan="4">
+                            <div show-loader="config.show_activities_loader"></div>
+                        </td>
+                    </tr>
+                    <tr ng-if="!config.show_activities_loader && activityDetailList.length==0">
+                        <td colspan='4' class="alert alert-danger">
+                            <center> No Records Found.</center>
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>

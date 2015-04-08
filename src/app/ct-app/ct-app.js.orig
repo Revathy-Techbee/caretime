@@ -1,0 +1,84 @@
+/**
+ * Created by Raza on 11/12/2014.
+ */
+
+angular.module('app.ctApp', [
+    'ui.router',
+    'ctApp.zones',
+    'ctApp.payTypes',
+    'ctApp.serviceItems',
+    'ctApp.customPrompts',
+    'ctApp.payors',
+    'ctApp.activities',
+    'ctApp.skills',
+    'ctApp.payClasses',
+    'ctApp.jobs',
+    'ctApp.employees',
+    'ctApp.schedules',
+    'ctApp.agency'
+    ])
+
+    .config(['$stateProvider', '$urlRouterProvider', function config($stateProvider, $urlRouterProvider) {
+        var access = routingConfig.accessLevels;
+        $stateProvider.state('ctApp', {
+            abstract :true,
+            url: '/app',
+            views: {
+                "main": {
+                    controller: 'CtAppCtrl',
+                    templateUrl: 'ct-app/ct-app.tpl.html'
+                }
+            },
+            data: { pageTitle: 'Application', access: access.user }
+        });
+        /// $urlRouterProvider.otherwise('/app/dashboard');
+    }])
+
+    .controller("CtAppCtrl", ["$scope", "$rootScope", "$state", "Auth", "Services", "$localStorage",
+        function($scope, $rootScope, $state, Auth, Services, $localStorage) {
+            $scope.labels = {};
+            Services.agencyDetail.get({
+                filter: "status > 0"
+            }, function(remoteData) {
+                //console.log(remoteData);
+                
+                
+                $scope.navLabels = JSON.parse(remoteData.record[0].labels);
+                $scope.labels.Zones = $scope.navLabels.zones;
+                $scope.labels.Jobs = $scope.navLabels.jobs;
+                $scope.labels.Employees = $scope.navLabels.employees;
+
+                var agencyDetails = {};
+                agencyDetails.id = remoteData.record[0].id;
+                agencyDetails.agency_name = remoteData.record[0].agency_name;
+                agencyDetails.timezone = remoteData.record[0].timezone;
+                $localStorage.agencyDetails = agencyDetails;
+
+                var configCode = {};
+                configCode.employee = 4;
+                configCode.job = 4;
+                configCode.zone = 4;
+
+                var payClass = [];
+                payClass = JSON.parse(remoteData.record[0].agency_pay_class);
+                $localStorage.payClass = [];
+                if (payClass.length > 0){
+                    $localStorage.payClass = payClass;
+                }
+                if (remoteData.record[0].config_employee_code){
+                    configCode.employee = remoteData.record[0].config_employee_code;
+                }
+                if (remoteData.record[0].config_job_code)
+                {
+                    configCode.job = remoteData.record[0].config_job_code;
+                }
+                if (remoteData.record[0].config_zone_code){
+                    configCode.zone = remoteData.record[0].config_zone_code;
+                }
+                $localStorage.configCode = configCode;
+                //console.log($localStorage.configCode);
+            });
+        }])
+    .controller("headerController", ["$scope", "Auth", function($scope, Auth){
+        $scope.username =  Auth.user.username;
+    }]);

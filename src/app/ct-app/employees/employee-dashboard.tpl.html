@@ -1,0 +1,348 @@
+<div class="bg-light lter b-b wrapper-md">
+    <h1 class="m-n font-thin h3">{{labels.Employees }} Dashboard</h1>
+</div>
+
+<div class="wrapper-md">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="clearfix">
+
+                        <div class="clear">
+                            <div class="h2 m-t-xs m-b-xs">
+                                {{employeeStateDetail.first_name}} {{employeeStateDetail.last_name}}
+                                <span ng-bind-html="employeeStateDetail.status | checkStatStatus"> {{employeeStateDetail.status}}</i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-group no-radius alt">
+                    <li class="list-group-item">
+                        <span class="pull-right">{{employeeStateDetail.agency_id}}</span>
+                        <i class="fa fa-university fa-fw text-muted"></i> Agency
+                    </li>
+                    <li class="list-group-item">
+                        <span class="pull-right" ng-bind-html="employeeStateDetail.is_supervisor | checklevel">{{employeeStateDetail.is_supervisor | checklevel}}</span>
+                        <i class="fa fa-users fa-fw text-muted"></i> User Type
+                    </li>
+
+                    <li class="list-group-item">
+                        <span class="pull-right">{{employeeStateDetail.username}}</span>
+                        <i class="fa fa-user fa-fw text-muted"></i> Username
+                    </li>
+                    <li class="list-group-item">
+                        <span class="pull-right">{{employeeStateDetail.access_code}}</span>
+                        <i class="fa fa-unlock-alt fa-fw text-muted"></i> Access Code
+                    </li>
+
+                    <li class="list-group-item">
+                        <span class="pull-right">{{employeeStateDetail.primary_phone | phoneFormat}}</span>
+                        <i class="fa fa-phone fa-fw text-muted"></i> Telephone
+                    </li>
+                    <li class="list-group-item">
+                        <span class="pull-right">{{employeeStateDetail.email}}</span>
+                        <i class="fa fa-envelope fa-fw text-muted"></i> eMail
+                    </li>
+                    <li class="list-group-item">
+                        <span class="pull-right">{{employeeStateDetail.primary_address1}} {{employeeStateDetail.primary_address2}}, {{employeeStateDetail.primary_county}} {{employeeStateDetail.primary_city}}, {{employeeStateDetail.state}} {{employeeStateDetail.primary_zip}}</span>
+                        <i class="fa fa-home fa-fw text-muted"></i> Address
+                    </li>
+                    <li class="list-group-item">
+                        <span class="pull-right">$ {{employeeStateDetail.pay_rate}}</span>
+                        <i class="fa fa-money fa-fw text-muted"></i> Pay Rate
+                    </li>
+
+
+                </div>
+
+            </div>
+            <div class="panel panel-info">
+
+                <div class="input-group">
+                    <input type="text" class="form-control input-lg" placeholder="Send John a message">
+                    <span class="input-group-btn">
+                <button class="btn btn-primary btn-lg" type="button">SEND</button>
+              </span>
+                </div>
+
+            </div>
+            <div class="panel b-a">
+                <div class="panel-heading font-bold bg-primary">Employee Activity</div>
+                <table class="table table-striped m-b-none">
+                    <thead>
+                        <tr>
+                            <th ng-click="empSortMe('Zone_code ', 'Zone_code ')" class="sortable Zone_code ">Zone &nbsp;<i class="fa fa-sort"></i>
+                            </th>
+                            <th ng-click="empSortMe('Job_code ', 'Job_code ')" class="sortable Job_code ">Job &nbsp;<i class="fa fa-sort"></i>
+                            </th>
+                            <th ng-click="empSortMe('clockin ', 'clockin ')" class="sortable clockin ">ClockIn &nbsp;<i class="fa fa-sort"></i>
+                            </th>
+                            <th ng-click="empSortMe('clockout', 'clockout')" class="sortable clockout">Clockout &nbsp;<i class="fa fa-sort"></i>
+                            </th>
+                            <th ng-click="empSortMe('work_duration', 'work_duration')" class="sortable work_duration" class="hidden-xs">Duration &nbsp;<i class="fa fa-sort"></i>
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+                        <tr ng-repeat="detail in employeelogDetails">
+                            <td>{{detail.Zone_name }}({{detail.Zone_code }})</td>
+                            <td>{{detail.job_name }}({{detail.Job_code}})</td>
+                            <td>{{detail.clockin}} </td>
+                            <td>{{detail.clockout}}</td>
+                            <td class="hidden-xs">{{detail.work_duration}}</td>
+
+                        </tr>
+                        <tr ng-if="employeelogDetails.length==0">
+                            <td colspan='5'> No Record Found </td>
+                        </tr>
+
+
+                    </tbody>
+                    <tr ng-if="employeelogDetails.length>0">
+                        <td colspan='3'>
+                            <div class="text-right">
+                                <small class="text-muted inline m-t-sm m-b-sm">showing {{empConfig.list.itemFrom}}-{{empConfig.list.itemTo}} of {{empConfig.list.itemTotalCount}} items </small>
+                            </div>
+                        </td>
+                        <td colspan='2'>
+
+                            <div class="text-right">
+                                <ul class="pagination pagination-sm m-t-none m-b-none">
+                                    <li><a href="javascript:void(0)" ng-click="getNextData(empConfig.list.preOffset)" ng-show="empConfig.list.currentPage>1"><i class="fa fa-chevron-left"></i></a>
+                                    </li>
+                                    <li><a href="javascript:void(0)" ng-repeat="page in empConfig.list.pagination" ng-click="getEmpNextData(page.offset)">{{page.number}}</a>
+                                    </li>
+                                    <li><a href="javascript:void(0)" ng-click="getNextData(empConfig.list.nextOffset)" ng-show="empConfig.list.currentPage < Config.list.paginationCount"><i class="fa fa-chevron-right"></i></a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+
+
+
+            <div class="panel b-a">
+                <div class="panel-heading font-bold bg-primary">Employee Schedule</div>
+                <table class="table table-striped m-b-none">
+                    <thead>
+                        <tr>
+                            <th width="20%" ng-click="sortMe('zone_id', 'zone_id')" class="sortable zone_id">Zone &nbsp;<i class="fa fa-sort"></i>
+                            </th>
+                            <th width="20%" ng-click="sortMe('job_id', 'job_id')" class="sortable job_id">Job &nbsp;<i class="fa fa-sort"></i>
+                            </th>
+                            <th width="20%" ng-click="sortMe('in_at', 'in_at')" class="sortable in_at">Start on &nbsp;<i class="fa fa-sort"></i>
+                            </th>
+                            <th width="20%" ng-click="sortMe('out_at', 'out_at')" class="sortable out_at">End at &nbsp;<i class="fa fa-sort"></i>
+                            </th>
+                            <th width="20%" ng-click="sortMe('duriation', 'duriation')" class="sortable duriation" class="hidden-xs">Duration &nbsp;<i class="fa fa-sort"></i>
+                            </th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+                        <tr ng-repeat="detail in employeeshiftDetails">
+                            <td>{{detail.zone | parseToJson:0:'zone'}}</td>
+                            <td>{{detail.job | parseToJson:0:'zone'}}</td>
+                            <td>{{detail.in_date}} {{detail.in_time}}</td>
+                            <td>{{detail.out_date}} {{detail.out_time}}</td>
+                            <td class="hidden-xs">{{detail.duriation}}</td>
+
+                        </tr>
+                        <tr ng-if="employeeshiftDetails.length==0">
+                            <td colspan='5'> No Record Found </td>
+                        </tr>
+
+
+                    </tbody>
+                    <tr ng-if="employeeshiftDetails.length>0">
+                        <td colspan='3'>
+                            <div class="text-right">
+                                <small class="text-muted inline m-t-sm m-b-sm">showing {{Config.list.itemFrom}}-{{Config.list.itemTo}} of {{Config.list.itemTotalCount}} items </small>
+                            </div>
+                        </td>
+                        <td colspan='2'>
+
+                            <div class="text-right">
+                                <ul class="pagination pagination-sm m-t-none m-b-none">
+                                    <li><a href="javascript:void(0)" ng-click="getNextData(Config.list.preOffset)" ng-show="Config.list.currentPage>1"><i class="fa fa-chevron-left"></i></a>
+                                    </li>
+                                    <li><a href="javascript:void(0)" ng-repeat="page in Config.list.pagination" ng-click="getNextData(page.offset)">{{page.number}}</a>
+                                    </li>
+                                    <li><a href="javascript:void(0)" ng-click="getNextData(Config.list.nextOffset)" ng-show="Config.list.currentPage < Config.list.paginationCount"><i class="fa fa-chevron-right"></i></a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+
+        </div>
+
+       <div class="col-md-6">
+            <div class="panel b-a">
+              <!-- <div class="padder-v b-t b-light bg-light lter row text-center no-gutter">
+                    <div class="col-xs-4">
+                        <div>Clock-In/Out</div>
+                        <div class="inline m-t-sm">
+                            <div ui-jq="easyPieChart" ui-options="{
+                      percent: 88,
+                      lineWidth: 3,
+                      trackColor: '{{app.color.light}}',
+                      barColor: '{{app.color.primary}}',
+                      scaleColor: false,
+                      color: '#fff',
+                      size: 65,
+                      lineCap: 'butt',
+                      rotate: 45,
+                      animate: 1000
+                    }">
+                                <div>
+                                    <span class="step">88</span>%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div>On Time</div>
+                        <div class="inline m-t-sm">
+                            <div ui-jq="easyPieChart" ui-options="{
+                      percent: 90,
+                      lineWidth: 3,
+                      trackColor: '{{app.color.light}}',
+                      barColor: '{{app.color.info}}',
+                      scaleColor: false,
+                      color: '#fff',
+                      size: 65,
+                      lineCap: 'butt',
+                      rotate: 90,
+                      animate: 1000
+                    }">
+                                <div>
+                                    <span class="step">90</span>%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div>Other</div>
+                        <div class="inline m-t-sm">
+                            <div ui-jq="easyPieChart" ui-options="{
+                      percent: 20,
+                      lineWidth: 3,
+                      trackColor: '{{app.color.light}}',
+                      barColor: '{{app.color.warning}}',
+                      scaleColor: false,
+                      color: '#fff',
+                      size: 65,
+                      lineCap: 'butt',
+                      rotate: 180,
+                      animate: 1000
+                    }">
+                                <div>
+                                    <span class="step">20</span>%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>-->
+
+                <div class="hbox text-center b-t b-light">
+                    <a href class="col padder-v text-muted b-r b-light">
+                        <div class="h3">210</div>
+                        <span>Clock OUT</span>
+                    </a>
+                    <a href class="col padder-v text-muted">
+                        <div class="h3">203</div>
+                        <span>Clock OUT</span>
+                    </a>
+                    <a href class="col padder-v text-muted">
+                        <div class="h3">7</div>
+                        <span>Error</span>
+                    </a>
+                </div>
+
+                <footer class="panel-footer bg-info text-center no-padder">
+                    <div class="row no-gutter">
+                        <div class="col-xs-4">
+                            <div class="wrapper">
+                                <span class="m-b-xs h3 block text-white">$1,342.23</span>
+                                <small class="text-muted">This Month</small>
+                            </div>
+                        </div>
+                        <div class="col-xs-4 dk">
+                            <div class="wrapper">
+                                <span class="m-b-xs h3 block text-white">$7,326.78</span>
+                                <small class="text-muted">YTD</small>
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="wrapper">
+                                <span class="m-b-xs h3 block text-white">$462.04</span>
+                                <small class="text-muted">Overtime</small>
+                            </div>
+                        </div>
+                    </div>
+                </footer>
+
+            </div>
+            <!--
+            <div ng-controller="FlotChartDemoCtrl">
+                <div class="panel b-a">
+                    <div class="panel-heading font-bold bg-info">Check In / Check Out</div>
+                    <div class="panel-body">
+                        <div ui-jq="plot" ui-options="
+              [
+                { data: {{d0_1}}, label: 'IN', points: { show: true }, lines: { show: true, fill: true, fillColor: { colors: [{ opacity: 0.1 }, { opacity: 0.1}] } } }, 
+                { data: {{d0_2}}, label: 'OUT', points: { show: true, radius: 4 } }
+              ],
+              {
+                colors: [ '{{app.color.info}}','{{app.color.warning}}' ],
+                series: { shadowSize: 2 },
+                xaxis:{ font: { color: '#ccc' } },
+                yaxis:{ font: { color: '#ccc' } },
+                grid: { hoverable: true, clickable: true, borderWidth: 0, color: '#ccc' },
+                tooltip: true,
+                tooltipOpts: { content: '%s of %x.1 is %y.4',  defaultTheme: false, shifts: { x: 0, y: 20 } }
+              }
+            " style="height:240px"></div>
+                    </div>
+                </div>
+
+
+                <div class="panel b-a">
+                    <div class="panel-heading font-bold bg-info">Status Codes</div>
+                    <div class="panel-body">
+                        <div ui-jq="plot" ui-options="
+              {{d3}},
+              {
+                series: { pie: { show: true, innerRadius: 0.5, stroke: { width: 0 }, label: { show: true, threshold: 0.05 } } },
+                colors: ['{{app.color.primary}}','{{app.color.info}}','{{app.color.success}}','{{app.color.warning}}','{{app.color.danger}}'],
+                grid: { hoverable: true, clickable: true, borderWidth: 0, color: '#ccc' },   
+                tooltip: true,
+                tooltipOpts: { content: '%s: %p.0%' }
+              }
+            " style="height:240px"></div>
+                    </div>
+                </div>
+            </div>
+              -->
+
+
+        </div> 
+    </div>
+
+
+</div>

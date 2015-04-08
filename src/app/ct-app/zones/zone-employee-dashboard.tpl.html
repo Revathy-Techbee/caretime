@@ -1,0 +1,307 @@
+<div class="bg-light lter b-b wrapper-md">
+  <h1 class="m-n font-thin h3">Employee</h1>
+</div>
+<div class="wrapper-md" ng-controller="FormDemoCtrl">
+
+
+  <div class="panel panel-default">
+    <div class="panel-heading font-bold">
+      Employee Setup
+    </div>
+    <div class="panel-body">
+      <form class="form-horizontal" method="get">
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Employee Name</label>
+          <div class="col-sm-10">
+            <div class="row">
+              <div class="col-md-6">
+                <input type="text" class="form-control" placeholder="Last Name">
+              </div>
+              <div class="col-md-6">
+                <input type="text" class="form-control" placeholder="First Name">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Username</label>
+          <div class="col-sm-10">
+              <input type="text" class="form-control" ng-model="user.name" ng-pattern="/^[a-zA-Z0-9]{4,10}$/" placeholder="allow a-zA-Z0-9, 4-10 length">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Email</label>
+          <div class="col-sm-10">
+              <input type="email" class="form-control" ng-model="user.email" required >
+          </div>
+        </div>
+
+        <div class="line line-dashed b-b line-lg pull-in"></div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Access Code</label>
+          <div class="col-sm-10">
+            <input type="text"  class="form-control" placeholder="Enter 6 digit Access Code">
+          </div>
+        </div>
+
+        <div class="line line-dashed b-b line-lg pull-in"></div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Employee Zone</label>
+          <div class="col-sm-10">
+            <input type="text"  class="form-control" placeholder="Enter Zone">
+          </div>
+        </div>
+
+        <div class="line line-dashed b-b line-lg pull-in"></div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Language</label>
+          <div class="col-sm-10">
+            <select ui-jq="chosen" multiple class="w-md">
+              <option value="eng">English</option>
+              <option value="spa">Spanish</option>
+              <option value="ger">German</option>
+              <option value="frn">French</option>
+              <option value="itl">Italian</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="line line-dashed b-b line-lg pull-in"></div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Eloyee Level</label>
+          <div class="col-sm-10">
+            <div ui-module="select2">
+              <select ui-select2 ng-model="select1" class="form-control w-md">
+                <option value="basic">Basic</option>
+                <option value="supervisor">Supervisor</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="line line-dashed b-b line-lg pull-in"></div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Current Status</label>
+          <div class="col-sm-10">
+            <label class="radio-inline i-checks">
+              <input type="radio" name="a" value="option1" checked><i></i> Active
+            </label>
+            <label class="radio-inline i-checks">
+              <input type="radio" name="a" value="option2"><i></i> Inactive
+            </label>
+            <label class="radio-inline i-checks">
+              <input type="radio" name="a" value="option3"><i></i> Terminated
+            </label>
+          </div>
+        </div>
+
+        <div class="line line-dashed b-b line-lg pull-in"></div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Voice Verification</label>
+          <div class="col-sm-10">
+            <select ui-jq="chosen" class="w-md">
+              <option value="dis">Disabled</option>
+              <option value="5">5%</option>
+              <option value="10">10%</option>
+              <option value="25">25%</option>
+              <option value="50">50% (Caution)</option>
+              <option value="75">75% (Caution)</option>
+              <option value="100">100% (Caution)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="line line-dashed b-b line-lg pull-in"></div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Clock OUT Safeguard</label>
+          <div class="col-sm-10">
+            <div class="row">
+              <div class="col-md-6>">
+              <select ui-jq="chosen" class="w-md">
+                <option value="ah">Timecard Reset after Hours </option>
+                <option value="td">Timecard Reset after Time of day</option>
+                <option value="dis">Timecard Reset Disabled</option>
+              </select>
+              </div>
+              <div class="col-md-6">
+                  <input type="text" class="form-control" placeholder="Enter Hours" ng-model="g.c" ng-pattern="/^[0-9]+$/" required >
+              </div>
+              </div>
+          </div>
+        </div>
+
+        <div class="line line-dashed b-b line-lg pull-in"></div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Address Line</label>
+          <div class="col-sm-10">
+            <input type="text"  class="form-control" placeholder="Enter Address line">
+          </div>
+          <div class="line"></div>
+          <label class="col-sm-2 control-label">Address Line 2</label>
+          <div class="col-sm-10">
+            <input type="text"  class="form-control" placeholder="Address line 2 (optional)">
+          </div>
+        <div class="line"></div>                
+          <label class="col-sm-2 control-label">City/State/Zip</label>
+          <div class="col-sm-10">
+            <div class="row">
+              <div class="col-md-4">
+                <input type="text" class="form-control" placeholder="City">
+              </div>
+              <div class="col-md-4">
+                <input type="text" class="form-control" placeholder="State">
+              </div>
+              <div class="col-md-4">
+                <input type="text" class="form-control" placeholder="ZIP">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="line line-dashed b-b line-lg pull-in"></div>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Home Phone</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" placeholder="(123) 333 4444" ng-model="phone" ng-pattern="/\([0-9]{3}\) ([0-9]{3}) ([0-9]{4})$/" required >
+          </div>
+          <div class="line"></div>
+          <label class="col-sm-2 control-label">Work Phone</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" placeholder="(123) 333 4444" ng-model="phone" ng-pattern="/\([0-9]{3}\) ([0-9]{3}) ([0-9]{4})$/" required >
+          </div>
+          <div class="line"></div>
+          <label class="col-sm-2 control-label">Other Phone</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" placeholder="(123) 333 4444" ng-model="phone" ng-pattern="/\([0-9]{3}\) ([0-9]{3}) ([0-9]{4})$/" required >
+          </div>
+        </div>
+
+        <div class="line line-dashed b-b line-lg pull-in"></div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label">Pay Rate (US$)</label>
+              <div class="col-sm-4">
+                <input type="text" class="form-control" placeholder="Enter Pay Rate" ng-model="g.c" ng-pattern="/^[0-9]+$/" required >
+              </div>
+          </div>
+
+        <div class="line line-dashed b-b line-lg pull-in"></div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Free-form Tags</label>
+          <div class="col-sm-10">
+            <div ui-module="select2">
+              <input
+                type="hidden"
+                ui-select2="select2Options"
+                ng-model="list_of_string"
+                class="form-control w-md"
+                >
+            </div>
+          </div>
+        </div>
+
+        <div class="line line-dashed b-b line-lg pull-in"></div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Hire Date</label>
+          <div class="col-sm-10" ng-controller="DatepickerDemoCtrl">
+            <div class="input-group w-md">
+              <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dt" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Birthday</label>
+          <div class="col-sm-10" ng-controller="DatepickerDemoCtrl">
+            <div class="input-group w-md">
+              <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dt" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+              </span>
+            </div>
+          </div>
+        </div>
+ 
+        <div class="line line-dashed b-b line-lg pull-in"></div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Notes</label>
+          <div class="col-sm-10">
+            <div class="btn-toolbar m-b-sm btn-editor" data-role="editor-toolbar" data-target="#editor">
+              <div class="btn-group dropdown">
+                <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" tooltip="Font"><i class="fa fa-font"></i><b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href dropdown-toggle data-edit="fontName Serif" style="font-family:'Serif'">Serif</a></li> 
+                  <li><a href dropdown-toggle data-edit="fontName Sans" style="font-family:'Sans'">Sans</a></li>
+                  <li><a href dropdown-toggle data-edit="fontName Arial" style="font-family:'Arial'">Arial</a></li></ul>
+              </div>
+              <div class="btn-group dropdown">
+                <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" tooltip="Font Size"><i class="fa fa-text-height"></i>&nbsp;<b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href dropdown-toggle data-edit="fontSize 5" style="font-size:24px">Huge</a></li>
+                  <li><a href dropdown-toggle data-edit="fontSize 3" style="font-size:18px">Normal</a></li>
+                  <li><a href dropdown-toggle data-edit="fontSize 1" style="font-size:14px">Small</a></li>
+                </ul>
+              </div>
+              <div class="btn-group">
+                <a class="btn btn-default" data-edit="bold" tooltip="Bold (Ctrl/Cmd+B)"><i class="fa fa-bold"></i></a>
+                <a class="btn btn-default" data-edit="italic" tooltip="Italic (Ctrl/Cmd+I)"><i class="fa fa-italic"></i></a>
+                <a class="btn btn-default" data-edit="strikethrough" tooltip="Strikethrough"><i class="fa fa-strikethrough"></i></a>
+                <a class="btn btn-default" data-edit="underline" tooltip="Underline (Ctrl/Cmd+U)"><i class="fa fa-underline"></i></a>
+              </div>
+              <div class="btn-group">
+                <a class="btn btn-default" data-edit="insertunorderedlist" tooltip="Bullet list"><i class="fa fa-list-ul"></i></a>
+                <a class="btn btn-default" data-edit="insertorderedlist" tooltip="Number list"><i class="fa fa-list-ol"></i></a>
+                <a class="btn btn-default" data-edit="outdent" tooltip="Reduce indent (Shift+Tab)"><i class="fa fa-dedent"></i></a>
+                <a class="btn btn-default" data-edit="indent" tooltip="Indent (Tab)"><i class="fa fa-indent"></i></a>
+              </div>
+              <div class="btn-group">
+                <a class="btn btn-default" data-edit="justifyleft" tooltip="Align Left (Ctrl/Cmd+L)"><i class="fa fa-align-left"></i></a>
+                <a class="btn btn-default" data-edit="justifycenter" tooltip="Center (Ctrl/Cmd+E)"><i class="fa fa-align-center"></i></a>
+                <a class="btn btn-default" data-edit="justifyright" tooltip="Align Right (Ctrl/Cmd+R)"><i class="fa fa-align-right"></i></a>
+                <a class="btn btn-default" data-edit="justifyfull" tooltip="Justify (Ctrl/Cmd+J)"><i class="fa fa-align-justify"></i></a>
+              </div>
+              <div class="btn-group dropdown">
+                <a class="btn btn-default dropdown-toggle" data-toggle="dropdown" tooltip="Hyperlink"><i class="fa fa-link"></i></a>
+                <div class="dropdown-menu">
+                  <div class="input-group m-l-xs m-r-xs">
+                    <input class="form-control input-sm" onclick="return false;" placeholder="URL" type="text" data-edit="createLink"/>
+                    <div class="input-group-btn">
+                      <button class="btn btn-sm btn-default" type="button">Add</button>
+                    </div>
+                  </div>
+                </div>
+                <a class="btn btn-default" data-edit="unlink" tooltip="Remove Hyperlink"><i class="fa fa-cut"></i></a>
+              </div>
+              
+              <div class="btn-group">
+                <a class="btn btn-default" tooltip="Insert picture (or just drag & drop)" id="pictureBtn"><i class="fa fa-picture-o"></i></a>
+                <input type="file" data-edit="insertImage" style="position:absolute; opacity:0; width:41px; height:34px" />
+              </div>
+              <div class="btn-group">
+                <a class="btn btn-default" data-edit="undo" tooltip="Undo (Ctrl/Cmd+Z)"><i class="fa fa-undo"></i></a>
+                <a class="btn btn-default" data-edit="redo" tooltip="Redo (Ctrl/Cmd+Y)"><i class="fa fa-repeat"></i></a>
+              </div>
+            </div>
+            <div ui-jq="wysiwyg" class="form-control" style="overflow:scroll;height:200px;max-height:200px">
+              Go ahead&hellip;
+            </div>
+          </div>
+        </div>
+        
+        <div class="line line-dashed b-b line-lg pull-in"></div>
+        <div class="form-group">
+          <div class="col-sm-4 col-sm-offset-2">
+            <button type="submit" class="btn btn-default">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,322 @@
+<div class="bg-light lter b-b wrapper-md">
+    <h1 class="m-n font-thin h3">Timecard Export Report</h1>
+</div>
+
+<div class="wrapper-md">
+    <div class="panel panel-default">
+        <div class="row wrapper">
+            <div class="col-sm-12">
+                SELECT FIELDS TO DISPLAY IN REPORT
+             </div>
+            <div class="col-sm-12">
+                <table class="table borderless" ct-table-sort="sortField" sort-order="sortType" callback="applyProgramSort()">
+                   <tbody>
+                        <tr>
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.agencyid">
+                                    <i></i> Agency ID
+                                </label>
+                            </td>
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.empzone">
+                                    <i></i> Emp zone
+                                </label>
+                            </td>
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.empname">
+                                    <i></i> Emp Name
+                                </label>
+                            </td>
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.level">
+                                    <i></i> Emp Level
+                                </label>
+                            </td>
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.skill">
+                                    <i></i> Emp Skill
+                                </label>
+                            </td>
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.empstatus">
+                                    <i></i> Emp Status
+                                </label>
+                            </td>
+                            
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.empext1">
+                                    <i></i> Emp Ext 1
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.empext2">
+                                    <i></i> Emp Ext 2
+                                </label>
+                            </td>
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.empext3">
+                                    <i></i> Emp Ext 3
+                                </label>
+                            </td>
+
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.empaddress1">
+                                    <i></i> Emp Address 
+                                </label>
+                            </td>
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.empaddress2">
+                                    <i></i> Emp Address 2 
+                                </label>
+                            </td>
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.empcity">
+                                    <i></i> Emp City 
+                                </label>
+                            </td>
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.empstate">
+                                    <i></i> Emp State 
+                                </label>
+                            </td>
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.empzip">
+                                    <i></i> Emp Zip 
+                                </label>
+                            </td>  
+                        </tr>
+                        <tr> 
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.roundedhrs">
+                                    <i></i> Rounded Hrs
+                                </label>
+                            </td>
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.jobzone">
+                                    <i></i> Job Zone
+                                </label>
+                            </td>
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.jobname">
+                                    <i></i> Job Name
+                                </label>
+                            </td>
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.contact">
+                                    <i></i> Job Contact
+                                </label>
+                            </td>
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.Service">
+                                    <i></i> Job Service
+                                </label>
+                            </td>
+                       
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.jobstatus">
+                                    <i></i> Job Status
+                                </label>
+                            </td>
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.jobpaytype">
+                                    <i></i> Pay Type
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.jobgroup">
+                                    <i></i> Job Group
+                                </label>
+                            </td>
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.jobext1">
+                                    <i></i> Job Ext 1
+                                </label>
+                            </td>
+
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.jobext2">
+                                    <i></i> Job Ext 2
+                                </label>
+                            </td>
+                            <td>
+                                <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.jobext3">
+                                    <i></i> Job Ext 3
+                                </label>
+                            </td>
+
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+        </div>
+
+        <div class="row wrapper">
+            <div class="col-sm-12">
+                <span>GROUP BY : &nbsp;</span>
+
+                <label class="radio-inline i-checks">
+                    <input type="radio" name="groupby" required="" value="employee_code" ng-model="groupBy"><i></i> Employee
+                </label>
+                <label class="radio-inline i-checks">
+                    <input type="radio" name="groupby" required="" value="Job_code" ng-model="groupBy"><i></i> Job
+                </label>
+            </div>
+        </div>
+
+        <div class="row wrapper">
+            <div class="col-sm-12">
+                SELECT FILTER
+            </div>
+            <div class="col-sm-3">
+                <div class="form-control " placeholder="Select zone" ui-select2="selectZone" value="" ng-model="reportFilters.zone">
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <input class="form-control " placeholder="Select Employee" ui-select2="selectEmployee" ng-model="reportFilters.employee" ng-disabled="reportFilters.zone==null || reportFilters.zone=='' || reportFilters.zone[0].id =='all'">
+            </div>
+            <div class="col-sm-3">
+
+                <div ng-controller="DatepickerDemoCtrl">
+
+                    <div class="input-group">
+                        <input type="text" placeholder="Select Start Date" class="form-control" readonly datepicker-popup="{{format}}" ng-model="reportFilters.startDate" is-open="opened" datepicker-options="dateOptions" close-text="Close" />
+                        <span class="input-group-btn">
+                      <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                    </div>
+
+                </div>
+
+            </div>
+            <div class="col-sm-3">
+
+                <div ng-controller="DatepickerDemoCtrl">
+
+                    <div class="input-group">
+                        <input type="text" placeholder="Select End Date" class="form-control" readonly datepicker-popup="{{format}}" ng-model="reportFilters.endDate" is-open="opened" datepicker-options="dateOptions" close-text="Close" />
+                        <span class="input-group-btn">
+                      <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                    </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="row wrapper">
+            <div class="col-sm-6">
+                <button class="btn btn-md btn-info" type="button" ng-click="updateTableData()">Search</button>
+                <button class="btn btn-md btn-warning" type="button" ng-click="clearSearch()">Clear</button>
+                <span class="alert alert-danger" ng-if="showerrorMsg">{{error_msg}}</span>
+
+            </div>
+            <div class="col-sm-6">
+                <div class=" pull-right">
+                    <div class="col-sm-4" ng-if="show_download_loader">
+                        <div ng-if="show_download_loader" show-loader="show_download_loader"></div>
+                    </div>
+                    <a ng-disabled="noRecord==1" download="TimeCardExportReport.xlsx" class="btn btn-md btn-info" id="export" ng-click="exportExcel()">Export Excel</a>
+
+                </div>
+            </div>
+
+        </div>
+        <!--<div class="row wrapper" ng-if="noRecord==1">
+            <div class="col-sm-12" ng-bind-html="norecord"> {{norecord }}</div>
+
+        </div>-->
+        <div class="row wrapper" ng-if="noRecord==1 || show_activities_loader">
+            <div class="col-sm-12">
+                <div ng-if="noRecord==1" ng-bind-html="norecord"> {{norecord }}</div>
+                <div ng-if="show_activities_loader" show-loader="show_activities_loader"></div>
+            </div>
+        </div>
+        <div class="row wrapper" ng-if="showRecord==1">
+            <wj-flex-grid control="ctx.flexGrid" items-source="TimecardDetails">
+                <wj-flex-grid-column header="Emp Code" is-read-only="true" binding="employee_code" width="*"> </wj-flex-grid-column>
+
+                <wj-flex-grid-column header="Job Code" is-read-only="true" binding="Job_code"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Clock In" is-read-only="true" binding="clockin"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Clock Out" is-read-only="true" binding="clockout"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Total Hours" is-read-only="true" binding="work_duration_non_rounded_number" format="n2" aggregate="Sum"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="(h m)" is-read-only="true" binding="work_duration_formated" format="n2"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Rounded Hrs" ng-if="field.roundedhrs" is-read-only="true" binding="work_duration_rounded_number" format="n2" aggregate="Sum"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="(h m)" ng-if="field.roundedhrs" is-read-only="true" binding="work_duration_rounded_formated" format="n2"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Emp Name" ng-if="field.empname" is-read-only="true" binding="employee_name"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Emp Level" ng-if="field.level" is-read-only="true" binding="empLevel"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Emp Skill" ng-if="field.skill" is-read-only="true" binding="empskill"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Agency ID" ng-if="field.agencyid" is-read-only="true" binding="empagencyid"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Emp Status" ng-if="field.empstatus" is-read-only="true" binding="empStatus"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Emp Zone" ng-if="field.empzone" is-read-only="true" binding="empZone"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Emp Ext 1" ng-if="field.empext1" is-read-only="true" binding="empext1"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Emp Ext 2" ng-if="field.empext2" is-read-only="true" binding="empext2"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Emp Ext 3" ng-if="field.empext3" is-read-only="true" binding="empext3"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Emp Address" ng-if="field.empaddress1" is-read-only="true" binding="primary_address1"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Emp Address 2" ng-if="field.empaddress2" is-read-only="true" binding="primary_address2"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Emp City" ng-if="field.empcity" is-read-only="true" binding="primary_city"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Emp State" ng-if="field.empstate" is-read-only="true" binding="primary_state"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Emp Zip" ng-if="field.empzip" is-read-only="true" binding="primary_zip"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Job Name" ng-if="field.jobname" is-read-only="true" binding="job_name"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Job Zone" ng-if="field.jobzone" is-read-only="true" binding="jobZone"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Job Contact" ng-if="field.contact" is-read-only="true" binding="jobContact"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Job Status" ng-if="field.jobstatus" is-read-only="true" binding="jobStatus"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Pay Type" ng-if="field.jobpaytype" is-read-only="true" binding="jobPaytype"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Job Service" ng-if="field.Service" is-read-only="true" binding="jobServiceitem"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Job Group" ng-if="field.jobgroup" is-read-only="true" binding="jobGroup"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Job Ext 1" ng-if="field.jobext1" is-read-only="true" binding="jobext1"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Job Ext 2" ng-if="field.jobext2" is-read-only="true" binding="jobext2"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Job Ext 3" ng-if="field.jobext3" is-read-only="true" binding="jobext3"> </wj-flex-grid-column>
+
+            </wj-flex-grid>
+            <div class="row wrapper">
+                <wj-menu value="TimecardDetails.pageSize" header="Rows per Page">
+                    <wj-menu-item value="10"> 10</wj-menu-item>
+                    <wj-menu-item value="25"> 25</wj-menu-item>
+                    <wj-menu-item value="50"> 50</wj-menu-item>
+                    <wj-menu-item value="100"> 100</wj-menu-item>
+                </wj-menu>
+                <div class="btn-group col-md-8" ng-show="TimecardDetails.pageSize > 0">
+                    <button type="button" class="btn btn-default" ng-disabled="TimecardDetails.pageIndex <= 0" ng-click="TimecardDetails.moveToFirstPage()"> <span class="glyphicon glyphicon-fast-backward"></span> </button>
+                    <button type="button" class="btn btn-default" ng-disabled="TimecardDetails.pageIndex <= 0" ng-click="TimecardDetails.moveToPreviousPage()"> <span class="glyphicon glyphicon-step-backward"></span> </button>
+                    <button type="button" class="btn btn-default" disabled style="width:100px"> {{TimecardDetails.pageIndex+1}} / {{TimecardDetails.pageCount}} </button>
+                    <button type="button" class="btn btn-default" ng-disabled="TimecardDetails.pageIndex >= TimecardDetails.pageCount - 1" ng-click="TimecardDetails.moveToNextPage()"> <span class="glyphicon glyphicon-step-forward"></span> </button>
+                    <button type="button" class="btn btn-default" ng-disabled="TimecardDetails.pageIndex >= TimecardDetails.pageCount - 1" ng-click="TimecardDetails.moveToLastPage()"> <span class="glyphicon glyphicon-fast-forward"></span> </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

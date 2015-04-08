@@ -1,0 +1,8 @@
+/**
+
+Any file put in custom-vendors will be copied automatically in build and bin release
+under custom-vendor folder in same hierarchy.
+Put any kind of vendor which is not registered with bower packages.
+ Or any customized vendor files ..
+
+**/
