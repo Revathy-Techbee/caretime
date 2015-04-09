@@ -120,8 +120,8 @@ angular.module('ctApp.jobTask', [
                                             "job_code": $scope.jobNameList[item.job_code],
                                             "task_code": $scope.taskNameList[item.task_id],
                                             "duration": item.duration,
-                                            "created_date": HelperService.formatingDate(item.created_date),
-                                            "modified_date": HelperService.formatingDate(item.modified_date)
+                                            "created_date": HelperService.formatingDate(item.created_date,$localStorage.user_info.country),
+                                            "modified_date": HelperService.formatingDate(item.modified_date,$localStorage.user_info.country)
 
                                         }
 

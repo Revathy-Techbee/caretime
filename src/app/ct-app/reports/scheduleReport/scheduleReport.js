@@ -77,9 +77,9 @@ angular.module('ctApp.scheduleReport', [
                         "employee_name": employeeTemp.text + ' (' + item.employee_code + ')',
                         "job_id": item.job_id,
                         "job_name": jobTemp.text + ' (' + item.job_id + ')',
-                        "startDate": HelperService.formatUTCOnlyDate(item.ref_in_at),
+                        "startDate": HelperService.formatUTCOnlyDate(item.ref_in_at,$localStorage.user_info.country),
                         "startTime": HelperService.formatOnlyTime(item.ref_in_at),
-                        "endDate": HelperService.formatUTCOnlyDate(item.ref_out_at),
+                        "endDate": HelperService.formatUTCOnlyDate(item.ref_out_at,$localStorage.user_info.country),
                         "endTime": HelperService.formatOnlyTime(item.ref_out_at),
                         "duriation": (item.duriation)?Number(item.duriation):Number(0)
 
@@ -454,10 +454,10 @@ angular.module('ctApp.scheduleReport', [
                             'text': temp.text + '(' + temp.code + ')',
                             'fillColor': '#E5E5E5'
                         }, {
-                            'text': HelperService.formatingDate(item.ref_in_at), //moment(item.ref_in_at).utc().format('MM-DD-YYYY HH:mm'),
+                            'text': HelperService.formatingDate(item.ref_in_at,$localStorage.user_info.country), //moment(item.ref_in_at).utc().format('MM-DD-YYYY HH:mm'),
                             'fillColor': '#E5E5E5'
                         }, {
-                            'text': HelperService.formatingDate(item.ref_out_at), //moment(item.ref_out_at).utc().format('MM-DD-YYYY HH:mm'),
+                            'text': HelperService.formatingDate(item.ref_out_at,$localStorage.user_info.country), //moment(item.ref_out_at).utc().format('MM-DD-YYYY HH:mm'),
                             'fillColor': '#E5E5E5'
                         }, {
                             'text': item.duriation,
@@ -582,10 +582,10 @@ angular.module('ctApp.scheduleReport', [
                             'text': temp.text + '(' + temp.code + ')',
                             'fillColor': '#E5E5E5'
                         }, {
-                            'text': HelperService.formatingDate(item.ref_in_at),
+                            'text': HelperService.formatingDate(item.ref_in_at,$localStorage.user_info.country),
                             'fillColor': '#E5E5E5'
                         }, {
-                            'text': HelperService.formatingDate(item.ref_out_at),
+                            'text': HelperService.formatingDate(item.ref_out_at,$localStorage.user_info.country),
                             'fillColor': '#E5E5E5'
                         }, {
                             'text': item.duriation,
@@ -706,10 +706,10 @@ angular.module('ctApp.scheduleReport', [
                             'text': temp.text + ' (' + temp.id + ')',
                             'fillColor': '#E5E5E5'
                         }, {
-                            'text': HelperService.formatingDate(item.ref_in_at),
+                            'text': HelperService.formatingDate(item.ref_in_at,$localStorage.user_info.country),
                             'fillColor': '#E5E5E5'
                         }, {
-                            'text': HelperService.formatingDate(item.ref_out_at),
+                            'text': HelperService.formatingDate(item.ref_out_at,$localStorage.user_info.country),
                             'fillColor': '#E5E5E5'
                         }, {
                             'text': item.duriation,

@@ -1,0 +1,24 @@
+{
+  "name": "wijmo",
+  "main": "js/jquery.wijmo-open.all.3.20133.29.js",
+  "ignore": [
+    ".bowerrc",
+    ".gitignore",
+    ".jshintignore",
+    ".jshintrc",
+    "bower.json",
+    "gruntfile.js",
+    "package.json"
+  ],
+  "homepage": "https://github.com/daanvanhulst/wijmo-angular",
+  "_release": "8bac554597",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "8bac554597b1bba4005e4d8a8d4b46e5e22b76f9"
+  },
+  "_source": "git://github.com/daanvanhulst/wijmo-angular.git",
+  "_target": "*",
+  "_originalSource": "wijmo-angular",
+  "_direct": true
+}

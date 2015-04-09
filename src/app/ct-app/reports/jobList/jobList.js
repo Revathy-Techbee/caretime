@@ -76,9 +76,9 @@ angular.module('ctApp.jobList', [
                         "authorized_phone_format": item.authorized_phone_format,
                        // "zone_detail": tempzone.text +' ('+tempzone.id+')',
                          "status": HelperService.checkstatus(item.status),
-                        "last_clocked_in_date": ((item.last_clocked_in_date)?HelperService.formatUTCOnlyDate(item.last_clocked_in_date) : "Not Yet Clockedin"),
-                        "last_scheduled_date": ((item.last_scheduled_date)?HelperService.formatUTCOnlyDate(item.last_scheduled_date):"Not Yet Scheduled"),
-                        "created_on": ((item.created_on)?HelperService.formatUTCOnlyDate(item.created_on):"No Created Date"),
+                        "last_clocked_in_date": ((item.last_clocked_in_date)?HelperService.formatUTCOnlyDate(item.last_clocked_in_date,$localStorage.user_info.country) : "Not Yet Clockedin"),
+                        "last_scheduled_date": ((item.last_scheduled_date)?HelperService.formatUTCOnlyDate(item.last_scheduled_date,$localStorage.user_info.country):"Not Yet Scheduled"),
+                        "created_on": ((item.created_on)?HelperService.formatUTCOnlyDate(item.created_on,$localStorage.user_info.country):"No Created Date"),
                       //  "created_on": (item.created_on)?moment(item.created_on).format('MM/DD/YYYY'):""
 
 

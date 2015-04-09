@@ -1,0 +1,35 @@
+{
+  "name": "angular-mapbox",
+  "homepage": "https://github.com/licyeus/angular-mapbox",
+  "authors": [
+    "Andrew Sullivan"
+  ],
+  "description": "Easy Angular directives for Mapbox.js",
+  "main": "dist/angular-mapbox.js",
+  "keywords": [
+    "mapbox",
+    "angular",
+    "directive",
+    "mapbox.js",
+    "map",
+    "box"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "app/bower_components",
+    "test",
+    "tests"
+  ],
+  "_release": "c38cadf7ff",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "c38cadf7ff2432bdbecd28289600d1c8a1826cce"
+  },
+  "_source": "git://github.com/flashpunk/angular-mapbox.git",
+  "_target": "*",
+  "_originalSource": "angular-mapbox"
+}

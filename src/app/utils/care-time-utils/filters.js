@@ -124,10 +124,19 @@ angular.module('utils.ct.filters', [])
         };
     })
     .filter('MMDDYYYY', function() {
-        return function(data) {
+        return function(data,country) {
             if(data){
                 var moment_data = moment.tz(data,"UTC").format(); // set incoming time zone as UTC
-                return (moment(moment_data).format('MM/DD/YYYY hh:mm a'));
+                if(country && country!='United States')
+                {
+                  return (moment(moment_data).format('DD/MM/YYYY hh:mm a'));
+
+               }
+                else
+                {
+                  return (moment(moment_data).format('MM/DD/YYYY hh:mm a'));
+
+                }
             }else{
                 return "Not yet edited";
             }
@@ -338,9 +347,18 @@ angular.module('utils.ct.filters', [])
   })
 
   .filter('onlydateMMDDYYYY', function() {
-    return function(data) {
-      if(data){
+    return function(data,country) {
+      if(data,country){
+         if(country && country!='United States')
+          {
+         return moment(data).format('DD-MM-YYYY');
+
+         }
+          else
+          {
          return moment(data).format('MM-DD-YYYY');
+
+          }
       }else{
           return "-";
         }
@@ -367,10 +385,19 @@ angular.module('utils.ct.filters', [])
     };
   })
    .filter('datewithtimeformat', function() {
-	 return function(data) {
+	 return function(data,country) {
       if(data){   
             data = moment.tz(data,"UTC").format(); // set incoming time zone as UTC
-    	  return (moment(data).format('MM/DD/YYYY hh:mm a'));
+             if(country && country!='United States')
+                {
+                  return (moment(data).format('DD/MM/YYYY hh:mm a'));
+
+               }
+                else
+                {
+                  return (moment(data).format('MM/DD/YYYY hh:mm a'));
+
+                }
       }else{
 	      return "-";
 

@@ -30,7 +30,7 @@
                 <tbody infinite-scroll='getNextData()' infinite-scroll-disabled='disable_infinite_scroll' infinite-scroll-distance='0'>
                     <tr ng-repeat="detail in payorDetailList" class="animate-repeat">
                         <td>{{detail.name}}</td>
-                        <td>{{detail.edited_on  | MMDDYYYY}}</td>
+                        <td>{{detail.edited_on  | MMDDYYYY:empCountry}}</td>
                         <td ng-bind-html="detail.status | checkstatus">{{detail.status | checkstatus}}</td>
                         <td>
                             <button ng-click="enableEditView(detail.id)" class="btn btn-rounded btn-sm btn-icon btn-default"><i class="fa fa-pencil"></i>

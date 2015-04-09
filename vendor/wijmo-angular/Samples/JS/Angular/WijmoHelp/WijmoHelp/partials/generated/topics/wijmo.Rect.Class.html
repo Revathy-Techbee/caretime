@@ -1,0 +1,137 @@
+<h2>Rect Class</h2>
+<dl class="dl-horizontal">
+<dt>Module</dt><dd>wijmo</dd>
+<dt>File</dt><dd>wijmo.js</dd>
+</dl>
+<p>Class that represents a rectangle (with left, top, width, and height).</p>
+<br/>
+<h3>Constructor</h3>
+<table class="table table-condensed" style="font:inherit">
+<thead>
+<tr>
+<th></th>
+<th>Name</th>
+<th>Parameters</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+    <tr>
+      <td></td>
+      <td><b>constructor</b>(left, top, width, height)</td>
+      <td><ul style="margin-left:-25px;list-style-type: none">
+<li><b>left</b> (<b>number</b>): Left coordinate of the new <a href="" ng-click="go('wijmo.Rect.Class.html')"><b>Rect</b></a>.</li><li><b>top</b> (<b>number</b>): Top coordinate of the new <a href="" ng-click="go('wijmo.Rect.Class.html')"><b>Rect</b></a>.</li><li><b>width</b> (<b>number</b>): Width of the new <a href="" ng-click="go('wijmo.Rect.Class.html')"><b>Rect</b></a>.</li><li><b>height</b> (<b>number</b>): Height of the new <a href="" ng-click="go('wijmo.Rect.Class.html')"><b>Rect</b></a>.</li></ul>
+</td>
+      <td>Initializes a new instance of a <a href="" ng-click="go('wijmo.Rect.Class.html')"><b>Rect</b></a> object.</td>
+    </tr>
+</tbody>
+</table>
+<br/>
+<h3>Properties</h3>
+<table class="table table-condensed" style="font:inherit">
+<thead>
+<tr>
+<th></th>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+    <tr>
+      <td></td>
+      <td><b>bottom</b></td>
+      <td><b>number</b></td>
+      <td>Gets the bottom coordinate of this <a href="" ng-click="go('wijmo.Rect.Class.html')"><b>Rect</b></a>.</td>
+    </tr>
+    <tr>
+      <td><span class="badge" title="Field">F</span></td>
+      <td><b>height</b></td>
+      <td><b>number</b></td>
+      <td>Gets or sets the height of this <a href="" ng-click="go('wijmo.Rect.Class.html')"><b>Rect</b></a>.</td>
+    </tr>
+    <tr>
+      <td><span class="badge" title="Field">F</span></td>
+      <td><b>left</b></td>
+      <td><b>number</b></td>
+      <td>Gets or sets the left coordinate of this <a href="" ng-click="go('wijmo.Rect.Class.html')"><b>Rect</b></a>.</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><b>right</b></td>
+      <td><b>number</b></td>
+      <td>Gets the right coordinate of this <a href="" ng-click="go('wijmo.Rect.Class.html')"><b>Rect</b></a>.</td>
+    </tr>
+    <tr>
+      <td><span class="badge" title="Field">F</span></td>
+      <td><b>top</b></td>
+      <td><b>number</b></td>
+      <td>Gets or sets the top coordinate of this <a href="" ng-click="go('wijmo.Rect.Class.html')"><b>Rect</b></a>.</td>
+    </tr>
+    <tr>
+      <td><span class="badge" title="Field">F</span></td>
+      <td><b>width</b></td>
+      <td><b>number</b></td>
+      <td>Gets or sets the width of this <a href="" ng-click="go('wijmo.Rect.Class.html')"><b>Rect</b></a>.</td>
+    </tr>
+</tbody>
+</table>
+<br/>
+<h3>Methods</h3>
+<table class="table table-condensed" style="font:inherit">
+<thead>
+<tr>
+<th></th>
+<th>Name</th>
+<th>Parameters</th>
+<th>Return Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+    <tr>
+      <td></td>
+      <td><b>clone</b>()</td>
+      <td></td>
+      <td><a href="" ng-click="go('wijmo.Rect.Class.html')"><b>Rect</b></a></td>
+      <td>Creates a copy of this <a href="" ng-click="go('wijmo.Rect.Class.html')"><b>Rect</b></a>.</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><b>contains</b>(pt)</td>
+      <td><ul style="margin-left:-25px;list-style-type: none">
+<li><b>pt</b> (<b>any</b>): The <a href="" ng-click="go('wijmo.Point.Class.html')"><b>Point</b></a> or <a href="" ng-click="go('wijmo.Rect.Class.html')"><b>Rect</b></a> to ckeck.</li></ul>
+</td>
+      <td><b>boolean</b></td>
+      <td>Determines whether the rectangle contains a given point or rectangle.</td>
+    </tr>
+    <tr>
+      <td><span class="badge" title="Static">S</span></td>
+      <td><b>fromBoundingRect</b>(rc)</td>
+      <td><ul style="margin-left:-25px;list-style-type: none">
+<li><b>rc</b> (<b>any</b>): Rectangle obtained by a call to the DOM's <b>getBoundingClientRect</b> 
+or <b>GetBoundingBox</b> methods.</li></ul>
+</td>
+      <td><a href="" ng-click="go('wijmo.Rect.Class.html')"><b>Rect</b></a></td>
+      <td>Creates a <a href="" ng-click="go('wijmo.Rect.Class.html')"><b>Rect</b></a> from <b>ClientRect</b> or <b>SVGRect</b> objects.</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><b>inflate</b>(dx, dy)</td>
+      <td><ul style="margin-left:-25px;list-style-type: none">
+<li><b>dx</b> (<b>number</b>): The amount by which to expand or shrink the left and right sides of the rectangle.</li><li><b>dy</b> (<b>number</b>): The amount by which to expand or shrink the top and bottom sides of the rectangle.</li></ul>
+</td>
+      <td><a href="" ng-click="go('wijmo.Rect.Class.html')"><b>Rect</b></a></td>
+      <td>Creates a rectangle that results from expanding or shrinking a rectangle by the specified amounts.</td>
+    </tr>
+    <tr>
+      <td><span class="badge" title="Static">S</span></td>
+      <td><b>union</b>(rc1, rc2)</td>
+      <td><ul style="margin-left:-25px;list-style-type: none">
+<li><b>rc1</b> (<a href="" ng-click="go('wijmo.Rect.Class.html')"><b>Rect</b></a>): First rectangle.</li><li><b>rc2</b> (<a href="" ng-click="go('wijmo.Rect.Class.html')"><b>Rect</b></a>): Second rectangle.</li></ul>
+</td>
+      <td><a href="" ng-click="go('wijmo.Rect.Class.html')"><b>Rect</b></a></td>
+      <td>Gets a rectangle that represents the union of two rectangles.</td>
+    </tr>
+</tbody>
+</table>

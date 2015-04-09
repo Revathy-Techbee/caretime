@@ -53,10 +53,10 @@ angular.module('ctApp.inactivityEmployee', [
     
 
         } 
-        if($localStorage.user_info.iszone_code)
+       /* if($localStorage.user_info.iszone_code)
         {
             filterObj.filter = filterObj.filter +' and zone_id='+$localStorage.user_info.zone_code;
-        }
+        }*/
       
 
        // filterObj.filter = filterObj.filter + " and (last_clocked_in_date < '" + startDate + "' or last_clocked_in_date IS NULL)";
@@ -79,7 +79,7 @@ angular.module('ctApp.inactivityEmployee', [
                         "primary_state": item.primary_state,
                         "primary_city": item.primary_city,
                         "zone_detail": zoneDetail.text,
-                        "lastActive": (item.last_clocked_in_date) ? HelperService.formatingDate(item.last_clocked_in_date) : "No Activity",
+                        "lastActive": (item.last_clocked_in_date) ? HelperService.formatingDate(item.last_clocked_in_date,$localStorage.user_info.country) : "No Activity",
                         "status": HelperService.checkstatus(item.status)
 
                     });

@@ -32,8 +32,9 @@ angular.module('ctApp.tasks', [
 
 }])
 
-.controller("TasksCtrl", ["$scope", "Services", "$state", "$modal",
-    function($scope, Services, $state, $modal) {
+.controller("TasksCtrl", ["$scope", "Services", "$state", "$modal","$localStorage",
+    function($scope, Services, $state, $modal,$localStorage) {
+        $scope.empCountry=$localStorage.user_info.country;
         $scope.config = {
             general: {
                 searchtxt: ""

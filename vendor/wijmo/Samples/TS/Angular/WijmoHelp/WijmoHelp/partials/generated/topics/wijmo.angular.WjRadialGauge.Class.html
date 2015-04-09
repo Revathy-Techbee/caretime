@@ -1,0 +1,40 @@
+<h2>WjRadialGauge Class</h2>
+<dl class="dl-horizontal">
+<dt>Base Class</dt><dd><b>WjGauge</b></dd>
+<dt>Module</dt><dd>wijmo.angular</dd>
+<dt>File</dt><dd>wijmo.angular.js</dd>
+</dl>
+<p><p>AngularJS directive for the <a href="" ng-click="go('wijmo.gauge.RadialGauge.Class.html')"><b>RadialGauge</b></a> control.</p>
+
+<p>Use the <b>WjRadialGauge</b> directive to add radial gauges to your AngularJS applications. 
+Note that directive and parameter names must be formatted as lower-case with dashes 
+instead of camel-case. For example:</p>
+
+<p><pre>Here is a &lt;b&gt;RadialGauge&lt;/b&gt; control:&lt;/p&gt;
+&lt;wj-radial-gauge
+  style="height:300px" 
+  value="count" 
+  min="0" max="10"
+  is-read-only="false"&gt;
+&lt;/wj-radial-gauge&gt;</pre></p>
+
+<p>The <b>WjRadialGauge</b> directive supports the following attributes:</p>
+
+<p><dl class="dl-horizontal">
+  <dt>control</dt>       <dd><code>=</code> Reference to the <b>RadialGauge</b> control created by this directive.</dd>
+  <dt>autoScale</dt>     <dd><code>@</code> Whether the gauge should scale the display to fill the host element.</dd>
+  <dt>format</dt>        <dd><code>@</code> Format string used for displaying the gauge values as text.</dd>
+  <dt>hasShadow</dt>     <dd><code>@</code> Whether the gauge should display a shadow effect.</dd>
+  <dt>isAnimated</dt>    <dd><code>@</code> Whether the gauge should animate value changes.</dd>
+  <dt>isReadOnly</dt>    <dd><code>@</code> Whether users can edit the value using the mouse and keyboard.</dd>
+  <dt>min</dt>           <dd><code>@</code> Minimum value that can be displayed on the gauge.</dd>
+  <dt>max</dt>           <dd><code>@</code> Maximum value that can be displayed on the gauge.</dd>
+  <dt>showText</dt>      <dd><code>@</code> Determines which values should be displayed as text within the gauge.</dd>
+  <dt>step</dt>          <dd><code>@</code> Amount to add or subtract to the value property when the user presses the arrow keys.</dd>
+  <dt>startAngle</dt>    <dd><code>@</code> Starting angle for the gauge, measured clockwise from the 9 o'clock position.</dd>
+  <dt>sweepAngle</dt>    <dd><code>@</code> Sweeping angle for the gauge (may ne positive or negative).</dd>
+  <dt>thickness</dt>     <dd><code>@</code> Thickness of the gauge, on a scale between zero and one.</dd>
+  <dt>value</dt>         <dd><code>=</code> The value displayed on the gauge.</dd>
+</dl></p>
+
+<p>The <b>WjRadialGauge</b> directive may contain one or more <a href="" ng-click="go('wijmo.angular.WjRange.Class.html')"><b>WjRange</b></a> directives.</p></p>

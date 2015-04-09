@@ -37,6 +37,7 @@ angular.module('admin.agency', [
 
 .controller("AdminAgencyCtrl", ["$scope", "Services", "$state", "$modal", "$localStorage", "$timeout", "$http",
     function($scope, Services, $state, $modal,$localStorage,$timeout,$http) {
+        $scope.empCountry=$localStorage.user_info.country;
         $scope.config = {
             general: {
                 searchtxt: ""

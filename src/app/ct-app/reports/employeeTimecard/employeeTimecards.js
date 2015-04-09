@@ -75,8 +75,8 @@ angular.module('ctApp.employeeTimecard', [
                         "employee_name": item.employee_name + ' (' + item.employee_code + ')',
                         "Job_code": item.Job_code,
                         "job_name": item.job_name + ' (' + item.Job_code + ')',
-                        "clockin": HelperService.formatingDate(item.clockin),
-                        "clockout": HelperService.formatingDate(item.clockout),
+                        "clockin": HelperService.formatingDate(item.clockin,$localStorage.user_info.country),
+                        "clockout": HelperService.formatingDate(item.clockout,$localStorage.user_info.country),
                         "work_duration": item.work_duration,
                         "work_duration_non_rounded_number": (item.work_duration_non_rounded_number) ? Number(parseFloat(item.work_duration_non_rounded_number.replace(',', ''))) : Number(0),
                         /* "work_duration_non_rounded_number": Number(item.work_duration_non_rounded_number),*/

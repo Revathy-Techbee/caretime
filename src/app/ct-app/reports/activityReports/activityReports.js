@@ -23,6 +23,7 @@ angular.module('ctApp.activityReports', [
 }])
 
 
+
 .controller("ActivityReportsCtrl", ["$scope", "Services", "HelperService", "$timeout","$localStorage",
     function($scope, Services, HelperService, $timeout,$localStorage) {
 
@@ -132,10 +133,10 @@ angular.module('ctApp.activityReports', [
                                         "job_code": $scope.jobNameList[item.job_code],
                                         "log_type": HelperService.logType(item.log_type),
                                         "call_duriation": item.call_duriation,
-                                        "phone_number": HelperService.phoneFormat(item.phone_number),
+                                        "phone_number": HelperService.phoneFormat(item.phone_number,$localStorage.user_info.country),
                                         "call_status": item.call_status,
                                         "created_by": HelperService.AddEditUser(item.created_by),
-                                         "timestamp": HelperService.formatingDate(item.timestamp)
+                                         "timestamp": HelperService.formatingDate(item.timestamp,$localStorage.user_info.country)
 
                                     }
 
@@ -295,6 +296,10 @@ angular.module('ctApp.activityReports', [
                 style: 'tableHeader',
                 alignment: 'center'
             }, {
+                text: 'Date',
+                style: 'tableHeader',
+                alignment: 'center'
+            }, {
                 text: 'Phone Number',
                 style: 'tableHeader',
                 alignment: 'center'
@@ -348,18 +353,22 @@ angular.module('ctApp.activityReports', [
                 //console.log(value);
                 var logtype = '-';
                 var duration = '-';
+                var date = '-';
                 var phone = '-';
                 var empname = '-';
                 var jobname = '-';
                 var call_status = '-';
                 var created_by = '-';
-
+                if (value.timestamp !== null) {
+                    date = value.timestamp;
+                }
                 if (value.phone_number !== null) {
                     phone = value.phone_number;
                 }
                 if (value.call_duriation !== null) {
                     duration = value.call_duriation;
                 }
+                 
                 if (value.log_type !== null) {
                     logtype = value.log_type;
                 }
@@ -388,6 +397,9 @@ angular.module('ctApp.activityReports', [
                     'fillColor': '#E5E5E5'
                 }, {
                     'text': duration,
+                    'fillColor': '#E5E5E5'
+                }, {
+                    'text': date,
                     'fillColor': '#E5E5E5'
                 }, {
                     'text': phone,
@@ -419,7 +431,7 @@ angular.module('ctApp.activityReports', [
                 docDefinition["content"].push({
                     style: 'tableExample',
                     table: {
-                        widths: [70, 80, 30, 50, 60, 70, 80],
+                        widths: [70, 80, 30, 50,60, 60, 70, 80],
                         body: resultarray
                     },
                     layout: {

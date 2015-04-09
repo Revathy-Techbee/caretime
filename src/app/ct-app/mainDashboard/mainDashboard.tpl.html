@@ -185,8 +185,8 @@
                             <div class="clear">
                                 <div><a href="">{{ emp.employee_name }} </a>
                                 </div>
-                                <small class="text-muted">{{emp.clockin | MMDDYYYY}}</small>
-                                <small class="text-muted"> - {{emp.clockout | MMDDYYYY}}</small>
+                                <small class="text-muted">{{emp.clockin | MMDDYYYY:empCountry}}</small>
+                                <small class="text-muted"> - {{emp.clockout | MMDDYYYY:empCountry}}</small>
                             </div>
                         </li>
 
@@ -203,7 +203,7 @@
             <div class="streamline b-l">
                 <div class="sl-item b-success b-l" ng-repeat="shift in shiftLatest">
                     <div class="m-l">
-                        <div class="text-default">{{shift.created_on | MMDDYYYY}}</div>
+                        <div class="text-default">{{shift.created_on | MMDDYYYY:empCountry}}</div>
                         <p><a href class="text-muted">CO:</a><a href class="text-info"> {{shift.employee |  parseToJson:'text'}}</a>
                             <br />
                             <a href class="text-muted">PA:</a><a href class="text-success"> {{shift.job |  parseToJson:'text'}}</a>

@@ -457,7 +457,7 @@
                     </li>
                     <li ng-if="shift.recurrence.end.isendOccur==1"><span>End after {{shift.recurrence.end.occurcount}} Occurrences</span>
                     </li>
-                    <li ng-if="shift.recurrence.end.isendOccur==2"><span>End On {{shift.recurrence.end.date | onlydateMMDDYYYY}}</span>
+                    <li ng-if="shift.recurrence.end.isendOccur==2"><span>End On {{shift.recurrence.end.date | onlydateMMDDYYYY:empCountry}}</span>
                     </li>
                 </ul>
                 <li>Alerts :

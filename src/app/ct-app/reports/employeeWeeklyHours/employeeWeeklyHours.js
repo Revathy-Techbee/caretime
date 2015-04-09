@@ -155,8 +155,8 @@ angular.module('ctApp.employeeWeeklyHours', [
                         "overhours": Number(over_hours),
                         "totalhours": Number(item["sum(work_duration_rounded_number)"]),
                         "weekno": week_number,
-                        "weekstart": HelperService.formatOnlyDate(firstdate),
-                        "weekend": HelperService.formatOnlyDate(lastdate)
+                        "weekstart": HelperService.formatOnlyDate(firstdate,$localStorage.user_info.country),
+                        "weekend": HelperService.formatOnlyDate(lastdate,$localStorage.user_info.country)
 
                     });
 

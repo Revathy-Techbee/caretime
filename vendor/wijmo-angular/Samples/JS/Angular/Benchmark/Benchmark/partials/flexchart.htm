@@ -1,0 +1,13 @@
+<h4 ng-init="benchmarkView('flexchart')">FlexChart</h4>
+
+<p>
+    The <b>FlexChart</b> grid is part of Wijmo 5.</p>
+
+<wj-flex-chart 
+    class="chartStyle"
+    items-source="chartData"
+    chart-type="Line"
+    binding-x="id">
+    <wj-flex-chart-series name="Amount" binding="amount"></wj-flex-chart-series>
+    <wj-flex-chart-legend position="None"></wj-flex-chart-legend>
+</wj-flex-chart>

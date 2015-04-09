@@ -23,7 +23,7 @@ angular.module('ctApp.mainDashboard', [
 
 
 .controller('MainDashboardCtrl', ['$scope', 'Services', '$localStorage', 'HelperService',"$timeout", function($scope, Services, $localStorage, HelperService,$timeout) {
-
+    $scope.empCountry=$localStorage.user_info.country;
     $scope.dashboardOverview = "Agency Overview";
     $scope.timeout_every = 15;
     $scope.getJobShiftDetails = function(startDateTime, ldate) {
@@ -166,7 +166,7 @@ angular.module('ctApp.mainDashboard', [
                                     "job_code": $scope.jobNameList[item.job_code],
                                     "log_type": HelperService.logType(item.log_type),
                                     "call_duriation": item.call_duriation,
-                                    "timestamp": HelperService.formatingDate(item.timestamp),
+                                    "timestamp": HelperService.formatingDate(item.timestamp,$localStorage.user_info.country),
                                     "call_status": item.call_status
 
                                 }
@@ -240,7 +240,16 @@ angular.module('ctApp.mainDashboard', [
         var addObj = a.add('24', 'hours');
         var ldatehrs = addObj.toDate();
         var ldate = moment(ldatehrs).utc().format('YYYY-MM-DD HH:mm');
-        $scope.currentDateonly = moment().format('MM/DD/YYYY');
+       if($scope.empCountry && $scope.empCountry!='United States')
+        {
+            $scope.currentDateonly = moment().format('DD/MM/YYYY');
+
+        }
+        else
+        {
+            $scope.currentDateonly = moment().format('MM/DD/YYYY');
+        }
+
         $scope.currentTime = moment().format('hh:mm A');
         $scope.getJobShiftDetails(startDateTime, ldate);
         $scope.getTimecardDetails(startDateTime, CurrentDateTime, 0);
@@ -269,8 +278,16 @@ angular.module('ctApp.mainDashboard', [
         var addObj = a.add('24', 'hours');
         var ldatehrs = addObj.toDate();
         var ldate = moment(ldatehrs).utc().format('YYYY-MM-DD HH:mm');
+        if($scope.empCountry  && $scope.empCountry!='United States')
+        {
+            $scope.currentDateonly = moment(CurrentDateTime).format('DD/MM/YYYY');
 
-        $scope.currentDateonly = moment(CurrentDateTime).format('MM/DD/YYYY');
+        }
+        else
+        {
+            $scope.currentDateonly = moment(CurrentDateTime).format('MM/DD/YYYY');
+
+        }
         $scope.currentTime = "12:00AM - 11:59PM";
         $scope.getJobShiftDetails(startDateTime, ldate);
         $scope.getTimecardDetails(startDateTime, ldate, 0);

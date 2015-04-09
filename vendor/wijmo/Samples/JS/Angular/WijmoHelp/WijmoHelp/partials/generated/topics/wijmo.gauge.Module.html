@@ -1,0 +1,255 @@
+<h2>Module wijmo.gauge</h2>
+<dl class="dl-horizontal">
+<dt>File</dt><dd>wijmo.gauge.js</dd>
+</dl>
+<p><p>Defines the <a href="" ng-click="go('wijmo.gauge.RadialGauge.Class.html')"><b>RadialGauge</b></a>, <a href="" ng-click="go('wijmo.gauge.LinearGauge.Class.html')"><b>LinearGauge</b></a>, and <a href="" ng-click="go('wijmo.gauge.BulletGraph.Class.html')"><b>BulletGraph</b></a>
+controls.</p>
+
+<p>Unlike many gauge controls, Wijmo gauges concentrate on the data being displayed,
+with little extraneous color and markup elements. They were designed to be
+easy to use and to read, especially on small-screen devices.</p></p>
+<br/>
+<h3>Classes</h3>
+<table class="table table-condensed" style="font:inherit">
+<thead>
+<tr>
+<th></th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+    <tr>
+      <td></td>
+      <td><a href="" ng-click="go('wijmo.gauge.BulletGraph.Class.html')"><b>BulletGraph</b></a></td>
+      <td><p>The <b>BulletGraph</b> is a type of linear gauge designed specifically for use
+in dashboards. It displays a single key measure along with a comparative
+measure and qualitative ranges to instantly signal whether the measure is
+good, bad, or in some other state.</p>
+
+<p>Bullet Graphs were created and popularized by dashboard design expert 
+Stephen Few. You can find more details and examples on 
+<a href="http://en.wikipedia.org/wiki/Bullet_graph">Wikipedia</a>.</p></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><a href="" ng-click="go('wijmo.gauge.Gauge.Class.html')"><b>Gauge</b></a></td>
+      <td>Base class for the Wijmo Gauge controls (abstract).</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><a href="" ng-click="go('wijmo.gauge.LinearGauge.Class.html')"><b>LinearGauge</b></a></td>
+      <td>The <b>LinearGauge</b> displays a linear scale with an indicator
+that represents a single value and optional ranges to represent
+reference values.</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><a href="" ng-click="go('wijmo.gauge.RadialGauge.Class.html')"><b>RadialGauge</b></a></td>
+      <td>The <b>RadialGauge</b> displays a circular scale with an indicator
+that represents a single value and optional ranges to represent
+reference values.</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><a href="" ng-click="go('wijmo.gauge.Range.Class.html')"><b>Range</b></a></td>
+      <td><p>Defines ranges to be used with <a href="" ng-click="go('wijmo.gauge.Gauge.Class.html')"><b>Gauge</b></a> controls.</p>
+
+<p><b>Range</b> objects have <b>min</b> and <b>max</b> properties that
+define the range's domain, as well as <b>color</b> and <b>thickness</b>
+properties that define the range's appearance.</p>
+
+<p>Every <b>Gauge</b> control has at least two ranges: 
+the 'face' defines the minimum and maximum values for the gauge, and
+the 'pointer' displays the gauge's current value.</p>
+
+<p>In addition to the built-in ranges, gauges may have additional
+ranges used to display regions of significance (for example, 
+low, medium, and high values).</p></td>
+    </tr>
+</tbody>
+</table>
+<br/>
+<h3>Enumerations</h3>
+<table class="table table-condensed" style="font:inherit">
+<thead>
+<tr>
+<th></th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+    <tr>
+      <td></td>
+      <td><a href="" ng-click="go('wijmo.gauge.GaugeDirection.Enum.html')"><b>GaugeDirection</b></a></td>
+      <td>Represents the direction in which the pointer of a <a href="" ng-click="go('wijmo.gauge.LinearGauge.Class.html')"><b>LinearGauge</b></a>
+increases.</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><a href="" ng-click="go('wijmo.gauge.ShowText.Enum.html')"><b>ShowText</b></a></td>
+      <td>Specifies which values should be displayed as text.</td>
+    </tr>
+</tbody>
+</table>
+<br/>
+<h3>Properties</h3>
+<table class="table table-condensed" style="font:inherit">
+<thead>
+<tr>
+<th></th>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+    <tr>
+      <td></td>
+      <td><b>face</b></td>
+      <td><a href="" ng-click="go('wijmo.gauge.Range.Class.html')"><b>Range</b></a></td>
+      <td>Gets the <a href="" ng-click="go('wijmo.gauge.Range.Class.html')"><b>Range</b></a> used to represent the gauge's overall geometry and appearance.</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><b>format</b></td>
+      <td><b>string</b></td>
+      <td>Gets or sets the format string used for displaying the gauge values
+as text.</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><b>hasShadow</b></td>
+      <td><b>boolean</b></td>
+      <td>Gets or sets whether the gauge should display a shadow effect.</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><b>isAnimated</b></td>
+      <td><b>boolean</b></td>
+      <td>Gets or sets whether the gauge should animate value changes.</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><b>isReadOnly</b></td>
+      <td><b>boolean</b></td>
+      <td>Gets or whether the user can edit the value using the mouse and
+.the keyboard.</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><b>max</b></td>
+      <td><b>number</b></td>
+      <td>Gets or sets the maximum value that can be displayed on the gauge.</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><b>min</b></td>
+      <td><b>number</b></td>
+      <td>Gets or sets the minimum value that can be displayed on the gauge.</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><b>pointer</b></td>
+      <td><a href="" ng-click="go('wijmo.gauge.Range.Class.html')"><b>Range</b></a></td>
+      <td>Gets the <a href="" ng-click="go('wijmo.gauge.Range.Class.html')"><b>Range</b></a> used to represent the gauge's current value.</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><b>ranges</b></td>
+      <td><a href="" ng-click="go('wijmo.collections.ObservableArray.Class.html')"><b>ObservableArray</b></a></td>
+      <td>Gets the collection of ranges in this gauge.</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><b>showRanges</b></td>
+      <td><b>boolean</b></td>
+      <td><p>Gets or sets whether the gauge should display the ranges contained in the <b>ranges</b> property.</p>
+
+<p>If this property is set to false, the ranges contained in the <b>ranges</b> property are not
+displayed in the gauge. Instead, they are used to interpolate the color of the <b>pointer</b>
+range while animating value changes.</p></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><b>showText</b></td>
+      <td><a href="" ng-click="go('wijmo.gauge.ShowText.Enum.html')"><b>ShowText</b></a></td>
+      <td>Gets or sets which values should be displayed as text in the gauge.</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><b>step</b></td>
+      <td><b>number</b></td>
+      <td>Gets or sets the amount to add or subtract to the <b>value</b> property
+when the user presses the arrow keys.</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><b>thickness</b></td>
+      <td><b>number</b></td>
+      <td><p>Gets or sets the thickness of the gauge, on a scale between zero and one.</p>
+
+<p>Setting the thickess to one causes the gauge to fill as much of the
+control area as possible. Smaller values create thinner gauges.</p></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><b>value</b></td>
+      <td><b>number</b></td>
+      <td>Gets or sets the value displayed on the gauge.</td>
+    </tr>
+</tbody>
+</table>
+<br/>
+<h3>Methods</h3>
+<table class="table table-condensed" style="font:inherit">
+<thead>
+<tr>
+<th></th>
+<th>Name</th>
+<th>Parameters</th>
+<th>Return Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+    <tr>
+      <td></td>
+      <td><b>hitTest</b>(pt, y)</td>
+      <td><ul style="margin-left:-25px;list-style-type: none">
+<li><b>pt</b> (<b>any</b>): Point to investigate, in window coordinates, or a MoueEvent object, or x coordinate of the point.</li><li><b>y</b> (<b>number</b>): Y coordinate of the point (if the first parameter is a number).</li></ul>
+</td>
+      <td><b>number</b></td>
+      <td><p>Gets a number that corresponds to the value of the gauge at a given point.</p>
+
+<p>For example:</p>
+
+<p><pre>
+// hit test a point when the user clicks on the gauge
+gauge.hostElement.addEventListener('click', function (e) {
+  var ht = gauge.hitTest(e.pageX, e.pageY);
+  if (ht != null) {
+    console.log('you clicked the gauge at value ' + ht.toString());
+  }
+});
+</pre></p><br/><b>Returns</b> Value of the gauge at the point, or null if the point on the gauge's face.</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><b>onValueChanged</b>()</td>
+      <td></td>
+      <td>void</td>
+      <td>Raises the <b>valueChanged</b> event.</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><b>refresh</b>(fullUpdate)</td>
+      <td><ul style="margin-left:-25px;list-style-type: none">
+<li><b>fullUpdate</b> (<b>boolean</b>): Whether to update the control layout as well as the content. <span class="text-info">(default Value: <b>true</b>)</span></li></ul>
+</td>
+      <td>void</td>
+      <td>Refreshes the control.</td>
+    </tr>
+</tbody>
+</table>

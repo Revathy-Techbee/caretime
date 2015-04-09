@@ -130,9 +130,9 @@ angular.module('ctApp.callLog', [
                                         "job_code": $scope.jobNameList[item.job_code],
                                         "log_type": HelperService.logType(item.log_type),
                                         "call_duriation": item.call_duriation,
-                                        "phone_number": HelperService.phoneFormat(item.phone_number),
+                                        "phone_number": HelperService.phoneFormat(item.phone_number,$localStorage.user_info.country),
                                         "call_status": item.call_status,
-                                        "created_on": HelperService.formatingDate(item.timestamp)
+                                        "created_on": HelperService.formatingDate(item.timestamp,$localStorage.user_info.country)
                                     }
 
 

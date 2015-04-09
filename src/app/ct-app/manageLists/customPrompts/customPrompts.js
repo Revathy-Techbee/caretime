@@ -30,8 +30,10 @@ angular.module('ctApp.customPrompts', [
         });
 
     }])
-    .controller("CustomPromptsCtrl", ["$scope", "Services", "$state", "$modal",
-        function($scope, Services, $state, $modal) {
+    .controller("CustomPromptsCtrl", ["$scope", "Services", "$state", "$modal","$localStorage",
+        function($scope, Services, $state, $modal,$localStorage) {
+            $scope.empCountry=$localStorage.user_info.country;
+
             $scope.config = {
                 general: {
                     searchtxt: ""

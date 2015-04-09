@@ -160,7 +160,7 @@
                         <div class="alert alert-{{WarningClass}}">
                             Please Note there is a log entry exist at
                             <div ng-repeat="avaliabledate in existdate">
-                                {{avaliabledate.clockin | datewithtimeformat}} - {{avaliabledate.clockout| datewithtimeformat}}
+                                {{avaliabledate.clockin | datewithtimeformat:empCountry}} - {{avaliabledate.clockout| datewithtimeformat:empCountry}}
                             </div>
                         </div>
                     </div>

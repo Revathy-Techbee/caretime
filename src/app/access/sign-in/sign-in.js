@@ -85,6 +85,7 @@ angular.module('access.signIn', [
                                         user_info.last_name = data.record[0]["last_name"];
                                         user_info.user_type = data.record[0]["is_supervisor"];
                                         user_info.zone_code=data.record[0]["zone_id"];
+                                        user_info.country=data.record[0]["country"];
                                         Services.setEmpZoneDetail(data.record[0]["zone_id"]);
                                         
                                         user_info.zone_detail=(data.record[0]["zone_detail"])?JSON.parse(data.record[0]["zone_detail"]):"";
@@ -92,7 +93,9 @@ angular.module('access.signIn', [
 
                                     } else {
                                         user_info.first_name = user_info.username;
-                                         user_info.iszone_code=false;
+                                        user_info.iszone_code=false;    
+                                        user_info.country='';
+
                                     }
                                     Auth.setUser(user_info, user_info.user_type);
 

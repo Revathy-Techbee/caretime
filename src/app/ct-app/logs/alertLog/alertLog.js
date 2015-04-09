@@ -102,7 +102,7 @@ angular.module('ctApp.alertLog', [
                         "empcode":  employeeTemp + '( '+ item.empcode+ ')', 
                         "jobcode":  item.jobname + '( '+ item.jobcode+ ')',
                         "alert_type": item.alert_type,
-                        "date_time": HelperService.formatingDate(item.date_time),
+                        "date_time": HelperService.formatingDate(item.date_time,$localStorage.user_info.country),
                         "job_zone": item.job_zonename + '( '+ item.job_zone+ ')',
                         "emp_zone": item.employee_zonename + '( '+ item.emp_zone+ ')'
 

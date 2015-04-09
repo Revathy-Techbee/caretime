@@ -1,0 +1,15 @@
+<h4 ng-init="benchmarkView('flexgrid')">FlexGrid</h4>
+
+<p>
+    The <b>FlexGrid</b> grid is part of Wijmo 5.</p>
+
+<wj-flex-grid 
+    class="gridStyle"
+    items-source="data" >
+    <wj-flex-grid-column header="ID" binding="id" width="50"></wj-flex-grid-column>
+    <wj-flex-grid-column header="Date" binding="date" width="100"></wj-flex-grid-column>
+    <wj-flex-grid-column header="Country" binding="country" width="100"></wj-flex-grid-column>
+    <wj-flex-grid-column header="Product" binding="product" width="140"></wj-flex-grid-column>
+    <wj-flex-grid-column header="Color" binding="color" width="140"></wj-flex-grid-column>
+    <wj-flex-grid-column header="Amount" binding="amount" width="100"></wj-flex-grid-column>
+</wj-flex-grid>

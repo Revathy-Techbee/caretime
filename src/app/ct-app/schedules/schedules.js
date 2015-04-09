@@ -125,8 +125,17 @@ angular.module('ctApp.schedules', [
             shotname = "";
             if ($scope.value.employee) {
                 temp = JSON.parse($scope.value.employee).text;
-                str = temp.split(",");
-                shotname = str[1] +" "+str[0].charAt(0);
+                if(temp=='Any Employee')
+                {
+                    shotname = temp;
+                }
+                else
+                {
+                    
+                    str = temp.split(",");
+                    shotname = str[1] +" "+str[0].charAt(0);
+                }
+                
             }
 
             $scope.events[i] = {
@@ -642,6 +651,7 @@ angular.module('ctApp.schedules', [
 
 .controller("AddUpdateScheduleCtrl", ["$scope", "Services", "$state", "$stateParams", "$timeout", "HelperService", "$localStorage", "$modal", "$sce", "$window", "$modalInstance",
     function($scope, Services, $state, $stateParams, $timeout, HelperService, $localStorage, $modal, $sce, $window, $modalInstance) {
+        $scope.empCountry=$localStorage.user_info.country;
         $scope.ok = function() {
             $modalInstance.close("takethisvalue");
         };
@@ -1403,8 +1413,10 @@ angular.module('ctApp.schedules', [
                     angular.forEach($scope.tempoutputDates, function(item, key) {
 
                         if (keepGoing) {
+                            /*$var inAtCurrent = moment(item + " " + moment($scope.shift.inAt).format("HH:mm"));
+                            var outAtCurrent = moment($scope.getOutDate(item, $scope.shift.duration) + " " + moment($scope.shift.outAt).format("HH:mm"));*/
                             var inAtCurrent = moment(item + " " + moment($scope.shift.inAt).format("HH:mm"));
-                            var outAtCurrent = moment($scope.getOutDate(item, $scope.shift.duration) + " " + moment($scope.shift.outAt).format("HH:mm"));
+                            var outAtCurrent = moment($scope.getOutDate(item, $scope.shift.duration));
                             //  console.log(outAtCurrent.format("MM/DD/YYYY HH:mm"));
                             if ($scope.shift.authorization.id) {
 
@@ -1543,7 +1555,7 @@ angular.module('ctApp.schedules', [
 
                                     if (((intime >= dbintime) && (intime < dbouttime)) || ((outtime > dbintime) && (outtime <= dbouttime)) || ((intime <= dbintime) && (outtime >= dbouttime))) {
 
-                                        err_date += HelperService.formatingDate(item.ref_in_at) + ' - ' + HelperService.formatingDate(item.ref_out_at) + ', ';
+                                        err_date += HelperService.formatingDate(item.ref_in_at,$localStorage.user_info.country) + ' - ' + HelperService.formatingDate(item.ref_out_at,$localStorage.user_info.country) + ', ';
                                         recurrenceflag = false;
 
 
@@ -1553,7 +1565,7 @@ angular.module('ctApp.schedules', [
 
                         } else {
                             angular.forEach(remoteData.record, function(item, key) {
-                                err_date += HelperService.formatingDate(item.ref_in_at) + ' - ' + HelperService.formatingDate(item.ref_out_at) + ', ';
+                                err_date += HelperService.formatingDate(item.ref_in_at,$localStorage.user_info.country) + ' - ' + HelperService.formatingDate(item.ref_out_at,$localStorage.user_info.country) + ', ';
                                 recurrenceflag = false;
                             });
                         }
@@ -1588,10 +1600,10 @@ angular.module('ctApp.schedules', [
 
             if (inDate && duriation) {
 
-                var a = moment(inDate);
+                var a = moment(inDate + " " + moment($scope.shift.inAt).format("HH:mm"));
                 var addObj = a.add(duriation, 'hours');
+                return addObj;
 
-                return addObj.format("MM/DD/YYYY");
             }
         };
 

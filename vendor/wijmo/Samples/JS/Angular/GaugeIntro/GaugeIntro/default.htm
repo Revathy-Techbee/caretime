@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Gauge Introduction</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- jQuery/Angular/Bootstrap -->
+    <script src="http://code.jquery.com/jquery-2.0.0.min.js" type="text/javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js" type="text/javascript"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
+
+    <!-- Wijmo -->
+    <script src="scripts/vendor/wijmo.min.js" type="text/javascript"></script>
+    <script src="scripts/vendor/wijmo.input.min.js" type="text/javascript"></script>
+    <script src="scripts/vendor/wijmo.grid.min.js" type="text/javascript"></script>
+    <script src="scripts/vendor/wijmo.chart.min.js" type="text/javascript"></script>
+    <script src="scripts/vendor/wijmo.gauge.min.js" type="text/javascript"></script>
+    <script src="scripts/vendor/wijmo.angular.min.js" type="text/javascript"></script>
+    <link href="styles/vendor/wijmo.min.css" rel="stylesheet" />
+
+    <!-- app scripts and styles -->
+    <script src="scripts/app.js"></script>
+    <script src="scripts/directives/appDctv.js"></script>
+    <script src="scripts/controllers/appCtrl.js"></script>
+    <link rel="stylesheet" href="styles/app.css" />
+</head>
+<body ng-app="app" ng-controller="appCtrl">
+
+    <div class="header">
+        <div class="container">
+            <h1>
+                <img src="resources/wijmo5.png" />
+                Gauge 101
+            </h1>
+            <p>
+                This page shows how to get started with Wijmo's Gauge controls.
+            </p>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- Getting Started -->
+        <div>
+            <h2>Getting Started</h2>
+            <p>
+                Steps for getting started with the Gauge controls in AngularJS applications:
+            </p>
+            <ol>
+                <li>Add references to jQuery, AngularJS, Wijmo, and Wijmo's AngularJS directives.</li>
+                <li>
+                    Include the Wijmo 5 directives in the app module: <br />
+                    <code>var app = angular.module('app', ['wj']);</code>
+                </li>
+                <li>Add a controller to provide data and logic.</li>
+                <li>Add a Wijmo Gauge control to the page and set its value, min, and max properties.</li>
+                <li>(Optional) Add some CSS to customize the gauge's appearance.</li>
+            </ol>
+            <div class="row">
+                <div class="col-md-6">
+                    <app-tab>
+                        <app-tab-pane title="HTML">
+                            <div class="pane-content">
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+  &lt;link rel="stylesheet" type="text/css" href="css/wijmo.css" /&gt;
+  &lt;script src="scripts/jquery.js" type="text/javascript"&gt;&lt;/script&gt;
+  &lt;script src="scripts/angular.js" type="text/javascript"&gt;&lt;/script&gt;
+  &lt;script src="scripts/wijmo.js" type="text/javascript"&gt;&lt;/script&gt;
+  &lt;script src="scripts/wijmo.input.js" type="text/javascript"&gt;&lt;/script&gt;
+  &lt;script src="scripts/wijmo.grid.js" type="text/javascript"&gt;&lt;/script&gt;
+  &lt;script src="scripts/wijmo.chart.js" type="text/javascript"&gt;&lt;/script&gt;
+  &lt;script src="scripts/wijmo.gauge.js" type="text/javascript"&gt;&lt;/script&gt;
+  &lt;script src="scripts/wijmo.angular.js" type="text/javascript"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body ng-app="app" ng-controller="appCtrl"&gt;
+
+  &lt;!-- Wijmo 5 LinearGauge directive --&gt;
+  &lt;wj-linear-gauge
+      value="props.value"
+      min="{&#8203;{ props.min }}"
+      max="{&#8203;{ props.max }}"
+      format="{&#8203;{ props.format }}"&gt;
+  &lt;/wj-linear-gauge&gt;
+
+  &lt;!-- Wijmo 5 RadialGauge directive --&gt;
+  &lt;wj-radial-gauge
+      value="props.value"
+      min="{&#8203;{ props.min }}"
+      max="{&#8203;{ props.max }}"
+      format="{&#8203;{ props.format }}"&gt;
+  &lt;/wj-radial-gauge&gt;
+
+  &lt;!-- Wijmo 5 InputNumber directive --&gt;
+  &lt;div&gt;
+    &lt;label&gt;Gauge Value&lt;/label&gt;
+    &lt;wj-input-number
+        value="props.value"
+        min="{&#8203;{ props.min }}"
+        max="{&#8203;{ props.max }}"
+        format="{&#8203;{ props.format }}"
+        step="{&#8203;{ props.step }}"&gt;
+    &lt;/wj-input-number&gt;
+  &lt;/div&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;
+                            </div>
+                        </app-tab-pane>
+                        <app-tab-pane title="JS">
+                            <div class="pane-content">
+
+// declare app module
+var app = angular.module('app', ['wj']);
+
+// app controller provides data
+app.controller('appCtrl', function appCtrl($scope) {
+
+  $scope.props = {
+    format: 'p0',
+    max: 1,
+    min: 0,,
+    value: 0.5
+  };
+
+});
+                            </div>
+                        </app-tab-pane>
+                    </app-tab>
+                </div>
+                <div class="col-md-6">
+                    <h4>Result (live):</h4>
+                    <wj-linear-gauge
+                        value="props.value"
+                        min="{{ props.min }}"
+                        max="{{ props.max }}"
+                        format="{{ props.format }}"
+                        class="linear-gauge">
+                    </wj-linear-gauge>
+
+                    <wj-radial-gauge
+                        value="props.value"
+                        min="{{ props.min }}"
+                        max="{{ props.max }}"
+                        format="{{ props.format }}"
+                        class="radial-gauge">
+                    </wj-radial-gauge>
+
+                    <div class="app-input-group">
+                        <label>Gauge Value</label>
+                        <wj-input-number
+                            value="props.value"
+                            min="{{ props.min }}"
+                            max="{{ props.max }}"
+                            format="{{ props.format }}"
+                            step="{{ props.step }}">
+                        </wj-input-number>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Displaying Values -->
+        <div>
+            <h2>Displaying Values</h2>
+            <p>
+                The gauge controls offer a <b>showText</b> property that determines which values should should be
+                displayed as text by the gauge.  There are four valid values for the <b>showText</b> property:
+            </p>
+            <ul>
+                <li>
+                    <b>Value</b>:  Display the Gauge's current value.
+                </li>
+                <li>
+                    <b>MinMax</b>:  Display the Gauge's current min and max values.
+                </li>
+                <li>
+                    <b>All</b>:  Display the Gauge's current min, max, and values.  This option is a combination of
+                    the <b>Value</b> and <b>MinMax</b> options.
+                </li>
+                <li>
+                    <b>None</b>:  Do not display any text in the Gauge control.
+                </li>
+            </ul>
+            <p>
+                The example below shows what happens when the <b>showText</b> property is changed.
+            </p>
+            <div class="row">
+                <div class="col-md-6">
+                    <app-tab>
+                        <app-tab-pane title="HTML">
+                            <div class="pane-content">
+&lt;wj-linear-gauge
+    value="props.value"
+    min="{&#8203;{ props.min }}"
+    max="{&#8203;{ props.max }}"
+    format="{&#8203;{ props.format }}"
+    show-text="{&#8203;{ props.showText }}"&gt;
+&lt;/wj-linear-gauge&gt;
+
+&lt;wj-radial-gauge
+    value="props.value"
+    min="{&#8203;{ props.min }}"
+    max="{&#8203;{ props.max }}"
+    format="{&#8203;{ props.format }}"
+    show-text="{&#8203;{ props.showText }}"&gt;
+&lt;/wj-radial-gauge&gt;
+
+&lt;-- "Gauge Value" input omitted --&gt;
+
+&lt;wj-menu header="Show Text" value="props.showText"&gt;
+  &lt;wj-menu-item value="'Value'"&gt;Value&lt;/wj-menu-item&gt;
+  &lt;wj-menu-item value="'MinMax'"&gt;Min/Max&lt;/wj-menu-item&gt;
+  &lt;wj-menu-item value="'All'"&gt;All&lt;/wj-menu-item&gt;
+  &lt;wj-menu-item value="'None'"&gt;None&lt;/wj-menu-item&gt;
+&lt;/wj-menu&gt;
+                            </div>
+                        </app-tab-pane>
+                        <app-tab-pane title="JS">
+                            <div class="pane-content">
+$scope.props = {
+  format: 'p0',
+  max: 1,
+  min: 0,
+  showText: 'All',
+  step: 0.25,
+  value: 0.5
+};
+                            </div>
+                        </app-tab-pane>
+                    </app-tab>
+                </div>
+                <div class="col-md-6">
+                    <h4>Result (live):</h4>
+                    <wj-linear-gauge
+                        value="props.value"
+                        min="{{ props.min }}"
+                        max="{{ props.max }}"
+                        format="{{ props.format }}"
+                        show-text="{{ props.showText }}"
+                        class="linear-gauge">
+                    </wj-linear-gauge>
+
+                    <wj-radial-gauge
+                        value="props.value"
+                        min="{{ props.min }}"
+                        max="{{ props.max }}"
+                        format="{{ props.format }}"
+                        show-text="{{ props.showText }}"
+                        class="radial-gauge">
+                    </wj-radial-gauge>
+
+                    <div class="app-input-group">
+                        <label>Gauge Value</label>
+                        <wj-input-number
+                            value="props.value"
+                            min="{{ props.min }}"
+                            max="{{ props.max }}"
+                            format="{{ props.format }}"
+                            step="{{ props.step }}">
+                        </wj-input-number>
+                    </div>
+
+                    <wj-menu header="Show Text" value="props.showText">
+                        <wj-menu-item value="'Value'">Value</wj-menu-item>
+                        <wj-menu-item value="'MinMax'">Min/Max</wj-menu-item>
+                        <wj-menu-item value="'All'">All</wj-menu-item>
+                        <wj-menu-item value="'None'">None</wj-menu-item>
+                    </wj-menu>
+                </div>
+            </div>
+        </div>
+
+        <!-- Using Ranges -->
+        <div>
+            <h2>Using Ranges</h2>
+            <p>
+                All Wijmo gauges have a <b>ranges</b> property that contains an array of <b>Range</b> objects.  By default, the ranges
+                are displayed on the face of gauge to indicate zones of interest; however, the <b>showRanges</b> property can be used to
+                to hide the ranges.  Instead, the gauge will determine which range contains the current gauge value and will apply that
+                range's color to the gauge pointer.
+            </p>
+            <p>
+                The Range object itself offers properties such as <b>min</b>, <b>max</b>, and <b>color</b> to customize each zone.
+            </p>
+            <p>
+                The following example demonstrates how to use ranges with the LinearGauge, RadialGauge, and BulletGraph.
+            </p>
+            <div class="row">
+                <div class="col-md-6">
+                    <app-tab>
+                        <app-tab-pane title="HTML">
+                            <div class="pane-content">
+&lt;wj-linear-gauge
+    value="props.value"
+    min="{&#8203;{ props.min }}"
+    max="{&#8203;{ props.max }}"
+    format="{&#8203;{ props.format }}"
+    show-ranges="{&#8203;{ props.showRanges }}"&gt;
+  &lt;wj-range wj-property="pointer" thickness="{&#8203;{ props.ranges.pointerThickness }}"&gt;&lt;/wj-range&gt;
+  &lt;wj-range min="{&#8203;{ props.ranges.lower.min }}" max="{&#8203;{ props.ranges.lower.max }}" color="{&#8203;{ props.ranges.lower.color }}"&gt;&lt;/wj-range&gt;
+  &lt;wj-range min="{&#8203;{ props.ranges.middle.min }}" max="{&#8203;{ props.ranges.middle.max }}" color="{&#8203;{ props.ranges.middle.color }}"&gt;&lt;/wj-range&gt;
+  &lt;wj-range min="{&#8203;{ props.ranges.upper.min }}" max="{&#8203;{ props.ranges.upper.max }}" color="{&#8203;{ props.ranges.upper.color }}"&gt;&lt;/wj-range&gt;
+&lt;/wj-linear-gauge&gt;
+
+&lt;wj-bullet-graph
+    value="props.value"
+    min="{&#8203;{ props.min }}"
+    max="{&#8203;{ props.max }}"
+    format="{&#8203;{ props.format }}"
+    good="{&#8203;{ props.ranges.middle.max }}"
+    bad="{&#8203;{ props.ranges.middle.min }}"
+    target="{&#8203;{ props.ranges.target }}"
+    show-ranges="{&#8203;{ props.showRanges }}"&gt;
+  &lt;wj-range wj-property="pointer" thickness="{&#8203;{ props.ranges.pointerThickness }}"&gt;&lt;/wj-range&gt;
+&lt;/wj-bullet-graph&gt;
+
+&lt;wj-radial-gauge
+    value="props.value"
+    min="{&#8203;{ props.min }}"
+    max="{&#8203;{ props.max }}"
+    format="{&#8203;{ props.format }}"
+    show-ranges="{&#8203;{ props.showRanges }}"&gt;
+  &lt;wj-range wj-property="pointer" thickness="{&#8203;{ props.ranges.pointerThickness }}"&gt;&lt;/wj-range&gt;
+  &lt;wj-range min="{&#8203;{ props.ranges.lower.min }}" max="{&#8203;{ props.ranges.lower.max }}" color="{&#8203;{ props.ranges.lower.color }}"&gt;&lt;/wj-range&gt;
+  &lt;wj-range min="{&#8203;{ props.ranges.middle.min }}" max="{&#8203;{ props.ranges.middle.max }}" color="{&#8203;{ props.ranges.middle.color }}"&gt;&lt;/wj-range&gt;
+  &lt;wj-range min="{&#8203;{ props.ranges.upper.min }}" max="{&#8203;{ props.ranges.upper.max }}" color="{&#8203;{ props.ranges.upper.color }}"&gt;&lt;/wj-range&gt;
+&lt;/wj-radial-gauge&gt;
+
+&lt;-- "Gauge Value" input omitted --&gt;
+
+&lt;label&gt;
+  Show Ranges&amp;nbsp;
+  &lt;input type="checkbox" ng-model="props.showRanges" ng-change="showRangesChanged()" /&gt;
+&lt;/label&gt;
+                            </div>
+                        </app-tab-pane>
+                        <app-tab-pane title="JS">
+                            <div class="pane-content">
+$scope.props = {
+  format: 'p0',
+  max: 1,
+  min: 0,
+  showRanges: true,
+  step: 0.25,
+  ranges: {
+    pointerThickness: 0.5,
+    target: .75,
+    lower: {
+      min: 0,
+      max: .33,
+      color: 'rgba(255,100,100,.1)'
+    },
+    middle: {
+      min: .33,
+      max: .66,
+      color: 'rgba(255,255,100,.1)'
+    },
+    upper: {
+      min: .66,
+      max: 1,
+      color: 'rgba(100,255,100,.1)'
+    }
+  },
+  value: 0.5
+};
+
+// "showRanges" change event handler
+$scope.showRangesChanged = function () {
+  // get the value of "showRanges" from $scope
+  var showRanges = menu.selectedValue;
+
+  // update the percentile.ranges object based on "$scope.props.showRanges"
+  $scope.props.ranges.lower.color = showRanges ? 'rgba(255,100,100,.1)' : 'red';
+  $scope.props.ranges.middle.color = showRanges ? 'rgba(255,255,100,.1)' : 'yellow';
+  $scope.props.ranges.upper.color = showRanges ? 'rgba(100,255,100,.1)' : 'green';
+  $scope.props.ranges.pointerThickness = showRanges ? 0.5 : 1;
+};
+                            </div>
+                        </app-tab-pane>
+                    </app-tab>
+                </div>
+                <div class="col-md-6">
+                    <h4>Result (live):</h4>
+                    <wj-linear-gauge
+                        value="props.value"
+                        min="{{ props.min }}"
+                        max="{{ props.max }}"
+                        format="{{ props.format }}"
+                        show-ranges="{{ props.showRanges }}"
+                        class="linear-gauge">
+                        <wj-range wj-property="pointer" thickness="{{ props.ranges.pointerThickness }}"></wj-range>
+                        <wj-range min="{{ props.ranges.lower.min }}" max="{{ props.ranges.lower.max }}" color="{{ props.ranges.lower.color }}"></wj-range>
+                        <wj-range min="{{ props.ranges.middle.min }}" max="{{ props.ranges.middle.max }}" color="{{ props.ranges.middle.color }}"></wj-range>
+                        <wj-range min="{{ props.ranges.upper.min }}" max="{{ props.ranges.upper.max }}" color="{{ props.ranges.upper.color }}"></wj-range>
+                    </wj-linear-gauge>
+
+                    <wj-bullet-graph
+                        value="props.value"
+                        min="{{ props.min }}"
+                        max="{{ props.max }}"
+                        format="{{ props.format }}"
+                        good="{{ props.ranges.middle.max }}"
+                        bad="{{ props.ranges.middle.min }}"
+                        target="{{ props.ranges.target }}"
+                        show-ranges="{{ props.showRanges }}"
+                        class="linear-gauge">
+                        <wj-range wj-property="pointer" thickness="{{ props.ranges.pointerThickness }}"></wj-range>
+                    </wj-bullet-graph>
+
+                    <wj-radial-gauge
+                        value="props.value"
+                        min="{{ props.min }}"
+                        max="{{ props.max }}"
+                        format="{{ props.format }}"
+                        show-ranges="{{ props.showRanges }}"
+                        class="radial-gauge">
+                        <wj-range wj-property="pointer" thickness="{{ props.ranges.pointerThickness }}"></wj-range>
+                        <wj-range min="{{ props.ranges.lower.min }}" max="{{ props.ranges.lower.max }}" color="{{ props.ranges.lower.color }}"></wj-range>
+                        <wj-range min="{{ props.ranges.middle.min }}" max="{{ props.ranges.middle.max }}" color="{{ props.ranges.middle.color }}"></wj-range>
+                        <wj-range min="{{ props.ranges.upper.min }}" max="{{ props.ranges.upper.max }}" color="{{ props.ranges.upper.color }}"></wj-range>
+                    </wj-radial-gauge>
+
+                    <div class="app-input-group">
+                        <label>Gauge Value</label>
+                        <wj-input-number
+                            value="props.value"
+                            min="{{ props.min }}"
+                            max="{{ props.max }}"
+                            format="{{ props.format }}"
+                            step="{{ props.step }}">
+                        </wj-input-number>
+                    </div>
+
+                    <label>
+                        Show Ranges&nbsp;
+                        <input type="checkbox" ng-model="props.showRanges" ng-change="showRangesChanged()" />
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Automatic Scaling -->
+        <div>
+            <h2>Automatic Scaling</h2>
+            <p>
+                The RadialGauge offers two properties to configure its layout, <b>startAngle</b> and <b>sweepAngle</b>. The
+                <b>startAngle</b> property specifies the RadialGauge's starting angle, or rotation.  The <b>sweepAngle</b>
+                property specifies an angle representing the length of the RadialGauge's arc.  The angle for both
+                properties are measured clockwise, starting a the 9 o'clock position.
+            </p>
+            <p>
+                The RadialGauge also offers the <b>autoScale</b> property.  When <b>autoScale</b> is set to true, the RadialGauge
+                will be automatically scaled to fill its containing element.
+            </p>
+            <p>
+                The following example allows you to adjust the <b>startAngle</b>, <b>sweepAngle</b>, and <b>autoScale</b> properties
+                in real-time.
+            </p>
+            <div class="row">
+                <div class="col-md-6">
+                    <app-tab>
+                        <app-tab-pane title="HTML">
+                            <div class="pane-content">
+&lt;wj-radial-gauge
+    value="props.value"
+    min="{&#8203;{ props.min }}"
+    max="{&#8203;{ props.max }}"
+    format="{&#8203;{ props.format }}"
+    auto-scale="{&#8203;{ props.autoScale }}"
+    start-angle="{&#8203;{ props.startAngle }}"
+    sweep-angle="{&#8203;{ props.sweepAngle }}"&gt;
+&lt;/wj-radial-gauge&gt;
+
+&lt;-- "Gauge Value" input omitted --&gt;
+
+&lt;div&gt;
+  &lt;label&gt;Start Angle&lt;/label&gt;
+  &lt;wj-input-number
+      value="props.startAngle"
+      min="-360"
+      max="360"
+      step="45"&gt;
+  &lt;/wj-input-number&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+  &lt;label&gt;Sweep Angle&lt;/label&gt;
+  &lt;wj-input-number
+      value="props.sweepAngle"
+      min="0"
+      max="360"
+      step="45"&gt;
+  &lt;/wj-input-number&gt;
+&lt;/div&gt;
+
+&lt;label&gt;
+  Auto-Scale&amp;nbsp;
+  &lt;input type="checkbox" ng-model="props.autoScale" /&gt;
+&lt;/label&gt;
+                            </div>
+                        </app-tab-pane>
+                        <app-tab-pane title="JS">
+                            <div class="pane-content">
+$scope.props = {
+  autoScale: true,
+  format: 'p0',
+  max: 1,
+  min: 0,
+  startAngle: 0,
+  sweepAngle: 180,
+  value: 0.5
+};
+                            </div>
+                        </app-tab-pane>
+                    </app-tab>
+                </div>
+                <div class="col-md-6">
+                    <h4>Result (live):</h4>
+                    <wj-radial-gauge
+                        value="props.value"
+                        min="{{ props.min }}"
+                        max="{{ props.max }}"
+                        format="{{ props.format }}"
+                        auto-scale="{{ props.autoScale }}"
+                        start-angle="{{ props.startAngle }}"
+                        sweep-angle="{{ props.sweepAngle }}"
+                        class="radial-gauge">
+                    </wj-radial-gauge>
+
+                    <div class="app-input-group">
+                        <label>Gauge Value</label>
+                        <wj-input-number
+                            value="props.value"
+                            min="{{ props.min }}"
+                            max="{{ props.max }}"
+                            format="{{ props.format }}"
+                            step="{{ props.step }}">
+                        </wj-input-number>
+                    </div>
+
+                    <div class="app-input-group">
+                        <label>Start Angle</label>
+                        <wj-input-number
+                            value="props.startAngle"
+                            min="-360"
+                            max="360"
+                            step="45">
+                        </wj-input-number>
+                    </div>
+
+                    <div class="app-input-group">
+                        <label>Sweep Angle</label>
+                        <wj-input-number
+                            value="props.sweepAngle"
+                            min="0"
+                            max="360"
+                            step="45">
+                        </wj-input-number>
+                    </div>
+
+                    <label>
+                        Auto-Scale&nbsp;
+                        <input type="checkbox" ng-model="props.autoScale" />
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Direction -->
+        <div>
+            <h2>Direction</h2>
+            <p>
+                The RadialGauge's <b>startAngle</b> and <b>sweepAngle</b> properties do not apply to the LinearGauge or
+                BulletGraph.  Instead, the LinearGauge and BulletGraph offer the <b>direction</b> property to determine
+                how it should be displayed.  There are four options for the <b>direction</b> property:
+            </p>
+            <ul>
+                <li>
+                    <b>Up</b>:  The gauge is rendered vertically and its value increases the bottom to top.
+                </li>
+                <li>
+                    <b>Right</b>:  The gauge is rendered horizontally and its value increases the right to left.  This is
+                    the default value.
+                </li>
+                <li>
+                    <b>Down</b>:  The gauge is rendered vertically and its value increases the top to bottom.
+                </li>
+                <li>
+                    <b>Left</b>:  The gauge is rendered horizontally and its value increases the left to right.
+                </li>
+            </ul>
+            <p>
+                The example below allows you to see what happens when the <b>direction</b> property is changed.
+            </p>
+            <div class="row">
+                <div class="col-md-6">
+                    <app-tab>
+                        <app-tab-pane title="HTML">
+                            <div class="pane-content">
+
+&lt;wj-linear-gauge
+    value="props.value"
+    min="{&#8203;{ props.min }}"
+    max="{&#8203;{ props.max }}"
+    format="{&#8203;{ props.format }}"
+    direction="{&#8203;{ props.direction }}"&gt;
+  &lt;wj-range wj-property="pointer" thickness="{&#8203;{ props.ranges.pointerThickness }}"&gt;&lt;/wj-range&gt;
+  &lt;wj-range min="{&#8203;{ props.ranges.lower.min }}" max="{&#8203;{ props.ranges.lower.max }}" color="{&#8203;{ props.ranges.lower.color }}"&gt;&lt;/wj-range&gt;
+  &lt;wj-range min="{&#8203;{ props.ranges.middle.min }}" max="{&#8203;{ props.ranges.middle.max }}" color="{&#8203;{ props.ranges.middle.color }}"&gt;&lt;/wj-range&gt;
+  &lt;wj-range min="{&#8203;{ props.ranges.upper.min }}" max="{&#8203;{ props.ranges.upper.max }}" color="{&#8203;{ props.ranges.upper.color }}"&gt;&lt;/wj-range&gt;
+&lt;/wj-linear-gauge&gt;
+
+&lt;wj-bullet-graph
+    value="props.value"
+    min="{&#8203;{ props.min }}"
+    max="{&#8203;{ props.max }}"
+    format="{&#8203;{ props.format }}"
+    good="{&#8203;{ props.ranges.middle.max }}"
+    bad="{&#8203;{ props.ranges.middle.min }}"
+    target="{&#8203;{ props.ranges.target }}"
+    direction="{&#8203;{ props.direction }}"&gt;
+  &lt;wj-range wj-property="pointer" thickness="{&#8203;{ props.ranges.pointerThickness }}"&gt;&lt;/wj-range&gt;
+&lt;/wj-bullet-graph&gt;
+
+&lt;-- "Gauge Value" input omitted --&gt;
+
+&lt;wj-menu header="Direction" value="props.direction"&gt;
+  &lt;wj-menu-item value="'Up'"&gt;Up&lt;/wj-menu-item&gt;
+  &lt;wj-menu-item value="'Right'"&gt;Right&lt;/wj-menu-item&gt;
+  &lt;wj-menu-item value="'Down'"&gt;Down&lt;/wj-menu-item&gt;
+  &lt;wj-menu-item value="'Left'"&gt;Left&lt;/wj-menu-item&gt;
+&lt;/wj-menu&gt;
+                            </div>
+                        </app-tab-pane>
+                        <app-tab-pane title="JS">
+                            <div class="pane-content">
+$scope.props = {
+  direction: 'Right',
+  format: 'p0',
+  max: 1,
+  min: 0,
+  ranges: {
+    pointerThickness: 0.5,
+    target: .75,
+    lower: {
+      min: 0,
+      max: .33,
+      color: 'rgba(255,100,100,.1)'
+    },
+    middle: {
+      min: .33,
+      max: .66,
+      color: 'rgba(255,255,100,.1)'
+    },
+    upper: {
+      min: .66,
+      max: 1,
+      color: 'rgba(100,255,100,.1)'
+    }
+  },
+  value: 0.5
+};
+                            </div>
+                        </app-tab-pane>
+                    </app-tab>
+                </div>
+                <div class="col-md-6">
+                    <h4>Result (live):</h4>
+                    <div class="row">
+                        <div class="{{ (props.direction == 'Up' || props.direction == 'Down') ? 'col-md-6' : '' }}">
+                            <wj-linear-gauge
+                                value="props.value"
+                                min="{{ props.min }}"
+                                max="{{ props.max }}"
+                                format="{{ props.format }}"
+                                direction="{{ props.direction }}"
+                                show-ranges="{{ props.showRanges }}"
+                                ng-style="(props.direction == 'Up' || props.direction == 'Down') && {'height' : '300px', 'width': '1.2em'}"
+                                class="linear-gauge">
+                                <wj-range wj-property="pointer" thickness="{{ props.ranges.pointerThickness }}"></wj-range>
+                                <wj-range min="{{ props.ranges.lower.min }}" max="{{ props.ranges.lower.max }}" color="{{ props.ranges.lower.color }}"></wj-range>
+                                <wj-range min="{{ props.ranges.middle.min }}" max="{{ props.ranges.middle.max }}" color="{{ props.ranges.middle.color }}"></wj-range>
+                                <wj-range min="{{ props.ranges.upper.min }}" max="{{ props.ranges.upper.max }}" color="{{ props.ranges.upper.color }}"></wj-range>
+                            </wj-linear-gauge>
+                        </div>
+
+                        <div class="{{ (props.direction == 'Up' || props.direction == 'Down') ? 'col-md-6' : '' }}">
+                            <wj-bullet-graph
+                                value="props.value"
+                                min="{{ props.min }}"
+                                max="{{ props.max }}"
+                                format="{{ props.format }}"
+                                good="{{ props.ranges.middle.max }}"
+                                bad="{{ props.ranges.middle.min }}"
+                                target="{{ props.ranges.target }}"
+                                direction="{{ props.direction }}"
+                                show-ranges="{{ props.showRanges }}"
+                                ng-style="(props.direction == 'Up' || props.direction == 'Down') && {'height' : '300px', 'width': '1.2em'}"
+                                class="linear-gauge">
+                                <wj-range wj-property="pointer" thickness="{{ props.ranges.pointerThickness }}"></wj-range>
+                            </wj-bullet-graph>
+                        </div>
+                    </div>
+
+                    <div class="app-input-group">
+                        <label>Gauge Value</label>
+                        <wj-input-number
+                            value="props.value"
+                            min="{{ props.min }}"
+                            max="{{ props.max }}"
+                            format="{{ props.format }}"
+                            step="{{ props.step }}">
+                        </wj-input-number>
+                    </div>
+
+                    <wj-menu header="Direction" value="props.direction">
+                        <wj-menu-item value="'Up'">Up</wj-menu-item>
+                        <wj-menu-item value="'Right'">Right</wj-menu-item>
+                        <wj-menu-item value="'Down'">Down</wj-menu-item>
+                        <wj-menu-item value="'Left'">Left</wj-menu-item>
+                    </wj-menu>
+                </div>
+            </div>
+        </div>
+
+        <!-- Styling -->
+        <div>
+            <h2>Styling</h2>
+            <p>
+                The appearance of the gauge controls is largely defined in CSS.  In addition to the default theme,
+                we include several professionally designed themes that customize the appearance of all Wijmo
+                controls to achieve a consistent, attractive look.
+            </p>
+            <p>
+                You can customize the appearance of the gauges using CSS.  To do this, copy the CSS rules from the
+                default theme to a new CSS file and modify the properties as needed.
+            </p>
+            <p>
+                In this example, we added the "custom-gauge" CSS class to the LinearGauge &amp; RadialGauge, and
+                define some CSS rules to create an orange pointer for both.
+            </p>
+            <div class="row">
+                <div class="col-md-6">
+                    <app-tab>
+                        <app-tab-pane title="HTML">
+                            <div class="pane-content">
+&lt;wj-linear-gauge
+    value="props.value"
+    min="{&#8203;{ props.min }}"
+    max="{&#8203;{ props.max }}"
+    format="{&#8203;{ props.format }}"
+    show-text="Value"
+    class="custom-gauge"&gt;
+&lt;/wj-linear-gauge&gt;
+
+&lt;wj-radial-gauge
+    value="props.value"
+    min="{&#8203;{ props.min }}"
+    max="{&#8203;{ props.max }}"
+    format="{&#8203;{ props.format }}"
+    show-text="Value"
+    class="custom-gauge"&gt;
+&lt;/wj-radial-gauge&gt;
+
+&lt;-- "Gauge Value" input omitted --&gt;
+                            </div>
+                        </app-tab-pane>
+                        <app-tab-pane title="JS">
+                            <div class="pane-content">
+$scope.props = {
+  format: 'p0',
+  max: 1,
+  min: 0,
+  value: 0.5
+};
+                            </div>
+                        </app-tab-pane>
+                        <app-tab-pane title="CSS">
+                            <div class="pane-content">
+.custom-gauge .wj-pointer {
+  fill: #ffa500;
+  stroke: #cd853f;
+}
+                            </div>
+                        </app-tab-pane>
+                    </app-tab>
+                </div>
+                <div class="col-md-6">
+                    <h4>Result (live):</h4>
+                    <wj-linear-gauge
+                        value="props.value"
+                        min="{{ props.min }}"
+                        max="{{ props.max }}"
+                        format="{{ props.format }}"
+                        show-text="Value"
+                        class="custom-gauge">
+                    </wj-linear-gauge>
+
+                    <wj-radial-gauge
+                        value="props.value"
+                        min="{{ props.min }}"
+                        max="{{ props.max }}"
+                        format="{{ props.format }}"
+                        show-text="Value"
+                        class="custom-gauge">
+                    </wj-radial-gauge>
+
+                    <div class="app-input-group">
+                        <label>Gauge Value</label>
+                        <wj-input-number
+                            value="props.value"
+                            min="{{ props.min }}"
+                            max="{{ props.max }}"
+                            format="{{ props.format }}"
+                            step="{{ props.step }}">
+                        </wj-input-number>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Editing Values -->
+        <div>
+            <h2>Editing Values</h2>
+            <p>
+                The gauge controls can be used as a simple indicator or as an input control when the <b>isReadOnly</b>
+                property is set to false.  The gauges also offer a <b>step</b> property that determines how much to
+                add or subtract from its current value when being used as an input control.
+            </p>
+            <p>
+                The example below demonstrates how to use the <b>isReadOnly</b> and <b>step</b> properties with the
+                LinearGauge and RadialGauge controls.
+            </p>
+            <div class="row">
+                <div class="col-md-6">
+                    <app-tab>
+                        <app-tab-pane title="HTML">
+                            <div class="pane-content">
+&lt;wj-linear-gauge
+    value="props.value"
+    min="{&#8203;{ props.min }}"
+    max="{&#8203;{ props.max }}"
+    format="{&#8203;{ props.format }}"
+    step="{&#8203;{ props.step }}"
+    is-read-only="{&#8203;{ props.isReadOnly }}"&gt;
+&lt;/wj-linear-gauge&gt;
+
+&lt;wj-radial-gauge
+    value="props.value"
+    min="{&#8203;{ props.min }}"
+    max="{&#8203;{ props.max }}"
+    format="{&#8203;{ props.format }}"
+    step="{&#8203;{ props.step }}"
+    is-read-only="{&#8203;{ props.isReadOnly }}"&gt;
+&lt;/wj-radial-gauge&gt;
+
+&lt;label&gt;
+  Read-Only&amp;nbsp;
+  &lt;input type="checkbox" ng-model="props.isReadOnly" /&gt;
+&lt;/label&gt;
+                            </div>
+                        </app-tab-pane>
+                        <app-tab-pane title="JS">
+                            <div class="pane-content">
+$scope.props = {
+  format: 'p0',
+  isReadOnly: false,
+  max: 1,
+  min: 0,
+  step: 0.25,
+  value: 0.5
+};
+                            </div>
+                        </app-tab-pane>
+                    </app-tab>
+                </div>
+                <div class="col-md-6">
+                    <h4>Result (live):</h4>
+                    <wj-linear-gauge
+                        value="props.value"
+                        min="{{ props.min }}"
+                        max="{{ props.max }}"
+                        format="{{ props.format }}"
+                        step="{{ props.step }}"
+                        is-read-only="{{ props.isReadOnly }}"
+                        class="linear-gauge">
+                    </wj-linear-gauge>
+
+                    <wj-radial-gauge
+                        value="props.value"
+                        min="{{ props.min }}"
+                        max="{{ props.max }}"
+                        format="{{ props.format }}"
+                        step="{{ props.step }}"
+                        is-read-only="{{ props.isReadOnly }}"
+                        class="radial-gauge">
+                    </wj-radial-gauge>
+
+                    <label>
+                        Read-Only&nbsp;
+                        <input type="checkbox" ng-model="props.isReadOnly" />
+                    </label>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Google analytics -->
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-208280-14', 'auto');
+        ga('send', 'pageview');
+    </script>
+</body>
+</html>

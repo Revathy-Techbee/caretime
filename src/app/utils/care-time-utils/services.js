@@ -151,10 +151,19 @@ angular.module('utils.ct.services', [])
                 }
 
             },
-            formatingDate: function formatingDate(dateAndTime) {
+            formatingDate: function formatingDate(dateAndTime,country) {
                 if (dateAndTime) {
-                     dateAndTime = moment.tz(dateAndTime,"UTC").format();
-                    return moment(dateAndTime).format('MM/DD/YYYY hh:mm a');
+                    dateAndTime = moment.tz(dateAndTime,"UTC").format();
+
+                    if(country && country!='United States')
+                    {
+                        return moment(dateAndTime).format('DD/MM/YYYY hh:mm a');
+
+                    }
+                    else
+                    {
+                        return moment(dateAndTime).format('MM/DD/YYYY hh:mm a');
+                    }
                 } else {
                     return "Not yet edited";
                 }
@@ -181,10 +190,19 @@ angular.module('utils.ct.services', [])
                     return '';
                 }
             },
-            phoneFormat: function phoneFormat(data) {
+            phoneFormat: function phoneFormat(data,country) {
                 if (data) {
-                    var num = data.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
-                    return num;
+                    if(country && country!='United States')
+                    {
+                        return data;
+
+                    }
+                    else
+                    {
+                        var num = data.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
+                        return num;
+                    }
+                    
                 } else {
                     return '';
                 }
@@ -200,9 +218,18 @@ angular.module('utils.ct.services', [])
                     return "-";
                 }
             },
-            formatOnlyDate: function formatOnlyDate(date) {
+            formatOnlyDate: function formatOnlyDate(date,country) {
                 if (date) {
-                    return moment(date).format('MM/DD/YYYY');
+                    if(country && country!='United States')
+                    {
+                        return moment(date).format('DD/MM/YYYY');
+
+                    }
+                    else
+                    {
+                        return moment(date).format('MM/DD/YYYY');
+
+                    }
                 } else {
                     return 'Invalid';
                 }
@@ -217,10 +244,20 @@ angular.module('utils.ct.services', [])
                 }
 
             },
-            formatUTCOnlyDate: function formatUTCOnlyDate(dateAndTime) {
+            formatUTCOnlyDate: function formatUTCOnlyDate(dateAndTime,country) {
                 if (dateAndTime) {
                     dateAndTime = moment.tz(dateAndTime,"UTC").format();
-                    return moment(dateAndTime).format('MM/DD/YYYY');
+                    if(country && country!='United States')
+                    {
+                        return moment(dateAndTime).format('DD/MM/YYYY');
+
+                    }
+                    else
+                    {
+                        return moment(dateAndTime).format('MM/DD/YYYY');
+
+                    }
+                    
                 } else {
                     return "Invalid";
                 }

@@ -1,0 +1,14 @@
+{
+  "name": "wijmo",
+  "version": "3.20133.29",
+  "main": "js/jquery.wijmo-open.all.3.20133.29.js",
+  "ignore": [
+	".bowerrc",
+	".gitignore",
+	".jshintignore",
+	".jshintrc",
+	"bower.json",
+	"gruntfile.js",
+	"package.json"
+  ]
+}

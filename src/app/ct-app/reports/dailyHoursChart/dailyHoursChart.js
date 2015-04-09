@@ -93,7 +93,7 @@ angular.module('ctApp.dailyHoursChart', [
                     var regular_hours = HelperService.regularHours(item["sum(work_duration_rounded_number)"]);
 
                     $scope.data.push({
-                        "dateclockin": HelperService.formatUTCOnlyDate(item.clockin),
+                        "dateclockin": HelperService.formatUTCOnlyDate(item.clockin,$localStorage.user_info.country),
                         "regularhours": Number(regular_hours)
                     });
                 });

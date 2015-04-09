@@ -121,8 +121,8 @@ angular.module('ctApp.jobObservation', [
                                             "job_code": $scope.jobNameList[item.job_code],
                                             "obv_id": $scope.obvNameList[item.obv_id],
                                             "comment": item.comment,
-                                            "created_date": HelperService.formatingDate(item.created_date),
-                                            "modified_date": HelperService.formatingDate(item.modified_date)
+                                            "created_date": HelperService.formatingDate(item.created_date,$localStorage.user_info.country),
+                                            "modified_date": HelperService.formatingDate(item.modified_date,$localStorage.user_info.country)
 
                                         }
 

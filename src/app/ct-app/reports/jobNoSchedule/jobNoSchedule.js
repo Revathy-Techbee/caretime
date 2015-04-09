@@ -51,10 +51,10 @@ angular.module('ctApp.jobNoSchedule', [
            
         } 
 
-        if($localStorage.user_info.iszone_code)
+       /* if($localStorage.user_info.iszone_code)
         {
             filterObj.filter = filterObj.filter +' and job_zone='+$localStorage.user_info.zone_code;
-        }
+        }*/
         
         /*if (jobWhiteList) {
             filterObj.filter = filterObj.filter + " and job_code NOT IN(" + jobWhiteList + ")";
@@ -76,9 +76,9 @@ angular.module('ctApp.jobNoSchedule', [
                         "job_code": item.job_code,
                         "job_name": item.job_name +' ('+item.job_code+')',
                         "contact_name": item.contact_name,
-                        "authorized_phone_format": HelperService.phoneFormat(item.authorized_phone_format),
+                        "authorized_phone_format": HelperService.phoneFormat(item.work_phone_format,$localStorage.user_info.country),
                         "zone_name": zoneDetail,
-                        "lastActive": (item.last_scheduled_date) ? HelperService.formatingDate(item.last_clocked_in_date) : "No Activity",
+                        "lastActive": (item.last_scheduled_date) ? HelperService.formatingDate(item.last_clocked_in_date,$localStorage.user_info.country) : "No Activity",
                         "status": HelperService.checkstatus(item.status)
 
                     }

@@ -77,13 +77,13 @@ angular.module('ctApp.scheduleVsActuall', [
                 $scope.job_id = [];
                 var job_date;
                 angular.forEach(data.record, function(item, key) {
-                    job_date = item.job_id + '_' + HelperService.formatUTCOnlyDate(item.ref_in_at);
+                    job_date = item.job_id + '_' + HelperService.formatUTCOnlyDate(item.ref_in_at,$localStorage.user_info.country);
                     var tempEmpName = (item.employee)?JSON.parse(item.employee):"";
                     $scope.schedule[job_date] = [{
                         "scheduleEmployeeCode": item.employee_code,
                         "scheduleEmployeeDetail": tempEmpName.text + ' (' + tempEmpName.code + ')',
-                        "scheduleStart": HelperService.formatingDate(item.ref_in_at),
-                        "scheduleEnd": HelperService.formatingDate(item.ref_out_at),
+                        "scheduleStart": HelperService.formatingDate(item.ref_in_at,$localStorage.user_info.country),
+                        "scheduleEnd": HelperService.formatingDate(item.ref_out_at,$localStorage.user_info.country),
                         "scheduleDuration": item.duriation
                     }];
                     $scope.job_id.push(item.job_id);
@@ -98,10 +98,10 @@ angular.module('ctApp.scheduleVsActuall', [
        
                 Services.employeeActivitiesService.get(activityfilterObj, function(result) {
                     angular.forEach(result.record, function(item, key) {
-                        job_date = item.Job_code + '_' + HelperService.formatUTCOnlyDate(item.clockin);
+                        job_date = item.Job_code + '_' + HelperService.formatUTCOnlyDate(item.clockin,$localStorage.user_info.country);
                         if (!angular.isUndefined($scope.schedule[job_date])) {
                             $scope.resultData.push({
-                                "date": HelperService.formatUTCOnlyDate(item.clockin),
+                                "date": HelperService.formatUTCOnlyDate(item.clockin,$localStorage.user_info.country),
                                 "job_id": item.Job_code,
                                 "jobDetail": item.job_name + ' (' + item.Job_code + ')',
                                 "scheduleEmployee": $scope.schedule[job_date][0].scheduleEmployeeDetail,
@@ -110,8 +110,8 @@ angular.module('ctApp.scheduleVsActuall', [
                                 "scheduleDuration": $scope.schedule[job_date][0].scheduleDuration,
                                 "actuallemployee_code": item.employee_code,
                                 "actuallemployeeDetail": item.employee_name + ' (' + item.employee_code + ')',
-                                "actuallStart": HelperService.formatingDate(item.clockin),
-                                "actuallEnd": HelperService.formatingDate(item.clockout),
+                                "actuallStart": HelperService.formatingDate(item.clockin,$localStorage.user_info.country),
+                                "actuallEnd": HelperService.formatingDate(item.clockout,$localStorage.user_info.country),
                                 "actuallDuration": item.work_duration_non_rounded_number,
                                 "variance":((item.work_duration_non_rounded_number)-($scope.schedule[job_date][0].scheduleDuration))
                             });

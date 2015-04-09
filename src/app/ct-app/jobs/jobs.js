@@ -37,6 +37,8 @@ angular.module('ctApp.jobs', [
 
 .controller("JobsCtrl", ["$scope", "Services", "$state", "$modal", "HelperService", "$http", "$localStorage",
     function($scope, Services, $state, $modal, HelperService, $http, $localStorage) {
+        $scope.empCountry=$localStorage.user_info.country;
+
         $scope.config = {
             general: {
                 searchtxt: ""
@@ -111,7 +113,7 @@ angular.module('ctApp.jobs', [
             $scope.disable_infinite_scroll = true;
             $scope.config.show_jobs_loader = true;
             $scope.filterObj = {
-                fields: "job_name,job_code,job_zone_detail,last_clocked_in_date,last_scheduled_date,authorized_phone_format,status,id",
+                fields: "job_name,job_code,job_zone_detail,last_clocked_in_date,last_scheduled_date,status,id,work_phone_format,country,authorized_phone_format",
                 limit: $scope.config.page_size,
                 include_count: true,
                 offset: $scope.jobDetailList.length,
@@ -156,7 +158,7 @@ angular.module('ctApp.jobs', [
             $scope.jobDetailList = [];
             $scope.config.show_jobs_loader = true;
             $scope.filterObj = {
-                fields: "job_name,job_code,job_zone_detail,last_clocked_in_date,last_scheduled_date,authorized_phone_format,status,id",
+                fields: "job_name,job_code,job_zone_detail,last_clocked_in_date,last_scheduled_date,status,id,work_phone_format,country,authorized_phone_format",
                 limit: $scope.config.page_size,
                 include_count: true,
                 order: $scope.sortField + ' ' + $scope.sortType,

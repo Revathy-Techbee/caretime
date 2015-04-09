@@ -78,7 +78,7 @@ angular.module('ctApp.authorizedVsActuall', [
                     var jobDetail = JSON.parse(item.job_detail);
                     var payorDetail = JSON.parse(item.payor_detail);
                     $scope.resultData.push({
-                            "endDate": moment(item.authorization_end_date).format('MM/DD/YYYY'),
+                            "endDate": HelperService.formatOnlyDate(item.authorization_end_date,$localStorage.user_info.country),
                             "zone": zoneDetail.text + ' (' + zoneDetail.id + ')',
                             "job": jobDetail.text + ' (' + jobDetail.id + ')',
                             "payor": payorDetail.text + ' (' + payorDetail.id + ')',

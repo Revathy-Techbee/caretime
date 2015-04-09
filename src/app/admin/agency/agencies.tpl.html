@@ -47,8 +47,8 @@
                         <td>{{detail.primary_city}}</td>
                         <td>{{detail.primary_state}}</td>
                         <td>{{detail.contact_name}}</td>
-                        <td>{{detail.created_on | datewithtimeformat}}</td>
-                        <td>{{detail.last_logged_in | datewithtimeformat}}</td>
+                        <td>{{detail.created_on | datewithtimeformat:empCountry}}</td>
+                        <td>{{detail.last_logged_in | datewithtimeformat:empCountry}}</td>
                         <td ng-bind-html="detail.status | checkAgencystatus">{{detail.status | checkAgencystatus}}</td>
                         <td>
                             <button ng-click="enableEditView(detail.id)" class="btn btn-rounded btn-sm btn-icon btn-default"><i class="fa fa-pencil"></i>

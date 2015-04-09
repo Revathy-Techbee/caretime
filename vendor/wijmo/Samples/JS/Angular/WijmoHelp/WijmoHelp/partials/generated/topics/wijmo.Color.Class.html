@@ -1,0 +1,115 @@
+<h2>Color Class</h2>
+<dl class="dl-horizontal">
+<dt>Module</dt><dd>wijmo</dd>
+<dt>File</dt><dd>wijmo.js</dd>
+</dl>
+<p><p>Color class.</p>
+
+<p>The <b>Color</b> class parses colors specified as CSS strings and exposes
+their red, green, blue, and alpha channels as properties, making it 
+easy to inspect, modify, and interpolate colors.</p></p>
+<br/>
+<h3>Constructor</h3>
+<table class="table table-condensed" style="font:inherit">
+<thead>
+<tr>
+<th></th>
+<th>Name</th>
+<th>Parameters</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+    <tr>
+      <td></td>
+      <td><b>constructor</b>(color)</td>
+      <td><ul style="margin-left:-25px;list-style-type: none">
+<li><b>color</b> (<b>string</b>): CSS color specification.</li></ul>
+</td>
+      <td>Initializes a new <a href="" ng-click="go('wijmo.Color.Class.html')"><b>Color</b></a> from a CSS color specification.</td>
+    </tr>
+</tbody>
+</table>
+<br/>
+<h3>Properties</h3>
+<table class="table table-condensed" style="font:inherit">
+<thead>
+<tr>
+<th></th>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+    <tr>
+      <td></td>
+      <td><b>a</b></td>
+      <td><b>number</b></td>
+      <td>Gets or sets the alpha component of this <a href="" ng-click="go('wijmo.Color.Class.html')"><b>Color</b></a>,
+in a range from 0 to 1 (zero is transparent, one is solid).</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><b>b</b></td>
+      <td><b>number</b></td>
+      <td>Gets or sets the blue component of this <a href="" ng-click="go('wijmo.Color.Class.html')"><b>Color</b></a>,
+in a range from 0 to 255.</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><b>g</b></td>
+      <td><b>number</b></td>
+      <td>Gets or sets the green component of this <a href="" ng-click="go('wijmo.Color.Class.html')"><b>Color</b></a>,
+in a range from 0 to 255.</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><b>r</b></td>
+      <td><b>number</b></td>
+      <td>Gets or sets the red component of this <a href="" ng-click="go('wijmo.Color.Class.html')"><b>Color</b></a>,
+in a range from 0 to 255.</td>
+    </tr>
+</tbody>
+</table>
+<br/>
+<h3>Methods</h3>
+<table class="table table-condensed" style="font:inherit">
+<thead>
+<tr>
+<th></th>
+<th>Name</th>
+<th>Parameters</th>
+<th>Return Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+    <tr>
+      <td><span class="badge" title="Static">S</span></td>
+      <td><b>fromRgba</b>(r, g, b, a)</td>
+      <td><ul style="margin-left:-25px;list-style-type: none">
+<li><b>r</b> (<b>number</b>): Value for the red channel, from 0 to 255.</li><li><b>g</b> (<b>number</b>): Value for the green channel, from 0 to 255.</li><li><b>b</b> (<b>number</b>): Value for the blue channel, from 0 to 255.</li><li><b>a</b> (<b>number</b>): Value for the alpha channel, from 0 to 1. <span class="text-info">(default Value: <b>1</b>)</span></li></ul>
+</td>
+      <td><a href="" ng-click="go('wijmo.Color.Class.html')"><b>Color</b></a></td>
+      <td>Creates a new <a href="" ng-click="go('wijmo.Color.Class.html')"><b>Color</b></a> using the specified RGBA color channel values.</td>
+    </tr>
+    <tr>
+      <td><span class="badge" title="Static">S</span></td>
+      <td><b>interpolate</b>(c1, c2, pct)</td>
+      <td><ul style="margin-left:-25px;list-style-type: none">
+<li><b>c1</b> (<a href="" ng-click="go('wijmo.Color.Class.html')"><b>Color</b></a>): First color.</li><li><b>c2</b> (<a href="" ng-click="go('wijmo.Color.Class.html')"><b>Color</b></a>): Second color.</li><li><b>pct</b> (<b>number</b>): Value between zero and one that determines how close the
+interpolation should be to the first color.</li></ul>
+</td>
+      <td><a href="" ng-click="go('wijmo.Color.Class.html')"><b>Color</b></a></td>
+      <td>Creates a <a href="" ng-click="go('wijmo.Color.Class.html')"><b>Color</b></a> by interpolating between two colors.</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td><b>toString</b>()</td>
+      <td></td>
+      <td><b>string</b></td>
+      <td>Gets a string representation of this <a href="" ng-click="go('wijmo.Color.Class.html')"><b>Color</b></a>.</td>
+    </tr>
+</tbody>
+</table>

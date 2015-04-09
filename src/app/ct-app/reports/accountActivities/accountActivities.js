@@ -138,15 +138,15 @@ angular.module('ctApp.accountActivities', [
                     var week_day = moment(item["timestamp"]).day() + 1;
 
                     $scope.data.push({
-                        "timestamp": HelperService.formatOnlyDate(item["timestamp"]),
+                        "timestamp": HelperService.formatOnlyDate(item["timestamp"],$localStorage.user_info.country),
                         "totalcalls": Number(item["count(job_code)"]),
                         "Year": week_year,
                         "Month": $scope.monthNames[week_month] + " - " + week_year,
                         "WeekNo": Number(week_number),
                         "Day": Number(week_day),
                         "LogType": Number(item["log_type"]),
-                        "weekstart": HelperService.formatOnlyDate(firstdate),
-                        "weekend": HelperService.formatOnlyDate(lastdate)
+                        "weekstart": HelperService.formatOnlyDate(firstdate,$localStorage.user_info.country),
+                        "weekend": HelperService.formatOnlyDate(lastdate,$localStorage.user_info.country)
 
                     });
 

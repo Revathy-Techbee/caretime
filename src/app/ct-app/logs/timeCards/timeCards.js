@@ -36,7 +36,7 @@ angular.module('ctApp.timeCard', [
 
 
 .controller("TimeCardsCtrl", ["$scope", "Services", "$state", "$modal", "HelperService", "$timeout", "$localStorage", function($scope, Services, $state, $modal, HelperService, $timeout, $localStorage) {
-
+   
     $scope.logFilters = {};
     $scope.logFilters.filterName = '';
     $scope.logFilters.zoneName = null;
@@ -49,7 +49,7 @@ angular.module('ctApp.timeCard', [
                                 "code": res.data.record[0]["zone_code"]}];
             
         });
-}
+    }
     $scope.logFilters.filterValue = '';
     $scope.filterName = [{
         name: "Employee",
@@ -136,15 +136,16 @@ angular.module('ctApp.timeCard', [
                             }
                         });
                         angular.forEach(data.record, function(item, key) {
+
                             $scope.calllogList.push({
                                     "id": item.id,
                                     "employee_code": $scope.empNameList[item.employee_code],
                                     "job_code": $scope.jobNameList[item.job_code],
                                     "log_type": HelperService.logType(item.log_type),
                                     "call_duriation": item.call_duriation,
-                                    "timestamp": HelperService.formatingDate(item.timestamp),
+                                    "timestamp": HelperService.formatingDate(item.timestamp,$localStorage.user_info.country),
                                     "call_status": item.call_status,
-                                    "adjusted_timestamp": HelperService.formatingDate(item.adjusted_timestamp),
+                                    "adjusted_timestamp": HelperService.formatingDate(item.adjusted_timestamp,$localStorage.user_info.country),
                                     "adjusted_call_duriation": item.adjusted_call_duriation,
                                     "created_by": HelperService.AddEditUser(item.created_by)
                                 }
@@ -407,7 +408,7 @@ angular.module('ctApp.timeCard', [
                 {
                    if ($localStorage.user_info.iszone_code) {
 
-        Services.getEmpZoneDetail().then(function(res) {
+                    Services.getEmpZoneDetail().then(function(res) {
 
                     $scope.logFilters.zoneName = [{
                         "text": res.data.record[0]["zone_name"],
@@ -544,6 +545,7 @@ angular.module('ctApp.timeCard', [
 }])
 
 .controller("AddUpdateTimeCardCtrl", ["$scope", "Services", "$state", "$stateParams", "$timeout", "HelperService", "$localStorage", "$rootScope", function($scope, Services, $state, $stateParams, $timeout, HelperService, $localStorage, $rootScope) {
+    $scope.empCountry=$localStorage.user_info.country;
     $scope.showWarningMsg = false;
     $scope.savedisable = 0;
     $scope.timecard = {};
