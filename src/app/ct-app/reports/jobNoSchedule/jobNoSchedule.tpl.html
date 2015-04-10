@@ -41,6 +41,7 @@
             <div class="col-sm-3">
                 <button class="btn btn-md btn-info" type="button" ng-click="updateTableData()">Search</button>
                 <button class="btn btn-md btn-warning" type="button" ng-click="clearSearch()">Clear</button>
+                 <a ng-disabled="noRecord==1" download="jobNoSchedule.xlsx" class="btn btn-md btn-info" id="export" ng-click="exportExcel()">Export Excel</a>
 
             </div>
 
@@ -61,7 +62,7 @@
         </div>
 
         <div class="row wrapper" ng-if="showRecord==1">
-            <wj-flex-grid items-source="JobDetails">
+            <wj-flex-grid control="ctx.flexGrid" items-source="JobDetails">
                 <!--<wj-flex-grid-column header="Job Code" is-read-only="true" binding="job_code"> </wj-flex-grid-column> -->
                 <wj-flex-grid-column header="Job Name" is-read-only="true" binding="job_name" width="*"> </wj-flex-grid-column>
                 <wj-flex-grid-column header="Zone Name" is-read-only="true" binding="zone_name"> </wj-flex-grid-column>

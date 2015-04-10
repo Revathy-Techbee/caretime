@@ -76,7 +76,7 @@
                 <wj-flex-grid-column header="Employee" is-read-only="true" binding="employee_code" width="*"> </wj-flex-grid-column>
                 <wj-flex-grid-column header="Job" is-read-only="true" binding="job_code"> </wj-flex-grid-column>
                 <wj-flex-grid-column header="Task" is-read-only="true" binding="task_code"> </wj-flex-grid-column>
-                <wj-flex-grid-column header="Duration" is-read-only="true" binding="duration"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Duration" format="n2" aggregate="Sum" is-read-only="true" binding="duration"> </wj-flex-grid-column>
                 <wj-flex-grid-column header="Created Date" is-read-only="true" binding="created_date"> </wj-flex-grid-column>
                 <wj-flex-grid-column header="Modified Date" is-read-only="true" binding="modified_date"> </wj-flex-grid-column>
             </wj-flex-grid>

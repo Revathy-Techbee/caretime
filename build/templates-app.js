@@ -7183,8 +7183,10 @@ angular.module("ct-app/reports/inactivityEmployees/inactivityEmployees.tpl.html"
     "            <div class=\"col-sm-3\">\n" +
     "                <button class=\"btn btn-md btn-info\" type=\"button\" ng-click=\"updateTableData()\">Search</button>\n" +
     "                <button class=\"btn btn-md btn-warning\" type=\"button\" ng-click=\"clearSearch()\">Clear</button>\n" +
+    "                 <a ng-disabled=\"noRecord==1\" download=\"InActivityEmployee.xlsx\" class=\"btn btn-md btn-info\" id=\"export\" ng-click=\"exportExcel()\">Export Excel</a>\n" +
     "\n" +
     "            </div>\n" +
+    "           \n" +
     "\n" +
     "        </div>\n" +
     "\n" +
@@ -7203,7 +7205,7 @@ angular.module("ct-app/reports/inactivityEmployees/inactivityEmployees.tpl.html"
     "        </div>\n" +
     "\n" +
     "        <div class=\"row wrapper\" ng-if=\"showRecord==1\">\n" +
-    "            <wj-flex-grid items-source=\"EmployeeDetails\">\n" +
+    "            <wj-flex-grid control=\"ctx.flexGrid\" items-source=\"EmployeeDetails\">\n" +
     "                <!--<wj-flex-grid-column format=\"none\" header=\"Employee Code\" is-read-only=\"true\" binding=\"access_code\"> </wj-flex-grid-column> -->\n" +
     "                <wj-flex-grid-column header=\"Employee Name\" is-read-only=\"true\" binding=\"employee_name\" width=\"*\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"State\" is-read-only=\"true\" binding=\"primary_state\"> </wj-flex-grid-column>\n" +
@@ -7404,6 +7406,7 @@ angular.module("ct-app/reports/jobNoSchedule/jobNoSchedule.tpl.html", []).run(["
     "            <div class=\"col-sm-3\">\n" +
     "                <button class=\"btn btn-md btn-info\" type=\"button\" ng-click=\"updateTableData()\">Search</button>\n" +
     "                <button class=\"btn btn-md btn-warning\" type=\"button\" ng-click=\"clearSearch()\">Clear</button>\n" +
+    "                 <a ng-disabled=\"noRecord==1\" download=\"jobNoSchedule.xlsx\" class=\"btn btn-md btn-info\" id=\"export\" ng-click=\"exportExcel()\">Export Excel</a>\n" +
     "\n" +
     "            </div>\n" +
     "\n" +
@@ -7424,7 +7427,7 @@ angular.module("ct-app/reports/jobNoSchedule/jobNoSchedule.tpl.html", []).run(["
     "        </div>\n" +
     "\n" +
     "        <div class=\"row wrapper\" ng-if=\"showRecord==1\">\n" +
-    "            <wj-flex-grid items-source=\"JobDetails\">\n" +
+    "            <wj-flex-grid control=\"ctx.flexGrid\" items-source=\"JobDetails\">\n" +
     "                <!--<wj-flex-grid-column header=\"Job Code\" is-read-only=\"true\" binding=\"job_code\"> </wj-flex-grid-column> -->\n" +
     "                <wj-flex-grid-column header=\"Job Name\" is-read-only=\"true\" binding=\"job_name\" width=\"*\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Zone Name\" is-read-only=\"true\" binding=\"zone_name\"> </wj-flex-grid-column>\n" +
@@ -7660,7 +7663,7 @@ angular.module("ct-app/reports/jobTask/jobTask.tpl.html", []).run(["$templateCac
     "                <wj-flex-grid-column header=\"Employee\" is-read-only=\"true\" binding=\"employee_code\" width=\"*\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Job\" is-read-only=\"true\" binding=\"job_code\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Task\" is-read-only=\"true\" binding=\"task_code\"> </wj-flex-grid-column>\n" +
-    "                <wj-flex-grid-column header=\"Duration\" is-read-only=\"true\" binding=\"duration\"> </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"Duration\" format=\"n2\" aggregate=\"Sum\" is-read-only=\"true\" binding=\"duration\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Created Date\" is-read-only=\"true\" binding=\"created_date\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Modified Date\" is-read-only=\"true\" binding=\"modified_date\"> </wj-flex-grid-column>\n" +
     "            </wj-flex-grid>\n" +

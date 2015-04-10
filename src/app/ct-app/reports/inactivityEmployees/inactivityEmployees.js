@@ -41,6 +41,7 @@ angular.module('ctApp.inactivityEmployee', [
     $scope.loadData = function(startDate, endDate, searchtxt, offset) {
         var filterObj;
         filterObj = {
+                'fiels':"access_code,last_name,first_name,primary_state,primary_city,zone_detail,last_clocked_in_date,country,status",
                 'limit': $scope.call_limit,
                 'offset': offset,
                 'include_count': true,
@@ -72,9 +73,9 @@ angular.module('ctApp.inactivityEmployee', [
                     if(item.zone_detail)
                     {
                      zoneDetail = JSON.parse(item.zone_detail);
-                    }
+                    }//
                     $scope.resultData.push({
-                        "access_code": (item.access_code).toString(),
+                        "access_code": (item.access_code)?(item.access_code).toString():"",
                         "employee_name": item.last_name + ', ' + item.first_name +' ('+item.access_code+')',
                         "primary_state": item.primary_state,
                         "primary_city": item.primary_city,
@@ -92,6 +93,11 @@ angular.module('ctApp.inactivityEmployee', [
                         $scope.startDate = moment($scope.reportFilters.startDate).format('YYYY-MM-DD');
                         $scope.endDate =  moment($scope.reportFilters.endDate).format('YYYY-MM-DD');
                         if ($scope.resultData.length !== 0) {
+                            $scope.ctx = {
+                                    flexGrid: null,
+                                    data: $scope.resultData,
+                                    includeColumnHeader: true
+                                };
                             $scope.noRecord = 0;
                             $scope.showRecord = 1;
                             $scope.EmployeeDetails = new wijmo.collections.CollectionView($scope.resultData);
@@ -117,7 +123,23 @@ angular.module('ctApp.inactivityEmployee', [
 
 
     };
+    $scope.exportExcel = function() {
+            if ($scope.noRecord === 0) {
+                var pageSize = $scope.ctx.flexGrid.collectionView.pageSize;
+                $scope.ctx.flexGrid.collectionView.pageSize = 0;
+                var result = wijmo.grid.ExcelConverter.export($scope.ctx.flexGrid, {
+                    includeColumnHeader: $scope.ctx.includeColumnHeader
+                });
+                $scope.ctx.flexGrid.collectionView.pageSize = pageSize;
+                if (navigator.msSaveBlob) {
+                    var blob = new Blob([result.base64Array]);
 
+                    navigator.msSaveBlob(blob, $('#export').attr("download"));
+                } else {
+                    $('#export')[0].href = result.href();
+                }
+            }
+        };
     $scope.updateTableData = function(isFilter) { // on limit change
 
         if ($scope.reportFilters.startDate && $scope.reportFilters.endDate) {

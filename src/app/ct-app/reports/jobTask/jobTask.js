@@ -119,7 +119,7 @@ angular.module('ctApp.jobTask', [
                                             "employee_code": $scope.empNameList[item.employee_code],
                                             "job_code": $scope.jobNameList[item.job_code],
                                             "task_code": $scope.taskNameList[item.task_id],
-                                            "duration": item.duration,
+                                            "duration": Number(item.duration),
                                             "created_date": HelperService.formatingDate(item.created_date,$localStorage.user_info.country),
                                             "modified_date": HelperService.formatingDate(item.modified_date,$localStorage.user_info.country)
 
@@ -147,6 +147,13 @@ angular.module('ctApp.jobTask', [
                                     };
                                     $scope.TaskDetails = new wijmo.collections.CollectionView($scope.resultData);
                                     $scope.TaskDetails.pageSize = 10;
+                                    $scope.groupBy = 'job_code';
+                                    var cv = $scope.TaskDetails;
+                                    cv.groupDescriptions.clear(); // clear current groups
+                                    if ($scope.groupBy) {
+                                        var groupDesc = new wijmo.collections.PropertyGroupDescription($scope.groupBy);
+                                        cv.groupDescriptions.push(groupDesc);
+                                    }
 
 
 

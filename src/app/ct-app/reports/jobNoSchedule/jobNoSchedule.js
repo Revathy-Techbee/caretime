@@ -39,6 +39,7 @@ angular.module('ctApp.jobNoSchedule', [
 
     $scope.loadData = function(startDate, endDate, searchtxt, offset) {
         var  filterObj = {
+                'fields':"job_code,job_name,contact_name,work_phone_format,last_scheduled_date,status,job_zone_detail,last_clocked_in_date",
                 'limit': $scope.call_limit,
                 'offset': offset,
                 'include_count': true,
@@ -99,6 +100,11 @@ angular.module('ctApp.jobNoSchedule', [
 
                     $scope.noRecord = 0;
                     $scope.showRecord = 1;
+                    $scope.ctx = {
+                                    flexGrid: null,
+                                    data: $scope.resultData,
+                                    includeColumnHeader: true
+                                };
                     $scope.JobDetails = new wijmo.collections.CollectionView($scope.resultData);
                     $scope.JobDetails.pageSize = 10;
 
@@ -121,7 +127,23 @@ angular.module('ctApp.jobNoSchedule', [
 
 
     };
+     $scope.exportExcel = function() {
+            if ($scope.noRecord === 0) {
+                var pageSize = $scope.ctx.flexGrid.collectionView.pageSize;
+                $scope.ctx.flexGrid.collectionView.pageSize = 0;
+                var result = wijmo.grid.ExcelConverter.export($scope.ctx.flexGrid, {
+                    includeColumnHeader: $scope.ctx.includeColumnHeader
+                });
+                $scope.ctx.flexGrid.collectionView.pageSize = pageSize;
+                if (navigator.msSaveBlob) {
+                    var blob = new Blob([result.base64Array]);
 
+                    navigator.msSaveBlob(blob, $('#export').attr("download"));
+                } else {
+                    $('#export')[0].href = result.href();
+                }
+            }
+        };
     $scope.updateTableData = function(isFilter) { // on limit change
 
         if ($scope.reportFilters.startDate && $scope.reportFilters.endDate) {

@@ -304,7 +304,7 @@ angular.module('ctApp.jobs', [
     $scope.job.customPromptMax = 10;
     //  $scope.authorizations = [];
     $scope.job.logtype = 2;
-    $scope.job.late_notify = 0;
+    $scope.job.late_notify = 1;
     $scope.savedisable = 0;
     $scope.generateJobcode_count = 0;
     // $scope.job.country="United States";
