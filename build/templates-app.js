@@ -8151,7 +8151,7 @@ angular.module("ct-app/reports/scheduleReport/scheduleReport.tpl.html", []).run(
     "                <wj-flex-grid-column header=\"Employee Name\" is-read-only=\"true\" binding=\"employee_name\" width=\"*\"> </wj-flex-grid-column>\n" +
     "                <!--<wj-flex-grid-column header=\"Job Code\" is-read-only=\"true\" binding=\"job_id\"> </wj-flex-grid-column> -->\n" +
     "                <wj-flex-grid-column header=\"Job Name\" is-read-only=\"true\" binding=\"job_name\"> </wj-flex-grid-column>\n" +
-    "                <wj-flex-grid-column header=\"Start Date\" is-read-only=\"true\" binding=\"startDate\"> </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"Start Date\" is-read-only=\"true\" binding=\"ref_in_at\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Start Time\" is-read-only=\"true\" binding=\"startTime\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"End Date\" is-read-only=\"true\" binding=\"endDate\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"End Time\" is-read-only=\"true\" binding=\"endTime\"> </wj-flex-grid-column>\n" +

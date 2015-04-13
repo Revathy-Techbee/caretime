@@ -84,8 +84,8 @@ angular.module('ctApp.authorizedVsActuall', [
                             "payor": payorDetail.text + ' (' + payorDetail.id + ')',
                             "authorizedHours": item.frequency + ' ' + item.hours + ' Hrs',
                             "totalauthorizedHours": item.total_hours,
-                            "hoursUsed": item.hours_used,
-                           "hoursRemaining": (item.hours_remaining?item.hours_remaining:0)
+                            "hoursUsed": (item.hours_used?(parseFloat(item.hours_used).toFixed(2)):0),
+                           "hoursRemaining": (item.hours_remaining?(parseFloat(item.hours_remaining).toFixed(2)):item.total_hours)
                         }
 
 

@@ -53,7 +53,7 @@ angular.module('ctApp.jobTask', [
           'limit': $scope.call_limit,
           'offset': offset,
           'include_count': true,
-          'order': 'employee_code,id desc',
+          'order': 'job_code,id desc',
           'filter': 'employee_code <>\'\' and job_code<>\'\' and created_date >=\'' + fdate + '\' and created_date <=\'' + ldate + '\' and agency_id = ' + Services.getAgencyID()
         };
       if (job && !angular.isUndefined(job.code) && job.code) {

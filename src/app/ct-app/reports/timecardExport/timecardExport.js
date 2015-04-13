@@ -63,7 +63,7 @@ angular.module('ctApp.timecardExport', [
                 'limit': $scope.call_limit,
                 'offset': offset,
                 'include_count': true,
-                'order': 'employee_code desc',
+                'order': $scope.groupBy+' desc',
                 'filter': "employee_code <>'' and job_code<>'' and clockin >='" + fdate + "' and clockout <='" + ldate + "' and agency_id = " + Services.getAgencyID()
             };
 

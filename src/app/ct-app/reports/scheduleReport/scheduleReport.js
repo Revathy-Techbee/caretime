@@ -56,7 +56,7 @@ angular.module('ctApp.scheduleReport', [
             'limit': $scope.call_limit,
             'offset': offset,
             'include_count': true,
-            'order': 'id desc',
+            'order': fieldname.id+' desc',
             'filter': "employee_code<>'' and job_id<>'' and ref_in_at >='" + fdate + "' and ref_out_at <='" + ldate + "'  and agency_id = " + Services.getAgencyID()
         };
         if (fieldval && !angular.isUndefined(fieldval.code) && fieldval.code) {
@@ -77,7 +77,7 @@ angular.module('ctApp.scheduleReport', [
                         "employee_name": employeeTemp.text + ' (' + item.employee_code + ')',
                         "job_id": item.job_id,
                         "job_name": jobTemp.text + ' (' + item.job_id + ')',
-                        "startDate": HelperService.formatUTCOnlyDate(item.ref_in_at,$localStorage.user_info.country),
+                        "ref_in_at": HelperService.formatUTCOnlyDate(item.ref_in_at,$localStorage.user_info.country),
                         "startTime": HelperService.formatOnlyTime(item.ref_in_at),
                         "endDate": HelperService.formatUTCOnlyDate(item.ref_out_at,$localStorage.user_info.country),
                         "endTime": HelperService.formatOnlyTime(item.ref_out_at),
@@ -178,7 +178,7 @@ angular.module('ctApp.scheduleReport', [
         }
 
 
-        if ($scope.reportFilters.zone == null || angular.isUndefined($scope.reportFilters.zone[0]) || (($scope.reportFilters.field === "" || $scope.reportFilters.field_value === "") && ($scope.reportFilters.zone[0].id !== "all" && $scope.reportFilters.field_value.id !== "all" && $scope.reportFilters.field.id !== 'startDate'))) {
+        if ($scope.reportFilters.zone == null || angular.isUndefined($scope.reportFilters.zone[0]) || (($scope.reportFilters.field === "" || $scope.reportFilters.field_value === "") && ($scope.reportFilters.zone[0].id !== "all" && $scope.reportFilters.field_value.id !== "all" && $scope.reportFilters.field.id !== 'ref_in_at'))) {
 
             $scope.showerrorMsg = true;
             $scope.error_msg = "Please use the required filters";
@@ -307,7 +307,7 @@ angular.module('ctApp.scheduleReport', [
                 $scope.downlodFilterObj.filter = $scope.downlodFilterObj.filter + ' and zone_id in(' + $scope.zone_id + ')';
             } 
 
-            if ($scope.reportFilters.field.id == 'startDate') {
+            if ($scope.reportFilters.field.id == 'ref_in_at') {
                 $scope.downlodFilterObj.fields ='ref_in_at,in_date ,job_id ,sum(duriation)';
                 $scope.downlodFilterObj.filter =$scope.downlodFilterObj.filter+ '  GROUP BY in_date';
 
@@ -391,7 +391,7 @@ angular.module('ctApp.scheduleReport', [
         var det = "Schedule Reporting from " + moment($scope.reportFilters.startDate).format('MM-DD-YYYY') + " to " + moment($scope.reportFilters.endDate).format('MM-DD-YYYY');
 
 
-        if ($scope.reportFilters.field.id == 'startDate') {
+        if ($scope.reportFilters.field.id == 'ref_in_at') {
             $scope.resultarray[data[$scope.numcount].in_date] = [];
             sum_total = "Date Total 0 ";
 
@@ -862,7 +862,7 @@ angular.module('ctApp.scheduleReport', [
                 id: "employee_code",
                 name: "Employee"
             }, , {
-                id: "startDate",
+                id: "ref_in_at",
                 name: "Date"
             }];
             angular.forEach(items, function(item, key) {
