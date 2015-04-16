@@ -36,9 +36,17 @@ angular.module('ctApp.inactivityEmployee', [
 
     $scope.reportFilters.startDate = moment(firstDay).format("YYYY-MM-DD");
     $scope.reportFilters.endDate = moment(lastDay).format("YYYY-MM-DD");
+    $scope.reportFilters.zone = null;
+    if($localStorage.user_info.iszone_code){
+        Services.getEmpZoneDetail().then(function(res) {
+        
+        $scope.reportFilters.zone=[{"text": res.data.record[0]["zone_name"],
+                            "id": res.data.record[0]["id"],
+                            "code": res.data.record[0]["zone_code"]}];
+        });
+    }
 
-
-    $scope.loadData = function(startDate, endDate, searchtxt, offset) {
+    $scope.loadData = function(startDate, endDate, zone_id,searchtxt, offset) {
         var filterObj;
         filterObj = {
                 'fiels':"access_code,last_name,first_name,primary_state,primary_city,zone_detail,last_clocked_in_date,country,status",
@@ -54,14 +62,11 @@ angular.module('ctApp.inactivityEmployee', [
     
 
         } 
-       /* if($localStorage.user_info.iszone_code)
-        {
-            filterObj.filter = filterObj.filter +' and zone_id='+$localStorage.user_info.zone_code;
-        }*/
-      
 
-       // filterObj.filter = filterObj.filter + " and (last_clocked_in_date < '" + startDate + "' or last_clocked_in_date IS NULL)";
-
+        if (zone_id) {
+                 filterObj.filter=filterObj.filter+' and zone_id  in(' + zone_id+ ')';
+               
+            }
 
         Services.employeeService.get(filterObj, function(data) { 
             if (data.record.length !== 0) {
@@ -87,7 +92,7 @@ angular.module('ctApp.inactivityEmployee', [
                     if (data.meta.count > (offset + $scope.call_limit)) {
 
                         var nextOffset = offset + $scope.call_limit + 1;
-                        $scope.loadData(startDate, endDate,  searchtxt, nextOffset);
+                        $scope.loadData(startDate, endDate, zone_id, searchtxt, nextOffset);
                     } else {
                         $scope.show_activities_loader = false;
                         $scope.startDate = moment($scope.reportFilters.startDate).format('YYYY-MM-DD');
@@ -164,6 +169,7 @@ angular.module('ctApp.inactivityEmployee', [
         $scope.showRecord = 0;
         $scope.resultData = [];
         $scope.noRecord = 0;
+        $scope.zone_id='';
         $scope.show_activities_loader = true;
         var fdate = moment(moment($scope.reportFilters.startDate).format('YYYY-MM-DD')).utc().format('YYYY-MM-DD HH:mm');
         var a = moment(moment($scope.reportFilters.endDate).format('YYYY-MM-DD'));
@@ -181,8 +187,15 @@ angular.module('ctApp.inactivityEmployee', [
             
                         
         }
+        if($scope.reportFilters.zone!== null && $scope.reportFilters.zone)
+        {
+            $scope.zone_nameid = HelperService.getCode_Name($scope.reportFilters.zone, 'code', 'text');
+            $scope.zone_id =$scope.zone_nameid.Code;
+            $scope.zone_name =$scope.zone_nameid.Code_Name;
+            mixpanelObj.Zone=($scope.zone_name ?$scope.zone_name :"All");
+        }
         mixpanel.track("Inactive Employee List",mixpanelObj);
-        $scope.loadData(fdate, ldate, $scope.reportFilters.searchtxt, 0);
+        $scope.loadData(fdate, ldate, $scope.zone_id,$scope.reportFilters.searchtxt, 0);
 
     };
 
@@ -196,6 +209,19 @@ angular.module('ctApp.inactivityEmployee', [
 
     $scope.clearSearch = function() {
         $scope.reportFilters.searchtxt = '';
+        if($localStorage.user_info.iszone_code){
+        Services.getEmpZoneDetail().then(function(res) {
+        
+        $scope.reportFilters.zone=[{"text": res.data.record[0]["zone_name"],
+                            "id": res.data.record[0]["id"],
+                            "code": res.data.record[0]["zone_code"]}];
+        });
+        }
+        else
+        {
+          $scope.reportFilters.zone = null;
+
+        }
         var date = new Date();
         var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
         var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
@@ -207,6 +233,63 @@ angular.module('ctApp.inactivityEmployee', [
         $scope.showRecord = 0;
 
     };
+    $scope.selectzone = {
+            multiple: true,
+            query: function(query) {
+                var data = {
+                    results: []
+                };
+                var getZone = true;
+
+                if ($scope.reportFilters.zone !== null && !angular.isUndefined($scope.reportFilters.zone[0]) && $scope.reportFilters.zone[0].code === "") {
+                    getZone = false;
+                    data = {
+                        results: []
+                    };
+
+                } else if ($scope.reportFilters.zone === null || angular.isUndefined($scope.reportFilters.zone[0])) {
+                    data.results.push({
+                        text: 'All',
+                        id: 'all',
+                        code: ''
+                    });
+                }
+
+                if (getZone === true) {
+                 $scope.zoneObj = {
+                        fields: "zone_name,zone_code,id",
+                        filter: "status > 0 and agency_id = " + Services.getAgencyID(),
+                        order: 'zone_name asc',
+                        limit: 5
+                    };
+                    if (query.term) {
+                        $scope.zoneObj.filter += " and zone_name like '%" + query.term + "%'";
+                    }
+
+                Services.employeeZones.get($scope.zoneObj, function(remoteData) {
+
+                    items = remoteData.record;
+                    if (items.length < 1) {
+                        query.callback(data);
+                    }
+                    angular.forEach(items, function(item, key) {
+                        data.results.push({
+                            "text": item.zone_name,
+                            "id": item.id,
+                            "code": item.zone_code,
+                        });
+                        query.callback(data);
+
+                    });
+
+                });
+                 } else {
+                    query.callback(data);
+                }
+            },initSelection: function(element, callback) {}
+
+
+        };
 
 
 

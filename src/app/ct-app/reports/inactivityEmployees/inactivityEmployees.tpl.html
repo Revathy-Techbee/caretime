@@ -6,6 +6,11 @@
 <div class="wrapper-md">
     <div class="panel panel-default">
         <div class="row wrapper">
+             <div class="col-sm-3">
+                <div  class="form-control " ui-select2="selectzone" value="" placeholder="Select Zone" ng-model="reportFilters.zone">
+                </div>
+
+            </div>
             <div class="col-sm-3">
                 <input class="form-control " placeholder="Search Text" value="" ng-model="reportFilters.searchtxt">
             </div>
@@ -38,22 +43,26 @@
                 </div>
 
             </div>
-            <div class="col-sm-3">
+           <!-- <div class="col-sm-3">
                 <button class="btn btn-md btn-info" type="button" ng-click="updateTableData()">Search</button>
                 <button class="btn btn-md btn-warning" type="button" ng-click="clearSearch()">Clear</button>
                  <a ng-disabled="noRecord==1" download="InActivityEmployee.xlsx" class="btn btn-md btn-info" id="export" ng-click="exportExcel()">Export Excel</a>
 
-            </div>
+            </div>-->
            
 
         </div>
 
-        <div class="row wrapper" ng-if="showerrorMsg">
-            <div class="col-sm-12">
-                <span class="alert alert-danger">{{error_msg}}</span>
-
+        <div class="row wrapper" >
+            <div class="col-sm-2">
+                <button class="btn btn-md btn-info" type="button" ng-click="updateTableData()">Search</button>
+                <button class="btn btn-md btn-warning" type="button" ng-click="clearSearch()">Clear</button>
             </div>
-
+            <div class="col-sm-10">
+                <span ng-if="showerrorMsg" class="alert alert-danger">{{error_msg}}</span>
+          
+                 <a ng-disabled="noRecord==1" download="jobNoSchedule.xlsx" class="btn btn-md btn-info pull-right" id="export" ng-click="exportExcel()">Export Excel</a>
+            </div>
         </div>
         <div class="row wrapper" ng-if="noRecord==1 || show_activities_loader">
             <div class="col-sm-12">

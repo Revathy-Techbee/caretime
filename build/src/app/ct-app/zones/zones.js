@@ -469,7 +469,7 @@ angular.module('ctApp.zones', ['ui.router']).config([
         fields: 'first_name,last_name,id',
         filter: 'status > 0 and agency_id = ' + Services.getAgencyID(),
         'order': 'last_name asc',
-        limit: 5
+        limit: 20
       };
       if (name) {
         $scope.NotifyEmp.filter += ' and (first_name  like \'%' + name + '%\' OR last_name   like \'%' + name + '%\' )';

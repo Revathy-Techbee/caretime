@@ -456,7 +456,8 @@ angular.module('ctApp.timeCard', [
   'HelperService',
   '$localStorage',
   '$rootScope',
-  function ($scope, Services, $state, $stateParams, $timeout, HelperService, $localStorage, $rootScope) {
+  '$modal',
+  function ($scope, Services, $state, $stateParams, $timeout, HelperService, $localStorage, $rootScope, $modal) {
     $scope.empCountry = $localStorage.user_info.country;
     $scope.showWarningMsg = false;
     $scope.savedisable = 0;
@@ -500,7 +501,7 @@ angular.module('ctApp.timeCard', [
         $scope.timecard.created_by = $scope.timecardDBField.created_by;
         $scope.timecard.notes = $scope.timecardDBField.notes;
         $scope.timecard.current_date = moment().format('YYYY-MM-DD hh:mm a');
-        $scope.ref_id = $scope.timecardDBField.ref_id;
+        $scope.timecard.ref_id = $scope.timecardDBField.ref_id;
         $scope.log_type = $scope.timecardDBField.log_type;
         var lastTimeUTC = moment.tz($scope.timecardDBField.timestamp, 'UTC').format();
         // set incoming time zone as UTC
@@ -508,7 +509,11 @@ angular.module('ctApp.timeCard', [
         $scope.last_date = moment($scope.timecardDBField.timestamp).toDate();
         if ($scope.log_type == 1) {
           $scope.timecard.clock_in = moment($scope.timecardDBField.timestamp).toDate();
+          $scope.timecard.clockinID = $scope.timecardDBField.id;
+          $scope.timecard.clockInSat = $scope.timecardDBField.call_status;
         } else {
+          $scope.timecard.clockoutID = $scope.timecardDBField.id;
+          $scope.timecard.clockOutSat = $scope.timecardDBField.call_status;
           $scope.timecard.clock_out = moment($scope.timecardDBField.timestamp).toDate();
           $scope.timecard.duration = $scope.timecardDBField.call_duriation;
           $scope.last_dur = $scope.timecardDBField.call_duriation;
@@ -519,21 +524,23 @@ angular.module('ctApp.timeCard', [
         $scope.getjobbyid($scope.timecard.job_code);
         if ($scope.log_type == 2) {
           Services.timeLog.get({
-            fields: 'timestamp',
+            fields: 'id,timestamp,call_status',
             limit: '1',
             order: 'id desc',
-            filter: 'id=\'' + $scope.ref_id + '\''
+            filter: 'id=\'' + $scope.timecard.ref_id + '\''
           }, function (remoteData) {
             $scope.timeLogDBField = remoteData.record[0];
             var lastTimeLogUTC = moment.tz($scope.timeLogDBField.timestamp, 'UTC').format();
+            $scope.timecard.clockinID = $scope.timeLogDBField.id;
+            $scope.timecard.clockInSat = $scope.timeLogDBField.call_status;
             $scope.timeLogDBField.timestamp = lastTimeLogUTC;
-            $scope.logoutID = $scope.ref_id;
+            $scope.logoutID = $scope.timecard.ref_id;
             $scope.timecard.clock_in = moment($scope.timeLogDBField.timestamp).toDate();
             $scope.timecard.authorization = $scope.timecard.authorizationID;
           });
         } else {
           Services.timeLog.get({
-            fields: 'timestamp,call_duriation,id,adjusted_timestamp',
+            fields: 'id,timestamp,call_duriation,id,adjusted_timestamp,call_status',
             limit: '1',
             order: 'id desc',
             filter: 'ref_id=\'' + $scope.timecardId + '\''
@@ -543,6 +550,8 @@ angular.module('ctApp.timeCard', [
               var lastTimeLogUTC = moment.tz($scope.timeLogDBField.timestamp, 'UTC').format();
               // set incoming time zone as UTC
               $scope.timeLogDBField.timestamp = lastTimeLogUTC;
+              $scope.timecard.clockoutID = $scope.timeLogDBField.id;
+              $scope.timecard.clockOutSat = $scope.timeLogDBField.call_status;
               $scope.timecard.clock_out = moment($scope.timeLogDBField.timestamp).toDate();
               $scope.timecard.duration = $scope.timeLogDBField.call_duriation;
               $scope.logoutID = $scope.timeLogDBField.id;
@@ -604,6 +613,16 @@ angular.module('ctApp.timeCard', [
           });
         }
       }
+    };
+    $scope.inactiveTimecard = function (data) {
+      Services.setModelTempVar(data);
+      $scope.modalInstance = $modal.open({
+        templateUrl: 'ct-app/logs/timeCards/InactiveTimeCard.tpl.html',
+        controller: 'InactiveTimecardCtrl'
+      });
+      $scope.modalInstance.result.then(function () {
+        console.log('test');  //$scope.updateTableData();
+      });
     };
     $scope.savetimecard = function () {
       $scope.savedisable = 1;
@@ -685,7 +704,7 @@ angular.module('ctApp.timeCard', [
             };
             if ($scope.timecardId) {
               if ($scope.log_type == 2) {
-                $scope.ActivitiesfilterObj.filter = $scope.ActivitiesfilterObj.filter + ' and  employee_code = \'' + $scope.timecard.employeecodeonly + '\' and ref_id!=\'' + $scope.ref_id + '\'';
+                $scope.ActivitiesfilterObj.filter = $scope.ActivitiesfilterObj.filter + ' and  employee_code = \'' + $scope.timecard.employeecodeonly + '\' and ref_id!=\'' + $scope.timecard.ref_id + '\'';
               } else {
                 $scope.ActivitiesfilterObj.filter = $scope.ActivitiesfilterObj.filter + ' and  employee_code = \'' + $scope.timecard.employeecodeonly + '\' and ref_id!=\'' + $scope.timecardId + '\'';
               }
@@ -977,7 +996,7 @@ angular.module('ctApp.timeCard', [
           var a = moment(newValue);
           var b = moment($scope.timecard.clock_in);
           duration = a.diff(b, 'hours', true);
-          if (duration > 0) {
+          if (duration >= 0) {
             duration = a.diff(b, 'hours', true);
             $scope.timecard.duration = HelperService.floatToTime(duration);
           } else {
@@ -995,7 +1014,7 @@ angular.module('ctApp.timeCard', [
           a = moment(newValue);
           b = moment($scope.timecard.clock_out);
           var dur = b.diff(a, 'hours', true);
-          if (dur < 0 || dur === 0) {
+          if (dur < 0) {
             $scope.timecard.clock_in = '';
           } else {
             if ($scope.timecardId) {
@@ -1180,6 +1199,67 @@ angular.module('ctApp.timeCard', [
     };
     $scope.modelclose = function () {
       $rootScope.$broadcast('close-edit-modal');
+    };
+  }
+]).controller('InactiveTimecardCtrl', [
+  '$scope',
+  'Services',
+  '$timeout',
+  '$modalInstance',
+  '$rootScope',
+  'HelperService',
+  '$localStorage',
+  function ($scope, Services, $timeout, $modalInstance, $rootScope, HelperService, $localStorage) {
+    $scope.TimecardDetails = Services.getModelTempVar();
+    //console.log($scope.TimecardDetails);
+    if ($scope.TimecardDetails) {
+      $scope.employee_code = $scope.TimecardDetails.employee_code;
+      $scope.jobNamecode = $scope.TimecardDetails.jobNamecode;
+      $scope.clock_in = HelperService.formatingDate($scope.TimecardDetails.clock_in, $localStorage.user_info.country);
+      $scope.clock_out = HelperService.formatingDate($scope.TimecardDetails.clock_out, $localStorage.user_info.country);
+      $scope.duration = $scope.TimecardDetails.duration;
+      $scope.clockInSat = $scope.TimecardDetails.clockInSat;
+      $scope.clockOutSat = $scope.TimecardDetails.clockOutSat;
+    }
+    $scope.saveInactivetimecard = function () {
+      $scope.savedisable = 1;
+      clockin = {
+        timestamp: moment($scope.TimecardDetails.clock_in).utc().format('YYYY-MM-DD HH:mm'),
+        call_status: 'Inactived'
+      };
+      clockout = {
+        timestamp: moment($scope.TimecardDetails.clock_in).utc().format('YYYY-MM-DD HH:mm'),
+        call_duriation: '0:0',
+        call_status: 'Inactived'
+      };
+      console.log($scope.TimecardDetails.clockinID);
+      console.log($scope.TimecardDetails.clockoutID);
+      Services.timeLog.update({ id: $scope.TimecardDetails.clockinID }, clockin, function (data) {
+        Services.timeLog.update({ id: $scope.TimecardDetails.clockoutID }, clockout, function (data) {
+          Services.employeeActivitiesService.get({
+            filter: 'ref_id=\'' + $scope.TimecardDetails.clockinID + '\'',
+            fields: 'id'
+          }, function (remoteData) {
+            Services.employeeActivitiesService.update({ id: remoteData.record[0].id }, {
+              Call_status_IN: 'Inactived',
+              Call_status_OUT: 'Inactived'
+            }, function (data) {
+              $scope.savedisable = 0;
+              $scope.showerrorMsg = true;
+              $scope.ErrorClass = 'success';
+              $scope.ErrorMsg = 'Notes edited sucessfully !!!';
+              $timeout(function () {
+                $scope.showerrorMsg = false;
+                $modalInstance.dismiss('cancel');
+                $rootScope.$broadcast('close-edit-modal');  //$modalInstance.close("takethisvalue");
+              }, 3000);
+            });
+          });
+        });
+      });
+    };
+    $scope.Inactivemodelclose = function () {
+      $modalInstance.dismiss('cancel');
     };
   }
 ]);

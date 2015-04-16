@@ -79,22 +79,22 @@ angular.module('ctApp.jobs', [
       });
     }
     /* $scope.jobSearchOptionUnsorted = [];
-        $scope.getjobFilters = function() {
-            Services.getjobFilter().then(function(resp) {
-                angular.forEach(resp.data.field, function(item, index) {
-                    $scope.jobSearchOptionUnsorted.push({
-                        id: item.name,
-                        name: item.label
-                    });
-                });
+         $scope.getjobFilters = function() {
+             Services.getjobFilter().then(function(resp) {
+                 angular.forEach(resp.data.field, function(item, index) {
+                     $scope.jobSearchOptionUnsorted.push({
+                         id: item.name,
+                         name: item.label
+                     });
+                 });
 
-                if ($scope.jobSearchOptionUnsorted.length > 0) {
-                    $scope.jobSearchOption = HelperService.arr.multisort($scope.jobSearchOptionUnsorted, ['name'], ['ASC']);
-                }
-            });
-        };
-        $scope.getjobFilters();
-        */
+                 if ($scope.jobSearchOptionUnsorted.length > 0) {
+                     $scope.jobSearchOption = HelperService.arr.multisort($scope.jobSearchOptionUnsorted, ['name'], ['ASC']);
+                 }
+             });
+         };
+         $scope.getjobFilters();
+         */
     $scope.jobSearchOption = [
       {
         id: 'job_code',
@@ -625,36 +625,82 @@ angular.module('ctApp.jobs', [
         $scope.jobDBField.jobgroup = $scope.job.jobgroup;
         $scope.saveUpdateJob();  /*if ($scope.jobDBField.job_zip) {
 
-                                Services.employeeZips.get({
-                                    fields:"id",
-                                    filter: "Zip ='" + $scope.jobDBField.job_zip + "' and status > 0",
-                                    limit: 1
-                                }, function(remoteData) {
+                        Services.employeeZips.get({
+                            fields:"id",
+                            filter: "Zip ='" + $scope.jobDBField.job_zip + "' and status > 0",
+                            limit: 1
+                        }, function(remoteData) {
 
-                                    if (remoteData.record.length > 0) {
-                                        $scope.saveUpdateJob();
-
-                                    } else {
-                                        $scope.savedisable = 0;
-                                        $scope.showerrorMsg = true;
-                                        $scope.ErrorClass = "danger";
-                                        $scope.ErrorMsg = "Invalid Zip Code";
-                                        jQuery(".personal .ng-invalid").addClass("ng-dirty");
-                                        $timeout(function() {
-                                            $scope.showerrorMsg = false;
-                                        }, 3000);
-                                        return false;
-                                    }
-
-                                });
-
-
+                            if (remoteData.record.length > 0) {
+                                $scope.saveUpdateJob();
 
                             } else {
-                                $scope.saveUpdateJob();
-                            }*/
+                                $scope.savedisable = 0;
+                                $scope.showerrorMsg = true;
+                                $scope.ErrorClass = "danger";
+                                $scope.ErrorMsg = "Invalid Zip Code";
+                                jQuery(".personal .ng-invalid").addClass("ng-dirty");
+                                $timeout(function() {
+                                    $scope.showerrorMsg = false;
+                                }, 3000);
+                                return false;
+                            }
+
+                        });
+
+
+
+                    } else {
+                        $scope.saveUpdateJob();
+                    }*/
       }  /* }
                 });*/
+    };
+    $scope.deleteJob = function (jobCode) {
+      Services.shiftService.get({
+        filter: 'job_id=\'' + jobCode + '\'',
+        fields: 'id',
+        include_count: true
+      }, function (remoteData) {
+        if (remoteData.meta.count <= 0) {
+          Services.employeeActivitiesService.get({
+            filter: 'job_code=\'' + jobCode + '\'',
+            fields: 'id',
+            include_count: true
+          }, function (remoteData) {
+            if (remoteData.meta.count <= 0) {
+              Services.setModelTempVar(jobCode);
+              $scope.modalInstance = $modal.open({
+                template: '<div class="modal-header"> <h3 class="modal-title">Delete Job</h3></div><div class="modal-body"><b> Please confirm by clicking Yes to Delete the job </b></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">No</button><button class="btn btn-primary" ng-click="all()">Yes</button> </div>',
+                controller: 'deleteJobCtrl'
+              });
+              $scope.modalInstance.result.then(function (id) {
+                $scope.savedisable = 1;
+                Services.jobService.delete({ filter: 'job_code=\'' + id + '\'' }, function (remoteData) {
+                  $scope.showerrorMsg = true;
+                  $scope.ErrorClass = 'success';
+                  $scope.ErrorMsg = 'Job deleted sucessfully !!!';
+                  $timeout(function () {
+                    $scope.showerrorMsg = false;
+                    $state.go('ctApp.jobs');
+                  }, 3000);
+                });
+              }, function () {
+              });
+            } else {
+              $scope.modalInstance = $modal.open({
+                template: '<div class="modal-header"> <h3 class="modal-title">Delete Job</h3></div><div class="modal-body"><b> This job has a schedule and/or activity associated, please change Status to Inactive </b></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">Cancel</button></div>',
+                controller: 'deleteJobCtrl'
+              });
+            }
+          });
+        } else {
+          $scope.modalInstance = $modal.open({
+            template: '<div class="modal-header"> <h3 class="modal-title">Delete Job</h3></div><div class="modal-body"><b> This job has a schedule and/or activity associated, please change Status to Inactive </b></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">Cancel</button></div>',
+            controller: 'deleteJobCtrl'
+          });
+        }
+      });
     };
     $scope.saveUpdateJob = function () {
       if (!angular.isUndefined($stateParams.jobId) && $stateParams.jobId) {
@@ -1042,35 +1088,35 @@ angular.module('ctApp.jobs', [
     };
     /*  $scope.getTimezone = function(val) {
 
-                return Services.getTimeZones(val).then(function(res) {
-                    var timezone = [];
-                    angular.forEach(res.data.record, function(item) {
-                        timezone.push(item.timezone);
-                    });
-                    return timezone;
-                });
-            };*/
+                  return Services.getTimeZones(val).then(function(res) {
+                      var timezone = [];
+                      angular.forEach(res.data.record, function(item) {
+                          timezone.push(item.timezone);
+                      });
+                      return timezone;
+                  });
+              };*/
     /* $scope.getmyTimezone = function(val) {
-                Services.employeeZips.get({
-                    filter: "Zip ='" + val + "'",
-                    fields: "timezone",
-                    limit: 1
-                }, function(remoteData) {
-                    if (remoteData.record.length > 0) {
-                        $scope.job.timezone = remoteData.record[0].timezone;
-                        $scope.showZipError = false;
-                    } else {
-                        $scope.showZipError = true;
-                        $timeout(function() {
-                            $scope.showZipError = false;
-                        }, 6000);
-                        $scope.job.timezone = "";
-                    }
+                 Services.employeeZips.get({
+                     filter: "Zip ='" + val + "'",
+                     fields: "timezone",
+                     limit: 1
+                 }, function(remoteData) {
+                     if (remoteData.record.length > 0) {
+                         $scope.job.timezone = remoteData.record[0].timezone;
+                         $scope.showZipError = false;
+                     } else {
+                         $scope.showZipError = true;
+                         $timeout(function() {
+                             $scope.showZipError = false;
+                         }, 6000);
+                         $scope.job.timezone = "";
+                     }
 
 
-                });
+                 });
 
-            };*/
+             };*/
     $scope.preventNext = function (keyEvent) {
       if (keyEvent.which === 13) {
         keyEvent.preventDefault();
@@ -1114,36 +1160,36 @@ angular.module('ctApp.jobs', [
       }
     };
     /* $scope.getZipDetail = function() {
-                if (!angular.isUndefined($scope.job.zip)) {
-                    if ($scope.job.zip.length == 5) {
+                 if (!angular.isUndefined($scope.job.zip)) {
+                     if ($scope.job.zip.length == 5) {
 
-                        Services.employeeZips.get({
-                            filter: "Zip ='" + $scope.job.zip + "'",
-                            fields: "timezone,primary_city,state,county",
-                            limit: 1
-                        }, function(remoteData) {
+                         Services.employeeZips.get({
+                             filter: "Zip ='" + $scope.job.zip + "'",
+                             fields: "timezone,primary_city,state,county",
+                             limit: 1
+                         }, function(remoteData) {
 
-                            if (remoteData.record.length > 0) {
-                                $scope.job.city = remoteData.record[0].primary_city;
-                                $scope.job.state = remoteData.record[0].state;
-                                $scope.job.county = remoteData.record[0].county;
-                                $scope.job.timezone = remoteData.record[0].timezone;
-                                $scope.showZipError = false;
-                            } else {
-                                $scope.showZipError = true;
-                                $timeout(function() {
-                                    $scope.showZipError = false;
-                                }, 6000);
-                                $scope.job.city = "";
-                                $scope.job.state = "";
-                                $scope.job.county = "";
-                                $scope.job.timezone = "";
-                            }
+                             if (remoteData.record.length > 0) {
+                                 $scope.job.city = remoteData.record[0].primary_city;
+                                 $scope.job.state = remoteData.record[0].state;
+                                 $scope.job.county = remoteData.record[0].county;
+                                 $scope.job.timezone = remoteData.record[0].timezone;
+                                 $scope.showZipError = false;
+                             } else {
+                                 $scope.showZipError = true;
+                                 $timeout(function() {
+                                     $scope.showZipError = false;
+                                 }, 6000);
+                                 $scope.job.city = "";
+                                 $scope.job.state = "";
+                                 $scope.job.county = "";
+                                 $scope.job.timezone = "";
+                             }
 
-                        });
-                    }
-                }
-            };*/
+                         });
+                     }
+                 }
+             };*/
     $scope.cancelJob = function () {
       $state.go('ctApp.jobs');
     };
@@ -1208,6 +1254,20 @@ angular.module('ctApp.jobs', [
     };
   }
 ]).controller('changeStatusCtrl', [
+  '$scope',
+  'Services',
+  '$modalInstance',
+  function ($scope, Services, $modalInstance) {
+    var id = Services.getModelTempVar();
+    Services.setModelTempVar();
+    $scope.all = function () {
+      $modalInstance.close(id);
+    };
+    $scope.cancel = function () {
+      $modalInstance.dismiss('cancel');
+    };
+  }
+]).controller('deleteJobCtrl', [
   '$scope',
   'Services',
   '$modalInstance',

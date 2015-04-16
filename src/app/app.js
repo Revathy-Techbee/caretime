@@ -330,6 +330,7 @@ angular.module('app', [
 
             });
             },
+
             employeeService: $resource(baseurl+'/rest/'+serviceName+'/agency_employees/:id/?app_name='+appName+'&fields=*', null, {'update': { method:'PUT' }}),
             employeeZones  : $resource(baseurl+'/rest/'+serviceName+'/agency_zones/:id/?app_name='+appName+'&fields=*', null, {'update': { method:'PUT' }}),
             employeeZips   : $resource(baseurl+'/rest/'+serviceName+'/agency_zip/:id/?app_name='+appName+'&fields=*', null, {'update': { method:'PUT' }}),
@@ -361,7 +362,9 @@ angular.module('app', [
              jobObservation : $resource(baseurl+'/rest/'+serviceName+'/job_observations/:id/?app_name='+appName+'&fields=*', null, {'update': { method:'PUT' }}),
              observationsName: $resource(baseurl+'/rest/'+serviceName+'/observations/:id/?app_name='+appName+'&fields=*', null, {'update': { method:'PUT' }}),
              tasksName: $resource(baseurl+'/rest/'+serviceName+'/tasks2/:id/?app_name='+appName+'&fields=*', null, {'update': { method:'PUT' }}),
-             alertService: $resource(baseurl+'/rest/'+serviceName+'/alerts/:id/?app_name='+appName+'&fields=*', null, {'update': { method:'PUT' }})
+             alertService: $resource(baseurl+'/rest/'+serviceName+'/alerts/:id/?app_name='+appName+'&fields=*', null, {'update': { method:'PUT' }}),
+             updateEmployeeActivities : $resource(baseurl+'/rest/'+serviceName+'/employee_activities/:ref_id/?app_name='+appName+'&fields=*', null, {'update': { method:'PUT' }}),
+
 
 
 

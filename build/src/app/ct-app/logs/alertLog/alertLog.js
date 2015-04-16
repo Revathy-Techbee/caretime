@@ -25,7 +25,8 @@ angular.module('ctApp.alertLog', [
   'HelperService',
   '$timeout',
   '$localStorage',
-  function ($scope, Services, HelperService, $timeout, $localStorage) {
+  '$modal',
+  function ($scope, Services, HelperService, $timeout, $localStorage, $modal) {
     $scope.logFilters = {};
     $scope.logFilters.zone = null;
     if ($localStorage.user_info.iszone_code) {
@@ -54,7 +55,7 @@ angular.module('ctApp.alertLog', [
     $scope.logFilters.endDate = moment(lastDay).format('YYYY-MM-DD');
     $scope.loadData = function (fdate, ldate, zone, fieldname, fieldval, alertType, offset) {
       var filterObj = {
-          'fields': 'empcode,jobcode,alert_type,date_time,job_zone,emp_zone,jobname,job_zonename,employeename,employee_zonename',
+          'fields': 'id,empcode,jobcode,alert_type,date_time,job_zone,emp_zone,jobname,job_zonename,employeename,employee_zonename,notes',
           'limit': $scope.call_limit,
           'offset': offset,
           'include_count': true,
@@ -83,10 +84,12 @@ angular.module('ctApp.alertLog', [
             employeeTemp = employeename.lastname + ', ' + employeename.firstname;
           }
           $scope.resultData.push({
+            'id': item.id,
             'empcode': employeeTemp + '( ' + item.empcode + ')',
             'jobcode': item.jobname + '( ' + item.jobcode + ')',
             'alert_type': item.alert_type,
             'date_time': HelperService.formatingDate(item.date_time, $localStorage.user_info.country),
+            'notes': item.notes,
             'job_zone': item.job_zonename + '( ' + item.job_zone + ')',
             'emp_zone': item.employee_zonename + '( ' + item.emp_zone + ')'
           });
@@ -186,6 +189,18 @@ angular.module('ctApp.alertLog', [
       }
       mixpanel.track('Alert Log', mixpanelObj);
       $scope.loadData(fdate, ldate, $scope.logFilters.zone, $scope.logFilters.field, $scope.logFilters.field_value, $scope.logFilters.alertType, 0);
+    };
+    $scope.enableEditView = function () {
+      var current_id = $scope.AlertDetails.currentItem.id;
+      Services.setModelTempVar({ 'AlertID': current_id });
+      $scope.modalInstance = $modal.open({
+        templateUrl: 'ct-app/logs/alertLog/add-update-alertLog.tpl.html',
+        size: 'lg',
+        controller: 'AddUpdateAlertLogCtrl'
+      });
+      $scope.modalInstance.result.then(function () {
+        $scope.updateTableData();
+      });
     };
     $scope.noRecord = 1;
     $scope.norecord = HelperService.errorMsg('alert-danger', 'Please Search to get Alert Log');
@@ -413,6 +428,40 @@ angular.module('ctApp.alertLog', [
           });
         }
       }
+    };
+  }
+]).controller('AddUpdateAlertLogCtrl', [
+  '$scope',
+  'Services',
+  '$timeout',
+  '$modalInstance',
+  function ($scope, Services, $timeout, $modalInstance) {
+    var AlertDetails = Services.getModelTempVar();
+    if (AlertDetails && AlertDetails.AlertID) {
+      $scope.alertID = AlertDetails.AlertID;
+      Services.setModelTempVar('');
+      Services.alertService.get({
+        filter: 'id=\'' + $scope.alertID + '\'',
+        fields: 'notes'
+      }, function (remoteData) {
+        $scope.notes = remoteData.record[0].notes;
+      });
+    }
+    $scope.saveNotes = function () {
+      $scope.savedisable = 1;
+      Services.alertService.update({ id: $scope.alertID }, { notes: $scope.notes }, function (data) {
+        $scope.savedisable = 0;
+        $scope.showerrorMsg = true;
+        $scope.ErrorClass = 'success';
+        $scope.ErrorMsg = 'Notes edited sucessfully !!!';
+        $timeout(function () {
+          $scope.showerrorMsg = false;
+          $modalInstance.close('takethisvalue');
+        }, 3000);
+      });
+    };
+    $scope.modelclose = function () {
+      $modalInstance.dismiss('cancel');
     };
   }
 ]);

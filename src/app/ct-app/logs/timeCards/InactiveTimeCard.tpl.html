@@ -1,0 +1,81 @@
+<div class="modal-header">
+    <h3 class="modal-title">INACTIVE TIME CARD</h3>
+</div>
+<div class="modal-body">
+    <div>
+
+        The following timecard will not be included in timesheet
+
+        <div class="table-responsive">
+            <table class="table table-striped b-t b-light">
+                <tr>
+                    <th>
+                        Employee
+                    </th>
+                    <td>
+                        {{employee_code}}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Job
+                    </th>
+                    <td>
+                        {{jobNamecode}}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Clock-in 
+                    </th>
+                    <td>
+                        {{clock_in}}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Clock-out 
+                    </th>
+                    <td>
+                        {{clock_out}}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Work Duration
+                    </th>
+                    <td>
+                        {{duration}}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        ClockIn Status
+                    </th>
+                    <td>
+                        {{clockInSat}}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        ClockOut Status
+                    </th>
+                    <td>
+                        {{clockOutSat}}
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="modal-footer">
+            <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
+                          {{ErrorMsg}}
+            </span>
+            <button type="button" class="btn btn-primary  btn-rounded" ng-disabled="savedisable == 1" ng-click='saveInactivetimecard()'>Submit</button>
+            <button type="button" class="btn btn-default btn-rounded" ng-click='Inactivemodelclose()'>Cancel</button>
+                    
+        </div>
+                
+        
+    </div>
+</div>

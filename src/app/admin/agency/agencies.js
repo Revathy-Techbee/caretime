@@ -36,11 +36,12 @@ angular.module('admin.agency', [
 }])
 
 .controller("AdminAgencyCtrl", ["$scope", "Services", "$state", "$modal", "$localStorage", "$timeout", "$http",
-    function($scope, Services, $state, $modal,$localStorage,$timeout,$http) {
-        $scope.empCountry=$localStorage.user_info.country;
+    function($scope, Services, $state, $modal, $localStorage, $timeout, $http) {
+        $scope.empCountry = $localStorage.user_info.country;
         $scope.config = {
             general: {
-                searchtxt: ""
+                searchtxt: "",
+                status: ""
             },
             page_size: 15,
             loaded_all_records: false,
@@ -50,8 +51,20 @@ angular.module('admin.agency', [
         $scope.sortField = "agency_name";
         $scope.sortType = "asc";
         $scope.agencyDetailList = [];
-
-
+        $scope.statusSearchOption = [{
+            id: "all",
+            name: "All"
+        }, {
+            id: "1",
+            name: "Active"
+        }, {
+            id: "0",
+            name: "Inactive"
+        }, {
+            id: "2",
+            name: "Trial"
+        }];
+        $scope.hidegeneratepwd=0;
         $scope.getNextData = function(offset) { // on pagination
             if ($scope.disable_infinite_scroll || $scope.config.loaded_all_records) {
                 return;
@@ -59,12 +72,25 @@ angular.module('admin.agency', [
             $scope.disable_infinite_scroll = true;
             $scope.config.show_agencies_loader = true;
             $scope.filterObj = {
-                fields: "id,agency_name,primary_city,primary_state,contact_name,created_on,last_logged_in,status,contact_email",
+                fields: "id,agency_name,primary_city,primary_state,contact_name,created_on,last_logged_in,status,contact_email,fax",
                 limit: $scope.config.page_size,
                 include_count: true,
                 offset: $scope.agencyDetailList.length,
                 order: $scope.sortField + ' ' + $scope.sortType
             };
+            if ($scope.config.general.searchtxt && $scope.config.general.searchtxt !== '') {
+                $scope.filterObj.filter = 'agency_name like "%' + $scope.config.general.searchtxt + '%"';
+            }
+            if (!angular.isUndefined($scope.config.general.status.id) && ($scope.config.general.status.id != 'all')) {
+                if (angular.isUndefined($scope.filterObj.filter)) {
+                    $scope.filterObj.filter = 'status="' + $scope.config.general.status.id + '"';
+
+                } else {
+                    $scope.filterObj.filter += ' and status="' + $scope.config.general.status.id + '"';
+
+                }
+            }
+
 
             Services.agencyDetail.get($scope.filterObj, function(data) {
                 for (var i = 0; i < data.record.length; i++) {
@@ -91,6 +117,15 @@ angular.module('admin.agency', [
             if ($scope.config.general.searchtxt && $scope.config.general.searchtxt !== '') {
                 $scope.filterObj.filter = 'agency_name like "%' + $scope.config.general.searchtxt + '%"';
             }
+            if (!angular.isUndefined($scope.config.general.status.id) && ($scope.config.general.status.id != 'all')) {
+                if (angular.isUndefined($scope.filterObj.filter)) {
+                    $scope.filterObj.filter = '  status="' + $scope.config.general.status.id + '"';
+
+                } else {
+                    $scope.filterObj.filter += ' and status="' + $scope.config.general.status.id + '"';
+
+                }
+            }
             Services.agencyDetail.get($scope.filterObj, function(data) {
                 $scope.agencyDetailList = data.record;
                 if (data.record.length < $scope.config.page_size) {
@@ -109,6 +144,7 @@ angular.module('admin.agency', [
 
         $scope.clearSearch = function() {
             $scope.config.general.searchtxt = "";
+            $scope.config.general.status = "";
             $scope.updateTableData();
         };
 
@@ -126,11 +162,11 @@ angular.module('admin.agency', [
 
         };
         $scope.resendEmail = function(agencyDetail) {
-             $scope.user_name = (agencyDetail.id + agencyDetail.contact_name).replace(/ /g, '');
+            $scope.user_name = (agencyDetail.id + agencyDetail.contact_name).replace(/ /g, '');
 
             var Emailmessage = "";
             Emailmessage = 'Hi ' + agencyDetail.contact_name + ':';
-            Emailmessage += '<br /><br />' + agencyDetail.agency_name  + ' agency is register with Caretime.  In order to complete the registration process and login to your account, you must click on the link below.  Please make a note of your user name before you click on the link.';
+            Emailmessage += '<br /><br />' + agencyDetail.agency_name + ' agency is register with Caretime.  In order to complete the registration process and login to your account, you must click on the link below.  Please make a note of your user name before you click on the link.';
             Emailmessage += '<br /><br /><strong>' + $scope.user_name + '</strong>';
             Emailmessage += '<br /><br />Please note that upon clicking the link below, you will be able to create a password.  Your password must be 8 characters, with one upper case and one number.';
             Emailmessage += '<br /><br />Please click on the Activation link below';
@@ -140,7 +176,6 @@ angular.module('admin.agency', [
             Emailmessage += '<br /><a href="mailto: support@caretime.us" title="" >support@caretime.us</a>';
             Emailmessage += '<br />Please visit our Knowledge Center for helpful tips on how to use the system.<a href="https://caretime.zendesk.com/hc/en-us" title="Caretime Zendesk">https://caretime.zendesk.com/hc/en-us</a>';
 
-            console.log(Emailmessage);
 
             $http({
                 method: 'POST',
@@ -149,7 +184,7 @@ angular.module('admin.agency', [
                     'Content-Type': 'application/x-www-form-urlencoded'
                 },
                 data: {
-                    'subject': 'Invitation for ' + agencyDetail.agency_name  + ' to Register with Caretime',
+                    'subject': 'Invitation for ' + agencyDetail.agency_name + ' to Register with Caretime',
                     'to': agencyDetail.contact_email,
                     'comment': Emailmessage
                 }
@@ -160,7 +195,7 @@ angular.module('admin.agency', [
                 $scope.ErrorMsg = "Mail Sent Sucessfully !!!";
                 $timeout(function() {
                     $scope.showerrorMsg = false;
-                                       
+
                 }, 3000);
 
 
@@ -170,7 +205,7 @@ angular.module('admin.agency', [
                 $scope.ErrorMsg = "Mail Sent Sucessfully !!!";
                 $timeout(function() {
                     $scope.showerrorMsg = false;
-                  
+
                 }, 3000);
 
             });
@@ -179,85 +214,102 @@ angular.module('admin.agency', [
 
         };
         $scope.generatePassword = function(agencyDetail) {
-             Services.signinService.get({
-                    filter: "user_email ='" + agencyDetail.contact_email + "' and user_type='1'"
-                }, function(data) {
-                    if (data.record.length === 0) {
-                                //console.log(agencyDetail);
-                                $scope.username=(agencyDetail.id + agencyDetail.contact_name).replace(/ /g, '');
-                                $scope.signinDBField = {};
-                                $scope.signinDBField.user_name= $scope.username;
-                                $scope.signinDBField.user_email= agencyDetail.contact_email;
-                                $scope.signinDBField.created_on= moment.utc();
-                                $scope.signinDBField.user_type= 1;
-                                $scope.signinDBField.status= 1;
-                                $scope.signinDBField.agency_id= agencyDetail.id;
-                                $scope.signinDBField.user_password= $scope.username;
-                                Services.signinService.save($scope.signinDBField, function(signindata) {
-                                    Emailmessage = 'Hi ' + $localStorage.user_info.first_name + ':';
-                                    Emailmessage += '<br /><br />' + agencyDetail.agency_name  + '  agency is register with Caretime. ';
-                                    Emailmessage += '<br /><br /><strong> LOGIN DETAILS  </strong><br /><br />';
-                                    Emailmessage += '<br /><br /><strong> Email : </strong>' + $scope.signinDBField.user_email + '<br /><br />';
-                                    Emailmessage += '<strong> User Name : </strong>' + $scope.signinDBField.user_name + '<br /><br />';
-                                    Emailmessage += '<strong> Password : </strong>' + $scope.signinDBField.user_password + '<br /><br />';
-                                   
-                                   
-                                    Emailmessage += '<br /><br />Thanks';
-                                    Emailmessage += '<br />Caretime Support Team';
-                                    Emailmessage += '<br /><a href="mailto: support@caretime.us" title="" >support@caretime.us</a>';
-                                    Emailmessage += '<br />Please visit our Knowledge Center for helpful tips on how to use the system.<a href="https://caretime.zendesk.com/hc/en-us" title="Caretime Zendesk">https://caretime.zendesk.com/hc/en-us</a>';
-
-                                   // console.log(Emailmessage);
-                                   // console.log($localStorage.user_info.email);
-
-                                    $http({
-                                    method: 'POST',
-                                    url: Services.mailUrl,
-                                    headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded'
-                                    },
-                                    data: {
-                                    'subject': 'Admin Login  for ' + agencyDetail.agency_name,
-                                    'to': $localStorage.user_info.email,
-                                    'comment': Emailmessage
-                                    }
-                                    }).
-                                    success(function(data, status, headers, config) {
-                                    $scope.showerrorMsg = true;
-                                    $scope.ErrorClass = "success";
-                                    $scope.ErrorMsg = "Mail Sent Sucessfully !!!";
-                                    $timeout(function() {
-                                    $scope.showerrorMsg = false;
-                                       
-                                    }, 3000);
+            $scope.hidegeneratepwd=1;
+            Services.signinService.get({
+                filter: "user_email ='" + agencyDetail.contact_email + "' and user_type='1'"
+            }, function(data) {
+                if (data.record.length === 0) {
+                    //console.log(agencyDetail);
+                    $scope.username = (agencyDetail.id + agencyDetail.contact_name).replace(/ /g, '');
+                    $scope.signinDBField = {};
+                    $scope.signinDBField.user_name = $scope.username;
+                    $scope.signinDBField.user_email = agencyDetail.contact_email;
+                    $scope.signinDBField.created_on = moment.utc();
+                    $scope.signinDBField.user_type = 1;
+                    $scope.signinDBField.status = 1;
+                    $scope.signinDBField.agency_id = agencyDetail.id;
+                    $scope.signinDBField.user_password = $scope.username;
+                    Services.signinService.save($scope.signinDBField, function(signindata) {
+                        Emailmessage = 'Hi ' + $localStorage.user_info.first_name + ':';
+                        Emailmessage += '<br /><br />' + agencyDetail.agency_name + '  agency is register with Caretime. ';
+                        Emailmessage += '<br /><br /><strong> LOGIN DETAILS  </strong><br /><br />';
+                        Emailmessage += '<br /><br /><strong> Email : </strong>' + $scope.signinDBField.user_email + '<br /><br />';
+                        Emailmessage += '<strong> User Name : </strong>' + $scope.signinDBField.user_name + '<br /><br />';
+                        Emailmessage += '<strong> Password : </strong>' + $scope.signinDBField.user_password + '<br /><br />';
 
 
-                                    }).error(function(data, status, headers, config) {
-                                    $scope.showerrorMsg = true;
-                                    $scope.ErrorClass = "success";
-                                    $scope.ErrorMsg = "Mail Sent Sucessfully !!!";
-                                    $timeout(function() {
-                                    $scope.showerrorMsg = false;
+                        Emailmessage += '<br /><br />Thanks';
+                        Emailmessage += '<br />Caretime Support Team';
+                        Emailmessage += '<br /><a href="mailto: support@caretime.us" title="" >support@caretime.us</a>';
+                        Emailmessage += '<br />Please visit our Knowledge Center for helpful tips on how to use the system.<a href="https://caretime.zendesk.com/hc/en-us" title="Caretime Zendesk">https://caretime.zendesk.com/hc/en-us</a>';
 
-                                    }, 3000);
 
-                                    });
-                                    });
 
-                                   
-                    }
-                    else
-                    {
-                        $scope.showerrorMsg = true;
-                        $scope.ErrorClass = "danger";
-                        $scope.ErrorMsg = "User already exist";
-                        $timeout(function() {
-                            $scope.showerrorMsg = false;
+                        $http({
+                            method: 'POST',
+                            url: Services.mailUrl,
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            data: {
+                                'subject': 'Admin Login  for ' + agencyDetail.agency_name,
+                                'to': $localStorage.user_info.email,
+                                'comment': Emailmessage
+                            }
+                        }).
+                        success(function(data, status, headers, config) {
+                            /*$scope.showerrorMsg = true;
+                            $scope.ErrorClass = "success";
+                            $scope.ErrorMsg = "Mail Sent Sucessfully !!!";
+                            $timeout(function() {
+                                $scope.showerrorMsg = false;
+
+                            }, 3000);
+                            */
+                            $scope.hidegeneratepwd=0;
+                            $scope.modalInstance = $modal.open({
+                                template: '<div class="modal-header"> <h3 class="modal-title">Temporary Password</h3></div><div class="modal-body"><span><b> Email : </b>' + $scope.signinDBField.user_email + '</span><br><span><b> User Name : </b>' + $scope.signinDBField.user_name + '</span><br><b> Password : </b>' + $scope.signinDBField.user_password + '</span><br></div>',
+                                controller: "temporaryPwdctl"
+                            });
+
+
+                        }).error(function(data, status, headers, config) {
+                            /*$scope.showerrorMsg = true;
+                            $scope.ErrorClass = "success";
+                            $scope.ErrorMsg = "Mail Sent Sucessfully !!!";
                            
-                        }, 4000);
-                    }
-                });
+
+                            $timeout(function() {
+                                $scope.showerrorMsg = false;
+                            }, 3000);*/
+                            $scope.hidegeneratepwd=0;
+                            $scope.modalInstance = $modal.open({
+                                template: '<div class="modal-header"> <h3 class="modal-title">Temporary Password</h3></div><div class="modal-body"><span><b> Email : </b>' + $scope.signinDBField.user_email + '</span><br><span><b> User Name : </b>' + $scope.signinDBField.user_name + '</span><br><b> Password : </b>' + $scope.signinDBField.user_password + '</span><br></div>',
+                                controller: "temporaryPwdctl"
+                            });
+                        });
+                    });
+
+
+                } else {
+                    $scope.hidegeneratepwd=0;
+                    $scope.modalInstance = $modal.open({
+                        template: '<div class="modal-header"> <h3 class="modal-title">Error </h3></div><div class="modal-body"><span><b> User already exist </b></span><br></div>',
+                        controller: "temporaryPwdctl"
+                    });
+                    /*
+                    $scope.showerrorMsg = true;
+                    $scope.ErrorClass = "danger";
+                    $scope.ErrorMsg = "User already exist";
+                    $timeout(function() {
+                        $scope.showerrorMsg = false;
+
+                    }, 4000);
+                    */
+                }
+            });
         };
+
 
 
     }
@@ -303,7 +355,7 @@ angular.module('admin.agency', [
                 $scope.agency.primary_address2 = $scope.agencyDBField.primary_address2;
                 $scope.agency.primary_city = $scope.agencyDBField.primary_city;
                 $scope.agency.primary_county = $scope.agencyDBField.primary_county;
-                $scope.agency.country     = ($scope.agencyDBField.country)?$scope.agencyDBField.country:"United States";
+                $scope.agency.country = ($scope.agencyDBField.country) ? $scope.agencyDBField.country : "United States";
                 $scope.agency.primary_state = $scope.agencyDBField.primary_state;
                 $scope.agency.primary_zip = $scope.agencyDBField.primary_zip;
                 $scope.agency.contact_email = $scope.agencyDBField.contact_email;
@@ -506,20 +558,14 @@ angular.module('admin.agency', [
                             return false;
                         } else {
 
-
+                            //toMailId=$scope.agencyDBField.contact_email+','+$localStorage.user_info.email;
                             Services.agencyDetail.save($scope.agencyDBField, function(data) {
                                 $scope.signinDBField = {};
                                 $scope.signinDBField.user_name = (data.id + $scope.agency.contact_name).replace(/ /g, '');
                                 $scope.signinDBField.user_email = $scope.agency.contact_email;
 
-                                $scope.sendMailOnCreate($scope.signinDBField.user_name, $scope.signinDBField.user_email);
-                                $scope.showerrorMsg = true;
-                                $scope.ErrorClass = "success";
-                                $scope.ErrorMsg = "Agency sucessfully added !!!";
-                                $timeout(function() {
-                                    $scope.showerrorMsg = false;
-                                    $state.go("admin.agency");
-                                }, 3000);
+                                $scope.sendMailOnCreate($scope.signinDBField.user_name, $scope.signinDBField.user_email,$scope.agencyDBField.contact_email,false);
+                               
 
 
                             });
@@ -550,7 +596,7 @@ angular.module('admin.agency', [
             }
 
         };
-        $scope.sendMailOnCreate = function(username, email) {
+        $scope.sendMailOnCreate = function(username, email,sendmail,showmsg) {
 
             var Emailmessage = "";
             Emailmessage = 'Hi ' + $scope.agency.contact_name + ':';
@@ -572,14 +618,63 @@ angular.module('admin.agency', [
                 },
                 data: {
                     'subject': 'Invitation for ' + $scope.agency.agency_name + ' to Register with Caretime',
-                    'to': $scope.agencyDBField.contact_email,
+                    'to':sendmail,
                     'comment': Emailmessage
                 }
             }).
             success(function(data, status, headers, config) {
+                if(showmsg)
+                {
+                    if (!angular.isUndefined($stateParams.agencyId) && $stateParams.agencyId) {
+                    $scope.showerrorMsg = true;
+                    $scope.ErrorClass = "success";
+                    $scope.ErrorMsg = "Mail Sent Sucessfully !!!";
+                    $timeout(function() {
+                        $scope.showerrorMsg = false;
+                        $state.go("admin.agency");
+
+                    }, 3000);
+                }
+                else
+                {
+                    $scope.showerrorMsg = true;
+                    $scope.ErrorClass = "success";
+                    $scope.ErrorMsg = "Agency sucessfully added !!!";
+                    $timeout(function() {
+                        $scope.showerrorMsg = false;
+                        $state.go("admin.agency");
+                    }, 3000);
+
+                }
+                }
+                else
+                {
+                    $scope.sendMailOnCreate(username, email,$localStorage.user_info.email,true);
+                }
+                
 
             }).error(function(data, status, headers, config) {
+                if (!angular.isUndefined($stateParams.agencyId) && $stateParams.agencyId) {
+                    $scope.showerrorMsg = true;
+                    $scope.ErrorClass = "success";
+                    $scope.ErrorMsg = "Mail Sent Sucessfully !!!";
+                    $timeout(function() {
+                        $scope.showerrorMsg = false;
+                        $state.go("admin.agency");
 
+                    }, 3000);
+                }
+                else
+                {
+                    $scope.showerrorMsg = true;
+                    $scope.ErrorClass = "success";
+                    $scope.ErrorMsg = "Agency sucessfully added !!!";
+                    $timeout(function() {
+                        $scope.showerrorMsg = false;
+                        $state.go("admin.agency");
+                    }, 3000);
+
+                }
             });
 
 
@@ -589,15 +684,8 @@ angular.module('admin.agency', [
             $scope.signinDBField = {};
             $scope.signinDBField.user_name = ($stateParams.agencyId + $scope.agency.contact_name).replace(/ /g, '');
             $scope.signinDBField.user_email = $scope.agency.contact_email;
-            $scope.sendMailOnCreate($scope.signinDBField.user_name, $scope.signinDBField.user_email);
-            $scope.showerrorMsg = true;
-            $scope.ErrorClass = "success";
-            $scope.ErrorMsg = "Mail Sent Sucessfully !!!";
-            $timeout(function() {
-                $scope.showerrorMsg = false;
-                $state.go("admin.agency");
-               
-            }, 3000);
+            $scope.sendMailOnCreate($scope.signinDBField.user_name, $scope.signinDBField.user_email,$scope.agencyDBField.contact_email,true);
+           
 
 
         };
@@ -611,7 +699,7 @@ angular.module('admin.agency', [
         $scope.getmyTimezone = function(lat, lng) {
             if (lat && lng) {
 
-/*
+                /*
                 Services.getTimeZone(lat, lng, function(data){
 
                     console.log(data);
@@ -697,7 +785,7 @@ angular.module('admin.agency', [
                         $scope.agency.long_lat.lat = $scope.mymapVariable.geometry.location['k'];
                         $scope.getmyTimezone($scope.agency.long_lat.lat, $scope.agency.long_lat.long);
                     }
-                   
+
 
                 }
 
@@ -783,4 +871,12 @@ angular.module('admin.agency', [
     }
 
 
+])
+.controller("temporaryPwdctl", ["$scope", "$timeout", "$modalInstance", function($scope, $timeout, $modalInstance) {
+    $timeout(function() {
+        $modalInstance.dismiss('cancel');
+
+    }, 5000);
+
+}
 ]);

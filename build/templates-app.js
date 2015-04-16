@@ -1,4 +1,4 @@
-angular.module('templates-app', ['access/employeeLogin/employeeLogin.tpl.html', 'access/forgotPassword/forgotPassword.tpl.html', 'access/resetPassword/resetPassword.tpl.html', 'access/sign-in/sign-in.tpl.html', 'access/sign-up/sign-up.tpl.html', 'admin/admin.tpl.html', 'admin/agency/add-update-agency.tpl.html', 'admin/agency/agencies.tpl.html', 'admin/agency/mapDetailView.tpl.html', 'admin/updatePassword/updatePassword.tpl.html', 'ct-app/agency/add-update-agency.tpl.html', 'ct-app/agency/mapDetailView.tpl.html', 'ct-app/authorizations/add-update-authorizations.tpl.html', 'ct-app/authorizations/authorizations.tpl.html', 'ct-app/ct-app.tpl.html', 'ct-app/employees/add-update-employee.tpl.html', 'ct-app/employees/employee-dashboard.tpl.html', 'ct-app/employees/employees.tpl.html', 'ct-app/employees/mapDetailView.tpl.html', 'ct-app/employees/upload-skeleton.tpl.html', 'ct-app/employees/view-employee.tpl.html', 'ct-app/jobs/add-update-job.tpl.html', 'ct-app/jobs/jobs.tpl.html', 'ct-app/jobs/mapDetailView.tpl.html', 'ct-app/jobs/view-job.tpl.html', 'ct-app/logs/alertLog/alertLog.tpl.html', 'ct-app/logs/callLog/callLogs.tpl.html', 'ct-app/logs/customPrompts/customPrompts.tpl.html', 'ct-app/logs/employeeActivities/employeeActivities.tpl.html', 'ct-app/logs/timeCards/add-update-timeCard.tpl.html', 'ct-app/logs/timeCards/timeCards.tpl.html', 'ct-app/mainDashboard/mainDashboard.tpl.html', 'ct-app/manageLists/activities/activities.tpl.html', 'ct-app/manageLists/activities/add-update-activity.tpl.html', 'ct-app/manageLists/customPrompts/add-update-customPrompt.tpl.html', 'ct-app/manageLists/customPrompts/customPrompts.tpl.html', 'ct-app/manageLists/observations/add-update-observation.tpl.html', 'ct-app/manageLists/observations/observations.tpl.html', 'ct-app/manageLists/payClasses/add-update-payClass.tpl.html', 'ct-app/manageLists/payClasses/payClasses.tpl.html', 'ct-app/manageLists/payTypes/add-update-payType.tpl.html', 'ct-app/manageLists/payTypes/payTypes.tpl.html', 'ct-app/manageLists/payors/add-update-payor.tpl.html', 'ct-app/manageLists/payors/payors.tpl.html', 'ct-app/manageLists/serviceItems/add-update-serviceItem.tpl.html', 'ct-app/manageLists/serviceItems/serviceItems.tpl.html', 'ct-app/manageLists/skills/add-update-skill.tpl.html', 'ct-app/manageLists/skills/skills.tpl.html', 'ct-app/manageLists/tasks/add-update-task.tpl.html', 'ct-app/manageLists/tasks/tasks.tpl.html', 'ct-app/mapView/mapView.tpl.html', 'ct-app/reports/accountActivities/accountActivities.tpl.html', 'ct-app/reports/activityReports/activityReports.tpl.html', 'ct-app/reports/authorizedVsActuall/authorizedVsActuall.tpl.html', 'ct-app/reports/dailyHoursChart/dailyHoursChart.tpl.html', 'ct-app/reports/employeeList/employeeList.tpl.html', 'ct-app/reports/employeeTimecard/employeeTimecard.tpl.html', 'ct-app/reports/employeeWeeklyHours/employeeWeeklyHours.tpl.html', 'ct-app/reports/inactivityEmployees/inactivityEmployees.tpl.html', 'ct-app/reports/jobList/jobList.tpl.html', 'ct-app/reports/jobNoSchedule/jobNoSchedule.tpl.html', 'ct-app/reports/jobObservation/jobObservation.tpl.html', 'ct-app/reports/jobTask/jobTask.tpl.html', 'ct-app/reports/jobTimecard/jobTimecard.tpl.html', 'ct-app/reports/jobWeeklyHours/jobWeeklyHours.tpl.html', 'ct-app/reports/mapReport/mapReport.tpl.html', 'ct-app/reports/scheduleReport/scheduleReport.tpl.html', 'ct-app/reports/scheduleVsActuall/scheduleVsActuall.tpl.html', 'ct-app/reports/timecardExport/timecardExport.tpl.html', 'ct-app/schedules/add-update-schedule.tpl.html', 'ct-app/schedules/schedules.tpl.html', 'ct-app/updatePassword/updatePassword.tpl.html', 'ct-app/zones/add-update-zone.tpl.html', 'ct-app/zones/zone-employee-dashboard.tpl.html', 'ct-app/zones/zones.tpl.html', 'partials/admin_header.tpl.html', 'partials/admin_nav.tpl.html', 'partials/aside.tpl.html', 'partials/datepicker.tpl.html', 'partials/header.tpl.html', 'partials/nav.tpl.html', 'partials/page_footer.tpl.html', 'partials/settings.tpl.html', 'utils/directive-templates/dropdown.tpl.html', 'utils/directive-templates/inline-edit.tpl.html', 'utils/directive-templates/popover-html-unsafe-popup.tpl.html']);
+angular.module('templates-app', ['access/employeeLogin/employeeLogin.tpl.html', 'access/forgotPassword/forgotPassword.tpl.html', 'access/resetPassword/resetPassword.tpl.html', 'access/sign-in/sign-in.tpl.html', 'access/sign-up/sign-up.tpl.html', 'admin/admin.tpl.html', 'admin/agency/add-update-agency.tpl.html', 'admin/agency/agencies.tpl.html', 'admin/agency/mapDetailView.tpl.html', 'admin/updatePassword/updatePassword.tpl.html', 'ct-app/agency/add-update-agency.tpl.html', 'ct-app/agency/mapDetailView.tpl.html', 'ct-app/authorizations/add-update-authorizations.tpl.html', 'ct-app/authorizations/authorizations.tpl.html', 'ct-app/ct-app.tpl.html', 'ct-app/employees/add-update-employee.tpl.html', 'ct-app/employees/employee-dashboard.tpl.html', 'ct-app/employees/employees.tpl.html', 'ct-app/employees/mapDetailView.tpl.html', 'ct-app/employees/upload-skeleton.tpl.html', 'ct-app/employees/view-employee.tpl.html', 'ct-app/jobs/add-update-job.tpl.html', 'ct-app/jobs/jobs.tpl.html', 'ct-app/jobs/mapDetailView.tpl.html', 'ct-app/jobs/view-job.tpl.html', 'ct-app/logs/alertLog/add-update-alertLog.tpl.html', 'ct-app/logs/alertLog/alertLog.tpl.html', 'ct-app/logs/callLog/callLogs.tpl.html', 'ct-app/logs/customPrompts/customPrompts.tpl.html', 'ct-app/logs/employeeActivities/employeeActivities.tpl.html', 'ct-app/logs/timeCards/InactiveTimeCard.tpl.html', 'ct-app/logs/timeCards/add-update-timeCard.tpl.html', 'ct-app/logs/timeCards/timeCards.tpl.html', 'ct-app/mainDashboard/mainDashboard.tpl.html', 'ct-app/manageLists/activities/activities.tpl.html', 'ct-app/manageLists/activities/add-update-activity.tpl.html', 'ct-app/manageLists/customPrompts/add-update-customPrompt.tpl.html', 'ct-app/manageLists/customPrompts/customPrompts.tpl.html', 'ct-app/manageLists/observations/add-update-observation.tpl.html', 'ct-app/manageLists/observations/observations.tpl.html', 'ct-app/manageLists/payClasses/add-update-payClass.tpl.html', 'ct-app/manageLists/payClasses/payClasses.tpl.html', 'ct-app/manageLists/payTypes/add-update-payType.tpl.html', 'ct-app/manageLists/payTypes/payTypes.tpl.html', 'ct-app/manageLists/payors/add-update-payor.tpl.html', 'ct-app/manageLists/payors/payors.tpl.html', 'ct-app/manageLists/serviceItems/add-update-serviceItem.tpl.html', 'ct-app/manageLists/serviceItems/serviceItems.tpl.html', 'ct-app/manageLists/skills/add-update-skill.tpl.html', 'ct-app/manageLists/skills/skills.tpl.html', 'ct-app/manageLists/tasks/add-update-task.tpl.html', 'ct-app/manageLists/tasks/tasks.tpl.html', 'ct-app/mapView/mapView.tpl.html', 'ct-app/reports/accountActivities/accountActivities.tpl.html', 'ct-app/reports/activityReports/activityReports.tpl.html', 'ct-app/reports/authorizedVsActuall/authorizedVsActuall.tpl.html', 'ct-app/reports/dailyHoursChart/dailyHoursChart.tpl.html', 'ct-app/reports/employeeList/employeeList.tpl.html', 'ct-app/reports/employeeTimecard/employeeTimecard.tpl.html', 'ct-app/reports/employeeWeeklyHours/employeeWeeklyHours.tpl.html', 'ct-app/reports/inactivityEmployees/inactivityEmployees.tpl.html', 'ct-app/reports/jobList/jobList.tpl.html', 'ct-app/reports/jobNoSchedule/jobNoSchedule.tpl.html', 'ct-app/reports/jobObservation/jobObservation.tpl.html', 'ct-app/reports/jobTask/jobTask.tpl.html', 'ct-app/reports/jobTimecard/jobTimecard.tpl.html', 'ct-app/reports/jobWeeklyHours/jobWeeklyHours.tpl.html', 'ct-app/reports/mapReport/mapReport.tpl.html', 'ct-app/reports/scheduleReport/scheduleReport.tpl.html', 'ct-app/reports/scheduleVsActuall/scheduleVsActuall.tpl.html', 'ct-app/reports/timecardExport/timecardExport.tpl.html', 'ct-app/schedules/add-update-schedule.tpl.html', 'ct-app/schedules/schedules.tpl.html', 'ct-app/updatePassword/updatePassword.tpl.html', 'ct-app/zones/add-update-zone.tpl.html', 'ct-app/zones/zone-employee-dashboard.tpl.html', 'ct-app/zones/zones.tpl.html', 'partials/admin_header.tpl.html', 'partials/admin_nav.tpl.html', 'partials/aside.tpl.html', 'partials/datepicker.tpl.html', 'partials/header.tpl.html', 'partials/nav.tpl.html', 'partials/page_footer.tpl.html', 'partials/settings.tpl.html', 'utils/directive-templates/dropdown.tpl.html', 'utils/directive-templates/inline-edit.tpl.html', 'utils/directive-templates/popover-html-unsafe-popup.tpl.html']);
 
 angular.module("access/employeeLogin/employeeLogin.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("access/employeeLogin/employeeLogin.tpl.html",
@@ -703,14 +703,23 @@ angular.module("admin/agency/agencies.tpl.html", []).run(["$templateCache", func
     "<div class=\"wrapper-md\">\n" +
     "    <div class=\"panel panel-default\">\n" +
     "        <div class=\"row wrapper\">\n" +
+    "            <div class=\"col-sm-3\">\n" +
+    "                \n" +
+    "                <ui-select ng-change=\"updateTableData()\" ng-model=\"config.general.status\" theme=\"select2\" style=\"min-width: 225px;\">\n" +
+    "                        <ui-select-match placeholder=\"Status for search\">{{$select.selected.name}}</ui-select-match>\n" +
+    "                        <ui-select-choices repeat=\"item in statusSearchOption\">\n" +
+    "                            <div ng-bind-html=\"item.name\"></div>\n" +
+    "                        </ui-select-choices>\n" +
+    "                    </ui-select>\n" +
     "\n" +
+    "            </div>\n" +
     "            <div class=\"col-sm-3\">\n" +
     "                <input type=\"text\" class=\"input-md form-control\" placeholder=\"Search Text\" ng-model=\"config.general.searchtxt\" ui-keypress=\"{13:'updateTableData(true)'}\" capitalize>\n" +
     "            </div>\n" +
-    "            <div class=\"col-sm-9\">\n" +
+    "            <div class=\"col-sm-6\">\n" +
     "                <button class=\"btn btn-md btn-info\" type=\"button\" ng-click=\"updateTableData(true)\">Search</button>\n" +
     "                <button class=\"btn btn-md btn-warning\" type=\"button\" ng-click=\"clearSearch()\">Clear</button>\n" +
-    "                <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">\n" +
+    "                <span class=\"alert alert-{{ErrorClass}}\"  ng-if=\"showerrorMsg\">\n" +
     "                        {{ErrorMsg}}\n" +
     "                </span>\n" +
     "            </div>\n" +
@@ -754,18 +763,18 @@ angular.module("admin/agency/agencies.tpl.html", []).run(["$templateCache", func
     "                            <button ng-click=\"enableView(detail.id)\" class=\"btn btn-rounded btn-sm btn-icon btn-default\"><i class=\"fa fa-eye\"></i>\n" +
     "                            </button>\n" +
     "                             <button ng-click=\"resendEmail(detail)\" class=\"btn btn-rounded btn-sm btn-icon btn-default\"><i class=\"fa fa-envelope\"></i>\n" +
-    "                            <button ng-click=\"generatePassword(detail)\" class=\"btn btn-rounded btn-sm btn-icon btn-default\"><i class=\"fa fa-key\"></i>\n" +
+    "                            <button ng-disabled=\"hidegeneratepwd==1\"ng-click=\"generatePassword(detail)\" class=\"btn btn-rounded btn-sm btn-icon btn-default\"><i class=\"fa fa-key\"></i>\n" +
     "                             \n" +
     "                            </button>\n" +
     "                        </td>\n" +
     "                    </tr>\n" +
     "                    <tr ng-if=\"config.show_agencies_loader\">\n" +
-    "                        <td colspan=\"4\">\n" +
+    "                        <td colspan=\"8\">\n" +
     "                            <div show-loader=\"config.show_agencies_loader\"></div>\n" +
     "                        </td>\n" +
     "                    </tr>\n" +
     "                    <tr ng-if=\"!config.show_agencies_loader && agencyDetailList.length==0\">\n" +
-    "                        <td colspan='4' class=\"alert alert-danger\">\n" +
+    "                        <td colspan='9' class=\"alert alert-danger\">\n" +
     "                            <center> No Records Found.</center>\n" +
     "                        </td>\n" +
     "                    </tr>\n" +
@@ -1676,7 +1685,7 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "\n" +
     "                        <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
     "                        <div class=\"form-group\">\n" +
-    "                            <div class=\"col-sm-10\">\n" +
+    "                            <div class=\"col-sm-9\">\n" +
     "                                <button type=\"submit\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
     "                                <button type=\"button\" ng-if=\"pageTitle=='Update'\" class=\"btn btn-primary  btn-rounded\" ng-click=\"employeeManage('general', false)\">Save changes</button>\n" +
     "                                <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">\n" +
@@ -1684,8 +1693,9 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "                                  {{ErrorMsg}}\n" +
     "                          </span>\n" +
     "                            </div>\n" +
-    "                            <div class=\"col-sm-2\">\n" +
+    "                            <div class=\"col-sm-3\">\n" +
     "                                <div class=\"pull-right\">\n" +
+    "                                    <button type=\"button\" ng-if=\"pageTitle=='Update'\" class=\"btn btn-default btn-rounded\" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>\n" +
     "                                    <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancelEmployee()'>Cancel</button>\n" +
     "                                </div>\n" +
     "                            </div>\n" +
@@ -1786,15 +1796,16 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "\n" +
     "                        <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
     "\n" +
-    "                        <div class=\"form-group\" ng-class=\"{'has-error': rc.personal.needsAttention(personal.workphone)}\">\n" +
-    "                            <label class=\"col-sm-2 control-label text-danger\">Work Phone </label>\n" +
+    "                        <!--<div class=\"form-group\" ng-class=\"{'has-error': rc.personal.needsAttention(personal.workphone)}\">-->\n" +
+    "                        <div class=\"form-group\" >\n" +
+    "                            <label class=\"col-sm-2 control-label\">Work Phone </label>\n" +
     "                            <div class=\"col-sm-4\">\n" +
     "\n" +
-    "                                <input type=\"text\" name=\"workphone\" class=\"form-control\" ng-if=\"employee.country=='United States'\"  ui-mask=\"(999) 999-9999\" required=\"\" ui-mask-use-viewvalue=\"false\" ng-model=\"employee.workphone\">\n" +
+    "                                <input type=\"text\" name=\"workphone\" class=\"form-control\" ng-if=\"employee.country=='United States'\"  ui-mask=\"(999) 999-9999\" ui-mask-use-viewvalue=\"false\" ng-model=\"employee.workphone\">\n" +
     "\n" +
-    "                                 <input type=\"text\" name=\"workphone\" class=\"form-control\" ng-if=\"employee.country!='United States'\"  required=\"\" ng-pattern=\"/^[0-9]+$/\" ng-model=\"employee.workphone\">\n" +
+    "                                 <input type=\"text\" name=\"workphone\" class=\"form-control\" ng-if=\"employee.country!='United States'\"  ng-pattern=\"/^[0-9]+$/\" ng-model=\"employee.workphone\">\n" +
     "                                <em class=\"help-block m-b-none text-muted\">This phone will be used for alert notification.</em>\n" +
-    "                                <span class=\"help-block\" ng-show=\"personal.workphone.$error.required && rc.personal.needsAttention(personal.workphone)\">Work Phone is required.</span>\n" +
+    "                                <!--<span class=\"help-block\" ng-show=\"personal.workphone.$error.required && rc.personal.needsAttention(personal.workphone)\">Work Phone is required.</span>-->\n" +
     "\n" +
     "                            </div>\n" +
     "                        </div>\n" +
@@ -1837,24 +1848,25 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "                            </div>\n" +
     "                        </div>\n" +
     "\n" +
-    "                        <div class=\"form-group\" ng-class=\"{'has-error': rc.personal.needsAttention(personal.birthdate)}\">\n" +
-    "                            <label class=\"col-sm-2 control-label text-danger\">Birthday</label>\n" +
+    "                        <!--<div class=\"form-group\" ng-class=\"{'has-error': rc.personal.needsAttention(personal.birthdate)}\"> -->\n" +
+    "                        <div class=\"form-group\" >\n" +
+    "                            <label class=\"col-sm-2 control-label \">Birthday</label>\n" +
     "                            <div class=\"col-sm-10\" ng-controller=\"DatepickerDemoCtrl\">\n" +
     "                                <div class=\"input-group w-md\">\n" +
-    "                                    <input required=\"\" readonly=\"\" type=\"text\" class=\"form-control\" max-date=\"{{dt}}\" datepicker-popup=\"{{format}}\" ng-model=\"employee.birthdate\" is-open=\"opened\" datepicker-options=\"dateOptions\" close-text=\"Close\" name=\"birthdate\" />\n" +
+    "                                    <input  readonly=\"\" type=\"text\" class=\"form-control\" max-date=\"{{dt}}\" datepicker-popup=\"{{format}}\" ng-model=\"employee.birthdate\" is-open=\"opened\" datepicker-options=\"dateOptions\" close-text=\"Close\" name=\"birthdate\" />\n" +
     "                                    <span class=\"input-group-btn\">\n" +
     "                            <button type=\"button\" class=\"btn btn-default\" ng-click=\"open($event)\"><i class=\"glyphicon glyphicon-calendar\"></i></button>\n" +
-    "                          </span>\n" +
+    "                          </span> \n" +
     "                                </div>\n" +
     "                                <em class=\"help-block m-b-none text-muted\">Required for Mobile authentication.</em>\n" +
-    "                                <span class=\"help-block\" ng-show=\"personal.birthdate.$error.required\n" +
-    "                                && rc.personal.needsAttention(personal.birthdate)\">Birthday is required.</span>\n" +
+    "                                <!--<span class=\"help-block\" ng-show=\"personal.birthdate.$error.required\n" +
+    "                                && rc.personal.needsAttention(personal.birthdate)\">Birthday is required.</span>-->\n" +
     "                            </div>\n" +
     "                        </div>\n" +
     "                        <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
     "\n" +
     "                        <div class=\"form-group\">\n" +
-    "                            <div class=\"col-sm-10\">\n" +
+    "                            <div class=\"col-sm-9\">\n" +
     "                                <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click=\"employeeManagePrev('personal')\">Prev</button>\n" +
     "                                <button type=\"submit\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
     "                                <button type=\"button\" ng-if=\"pageTitle=='Update'\" class=\"btn btn-primary  btn-rounded\" ng-click=\"employeeManage('personal', false)\">Save changes</button>\n" +
@@ -1862,8 +1874,9 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "                                  {{ErrorMsg}}\n" +
     "                      </span>\n" +
     "                            </div>\n" +
-    "                            <div class=\"col-sm-2\">\n" +
+    "                            <div class=\"col-sm-3\">\n" +
     "                                <div class=\"pull-right\">\n" +
+    "                                    <button type=\"button\" ng-if=\"pageTitle=='Update'\" class=\"btn btn-default btn-rounded\" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>\n" +
     "                                    <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancelEmployee()'>Cancel</button>\n" +
     "                                </div>\n" +
     "                            </div>\n" +
@@ -1988,7 +2001,7 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "\n" +
     "                        <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
     "                        <div class=\"form-group\">\n" +
-    "                            <div class=\"col-sm-10\">\n" +
+    "                            <div class=\"col-sm-9\">\n" +
     "                                <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click=\"employeeManagePrev('advanced')\">Prev</button>\n" +
     "                                <button type=\"submit\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
     "                                <button type=\"button\" class=\"btn btn-primary  btn-rounded\" ng-disabled=\"savedisable == 1\" ng-click=\"employeeManage('advanced', false)\">Save changes</button>\n" +
@@ -1996,8 +2009,9 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "                                  {{ErrorMsg}}\n" +
     "                        </span>\n" +
     "                            </div>\n" +
-    "                            <div class=\"col-sm-2\">\n" +
+    "                            <div class=\"col-sm-3\">\n" +
     "                                <div class=\"pull-right\">\n" +
+    "                                    <button type=\"button\" ng-if=\"pageTitle=='Update'\" class=\"btn btn-default btn-rounded\" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>\n" +
     "                                    <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancelEmployee()'>Cancel</button>\n" +
     "                                </div>\n" +
     "                            </div>\n" +
@@ -2119,7 +2133,7 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "                        </div>\n" +
     "\n" +
     "                        <div class=\"form-group\">\n" +
-    "                            <div class=\"col-sm-10\">\n" +
+    "                            <div class=\"col-sm-9\">\n" +
     "                                <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click=\"employeeManagePrev('certification')\">Prev</button>\n" +
     "                                <button type=\"button\" ng-if=\"adminUser\" ng-click=\"employeeManage('certification')\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
     "                                <button type=\"button\" class=\"btn btn-primary  btn-rounded\" ng-click=\"employeeManage('certification', false)\">Save changes</button>\n" +
@@ -2131,8 +2145,9 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "\n" +
     "\n" +
     "\n" +
-    "                            <div class=\"col-sm-2\">\n" +
+    "                            <div class=\"col-sm-3\">\n" +
     "                                <div class=\"pull-right\">\n" +
+    "                                    <button type=\"button\" ng-if=\"pageTitle=='Update'\" class=\"btn btn-default btn-rounded\" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>\n" +
     "                                    <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancelEmployee()'>Cancel</button>\n" +
     "                                </div>\n" +
     "                            </div>\n" +
@@ -2181,15 +2196,16 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "\n" +
     "                        <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
     "                        <div class=\"form-group\">\n" +
-    "                            <div class=\"col-sm-10\">\n" +
+    "                            <div class=\"col-sm-9\">\n" +
     "                                <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click=\"employeeManagePrev('authorization')\">Prev</button>\n" +
     "                                <button type=\"button\" class=\"btn btn-primary  btn-rounded\" ng-click=\"employeeManage('authorization', false)\">Save changes</button>\n" +
     "                                <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">\n" +
     "                                  {{ErrorMsg}}\n" +
     "                        </span>\n" +
     "                            </div>\n" +
-    "                            <div class=\"col-sm-2\">\n" +
+    "                            <div class=\"col-sm-3\">\n" +
     "                                <div class=\"pull-right\">\n" +
+    "                                    <button type=\"button\" ng-if=\"pageTitle=='Update'\" class=\"btn btn-default btn-rounded\" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>\n" +
     "                                    <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancelEmployee()'>Cancel</button>\n" +
     "                                </div>\n" +
     "                            </div>\n" +
@@ -3176,7 +3192,7 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "\n" +
     "                        <div class=\"form-group\">\n" +
     "\n" +
-    "                            <div class=\"col-sm-10\">\n" +
+    "                            <div class=\"col-sm-9\">\n" +
     "\n" +
     "                                <button type=\"submit\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
     "\n" +
@@ -3190,9 +3206,10 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "\n" +
     "                            </div>\n" +
     "\n" +
-    "                            <div class=\"col-sm-2\">\n" +
+    "                            <div class=\"col-sm-3\">\n" +
     "\n" +
     "                                <div class=\"pull-right\">\n" +
+    "                                    <button type=\"button\" ng-show=\"job_id\" class=\"btn btn-default btn-rounded\" ng-click='deleteJob(job.job_code)'>Delete</button>\n" +
     "                                    <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancelJob()'>Cancel</button>\n" +
     "                                </div>\n" +
     "\n" +
@@ -3314,7 +3331,7 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "\n" +
     "                        <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
     "                        <div class=\"form-group\">\n" +
-    "                            <div class=\"col-sm-10\">\n" +
+    "                            <div class=\"col-sm-9\">\n" +
     "                                <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click=\"jobManagePrev('location')\">Prev</button>\n" +
     "                                <button type=\"submit\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
     "                                <button type=\"button\" class=\"btn btn-primary btn-rounded\" ng-click=\"jobManage('location', false)\" ng-disabled=\"savedisable == 1\">Save changes</button>\n" +
@@ -3323,8 +3340,9 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "                                     {{ErrorMsg}}\n" +
     "                                </span>\n" +
     "                            </div>\n" +
-    "                            <div class=\"col-sm-2\">\n" +
+    "                            <div class=\"col-sm-3\">\n" +
     "                                <div class=\"pull-right\">\n" +
+    "                                     <button type=\"button\" ng-show=\"job_id\" class=\"btn btn-default btn-rounded\" ng-click='deleteJob(job.job_code)'>Delete</button>\n" +
     "                                    <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancelJob()'>Cancel</button>\n" +
     "                                </div>\n" +
     "                            </div>\n" +
@@ -3462,7 +3480,7 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "\n" +
     "                        <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
     "                        <div class=\"form-group\">\n" +
-    "                            <div class=\"col-sm-10\">\n" +
+    "                            <div class=\"col-sm-9\">\n" +
     "                                <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click=\"jobManagePrev('advanced')\" ng-disabled=\"savedisable == 1\">Prev</button>\n" +
     "                                <button type=\"submit\" class=\"btn btn-default btn-rounded\" ng-disabled=\"savedisable == 1\">Next</button>\n" +
     "\n" +
@@ -3472,8 +3490,9 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "                                     {{ErrorMsg}}\n" +
     "                                 </span>\n" +
     "                            </div>\n" +
-    "                            <div class=\"col-sm-2\">\n" +
+    "                            <div class=\"col-sm-3\">\n" +
     "                                <div class=\"pull-right\">\n" +
+    "                                    <button type=\"button\" ng-show=\"job_id\" class=\"btn btn-default btn-rounded\" ng-click='deleteJob(job.job_code)'>Delete</button>\n" +
     "                                    <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancelJob()'>Cancel</button>\n" +
     "                                </div>\n" +
     "                            </div>\n" +
@@ -3523,7 +3542,7 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "\n" +
     "                        <div class=\"form-group\">\n" +
     "\n" +
-    "                            <div class=\"col-sm-10\">\n" +
+    "                            <div class=\"col-sm-9\">\n" +
     "\n" +
     "                                <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click=\"jobManagePrev('notes')\">Prev</button>\n" +
     "\n" +
@@ -3538,8 +3557,9 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "\n" +
     "                            </div>\n" +
     "\n" +
-    "                            <div class=\"col-sm-2\">\n" +
+    "                            <div class=\"col-sm-3\">\n" +
     "                                <div class=\"pull-right\">\n" +
+    "                                     <button type=\"button\" ng-show=\"job_id\" class=\"btn btn-default btn-rounded\" ng-click='deleteJob(job.job_code)'>Delete</button>\n" +
     "                                    <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancelJob()'>Cancel</button>\n" +
     "                                </div>\n" +
     "\n" +
@@ -3625,7 +3645,7 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "\n" +
     "                        <div class=\"form-group\">\n" +
     "\n" +
-    "                            <div class=\"col-sm-10\">\n" +
+    "                            <div class=\"col-sm-9\">\n" +
     "\n" +
     "                                <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click=\"jobManagePrev('customPrompt')\">Prev</button>\n" +
     "\n" +
@@ -3639,8 +3659,9 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "\n" +
     "                            </div>\n" +
     "\n" +
-    "                            <div class=\"col-sm-2\">\n" +
+    "                            <div class=\"col-sm-3\">\n" +
     "                                <div class=\"pull-right\">\n" +
+    "                                     <button type=\"button\" ng-show=\"job_id\" class=\"btn btn-default btn-rounded\" ng-click='deleteJob(job.job_code)'>Delete</button>\n" +
     "                                    <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancelJob()'>Cancel</button>\n" +
     "                                </div>\n" +
     "\n" +
@@ -4123,6 +4144,47 @@ angular.module("ct-app/jobs/view-job.tpl.html", []).run(["$templateCache", funct
     "    </div>");
 }]);
 
+angular.module("ct-app/logs/alertLog/add-update-alertLog.tpl.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("ct-app/logs/alertLog/add-update-alertLog.tpl.html",
+    "<div>\n" +
+    "    <div class=\"bg-light lter b-b wrapper-md\">\n" +
+    "        <h1 class=\"m-n font-thin h3\">Update Notes</h1>\n" +
+    "    </div>\n" +
+    "    <div class=\"wrapper-md\">\n" +
+    "\n" +
+    "        <div>\n" +
+    "\n" +
+    "            <form name=\"addtimecard\" class=\"form-validation form-horizontal addtimecard\" rc-submit=\"saveNotes()\" novalidate>\n" +
+    "                <div class=\"form-group\">\n" +
+    "                    <label class=\"col-sm-2 control-label\">Notes</label>\n" +
+    "                    <div class=\"col-sm-10\">\n" +
+    "                        <textarea rows=\"4\" capitalize ng-model=\"notes\" cols=\"50\" placeholder=\"Notes\"></textarea>\n" +
+    "\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
+    "                <div class=\"form-group\">\n" +
+    "                    <div class=\"col-sm-10\">\n" +
+    "                        <button type=\"submit\" class=\"btn btn-primary  btn-rounded\" ng-disabled=\"savedisable == 1\">Save changes</button>\n" +
+    "                        <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">\n" +
+    "                                  {{ErrorMsg}}\n" +
+    "                        </span>\n" +
+    "                    </div>\n" +
+    "                    <div class=\"col-sm-2\">\n" +
+    "                        <div class=\"pull-right\">\n" +
+    "\n" +
+    "                            <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='modelclose()'>Cancel</button>\n" +
+    "\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "            </form>\n" +
+    "\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>");
+}]);
+
 angular.module("ct-app/logs/alertLog/alertLog.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("ct-app/logs/alertLog/alertLog.tpl.html",
     "<div class=\"bg-light lter b-b wrapper-md\">\n" +
@@ -4218,11 +4280,16 @@ angular.module("ct-app/logs/alertLog/alertLog.tpl.html", []).run(["$templateCach
     "                <wj-flex-grid-column header=\"Employee Code\" is-read-only=\"true\" binding=\"empcode\" width=\"*\"> </wj-flex-grid-column>\n" +
     "               \n" +
     "                <wj-flex-grid-column header=\"Job Code\" is-read-only=\"true\" binding=\"jobcode\"> </wj-flex-grid-column>\n" +
-    "                <wj-flex-grid-column header=\"Alert Type\" is-read-only=\"true\" binding=\"alert_type\"> </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"Alert Type\" is-read-only=\"true\" binding=\"alert_type\"> </wj-flex-grid-column width=\"*\">\n" +
     "                <wj-flex-grid-column header=\"Date\" is-read-only=\"true\" binding=\"date_time\"> </wj-flex-grid-column>\n" +
-    "                 <wj-flex-grid-column header=\"Employee Zone Code\" is-read-only=\"true\" binding=\"emp_zone\" width=\"*\"> </wj-flex-grid-column>\n" +
+    "                 <wj-flex-grid-column header=\"Employee Zone Code\" is-read-only=\"true\" binding=\"emp_zone\" > </wj-flex-grid-column>\n" +
     "               \n" +
     "                <wj-flex-grid-column header=\"Job Zone Code\" is-read-only=\"true\" binding=\"job_zone\"> </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"Notes\" is-read-only=\"true\" binding=\"notes\"> </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"Edit\" is-read-only=\"true\" binding=\"id\" align=\"center\">\n" +
+    "                    <button type=\"button\" class=\"btn btn-rounded btn-sm btn-icon btn-default\" ng-click=\"enableEditView()\"><i class=\"fa fa-pencil\"></i>\n" +
+    "                    </button>\n" +
+    "                </wj-flex-grid-column>\n" +
     "               </wj-flex-grid-column>\n" +
     "\n" +
     "\n" +
@@ -4651,6 +4718,91 @@ angular.module("ct-app/logs/employeeActivities/employeeActivities.tpl.html", [])
     "</div>");
 }]);
 
+angular.module("ct-app/logs/timeCards/InactiveTimeCard.tpl.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("ct-app/logs/timeCards/InactiveTimeCard.tpl.html",
+    "<div class=\"modal-header\">\n" +
+    "    <h3 class=\"modal-title\">INACTIVE TIME CARD</h3>\n" +
+    "</div>\n" +
+    "<div class=\"modal-body\">\n" +
+    "    <div>\n" +
+    "\n" +
+    "        The following timecard will not be included in timescheet\n" +
+    "\n" +
+    "        <div class=\"table-responsive\">\n" +
+    "            <table class=\"table table-striped b-t b-light\">\n" +
+    "                <tr>\n" +
+    "                    <th>\n" +
+    "                        Employee\n" +
+    "                    </th>\n" +
+    "                    <td>\n" +
+    "                        {{employee_code}}\n" +
+    "                    </td>\n" +
+    "                </tr>\n" +
+    "                <tr>\n" +
+    "                    <th>\n" +
+    "                        Job\n" +
+    "                    </th>\n" +
+    "                    <td>\n" +
+    "                        {{jobNamecode}}\n" +
+    "                    </td>\n" +
+    "                </tr>\n" +
+    "                <tr>\n" +
+    "                    <th>\n" +
+    "                        Clock-in \n" +
+    "                    </th>\n" +
+    "                    <td>\n" +
+    "                        {{clock_in}}\n" +
+    "                    </td>\n" +
+    "                </tr>\n" +
+    "                <tr>\n" +
+    "                    <th>\n" +
+    "                        Clock-out \n" +
+    "                    </th>\n" +
+    "                    <td>\n" +
+    "                        {{clock_out}}\n" +
+    "                    </td>\n" +
+    "                </tr>\n" +
+    "                <tr>\n" +
+    "                    <th>\n" +
+    "                        Work Duration\n" +
+    "                    </th>\n" +
+    "                    <td>\n" +
+    "                        {{duration}}\n" +
+    "                    </td>\n" +
+    "                </tr>\n" +
+    "                <tr>\n" +
+    "                    <th>\n" +
+    "                        ClockIn Status\n" +
+    "                    </th>\n" +
+    "                    <td>\n" +
+    "                        {{clockInSat}}\n" +
+    "                    </td>\n" +
+    "                </tr>\n" +
+    "                <tr>\n" +
+    "                    <th>\n" +
+    "                        ClockOut Status\n" +
+    "                    </th>\n" +
+    "                    <td>\n" +
+    "                        {{clockOutSat}}\n" +
+    "                    </td>\n" +
+    "                </tr>\n" +
+    "            </table>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <div class=\"modal-footer\">\n" +
+    "            <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">\n" +
+    "                          {{ErrorMsg}}\n" +
+    "            </span>\n" +
+    "            <button type=\"button\" class=\"btn btn-primary  btn-rounded\" ng-disabled=\"savedisable == 1\" ng-click='saveInactivetimecard()'>Submit</button>\n" +
+    "            <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='Inactivemodelclose()'>Cancel</button>\n" +
+    "                    \n" +
+    "        </div>\n" +
+    "                \n" +
+    "        \n" +
+    "    </div>\n" +
+    "</div>");
+}]);
+
 angular.module("ct-app/logs/timeCards/add-update-timeCard.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("ct-app/logs/timeCards/add-update-timeCard.tpl.html",
     "<div>\n" +
@@ -4797,6 +4949,7 @@ angular.module("ct-app/logs/timeCards/add-update-timeCard.tpl.html", []).run(["$
     "                <div class=\"form-group\">\n" +
     "                    <div class=\"col-sm-10\">\n" +
     "                        <button type=\"submit\" class=\"btn btn-primary  btn-rounded\" ng-disabled=\"savedisable == 1\">Save changes</button>\n" +
+    "                        <button type=\"button\" ng-show=\"timecardId\" class=\"btn btn-default btn-rounded\" ng-click='inactiveTimecard(timecard)'>Inactive Timecard</button>\n" +
     "                        <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">\n" +
     "                                  {{ErrorMsg}}\n" +
     "                        </span>\n" +
@@ -7148,6 +7301,11 @@ angular.module("ct-app/reports/inactivityEmployees/inactivityEmployees.tpl.html"
     "<div class=\"wrapper-md\">\n" +
     "    <div class=\"panel panel-default\">\n" +
     "        <div class=\"row wrapper\">\n" +
+    "             <div class=\"col-sm-3\">\n" +
+    "                <div  class=\"form-control \" ui-select2=\"selectzone\" value=\"\" placeholder=\"Select Zone\" ng-model=\"reportFilters.zone\">\n" +
+    "                </div>\n" +
+    "\n" +
+    "            </div>\n" +
     "            <div class=\"col-sm-3\">\n" +
     "                <input class=\"form-control \" placeholder=\"Search Text\" value=\"\" ng-model=\"reportFilters.searchtxt\">\n" +
     "            </div>\n" +
@@ -7180,22 +7338,26 @@ angular.module("ct-app/reports/inactivityEmployees/inactivityEmployees.tpl.html"
     "                </div>\n" +
     "\n" +
     "            </div>\n" +
-    "            <div class=\"col-sm-3\">\n" +
+    "           <!-- <div class=\"col-sm-3\">\n" +
     "                <button class=\"btn btn-md btn-info\" type=\"button\" ng-click=\"updateTableData()\">Search</button>\n" +
     "                <button class=\"btn btn-md btn-warning\" type=\"button\" ng-click=\"clearSearch()\">Clear</button>\n" +
     "                 <a ng-disabled=\"noRecord==1\" download=\"InActivityEmployee.xlsx\" class=\"btn btn-md btn-info\" id=\"export\" ng-click=\"exportExcel()\">Export Excel</a>\n" +
     "\n" +
-    "            </div>\n" +
+    "            </div>-->\n" +
     "           \n" +
     "\n" +
     "        </div>\n" +
     "\n" +
-    "        <div class=\"row wrapper\" ng-if=\"showerrorMsg\">\n" +
-    "            <div class=\"col-sm-12\">\n" +
-    "                <span class=\"alert alert-danger\">{{error_msg}}</span>\n" +
-    "\n" +
+    "        <div class=\"row wrapper\" >\n" +
+    "            <div class=\"col-sm-2\">\n" +
+    "                <button class=\"btn btn-md btn-info\" type=\"button\" ng-click=\"updateTableData()\">Search</button>\n" +
+    "                <button class=\"btn btn-md btn-warning\" type=\"button\" ng-click=\"clearSearch()\">Clear</button>\n" +
     "            </div>\n" +
-    "\n" +
+    "            <div class=\"col-sm-10\">\n" +
+    "                <span ng-if=\"showerrorMsg\" class=\"alert alert-danger\">{{error_msg}}</span>\n" +
+    "          \n" +
+    "                 <a ng-disabled=\"noRecord==1\" download=\"jobNoSchedule.xlsx\" class=\"btn btn-md btn-info pull-right\" id=\"export\" ng-click=\"exportExcel()\">Export Excel</a>\n" +
+    "            </div>\n" +
     "        </div>\n" +
     "        <div class=\"row wrapper\" ng-if=\"noRecord==1 || show_activities_loader\">\n" +
     "            <div class=\"col-sm-12\">\n" +
@@ -7372,6 +7534,11 @@ angular.module("ct-app/reports/jobNoSchedule/jobNoSchedule.tpl.html", []).run(["
     "    <div class=\"panel panel-default\">\n" +
     "        <div class=\"row wrapper\">\n" +
     "            <div class=\"col-sm-3\">\n" +
+    "                <div  class=\"form-control \" ui-select2=\"selectzone\" value=\"\" placeholder=\"Select Zone\" ng-model=\"reportFilters.zone\">\n" +
+    "                </div>\n" +
+    "\n" +
+    "            </div>\n" +
+    "            <div class=\"col-sm-3\">\n" +
     "                <input class=\"form-control \" placeholder=\"Search Text\" value=\"\" ng-model=\"reportFilters.searchtxt\">\n" +
     "            </div>\n" +
     "\n" +
@@ -7403,21 +7570,25 @@ angular.module("ct-app/reports/jobNoSchedule/jobNoSchedule.tpl.html", []).run(["
     "                </div>\n" +
     "\n" +
     "            </div>\n" +
-    "            <div class=\"col-sm-3\">\n" +
+    "            <!--<div class=\"col-sm-3\">\n" +
     "                <button class=\"btn btn-md btn-info\" type=\"button\" ng-click=\"updateTableData()\">Search</button>\n" +
     "                <button class=\"btn btn-md btn-warning\" type=\"button\" ng-click=\"clearSearch()\">Clear</button>\n" +
     "                 <a ng-disabled=\"noRecord==1\" download=\"jobNoSchedule.xlsx\" class=\"btn btn-md btn-info\" id=\"export\" ng-click=\"exportExcel()\">Export Excel</a>\n" +
     "\n" +
-    "            </div>\n" +
+    "            </div>-->\n" +
     "\n" +
     "        </div>\n" +
     "\n" +
-    "        <div class=\"row wrapper\" ng-if=\"showerrorMsg\">\n" +
-    "            <div class=\"col-sm-12\">\n" +
-    "                <span class=\"alert alert-danger\">{{error_msg}}</span>\n" +
-    "\n" +
+    "        <div class=\"row wrapper\" >\n" +
+    "            <div class=\"col-sm-2\">\n" +
+    "                <button class=\"btn btn-md btn-info\" type=\"button\" ng-click=\"updateTableData()\">Search</button>\n" +
+    "                <button class=\"btn btn-md btn-warning\" type=\"button\" ng-click=\"clearSearch()\">Clear</button>\n" +
     "            </div>\n" +
-    "\n" +
+    "            <div class=\"col-sm-10\">\n" +
+    "                <span ng-if=\"showerrorMsg\" class=\"alert alert-danger\">{{error_msg}}</span>\n" +
+    "          \n" +
+    "                 <a ng-disabled=\"noRecord==1\" download=\"jobNoSchedule.xlsx\" class=\"btn btn-md btn-info pull-right\" id=\"export\" ng-click=\"exportExcel()\">Export Excel</a>\n" +
+    "            </div>\n" +
     "        </div>\n" +
     "        <div class=\"row wrapper\" ng-if=\"noRecord==1 || show_activities_loader\">\n" +
     "            <div class=\"col-sm-12\">\n" +

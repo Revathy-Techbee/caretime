@@ -137,7 +137,7 @@
 
                         <div class="line line-dashed b-b line-lg pull-in"></div>
                         <div class="form-group">
-                            <div class="col-sm-10">
+                            <div class="col-sm-9">
                                 <button type="submit" class="btn btn-default btn-rounded">Next</button>
                                 <button type="button" ng-if="pageTitle=='Update'" class="btn btn-primary  btn-rounded" ng-click="employeeManage('general', false)">Save changes</button>
                                 <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
@@ -145,8 +145,9 @@
                                   {{ErrorMsg}}
                           </span>
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-sm-3">
                                 <div class="pull-right">
+                                    <button type="button" ng-if="pageTitle=='Update'" class="btn btn-default btn-rounded" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>
                                     <button type="button" class="btn btn-default btn-rounded" ng-click='cancelEmployee()'>Cancel</button>
                                 </div>
                             </div>
@@ -247,15 +248,16 @@
 
                         <div class="line line-dashed b-b line-lg pull-in"></div>
 
-                        <div class="form-group" ng-class="{'has-error': rc.personal.needsAttention(personal.workphone)}">
-                            <label class="col-sm-2 control-label text-danger">Work Phone </label>
+                        <!--<div class="form-group" ng-class="{'has-error': rc.personal.needsAttention(personal.workphone)}">-->
+                        <div class="form-group" >
+                            <label class="col-sm-2 control-label">Work Phone </label>
                             <div class="col-sm-4">
 
-                                <input type="text" name="workphone" class="form-control" ng-if="employee.country=='United States'"  ui-mask="(999) 999-9999" required="" ui-mask-use-viewvalue="false" ng-model="employee.workphone">
+                                <input type="text" name="workphone" class="form-control" ng-if="employee.country=='United States'"  ui-mask="(999) 999-9999" ui-mask-use-viewvalue="false" ng-model="employee.workphone">
 
-                                 <input type="text" name="workphone" class="form-control" ng-if="employee.country!='United States'"  required="" ng-pattern="/^[0-9]+$/" ng-model="employee.workphone">
+                                 <input type="text" name="workphone" class="form-control" ng-if="employee.country!='United States'"  ng-pattern="/^[0-9]+$/" ng-model="employee.workphone">
                                 <em class="help-block m-b-none text-muted">This phone will be used for alert notification.</em>
-                                <span class="help-block" ng-show="personal.workphone.$error.required && rc.personal.needsAttention(personal.workphone)">Work Phone is required.</span>
+                                <!--<span class="help-block" ng-show="personal.workphone.$error.required && rc.personal.needsAttention(personal.workphone)">Work Phone is required.</span>-->
 
                             </div>
                         </div>
@@ -298,24 +300,25 @@
                             </div>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': rc.personal.needsAttention(personal.birthdate)}">
-                            <label class="col-sm-2 control-label text-danger">Birthday</label>
+                        <!--<div class="form-group" ng-class="{'has-error': rc.personal.needsAttention(personal.birthdate)}"> -->
+                        <div class="form-group" >
+                            <label class="col-sm-2 control-label ">Birthday</label>
                             <div class="col-sm-10" ng-controller="DatepickerDemoCtrl">
                                 <div class="input-group w-md">
-                                    <input required="" readonly="" type="text" class="form-control" max-date="{{dt}}" datepicker-popup="{{format}}" ng-model="employee.birthdate" is-open="opened" datepicker-options="dateOptions" close-text="Close" name="birthdate" />
+                                    <input  readonly="" type="text" class="form-control" max-date="{{dt}}" datepicker-popup="{{format}}" ng-model="employee.birthdate" is-open="opened" datepicker-options="dateOptions" close-text="Close" name="birthdate" />
                                     <span class="input-group-btn">
                             <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
-                          </span>
+                          </span> 
                                 </div>
                                 <em class="help-block m-b-none text-muted">Required for Mobile authentication.</em>
-                                <span class="help-block" ng-show="personal.birthdate.$error.required
-                                && rc.personal.needsAttention(personal.birthdate)">Birthday is required.</span>
+                                <!--<span class="help-block" ng-show="personal.birthdate.$error.required
+                                && rc.personal.needsAttention(personal.birthdate)">Birthday is required.</span>-->
                             </div>
                         </div>
                         <div class="line line-dashed b-b line-lg pull-in"></div>
 
                         <div class="form-group">
-                            <div class="col-sm-10">
+                            <div class="col-sm-9">
                                 <button type="button" class="btn btn-default btn-rounded" ng-click="employeeManagePrev('personal')">Prev</button>
                                 <button type="submit" class="btn btn-default btn-rounded">Next</button>
                                 <button type="button" ng-if="pageTitle=='Update'" class="btn btn-primary  btn-rounded" ng-click="employeeManage('personal', false)">Save changes</button>
@@ -323,8 +326,9 @@
                                   {{ErrorMsg}}
                       </span>
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-sm-3">
                                 <div class="pull-right">
+                                    <button type="button" ng-if="pageTitle=='Update'" class="btn btn-default btn-rounded" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>
                                     <button type="button" class="btn btn-default btn-rounded" ng-click='cancelEmployee()'>Cancel</button>
                                 </div>
                             </div>
@@ -449,7 +453,7 @@
 
                         <div class="line line-dashed b-b line-lg pull-in"></div>
                         <div class="form-group">
-                            <div class="col-sm-10">
+                            <div class="col-sm-9">
                                 <button type="button" class="btn btn-default btn-rounded" ng-click="employeeManagePrev('advanced')">Prev</button>
                                 <button type="submit" class="btn btn-default btn-rounded">Next</button>
                                 <button type="button" class="btn btn-primary  btn-rounded" ng-disabled="savedisable == 1" ng-click="employeeManage('advanced', false)">Save changes</button>
@@ -457,8 +461,9 @@
                                   {{ErrorMsg}}
                         </span>
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-sm-3">
                                 <div class="pull-right">
+                                    <button type="button" ng-if="pageTitle=='Update'" class="btn btn-default btn-rounded" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>
                                     <button type="button" class="btn btn-default btn-rounded" ng-click='cancelEmployee()'>Cancel</button>
                                 </div>
                             </div>
@@ -580,7 +585,7 @@
                         </div>
 
                         <div class="form-group">
-                            <div class="col-sm-10">
+                            <div class="col-sm-9">
                                 <button type="button" class="btn btn-default btn-rounded" ng-click="employeeManagePrev('certification')">Prev</button>
                                 <button type="button" ng-if="adminUser" ng-click="employeeManage('certification')" class="btn btn-default btn-rounded">Next</button>
                                 <button type="button" class="btn btn-primary  btn-rounded" ng-click="employeeManage('certification', false)">Save changes</button>
@@ -592,8 +597,9 @@
 
 
 
-                            <div class="col-sm-2">
+                            <div class="col-sm-3">
                                 <div class="pull-right">
+                                    <button type="button" ng-if="pageTitle=='Update'" class="btn btn-default btn-rounded" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>
                                     <button type="button" class="btn btn-default btn-rounded" ng-click='cancelEmployee()'>Cancel</button>
                                 </div>
                             </div>
@@ -642,15 +648,16 @@
 
                         <div class="line line-dashed b-b line-lg pull-in"></div>
                         <div class="form-group">
-                            <div class="col-sm-10">
+                            <div class="col-sm-9">
                                 <button type="button" class="btn btn-default btn-rounded" ng-click="employeeManagePrev('authorization')">Prev</button>
                                 <button type="button" class="btn btn-primary  btn-rounded" ng-click="employeeManage('authorization', false)">Save changes</button>
                                 <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
                                   {{ErrorMsg}}
                         </span>
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-sm-3">
                                 <div class="pull-right">
+                                    <button type="button" ng-if="pageTitle=='Update'" class="btn btn-default btn-rounded" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>
                                     <button type="button" class="btn btn-default btn-rounded" ng-click='cancelEmployee()'>Cancel</button>
                                 </div>
                             </div>

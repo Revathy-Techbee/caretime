@@ -37,7 +37,7 @@ angular.module('ctApp.jobs', [
 
 .controller("JobsCtrl", ["$scope", "Services", "$state", "$modal", "HelperService", "$http", "$localStorage",
     function($scope, Services, $state, $modal, HelperService, $http, $localStorage) {
-        $scope.empCountry=$localStorage.user_info.country;
+        $scope.empCountry = $localStorage.user_info.country;
 
         $scope.config = {
             general: {
@@ -79,24 +79,24 @@ angular.module('ctApp.jobs', [
 
         }
 
-       /* $scope.jobSearchOptionUnsorted = [];
-        $scope.getjobFilters = function() {
-            Services.getjobFilter().then(function(resp) {
-                angular.forEach(resp.data.field, function(item, index) {
-                    $scope.jobSearchOptionUnsorted.push({
-                        id: item.name,
-                        name: item.label
-                    });
-                });
+        /* $scope.jobSearchOptionUnsorted = [];
+         $scope.getjobFilters = function() {
+             Services.getjobFilter().then(function(resp) {
+                 angular.forEach(resp.data.field, function(item, index) {
+                     $scope.jobSearchOptionUnsorted.push({
+                         id: item.name,
+                         name: item.label
+                     });
+                 });
 
-                if ($scope.jobSearchOptionUnsorted.length > 0) {
-                    $scope.jobSearchOption = HelperService.arr.multisort($scope.jobSearchOptionUnsorted, ['name'], ['ASC']);
-                }
-            });
-        };
-        $scope.getjobFilters();
-        */
-         $scope.jobSearchOption = [{
+                 if ($scope.jobSearchOptionUnsorted.length > 0) {
+                     $scope.jobSearchOption = HelperService.arr.multisort($scope.jobSearchOptionUnsorted, ['name'], ['ASC']);
+                 }
+             });
+         };
+         $scope.getjobFilters();
+         */
+        $scope.jobSearchOption = [{
             id: "job_code",
             name: "Job Code"
         }, {
@@ -205,26 +205,24 @@ angular.module('ctApp.jobs', [
             $scope.config.general.filterDBField = '';
             $scope.config.general.filterStatus = '';
             $scope.config.general.searchtxt = '';
-              if ($localStorage.user_info.iszone_code) {
-                    Services.getEmpZoneDetail().then(function(res) {
+            if ($localStorage.user_info.iszone_code) {
+                Services.getEmpZoneDetail().then(function(res) {
 
-                        $scope.config.general.zone = [{
-                            "text": res.data.record[0]["zone_name"],
-                            "id": res.data.record[0]["id"],
-                            "code": res.data.record[0]["zone_code"]
-                        }];
-                        $scope.updateTableData();
+                    $scope.config.general.zone = [{
+                        "text": res.data.record[0]["zone_name"],
+                        "id": res.data.record[0]["id"],
+                        "code": res.data.record[0]["zone_code"]
+                    }];
+                    $scope.updateTableData();
 
-                    });
+                });
 
 
-                }
-                else
-                {
-                     $scope.config.general.zone = null;
-                     $scope.updateTableData();
+            } else {
+                $scope.config.general.zone = null;
+                $scope.updateTableData();
 
-                }
+            }
         };
 
 
@@ -345,7 +343,7 @@ angular.module('ctApp.jobs', [
             $scope.job.late_notify = 1;
             $scope.savedisable = 0;
             $scope.generateJobcode_count = 0;
-           // $scope.job.country="United States";
+            // $scope.job.country="United States";
             //$scope.timezonedata = 0;
             $scope.jobcode_length = $localStorage.configCode.job;
             if ($localStorage.user_info.iszone_code) {
@@ -390,7 +388,7 @@ angular.module('ctApp.jobs', [
                             state: $scope.jobDBField.job_state,
                             zip: $scope.jobDBField.job_zip,
                             county: $scope.jobDBField.job_county,
-                            country: ($scope.jobDBField.country)?$scope.jobDBField.country:"United States",
+                            country: ($scope.jobDBField.country) ? $scope.jobDBField.country : "United States",
                             budgeted_hours: $scope.jobDBField.budgeted_hours,
                             status: $scope.jobDBField.status,
                             service_item: ($scope.jobDBField.service_item_detail) ? JSON.parse($scope.jobDBField.service_item_detail) : "",
@@ -438,7 +436,7 @@ angular.module('ctApp.jobs', [
                                 $scope.authorizations = data.record;
                             }
                         });
-                        
+
                         if ($scope.job.jobgroup) {
                             $scope.getJobDetailByID($scope.job.jobgroup);
                         }
@@ -448,7 +446,7 @@ angular.module('ctApp.jobs', [
             };
 
             $scope.getJobDetailByID = function(jobId) {
-                
+
                 Services.jobService.get({
                     "fields": "job_name",
                     "filter": "job_code='" + jobId + "' and agency_id = " + Services.getAgencyID(),
@@ -648,123 +646,184 @@ angular.module('ctApp.jobs', [
                         return false;
                     } else {*/
 
-                        $scope.prompt_id = [];
-                        angular.forEach($scope.job.customPrompt, function(item, key) {
-                            if (item.prompt) {
-                                $scope.prompt_id.push(item.prompt.id);
-                            }
-                        });
-                        $scope.sorted_arr = $scope.prompt_id.sort(); // You can define the comparing function here. 
-                        var results = 0;
-                        for (var i = 0; i < $scope.prompt_id.length - 1; i++) {
-                            if ($scope.sorted_arr[i + 1] == $scope.sorted_arr[i]) {
-                                results = 1;
-                                break;
-                            }
-                        }
-                        if (results !== 0) {
+                $scope.prompt_id = [];
+                angular.forEach($scope.job.customPrompt, function(item, key) {
+                    if (item.prompt) {
+                        $scope.prompt_id.push(item.prompt.id);
+                    }
+                });
+                $scope.sorted_arr = $scope.prompt_id.sort(); // You can define the comparing function here. 
+                var results = 0;
+                for (var i = 0; i < $scope.prompt_id.length - 1; i++) {
+                    if ($scope.sorted_arr[i + 1] == $scope.sorted_arr[i]) {
+                        results = 1;
+                        break;
+                    }
+                }
+                if (results !== 0) {
 
-                            $scope.savedisable = 0;
-                            $scope.showerrorMsg = true;
-                            $scope.ErrorClass = "danger";
-                            $scope.ErrorMsg = "Please select different Prompt!!!";
-                            jQuery(".basic .ng-invalid").addClass("ng-dirty");
-                            $timeout(function() {
-                                $scope.showerrorMsg = false;
-                            }, 3000);
+                    $scope.savedisable = 0;
+                    $scope.showerrorMsg = true;
+                    $scope.ErrorClass = "danger";
+                    $scope.ErrorMsg = "Please select different Prompt!!!";
+                    jQuery(".basic .ng-invalid").addClass("ng-dirty");
+                    $timeout(function() {
+                        $scope.showerrorMsg = false;
+                    }, 3000);
 
-                            return false;
-                        } else
-                        {
+                    return false;
+                } else {
 
-                            $scope.jobDBField.job_name = $scope.job.job_name;
-                            $scope.jobDBField.agency_id = Services.getAgencyID();
-                            $scope.jobDBField.prompt_id = JSON.stringify($scope.prompt_id);
-                            $scope.jobDBField.prompt_details = JSON.stringify($scope.job.customPrompt);
-                            $scope.jobDBField.prompt_logtype = $scope.job.logtype;
-                            $scope.jobDBField.job_zone_detail = JSON.stringify($scope.job.job_zone);
-                            $scope.jobDBField.job_zone = $scope.job.job_zone.id;
-                            $scope.jobDBField.visitonly = JSON.stringify($scope.job.visitonly);
-                            $scope.jobDBField.employee_chart = $scope.job.employee_chart;
-                            $scope.jobDBField.job_address1 = $scope.job.job_address1;
-                            $scope.jobDBField.job_address2 = $scope.job.job_address2;
-                            $scope.jobDBField.job_city = $scope.job.city;
-                            $scope.jobDBField.job_state = $scope.job.state;
-                            $scope.jobDBField.job_zip = $scope.job.zip;
-                            $scope.jobDBField.job_county = $scope.job.county;
-                            $scope.jobDBField.country = $scope.job.country;
-                            $scope.jobDBField.timezone = $scope.job.timezone;
-                            $scope.jobDBField.work_phone = angular.toJson($scope.job.workphones);
-                            $scope.jobDBField.fax = $scope.job.fax;
-                            $scope.jobDBField.contact_name = $scope.job.contact_name;
-                            $scope.jobDBField.other_phone = JSON.stringify($scope.job.other_phone);
-                            $scope.jobDBField.budgeted_hours = $scope.job.budgeted_hours;
+                    $scope.jobDBField.job_name = $scope.job.job_name;
+                    $scope.jobDBField.agency_id = Services.getAgencyID();
+                    $scope.jobDBField.prompt_id = JSON.stringify($scope.prompt_id);
+                    $scope.jobDBField.prompt_details = JSON.stringify($scope.job.customPrompt);
+                    $scope.jobDBField.prompt_logtype = $scope.job.logtype;
+                    $scope.jobDBField.job_zone_detail = JSON.stringify($scope.job.job_zone);
+                    $scope.jobDBField.job_zone = $scope.job.job_zone.id;
+                    $scope.jobDBField.visitonly = JSON.stringify($scope.job.visitonly);
+                    $scope.jobDBField.employee_chart = $scope.job.employee_chart;
+                    $scope.jobDBField.job_address1 = $scope.job.job_address1;
+                    $scope.jobDBField.job_address2 = $scope.job.job_address2;
+                    $scope.jobDBField.job_city = $scope.job.city;
+                    $scope.jobDBField.job_state = $scope.job.state;
+                    $scope.jobDBField.job_zip = $scope.job.zip;
+                    $scope.jobDBField.job_county = $scope.job.county;
+                    $scope.jobDBField.country = $scope.job.country;
+                    $scope.jobDBField.timezone = $scope.job.timezone;
+                    $scope.jobDBField.work_phone = angular.toJson($scope.job.workphones);
+                    $scope.jobDBField.fax = $scope.job.fax;
+                    $scope.jobDBField.contact_name = $scope.job.contact_name;
+                    $scope.jobDBField.other_phone = JSON.stringify($scope.job.other_phone);
+                    $scope.jobDBField.budgeted_hours = $scope.job.budgeted_hours;
 
-                            $scope.jobDBField.status = $scope.job.status;
-                            $scope.jobDBField.service_item_detail = JSON.stringify($scope.job.service_item);
-                            $scope.jobDBField.service_item = $scope.job.service_item.id;
-                            $scope.jobDBField.pay_type_detail = JSON.stringify($scope.job.pay_type);
-                            $scope.jobDBField.pay_type = $scope.job.pay_type.id;
-                            $scope.jobDBField.map_url = $scope.job.url;
-                            $scope.jobDBField.long_lat = JSON.stringify($scope.job.long_lat);
+                    $scope.jobDBField.status = $scope.job.status;
+                    $scope.jobDBField.service_item_detail = JSON.stringify($scope.job.service_item);
+                    $scope.jobDBField.service_item = $scope.job.service_item.id;
+                    $scope.jobDBField.pay_type_detail = JSON.stringify($scope.job.pay_type);
+                    $scope.jobDBField.pay_type = $scope.job.pay_type.id;
+                    $scope.jobDBField.map_url = $scope.job.url;
+                    $scope.jobDBField.long_lat = JSON.stringify($scope.job.long_lat);
 
-                            $scope.jobDBField.external_code = JSON.stringify($scope.job.external_code);
-                            $scope.jobDBField.late_notify = $scope.job.late_notify;
+                    $scope.jobDBField.external_code = JSON.stringify($scope.job.external_code);
+                    $scope.jobDBField.late_notify = $scope.job.late_notify;
 
-                            $scope.jobDBField.budgeted_type = $scope.job.budgeted_type;
-                            $scope.workphoneformat = [];
-                            $scope.authphoneformat = [];
+                    $scope.jobDBField.budgeted_type = $scope.job.budgeted_type;
+                    $scope.workphoneformat = [];
+                    $scope.authphoneformat = [];
 
-                            angular.forEach($scope.job.workphones, function(item, key) {
-                                $scope.workphoneformat.push(item.phone);
-                                var phonenum = item.phone;
-                                var phoneformat = phonenum.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
-                                $scope.authphoneformat.push(phoneformat);
+                    angular.forEach($scope.job.workphones, function(item, key) {
+                        $scope.workphoneformat.push(item.phone);
+                        var phonenum = item.phone;
+                        var phoneformat = phonenum.replace(/(\d{3})(\d{3})(\d{4})/, "($1) $2-$3");
+                        $scope.authphoneformat.push(phoneformat);
 
-                            });
+                    });
 
-                            $scope.jobDBField.work_phone_format = $scope.workphoneformat.join(", ");
-                            $scope.jobDBField.authorized_phone_format = $scope.authphoneformat.join(", ");
-                            $scope.jobDBField.job_notes = $scope.job.job_notes;
-                            $scope.jobDBField.jobgroup = $scope.job.jobgroup;
-                            $scope.saveUpdateJob();
-                            /*if ($scope.jobDBField.job_zip) {
+                    $scope.jobDBField.work_phone_format = $scope.workphoneformat.join(", ");
+                    $scope.jobDBField.authorized_phone_format = $scope.authphoneformat.join(", ");
+                    $scope.jobDBField.job_notes = $scope.job.job_notes;
+                    $scope.jobDBField.jobgroup = $scope.job.jobgroup;
+                    $scope.saveUpdateJob();
+                    /*if ($scope.jobDBField.job_zip) {
 
-                                Services.employeeZips.get({
-                                    fields:"id",
-                                    filter: "Zip ='" + $scope.jobDBField.job_zip + "' and status > 0",
-                                    limit: 1
-                                }, function(remoteData) {
+                        Services.employeeZips.get({
+                            fields:"id",
+                            filter: "Zip ='" + $scope.jobDBField.job_zip + "' and status > 0",
+                            limit: 1
+                        }, function(remoteData) {
 
-                                    if (remoteData.record.length > 0) {
-                                        $scope.saveUpdateJob();
-
-                                    } else {
-                                        $scope.savedisable = 0;
-                                        $scope.showerrorMsg = true;
-                                        $scope.ErrorClass = "danger";
-                                        $scope.ErrorMsg = "Invalid Zip Code";
-                                        jQuery(".personal .ng-invalid").addClass("ng-dirty");
-                                        $timeout(function() {
-                                            $scope.showerrorMsg = false;
-                                        }, 3000);
-                                        return false;
-                                    }
-
-                                });
-
-
+                            if (remoteData.record.length > 0) {
+                                $scope.saveUpdateJob();
 
                             } else {
-                                $scope.saveUpdateJob();
-                            }*/
+                                $scope.savedisable = 0;
+                                $scope.showerrorMsg = true;
+                                $scope.ErrorClass = "danger";
+                                $scope.ErrorMsg = "Invalid Zip Code";
+                                jQuery(".personal .ng-invalid").addClass("ng-dirty");
+                                $timeout(function() {
+                                    $scope.showerrorMsg = false;
+                                }, 3000);
+                                return false;
+                            }
+
+                        });
+
+
+
+                    } else {
+                        $scope.saveUpdateJob();
+                    }*/
 
 
 
 
-                        }
-                   /* }
+                }
+                /* }
                 });*/
+
+            };
+            $scope.deleteJob = function(jobCode) {
+                Services.shiftService.get({
+                    filter: "job_id='" + jobCode + "'",
+                    fields: "id",
+                    include_count: true,
+                }, function(remoteData) {
+                    if (remoteData.meta.count <= 0) {
+                        Services.employeeActivitiesService.get({
+                            filter: "job_code='" + jobCode + "'",
+                            fields: "id",
+                            include_count: true,
+                        }, function(remoteData) {
+                            if (remoteData.meta.count <= 0)
+                            {
+                                Services.setModelTempVar(jobCode);
+                                $scope.modalInstance = $modal.open({
+                                    template: '<div class="modal-header"> <h3 class="modal-title">Delete Job</h3></div><div class="modal-body"><b> Please confirm by clicking Yes to Delete the job </b></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">No</button><button class="btn btn-primary" ng-click="all()">Yes</button> </div>',
+                                    controller: "deleteJobCtrl"
+
+                                });
+                                $scope.modalInstance.result.then(function(id) {
+                                    $scope.savedisable = 1;
+                                  
+                                    Services.jobService.delete({
+                                        filter: "job_code='" + id + "'"
+                                    }, function(remoteData) {
+
+                                     $scope.showerrorMsg = true;
+                                    $scope.ErrorClass = "success";
+                                    $scope.ErrorMsg = "Job deleted sucessfully !!!";
+                                     $timeout(function() {
+                                        $scope.showerrorMsg = false;
+                                        $state.go("ctApp.jobs");
+                                    }, 3000);
+
+                                    });
+                                    
+                                }, function() {});
+                               
+                            } else {
+                                 $scope.modalInstance = $modal.open({
+                                    template: '<div class="modal-header"> <h3 class="modal-title">Delete Job</h3></div><div class="modal-body"><b> This job has a schedule and/or activity associated, please change Status to Inactive </b></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">Cancel</button></div>',
+                                    controller: "deleteJobCtrl"
+
+                                });
+                                
+                                
+
+                            }
+                        });
+                    } else {
+                        $scope.modalInstance = $modal.open({
+                            template: '<div class="modal-header"> <h3 class="modal-title">Delete Job</h3></div><div class="modal-body"><b> This job has a schedule and/or activity associated, please change Status to Inactive </b></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">Cancel</button></div>',
+                            controller: "deleteJobCtrl"
+
+                        });
+                    }
+
+
+                });
 
             };
             $scope.saveUpdateJob = function() {
@@ -865,7 +924,7 @@ angular.module('ctApp.jobs', [
                     $scope.getJobcode();
 
                     Services.jobService.get({
-                        field:"id",
+                        field: "id",
                         filter: "job_code='" + $scope.jobDBField.job_code + "'"
                     }, function(data) {
 
@@ -981,7 +1040,7 @@ angular.module('ctApp.jobs', [
                 } else if ($localStorage.configCode.job <= ($scope.job.jobgroup).length) {
                     $scope.savedisable = 1;
                     Services.jobService.get({
-                        fields:"job_name",
+                        fields: "job_name",
                         filter: "job_code='" + $scope.job.jobgroup + "' and agency_id = " + Services.getAgencyID()
                     }, function(data) {
 
@@ -1009,20 +1068,20 @@ angular.module('ctApp.jobs', [
 
 
             $scope.getmyTimezone = function(lat, lng) {
-            if (lat && lng) {
-                var tz = new TimeZoneDB();
-                tz.getJSON({
-                    key: Services.timezoneKey,
-                    lat: lat,
-                    lng: lng
-                }, function(data) {
-                    $scope.$apply(function() {
-                        $scope.job.timezone = data.zoneName;
+                if (lat && lng) {
+                    var tz = new TimeZoneDB();
+                    tz.getJSON({
+                        key: Services.timezoneKey,
+                        lat: lat,
+                        lng: lng
+                    }, function(data) {
+                        $scope.$apply(function() {
+                            $scope.job.timezone = data.zoneName;
+                        });
                     });
-                });
 
-            }
-        };
+                }
+            };
 
             $scope.$on('place_changed', function(event, newValue) {
                 $scope.street_number = "";
@@ -1036,7 +1095,7 @@ angular.module('ctApp.jobs', [
                 $scope.mymapVariable = newValue;
                 // console.log($scope.mymapVariable);
                 if (newValue) {
-                    $scope.job.timezone="";
+                    $scope.job.timezone = "";
                     if ($scope.mymapVariable.address_components) {
 
                         for (var i = 0; i < $scope.mymapVariable.address_components.length; i++) {
@@ -1085,12 +1144,12 @@ angular.module('ctApp.jobs', [
                             $scope.job.url = $scope.mymapVariable.url;
 
                         }
-                       
+
                         if ($scope.mymapVariable.geometry) {
 
                             $scope.job.long_lat.long = $scope.mymapVariable.geometry.location['D'];
                             $scope.job.long_lat.lat = $scope.mymapVariable.geometry.location['k'];
-                             $scope.getmyTimezone($scope.job.long_lat.lat, $scope.job.long_lat.long);
+                            $scope.getmyTimezone($scope.job.long_lat.lat, $scope.job.long_lat.long);
                         }
 
 
@@ -1125,7 +1184,7 @@ angular.module('ctApp.jobs', [
             $scope.selectZone = {
 
                 query: function(query) {
-                   
+
                     $scope.zoneObj = {
                         fields: "zone_name,zone_code",
                         filter: "status > 0 and agency_id = " + Services.getAgencyID(),
@@ -1175,7 +1234,7 @@ angular.module('ctApp.jobs', [
                         results: []
                     };
                     $scope.serviceObj = {
-                        fields:"name,id",
+                        fields: "name,id",
                         filter: "status > 0 and agency_id = " + Services.getAgencyID(),
                         order: 'name asc',
                         limit: 5
@@ -1215,7 +1274,7 @@ angular.module('ctApp.jobs', [
                         results: []
                     };
                     $scope.payObj = {
-                        fields:"name,id",
+                        fields: "name,id",
                         filter: "status > 0 and agency_id = " + Services.getAgencyID(),
                         order: 'name asc',
                         limit: 5
@@ -1252,7 +1311,7 @@ angular.module('ctApp.jobs', [
 
             $scope.refreshSelectPrompt = function(name) {
                 $scope.promptObj = {
-                    fields:"prompt_name,id,prompt_text,prompt_answers",
+                    fields: "prompt_name,id,prompt_text,prompt_answers",
                     filter: "status > 0 and agency_id = " + Services.getAgencyID(),
                     'order': 'id asc',
                     limit: 5
@@ -1278,39 +1337,39 @@ angular.module('ctApp.jobs', [
 
             };
 
-          /*  $scope.getTimezone = function(val) {
+            /*  $scope.getTimezone = function(val) {
 
-                return Services.getTimeZones(val).then(function(res) {
-                    var timezone = [];
-                    angular.forEach(res.data.record, function(item) {
-                        timezone.push(item.timezone);
-                    });
-                    return timezone;
-                });
-            };*/
-
-
-           /* $scope.getmyTimezone = function(val) {
-                Services.employeeZips.get({
-                    filter: "Zip ='" + val + "'",
-                    fields: "timezone",
-                    limit: 1
-                }, function(remoteData) {
-                    if (remoteData.record.length > 0) {
-                        $scope.job.timezone = remoteData.record[0].timezone;
-                        $scope.showZipError = false;
-                    } else {
-                        $scope.showZipError = true;
-                        $timeout(function() {
-                            $scope.showZipError = false;
-                        }, 6000);
-                        $scope.job.timezone = "";
-                    }
+                  return Services.getTimeZones(val).then(function(res) {
+                      var timezone = [];
+                      angular.forEach(res.data.record, function(item) {
+                          timezone.push(item.timezone);
+                      });
+                      return timezone;
+                  });
+              };*/
 
 
-                });
+            /* $scope.getmyTimezone = function(val) {
+                 Services.employeeZips.get({
+                     filter: "Zip ='" + val + "'",
+                     fields: "timezone",
+                     limit: 1
+                 }, function(remoteData) {
+                     if (remoteData.record.length > 0) {
+                         $scope.job.timezone = remoteData.record[0].timezone;
+                         $scope.showZipError = false;
+                     } else {
+                         $scope.showZipError = true;
+                         $timeout(function() {
+                             $scope.showZipError = false;
+                         }, 6000);
+                         $scope.job.timezone = "";
+                     }
 
-            };*/
+
+                 });
+
+             };*/
 
             $scope.preventNext = function(keyEvent) {
                 if (keyEvent.which === 13) {
@@ -1358,37 +1417,37 @@ angular.module('ctApp.jobs', [
                 }
             };
 
-           /* $scope.getZipDetail = function() {
-                if (!angular.isUndefined($scope.job.zip)) {
-                    if ($scope.job.zip.length == 5) {
+            /* $scope.getZipDetail = function() {
+                 if (!angular.isUndefined($scope.job.zip)) {
+                     if ($scope.job.zip.length == 5) {
 
-                        Services.employeeZips.get({
-                            filter: "Zip ='" + $scope.job.zip + "'",
-                            fields: "timezone,primary_city,state,county",
-                            limit: 1
-                        }, function(remoteData) {
+                         Services.employeeZips.get({
+                             filter: "Zip ='" + $scope.job.zip + "'",
+                             fields: "timezone,primary_city,state,county",
+                             limit: 1
+                         }, function(remoteData) {
 
-                            if (remoteData.record.length > 0) {
-                                $scope.job.city = remoteData.record[0].primary_city;
-                                $scope.job.state = remoteData.record[0].state;
-                                $scope.job.county = remoteData.record[0].county;
-                                $scope.job.timezone = remoteData.record[0].timezone;
-                                $scope.showZipError = false;
-                            } else {
-                                $scope.showZipError = true;
-                                $timeout(function() {
-                                    $scope.showZipError = false;
-                                }, 6000);
-                                $scope.job.city = "";
-                                $scope.job.state = "";
-                                $scope.job.county = "";
-                                $scope.job.timezone = "";
-                            }
+                             if (remoteData.record.length > 0) {
+                                 $scope.job.city = remoteData.record[0].primary_city;
+                                 $scope.job.state = remoteData.record[0].state;
+                                 $scope.job.county = remoteData.record[0].county;
+                                 $scope.job.timezone = remoteData.record[0].timezone;
+                                 $scope.showZipError = false;
+                             } else {
+                                 $scope.showZipError = true;
+                                 $timeout(function() {
+                                     $scope.showZipError = false;
+                                 }, 6000);
+                                 $scope.job.city = "";
+                                 $scope.job.state = "";
+                                 $scope.job.county = "";
+                                 $scope.job.timezone = "";
+                             }
 
-                        });
-                    }
-                }
-            };*/
+                         });
+                     }
+                 }
+             };*/
             $scope.cancelJob = function() {
                 $state.go("ctApp.jobs");
             };
@@ -1443,15 +1502,15 @@ angular.module('ctApp.jobs', [
             });
 
 
-               Services.jobauthorizationService.get({
-                    fields: "id,payor_detail,skill_detail,acitivity_detail,authorization_start_date,authorization_end_date,total_hours,status",
-                    filter: "job='" + $scope.job_code + "'"
-               }, function(data) {
+            Services.jobauthorizationService.get({
+                fields: "id,payor_detail,skill_detail,acitivity_detail,authorization_start_date,authorization_end_date,total_hours,status",
+                filter: "job='" + $scope.job_code + "'"
+            }, function(data) {
 
-                   if (data.record) {
-                       $scope.job_authorization = data.record;
-                   }
-               });
+                if (data.record) {
+                    $scope.job_authorization = data.record;
+                }
+            });
 
 
 
@@ -1469,6 +1528,22 @@ angular.module('ctApp.jobs', [
 
     ])
     .controller("changeStatusCtrl", ["$scope", "Services", "$modalInstance", function($scope, Services, $modalInstance) {
+
+            var id = Services.getModelTempVar();
+            Services.setModelTempVar();
+            $scope.all = function() {
+                $modalInstance.close(id);
+            };
+
+            $scope.cancel = function() {
+
+                $modalInstance.dismiss('cancel');
+
+            };
+        }
+
+    ])
+    .controller("deleteJobCtrl", ["$scope", "Services", "$modalInstance", function($scope, Services, $modalInstance) {
 
             var id = Services.getModelTempVar();
             Services.setModelTempVar();

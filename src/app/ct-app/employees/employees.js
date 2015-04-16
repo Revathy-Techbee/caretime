@@ -728,8 +728,8 @@ angular.module('ctApp.employees', [
 
             }
             if (step == "personal") {
-
-                if ((!$scope.employee.timezone) || (!$scope.employee.workphone) || (!$scope.employee.birthdate)) {
+                if (!$scope.employee.timezone) {
+                //if ((!$scope.employee.timezone) || (!$scope.employee.workphone) || (!$scope.employee.birthdate)) {
                     $scope.savedisable = 0;
                     $scope.showerrorMsg = true;
                     $scope.ErrorClass = "danger";
@@ -1744,6 +1744,68 @@ angular.module('ctApp.employees', [
             }
         };
         $scope.getEmployeeDetail();
+        $scope.deleteEmployee = function(employeeCode) {
+                Services.shiftService.get({
+                    filter: "employee_code='" + employeeCode + "'",
+                    fields: "id",
+                    include_count: true,
+                }, function(remoteData) {
+                    if (remoteData.meta.count <= 0) {
+                        Services.employeeActivitiesService.get({
+                            filter: "employee_code='" + employeeCode + "'",
+                            fields: "id",
+                            include_count: true,
+                        }, function(remoteData) {
+                            if (remoteData.meta.count <= 0)
+                            {
+                                Services.setModelTempVar(employeeCode);
+                                $scope.modalInstance = $modal.open({
+                                    template: '<div class="modal-header"> <h3 class="modal-title">Delete Employee</h3></div><div class="modal-body"><b> Please confirm by clicking Yes to Delete the employee </b></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">No</button><button class="btn btn-primary" ng-click="all()">Yes</button> </div>',
+                                    controller: "deleteEmployeeCtrl"
+
+                                });
+                                $scope.modalInstance.result.then(function(id) {
+                                    $scope.savedisable = 1;
+                                  
+                                    Services.employeeService.delete({
+                                        filter: "access_code='" + id + "'"
+                                    }, function(remoteData) {
+
+                                     $scope.showerrorMsg = true;
+                                    $scope.ErrorClass = "success";
+                                    $scope.ErrorMsg = "Employee deleted sucessfully !!!";
+                                     $timeout(function() {
+                                        $scope.showerrorMsg = false;
+                                        $state.go("ctApp.employees");
+                                    }, 3000);
+
+                                    });
+                                    
+                                }, function() {});
+                               
+                            } else {
+                                 $scope.modalInstance = $modal.open({
+                                    template: '<div class="modal-header"> <h3 class="modal-title">Delete Employee</h3></div><div class="modal-body"><b> This employee has a schedule and/or activity associated, please change Status to Inactive </b></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">Cancel</button></div>',
+                                    controller: "deleteEmployeeCtrl"
+
+                                });
+                                
+                                
+
+                            }
+                        });
+                    } else {
+                        $scope.modalInstance = $modal.open({
+                            template: '<div class="modal-header"> <h3 class="modal-title">Delete Employee</h3></div><div class="modal-body"><b> This employee has a schedule and/or activity associated, please change Status to Inactive </b></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">Cancel</button></div>',
+                            controller: "deleteEmployeeCtrl"
+
+                        });
+                    }
+
+
+                });
+
+            };
     }
 ])
 
@@ -2394,4 +2456,20 @@ angular.module('ctApp.employees', [
         $scope.modalLoading = false;
         $scope.$close("cancel");
     };
-}]);
+}])
+ .controller("deleteEmployeeCtrl", ["$scope", "Services", "$modalInstance", function($scope, Services, $modalInstance) {
+
+            var id = Services.getModelTempVar();
+            Services.setModelTempVar();
+            $scope.all = function() {
+                $modalInstance.close(id);
+            };
+
+            $scope.cancel = function() {
+
+                $modalInstance.dismiss('cancel');
+
+            };
+        }
+
+    ]);

@@ -39,7 +39,10 @@ angular.module('admin.agency', ['ui.router']).config([
   function ($scope, Services, $state, $modal, $localStorage, $timeout, $http) {
     $scope.empCountry = $localStorage.user_info.country;
     $scope.config = {
-      general: { searchtxt: '' },
+      general: {
+        searchtxt: '',
+        status: ''
+      },
       page_size: 15,
       loaded_all_records: false,
       show_agencies_loader: true
@@ -48,6 +51,25 @@ angular.module('admin.agency', ['ui.router']).config([
     $scope.sortField = 'agency_name';
     $scope.sortType = 'asc';
     $scope.agencyDetailList = [];
+    $scope.statusSearchOption = [
+      {
+        id: 'all',
+        name: 'All'
+      },
+      {
+        id: '1',
+        name: 'Active'
+      },
+      {
+        id: '0',
+        name: 'Inactive'
+      },
+      {
+        id: '2',
+        name: 'Trial'
+      }
+    ];
+    $scope.hidegeneratepwd = 0;
     $scope.getNextData = function (offset) {
       // on pagination
       if ($scope.disable_infinite_scroll || $scope.config.loaded_all_records) {
@@ -56,12 +78,22 @@ angular.module('admin.agency', ['ui.router']).config([
       $scope.disable_infinite_scroll = true;
       $scope.config.show_agencies_loader = true;
       $scope.filterObj = {
-        fields: 'id,agency_name,primary_city,primary_state,contact_name,created_on,last_logged_in,status,contact_email',
+        fields: 'id,agency_name,primary_city,primary_state,contact_name,created_on,last_logged_in,status,contact_email,fax',
         limit: $scope.config.page_size,
         include_count: true,
         offset: $scope.agencyDetailList.length,
         order: $scope.sortField + ' ' + $scope.sortType
       };
+      if ($scope.config.general.searchtxt && $scope.config.general.searchtxt !== '') {
+        $scope.filterObj.filter = 'agency_name like "%' + $scope.config.general.searchtxt + '%"';
+      }
+      if (!angular.isUndefined($scope.config.general.status.id) && $scope.config.general.status.id != 'all') {
+        if (angular.isUndefined($scope.filterObj.filter)) {
+          $scope.filterObj.filter = 'status="' + $scope.config.general.status.id + '"';
+        } else {
+          $scope.filterObj.filter += ' and status="' + $scope.config.general.status.id + '"';
+        }
+      }
       Services.agencyDetail.get($scope.filterObj, function (data) {
         for (var i = 0; i < data.record.length; i++) {
           $scope.agencyDetailList.push(data.record[i]);
@@ -86,6 +118,13 @@ angular.module('admin.agency', ['ui.router']).config([
       if ($scope.config.general.searchtxt && $scope.config.general.searchtxt !== '') {
         $scope.filterObj.filter = 'agency_name like "%' + $scope.config.general.searchtxt + '%"';
       }
+      if (!angular.isUndefined($scope.config.general.status.id) && $scope.config.general.status.id != 'all') {
+        if (angular.isUndefined($scope.filterObj.filter)) {
+          $scope.filterObj.filter = '  status="' + $scope.config.general.status.id + '"';
+        } else {
+          $scope.filterObj.filter += ' and status="' + $scope.config.general.status.id + '"';
+        }
+      }
       Services.agencyDetail.get($scope.filterObj, function (data) {
         $scope.agencyDetailList = data.record;
         if (data.record.length < $scope.config.page_size) {
@@ -101,6 +140,7 @@ angular.module('admin.agency', ['ui.router']).config([
     };
     $scope.clearSearch = function () {
       $scope.config.general.searchtxt = '';
+      $scope.config.general.status = '';
       $scope.updateTableData();
     };
     $scope.enableEditView = function (id) {
@@ -123,7 +163,6 @@ angular.module('admin.agency', ['ui.router']).config([
       Emailmessage += '<br />Caretime Support Team';
       Emailmessage += '<br /><a href="mailto: support@caretime.us" title="" >support@caretime.us</a>';
       Emailmessage += '<br />Please visit our Knowledge Center for helpful tips on how to use the system.<a href="https://caretime.zendesk.com/hc/en-us" title="Caretime Zendesk">https://caretime.zendesk.com/hc/en-us</a>';
-      console.log(Emailmessage);
       $http({
         method: 'POST',
         url: Services.mailUrl,
@@ -150,6 +189,7 @@ angular.module('admin.agency', ['ui.router']).config([
       });
     };
     $scope.generatePassword = function (agencyDetail) {
+      $scope.hidegeneratepwd = 1;
       Services.signinService.get({ filter: 'user_email =\'' + agencyDetail.contact_email + '\' and user_type=\'1\'' }, function (data) {
         if (data.record.length === 0) {
           //console.log(agencyDetail);
@@ -173,8 +213,6 @@ angular.module('admin.agency', ['ui.router']).config([
             Emailmessage += '<br />Caretime Support Team';
             Emailmessage += '<br /><a href="mailto: support@caretime.us" title="" >support@caretime.us</a>';
             Emailmessage += '<br />Please visit our Knowledge Center for helpful tips on how to use the system.<a href="https://caretime.zendesk.com/hc/en-us" title="Caretime Zendesk">https://caretime.zendesk.com/hc/en-us</a>';
-            // console.log(Emailmessage);
-            // console.log($localStorage.user_info.email);
             $http({
               method: 'POST',
               url: Services.mailUrl,
@@ -185,28 +223,49 @@ angular.module('admin.agency', ['ui.router']).config([
                 'comment': Emailmessage
               }
             }).success(function (data, status, headers, config) {
-              $scope.showerrorMsg = true;
-              $scope.ErrorClass = 'success';
-              $scope.ErrorMsg = 'Mail Sent Sucessfully !!!';
-              $timeout(function () {
-                $scope.showerrorMsg = false;
-              }, 3000);
+              /*$scope.showerrorMsg = true;
+                            $scope.ErrorClass = "success";
+                            $scope.ErrorMsg = "Mail Sent Sucessfully !!!";
+                            $timeout(function() {
+                                $scope.showerrorMsg = false;
+
+                            }, 3000);
+                            */
+              $scope.hidegeneratepwd = 0;
+              $scope.modalInstance = $modal.open({
+                template: '<div class="modal-header"> <h3 class="modal-title">Temporary Password</h3></div><div class="modal-body"><span><b> Email : </b>' + $scope.signinDBField.user_email + '</span><br><span><b> User Name : </b>' + $scope.signinDBField.user_name + '</span><br><b> Password : </b>' + $scope.signinDBField.user_password + '</span><br></div>',
+                controller: 'temporaryPwdctl'
+              });
             }).error(function (data, status, headers, config) {
-              $scope.showerrorMsg = true;
-              $scope.ErrorClass = 'success';
-              $scope.ErrorMsg = 'Mail Sent Sucessfully !!!';
-              $timeout(function () {
-                $scope.showerrorMsg = false;
-              }, 3000);
+              /*$scope.showerrorMsg = true;
+                            $scope.ErrorClass = "success";
+                            $scope.ErrorMsg = "Mail Sent Sucessfully !!!";
+                           
+
+                            $timeout(function() {
+                                $scope.showerrorMsg = false;
+                            }, 3000);*/
+              $scope.hidegeneratepwd = 0;
+              $scope.modalInstance = $modal.open({
+                template: '<div class="modal-header"> <h3 class="modal-title">Temporary Password</h3></div><div class="modal-body"><span><b> Email : </b>' + $scope.signinDBField.user_email + '</span><br><span><b> User Name : </b>' + $scope.signinDBField.user_name + '</span><br><b> Password : </b>' + $scope.signinDBField.user_password + '</span><br></div>',
+                controller: 'temporaryPwdctl'
+              });
             });
           });
         } else {
-          $scope.showerrorMsg = true;
-          $scope.ErrorClass = 'danger';
-          $scope.ErrorMsg = 'User already exist';
-          $timeout(function () {
-            $scope.showerrorMsg = false;
-          }, 4000);
+          $scope.hidegeneratepwd = 0;
+          $scope.modalInstance = $modal.open({
+            template: '<div class="modal-header"> <h3 class="modal-title">Error </h3></div><div class="modal-body"><span><b> User already exist </b></span><br></div>',
+            controller: 'temporaryPwdctl'
+          });  /*
+                    $scope.showerrorMsg = true;
+                    $scope.ErrorClass = "danger";
+                    $scope.ErrorMsg = "User already exist";
+                    $timeout(function() {
+                        $scope.showerrorMsg = false;
+
+                    }, 4000);
+                    */
         }
       });
     };
@@ -425,18 +484,12 @@ angular.module('admin.agency', ['ui.router']).config([
               });
               return false;
             } else {
+              //toMailId=$scope.agencyDBField.contact_email+','+$localStorage.user_info.email;
               Services.agencyDetail.save($scope.agencyDBField, function (data) {
                 $scope.signinDBField = {};
                 $scope.signinDBField.user_name = (data.id + $scope.agency.contact_name).replace(/ /g, '');
                 $scope.signinDBField.user_email = $scope.agency.contact_email;
-                $scope.sendMailOnCreate($scope.signinDBField.user_name, $scope.signinDBField.user_email);
-                $scope.showerrorMsg = true;
-                $scope.ErrorClass = 'success';
-                $scope.ErrorMsg = 'Agency sucessfully added !!!';
-                $timeout(function () {
-                  $scope.showerrorMsg = false;
-                  $state.go('admin.agency');
-                }, 3000);
+                $scope.sendMailOnCreate($scope.signinDBField.user_name, $scope.signinDBField.user_email, $scope.agencyDBField.contact_email, false);
               });
             }
           } else {
@@ -456,7 +509,7 @@ angular.module('admin.agency', ['ui.router']).config([
         });
       }
     };
-    $scope.sendMailOnCreate = function (username, email) {
+    $scope.sendMailOnCreate = function (username, email, sendmail, showmsg) {
       var Emailmessage = '';
       Emailmessage = 'Hi ' + $scope.agency.contact_name + ':';
       Emailmessage += '<br /><br />' + $scope.agency.agency_name + ' agency is register with Caretime.  In order to complete the registration process and login to your account, you must click on the link below.  Please make a note of your user name before you click on the link.';
@@ -474,25 +527,56 @@ angular.module('admin.agency', ['ui.router']).config([
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         data: {
           'subject': 'Invitation for ' + $scope.agency.agency_name + ' to Register with Caretime',
-          'to': $scope.agencyDBField.contact_email,
+          'to': sendmail,
           'comment': Emailmessage
         }
       }).success(function (data, status, headers, config) {
+        if (showmsg) {
+          if (!angular.isUndefined($stateParams.agencyId) && $stateParams.agencyId) {
+            $scope.showerrorMsg = true;
+            $scope.ErrorClass = 'success';
+            $scope.ErrorMsg = 'Mail Sent Sucessfully !!!';
+            $timeout(function () {
+              $scope.showerrorMsg = false;
+              $state.go('admin.agency');
+            }, 3000);
+          } else {
+            $scope.showerrorMsg = true;
+            $scope.ErrorClass = 'success';
+            $scope.ErrorMsg = 'Agency sucessfully added !!!';
+            $timeout(function () {
+              $scope.showerrorMsg = false;
+              $state.go('admin.agency');
+            }, 3000);
+          }
+        } else {
+          $scope.sendMailOnCreate(username, email, $localStorage.user_info.email, true);
+        }
       }).error(function (data, status, headers, config) {
+        if (!angular.isUndefined($stateParams.agencyId) && $stateParams.agencyId) {
+          $scope.showerrorMsg = true;
+          $scope.ErrorClass = 'success';
+          $scope.ErrorMsg = 'Mail Sent Sucessfully !!!';
+          $timeout(function () {
+            $scope.showerrorMsg = false;
+            $state.go('admin.agency');
+          }, 3000);
+        } else {
+          $scope.showerrorMsg = true;
+          $scope.ErrorClass = 'success';
+          $scope.ErrorMsg = 'Agency sucessfully added !!!';
+          $timeout(function () {
+            $scope.showerrorMsg = false;
+            $state.go('admin.agency');
+          }, 3000);
+        }
       });
     };
     $scope.Resendemail = function () {
       $scope.signinDBField = {};
       $scope.signinDBField.user_name = ($stateParams.agencyId + $scope.agency.contact_name).replace(/ /g, '');
       $scope.signinDBField.user_email = $scope.agency.contact_email;
-      $scope.sendMailOnCreate($scope.signinDBField.user_name, $scope.signinDBField.user_email);
-      $scope.showerrorMsg = true;
-      $scope.ErrorClass = 'success';
-      $scope.ErrorMsg = 'Mail Sent Sucessfully !!!';
-      $timeout(function () {
-        $scope.showerrorMsg = false;
-        $state.go('admin.agency');
-      }, 3000);
+      $scope.sendMailOnCreate($scope.signinDBField.user_name, $scope.signinDBField.user_email, $scope.agencyDBField.contact_email, true);
     };
     $scope.previous_state = function () {
       $state.go('admin.agency');
@@ -619,5 +703,14 @@ angular.module('admin.agency', ['ui.router']).config([
       $modalInstance.dismiss('cancel');
       document.getElementById('jobMapId').src = $scope.fullMapUrl;
     };
+  }
+]).controller('temporaryPwdctl', [
+  '$scope',
+  '$timeout',
+  '$modalInstance',
+  function ($scope, $timeout, $modalInstance) {
+    $timeout(function () {
+      $modalInstance.dismiss('cancel');
+    }, 5000);
   }
 ]);

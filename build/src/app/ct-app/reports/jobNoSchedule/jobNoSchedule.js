@@ -37,7 +37,17 @@ angular.module('ctApp.jobNoSchedule', [
     var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
     $scope.reportFilters.startDate = moment(firstDay).format('YYYY-MM-DD');
     $scope.reportFilters.endDate = moment(lastDay).format('YYYY-MM-DD');
-    $scope.loadData = function (startDate, endDate, searchtxt, offset) {
+    $scope.reportFilters.zone = null;
+    if ($localStorage.user_info.iszone_code) {
+      Services.getEmpZoneDetail().then(function (res) {
+        $scope.reportFilters.zone = [{
+            'text': res.data.record[0]['zone_name'],
+            'id': res.data.record[0]['id'],
+            'code': res.data.record[0]['zone_code']
+          }];
+      });
+    }
+    $scope.loadData = function (startDate, endDate, zone_id, searchtxt, offset) {
       var filterObj = {
           'fields': 'job_code,job_name,contact_name,work_phone_format,last_scheduled_date,status,job_zone_detail,last_clocked_in_date',
           'limit': $scope.call_limit,
@@ -49,14 +59,9 @@ angular.module('ctApp.jobNoSchedule', [
       if (searchtxt) {
         filterObj.filter = filterObj.filter + ' and  (job_name like "%' + searchtxt + '%" or job_code like "%' + searchtxt + '%" or job_notes like "%' + searchtxt + '%" or job_zone like "%' + searchtxt + '%" or contact_name like "%' + searchtxt + '%" or job_zone_detail like "%' + searchtxt + '%")';
       }
-      /* if($localStorage.user_info.iszone_code)
-        {
-            filterObj.filter = filterObj.filter +' and job_zone='+$localStorage.user_info.zone_code;
-        }*/
-      /*if (jobWhiteList) {
-            filterObj.filter = filterObj.filter + " and job_code NOT IN(" + jobWhiteList + ")";
-
-        }*/
+      if (zone_id) {
+        filterObj.filter = filterObj.filter + ' and job_zone  in(' + zone_id + ')';
+      }
       Services.jobService.get(filterObj, function (data) {
         //Need To change into post Method.Header is not working currently 
         if (data.record.length !== 0) {
@@ -78,7 +83,7 @@ angular.module('ctApp.jobNoSchedule', [
           });
           if (data.meta.count > offset + $scope.call_limit) {
             var nextOffset = offset + $scope.call_limit + 1;
-            $scope.loadData(startDate, endDate, searchtxt, nextOffset);
+            $scope.loadData(startDate, endDate, zone_id, searchtxt, nextOffset);
           } else {
             $scope.show_activities_loader = false;
             $scope.startDate = moment($scope.reportFilters.startDate).format('YYYY-MM-DD');
@@ -144,6 +149,7 @@ angular.module('ctApp.jobNoSchedule', [
       $scope.resultData = [];
       $scope.noRecord = 0;
       $scope.show_activities_loader = true;
+      $scope.zone_id = '';
       //$scope.jobWhiteList = [];
       var fdate = moment(moment($scope.reportFilters.startDate).format('YYYY-MM-DD')).utc().format('YYYY-MM-DD HH:mm');
       var a = moment(moment($scope.reportFilters.endDate).format('YYYY-MM-DD'));
@@ -158,13 +164,30 @@ angular.module('ctApp.jobNoSchedule', [
       if ($scope.reportFilters.searchtxt) {
         mixpanelObj.SearchText = $scope.reportFilters.searchtxt;
       }
+      if ($scope.reportFilters.zone !== null && $scope.reportFilters.zone) {
+        $scope.zone_nameid = HelperService.getCode_Name($scope.reportFilters.zone, 'code', 'text');
+        $scope.zone_id = $scope.zone_nameid.Code;
+        $scope.zone_name = $scope.zone_nameid.Code_Name;
+        mixpanelObj.Zone = $scope.zone_name ? $scope.zone_name : 'All';
+      }
       mixpanel.track('Jobs List without Schedule', mixpanelObj);
-      $scope.loadData(fdate, ldate, $scope.reportFilters.searchtxt, 0);
+      $scope.loadData(fdate, ldate, $scope.zone_id, $scope.reportFilters.searchtxt, 0);
     };
     $scope.noRecord = 1;
     $scope.norecord = HelperService.errorMsg('alert-danger', 'Please Search to get Jobs List without Schedule');
     $scope.clearSearch = function () {
       $scope.reportFilters.searchtxt = '';
+      if ($localStorage.user_info.iszone_code) {
+        Services.getEmpZoneDetail().then(function (res) {
+          $scope.reportFilters.zone = [{
+              'text': res.data.record[0]['zone_name'],
+              'id': res.data.record[0]['id'],
+              'code': res.data.record[0]['zone_code']
+            }];
+        });
+      } else {
+        $scope.reportFilters.zone = null;
+      }
       var date = new Date();
       var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
       var lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
@@ -174,6 +197,52 @@ angular.module('ctApp.jobNoSchedule', [
       $scope.noRecord = 1;
       $scope.norecord = HelperService.errorMsg('alert-danger', 'Please Search to get Jobs List without Schedule');
       $scope.showRecord = 0;
+    };
+    $scope.selectzone = {
+      multiple: true,
+      query: function (query) {
+        var data = { results: [] };
+        var getZone = true;
+        if ($scope.reportFilters.zone !== null && !angular.isUndefined($scope.reportFilters.zone[0]) && $scope.reportFilters.zone[0].code === '') {
+          getZone = false;
+          data = { results: [] };
+        } else if ($scope.reportFilters.zone === null || angular.isUndefined($scope.reportFilters.zone[0])) {
+          data.results.push({
+            text: 'All',
+            id: 'all',
+            code: ''
+          });
+        }
+        if (getZone === true) {
+          $scope.zoneObj = {
+            fields: 'zone_name,zone_code,id',
+            filter: 'status > 0 and agency_id = ' + Services.getAgencyID(),
+            order: 'zone_name asc',
+            limit: 5
+          };
+          if (query.term) {
+            $scope.zoneObj.filter += ' and zone_name like \'%' + query.term + '%\'';
+          }
+          Services.employeeZones.get($scope.zoneObj, function (remoteData) {
+            items = remoteData.record;
+            if (items.length < 1) {
+              query.callback(data);
+            }
+            angular.forEach(items, function (item, key) {
+              data.results.push({
+                'text': item.zone_name,
+                'id': item.id,
+                'code': item.zone_code
+              });
+              query.callback(data);
+            });
+          });
+        } else {
+          query.callback(data);
+        }
+      },
+      initSelection: function (element, callback) {
+      }
     };
   }
 ]);

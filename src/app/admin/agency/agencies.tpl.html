@@ -5,14 +5,23 @@
 <div class="wrapper-md">
     <div class="panel panel-default">
         <div class="row wrapper">
+            <div class="col-sm-3">
+                
+                <ui-select ng-change="updateTableData()" ng-model="config.general.status" theme="select2" style="min-width: 225px;">
+                        <ui-select-match placeholder="Status for search">{{$select.selected.name}}</ui-select-match>
+                        <ui-select-choices repeat="item in statusSearchOption">
+                            <div ng-bind-html="item.name"></div>
+                        </ui-select-choices>
+                    </ui-select>
 
+            </div>
             <div class="col-sm-3">
                 <input type="text" class="input-md form-control" placeholder="Search Text" ng-model="config.general.searchtxt" ui-keypress="{13:'updateTableData(true)'}" capitalize>
             </div>
-            <div class="col-sm-9">
+            <div class="col-sm-6">
                 <button class="btn btn-md btn-info" type="button" ng-click="updateTableData(true)">Search</button>
                 <button class="btn btn-md btn-warning" type="button" ng-click="clearSearch()">Clear</button>
-                <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
+                <span class="alert alert-{{ErrorClass}}"  ng-if="showerrorMsg">
                         {{ErrorMsg}}
                 </span>
             </div>
@@ -56,18 +65,18 @@
                             <button ng-click="enableView(detail.id)" class="btn btn-rounded btn-sm btn-icon btn-default"><i class="fa fa-eye"></i>
                             </button>
                              <button ng-click="resendEmail(detail)" class="btn btn-rounded btn-sm btn-icon btn-default"><i class="fa fa-envelope"></i>
-                            <button ng-click="generatePassword(detail)" class="btn btn-rounded btn-sm btn-icon btn-default"><i class="fa fa-key"></i>
+                            <button ng-disabled="hidegeneratepwd==1"ng-click="generatePassword(detail)" class="btn btn-rounded btn-sm btn-icon btn-default"><i class="fa fa-key"></i>
                              
                             </button>
                         </td>
                     </tr>
                     <tr ng-if="config.show_agencies_loader">
-                        <td colspan="4">
+                        <td colspan="8">
                             <div show-loader="config.show_agencies_loader"></div>
                         </td>
                     </tr>
                     <tr ng-if="!config.show_agencies_loader && agencyDetailList.length==0">
-                        <td colspan='4' class="alert alert-danger">
+                        <td colspan='9' class="alert alert-danger">
                             <center> No Records Found.</center>
                         </td>
                     </tr>
