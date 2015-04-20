@@ -4726,7 +4726,7 @@ angular.module("ct-app/logs/timeCards/InactiveTimeCard.tpl.html", []).run(["$tem
     "<div class=\"modal-body\">\n" +
     "    <div>\n" +
     "\n" +
-    "        The following timecard will not be included in timescheet\n" +
+    "        The following timecard will not be included in timesheet\n" +
     "\n" +
     "        <div class=\"table-responsive\">\n" +
     "            <table class=\"table table-striped b-t b-light\">\n" +

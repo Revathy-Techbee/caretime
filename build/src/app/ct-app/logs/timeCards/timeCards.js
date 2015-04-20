@@ -677,9 +677,10 @@ angular.module('ctApp.timeCard', [
         }, 3000);
         return false;
       } else {
+        //console.log($scope.timecard);
         //Revathy check  authorizationService exist
         Services.jobauthorizationService.get({
-          filter: 'job =\'' + $scope.timecard.job_code.id + '\'  and status > 0 and authorization_end_date>=\'' + moment($scope.timecard.clock_in).format('YYYY-MM-DD') + '\' and authorization_start_date<=\'' + moment($scope.timecard.clock_in).format('YYYY-MM-DD') + '\' and agency_id = ' + Services.getAgencyID(),
+          filter: 'job =\'' + $scope.timecard.job_code + '\'  and status > 0 and authorization_end_date>=\'' + moment($scope.timecard.clock_in).format('YYYY-MM-DD') + '\' and authorization_start_date<=\'' + moment($scope.timecard.clock_in).format('YYYY-MM-DD') + '\' and agency_id = ' + Services.getAgencyID(),
           fields: 'count(id)'
         }, function (remoteData) {
           $scope.authorizationCnt = remoteData.record[0]['count(id)'];
@@ -711,6 +712,8 @@ angular.module('ctApp.timeCard', [
             } else {
               $scope.ActivitiesfilterObj.filter = $scope.ActivitiesfilterObj.filter + ' and  employee_code = \'' + $scope.timecard.employee_code.id + '\'';
             }
+            //  console.log( $scope.ActivitiesfilterObj);
+            //return;
             Services.employeeActivitiesService.get($scope.ActivitiesfilterObj, function (remoteData) {
               if (remoteData.meta.count > 0) {
                 angular.forEach(remoteData.record, function (item, key) {
@@ -737,7 +740,10 @@ angular.module('ctApp.timeCard', [
       $scope.newInOut = [];
       $scope.timecard.newClockin = moment($scope.timecard.clock_in).format('YYYY-MM-DD HH:mm');
       $scope.timecard.newClockout = $scope.timecard.clock_out;
+      //console.log(moment(moment($scope.timecard.clock_out).format('YYYY-MM-DD')).diff(moment(moment($scope.timecard.clock_in).format('YYYY-MM-DD')),'days'));
+      var dayCount = moment(moment($scope.timecard.clock_out).format('YYYY-MM-DD')).diff(moment(moment($scope.timecard.clock_in).format('YYYY-MM-DD')), 'days');
       if (moment(moment($scope.timecard.clock_in).format('YYYY-MM-DD')).unix() < moment(moment($scope.timecard.clock_out).format('YYYY-MM-DD')).unix()) {
+        var i = 0;
         do {
           $scope.timecard.newClockout = moment($scope.timecard.newClockin).format('YYYY-MM-DD') + ' 23:59';
           if (moment($scope.timecard.newClockout).unix() > moment($scope.timecard.clock_out).unix()) {
@@ -765,8 +771,11 @@ angular.module('ctApp.timeCard', [
               'duration': $scope.timecard.newduration
             });
           }
+          //console.log($scope.timecard.newClockin);
+          //console.log(",",$scope.timecard.newClockout);
           $scope.timecard.newClockin = moment(moment(moment($scope.timecard.newClockin).format('YYYY-MM-DD')).add(1, 'days')).format('YYYY-MM-DD') + ' 00:01';
-        } while (moment($scope.timecard.newClockout).unix() < moment($scope.timecard.clock_out).unix());
+          i++;
+        } while (i <= dayCount);  //while (moment($scope.timecard.newClockout).unix() < moment($scope.timecard.clock_out).unix());
       } else {
         $scope.newInOut.push({
           'clockin': $scope.timecard.newClockin,
@@ -774,9 +783,11 @@ angular.module('ctApp.timeCard', [
           'duration': $scope.timecard.duration
         });
       }
+      // console.log($scope.newInOut) ;
       $scope.AddUpdatetimecard($scope.newInOut[0]);
     };
     $scope.AddUpdatetimecard = function (newClockInOut) {
+      //console.log(newClockInOut);
       var clock_in;
       $scope.Splittimecnt++;
       if ($scope.timecardId && $scope.Splittimecnt == 1) {
@@ -877,7 +888,8 @@ angular.module('ctApp.timeCard', [
           }
         }
         Services.timeLog.update({ id: $scope.timecardId }, clock_in, function (data) {
-          if ($scope.log_type == 1 && $scope.clock_in_flag != 1) {
+          //console.log("log type : ",$scope.log_type ,"clock in flag",$scope.clock_in_flag );
+          if ($scope.log_type == 2 && $scope.clock_in_flag != 1) {
             Services.timeLog.update({ id: $scope.logoutID }, updatedur, function (data) {
               if ($scope.newInOut.length > $scope.Splittimecnt) {
                 $scope.AddUpdatetimecard($scope.newInOut[$scope.Splittimecnt]);
@@ -886,6 +898,7 @@ angular.module('ctApp.timeCard', [
                 $scope.showerrorMsg = true;
                 $scope.ErrorClass = 'success';
                 $scope.ErrorMsg = 'Time card edited sucessfully !!!';
+                //  console.log("if");
                 $timeout(function () {
                   $scope.showerrorMsg = false;
                   $scope.modelclose();
