@@ -334,6 +334,7 @@ angular.module('utils.ct.filters', []).filter('fromNow', function () {
       if (country && country != 'United States') {
         return moment(data).format('DD-MM-YYYY');
       } else {
+        //console.log("in");
         return moment(data).format('MM-DD-YYYY');
       }
     } else {

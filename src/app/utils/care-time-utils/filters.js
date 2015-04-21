@@ -356,6 +356,7 @@ angular.module('utils.ct.filters', [])
          }
           else
           {
+              //console.log("in");
          return moment(data).format('MM-DD-YYYY');
 
           }

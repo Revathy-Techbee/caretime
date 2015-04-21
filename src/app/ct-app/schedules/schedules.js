@@ -1518,6 +1518,9 @@ angular.module('ctApp.schedules', [
                     include_count: true
 
                 };
+               /* Date already allocated [04/27/2015 03:00 pm - 04/27/2015 09:00 pm, 05/04/2015 03:00 pm - 05/04/2015 09:00 pm,
+                05/11/2015 03:00 pm - 05/11/2015 09:00 pm, 05/18/2015 03:00 pm - 05/18/2015 09:00 pm,
+                05/25/2015 03:00 pm - 05/25/2015 09:00 pm] */
                 if ($scope.shiftId !== "") { // update 
 
                     if ($scope.allshiftId === "") { // update single
@@ -1538,6 +1541,8 @@ angular.module('ctApp.schedules', [
                     Services.shiftService.get($scope.checkshiftObj, function(remoteData) {
                         var recurrenceflag = true;
 
+                       // console.log($scope.tempoutputDates);
+
                         if (($scope.tempoutputDates) && ($scope.shift.recurrence.is == 1)) {
 
                             angular.forEach(remoteData.record, function(item, key) {
@@ -1545,15 +1550,54 @@ angular.module('ctApp.schedules', [
                                 var dbintime = Date.parse(moment(item.ref_in_at).format("MM/DD/YYYY HH:mm")); //allready in UTC form DB
                                 var dbouttime = Date.parse(moment(item.ref_out_at).format("MM/DD/YYYY HH:mm"));
 
+                                //console.log(moment(item.ref_out_at).format("MM/DD/YYYY HH:mm"));
+                                //console.log(dbouttime);
+
                                 angular.forEach($scope.tempoutputDates, function(dates) {
+
                                     var datesT = moment(dates + " " + moment($scope.shift.inAt).format("HH:mm")).utc().format("MM/DD/YYYY");
+                                    var datesOT = moment($scope.getOutDate(dates, $scope.shift.duration)).utc().format("MM/DD/YYYY HH:mm:ss");
+
                                     in_time = moment($scope.shift.inAt).utc().format("HH:mm:ss");
                                     out_time = moment($scope.shift.outAt).utc().format("HH:mm:ss");
                                     var intime = Date.parse(datesT + ' ' + in_time);
-                                    var outtime = Date.parse(datesT + ' ' + out_time);
+                                    var outtime = Date.parse(datesOT); //datesOT already in MM/DD/YYYY HH:mm:ss format
 
 
-                                    if (((intime >= dbintime) && (intime < dbouttime)) || ((outtime > dbintime) && (outtime <= dbouttime)) || ((intime <= dbintime) && (outtime >= dbouttime))) {
+                                   // console.log("----",datesT + ' ' + in_time);
+                                   // console.log(outtime);
+                                   // console.log(datesT + ' ' + out_time);
+                                   // console.log(outtime);
+
+                                   /* console.log("before UTC",dates);
+                                    console.log("after UTC",datesT);
+                                    console.log(datesT , ' ', in_time);
+                                    console.log(intime);
+                                    before UTC 04/28/2015
+                                    schedules.js (line 1563)
+                                    after UTC 04/28/2015
+                                    schedules.js (line 1564)
+                                    04/28/2015  23:00:00
+                                    schedules.js (line 1565)
+                                    1430276400000
+
+                                    if (((intime >= dbintime) && (intime < dbouttime))){
+                                        console.log("in 1576");
+                                    }
+                                    if (((outtime > dbintime) && (outtime <= dbouttime))){
+                                       // console.log("in 1579");
+                                       // console.log(outtime);
+                                       // console.log(dbintime);
+                                    }
+                                    if (((intime <= dbintime) && (outtime >= dbouttime))){
+                                        console.log("in 1582");
+                                    }*/
+                                    if (((intime >= dbintime) && (intime < dbouttime)) ||
+                                        ((outtime > dbintime) && (outtime <= dbouttime)) ||
+                                        ((intime <= dbintime) && (outtime >= dbouttime))) {
+
+
+
 
                                         err_date += HelperService.formatingDate(item.ref_in_at,$localStorage.user_info.country) + ' - ' + HelperService.formatingDate(item.ref_out_at,$localStorage.user_info.country) + ', ';
                                         recurrenceflag = false;
