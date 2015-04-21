@@ -291,6 +291,10 @@ angular.module('admin.agency', ['ui.router']).config([
     $scope.agency.config_job_code = 4;
     $scope.agency.notify_interval = '15';
     $scope.agency.status = 1;
+    $scope.agency.labels = {};
+    $scope.agency.labels.zones = 'ZONE';
+    $scope.agency.labels.jobs = 'JOB';
+    $scope.agency.labels.employees = 'EMPLOYEE';
     $scope.pageTitle = 'Add New';
     /* $scope.agency.payclassesMax = 3;
          $scope.agency.payclasses = [{
@@ -342,12 +346,14 @@ angular.module('admin.agency', ['ui.router']).config([
         $scope.agency.editedOn = HelperService.convertUTCtoMytimeZone($scope.agencyDBField.edited_on);
         $scope.agency.edited_by = $scope.agencyDBField.edited_by;
         $scope.agency.created_on = HelperService.convertUTCtoMytimeZone($scope.agencyDBField.created_on);
-        $scope.agency.created_by = $scope.agencyDBField.created_by;
-        $scope.generateAgencyCode = function (lastIdDB) {
-          var temp = lastIdDB;
-          return '1' + ('000' + temp).slice(-4);
-        };
-        $scope.agency.agency_id = $scope.generateAgencyCode($scope.agencyDBField.id);
+        $scope.agency.created_by = $scope.agencyDBField.created_by;  /* $scope.generateAgencyCode = function(lastIdDB) {
+
+                    var temp = lastIdDB;
+                    return "1" + ('000' + temp).slice(-4);
+
+                };
+                $scope.agency.agency_id = $scope.generateAgencyCode($scope.agencyDBField.id);
+                */
       });
     }
     $scope.agencyManage = function (step) {

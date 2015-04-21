@@ -345,6 +345,7 @@ angular.module('ctApp.employees', [
     $scope.employee_id = $stateParams.employeeId;
     $scope.employee.communication = {};
     $scope.employee.track_location = 0;
+    //$scope.empnamecnt=0;
     //$scope.employee.country="United States";
     if ($localStorage.user_info.iszone_code) {
       Services.getEmpZoneDetail().then(function (res) {
@@ -916,38 +917,6 @@ angular.module('ctApp.employees', [
         }
       });
       if (flag == 1) {
-        /*
-                if ($scope.employeeDBField.primary_zip) {
-
-                    Services.employeeZips.get({
-                        field:"id",
-                        filter: "Zip ='" + $scope.employeeDBField.primary_zip + "' and status > 0",
-                        limit: 1
-                    }, function(remoteData) {
-
-                        if (remoteData.record.length > 0) {
-                            $scope.checkEmpAgencyID();
-
-                        } else {
-                            $scope.savedisable = 0;
-                            $scope.showerrorMsg = true;
-                            $scope.ErrorClass = "danger";
-                            $scope.ErrorMsg = "Invalid Zip Code";
-                            jQuery(".personal .ng-invalid").addClass("ng-dirty");
-                            $timeout(function() {
-                                $scope.showerrorMsg = false;
-                            }, 3000);
-                            return false;
-                        }
-
-                    });
-
-
-
-                } else {
-                    $scope.checkEmpAgencyID();
-                }
-                */
         $scope.checkEmpAgencyID();
       }
     };
@@ -962,7 +931,7 @@ angular.module('ctApp.employees', [
         }
         Services.employeeService.get(EmpAgencyObj, function (data) {
           if (data.record.length < 1) {
-            $scope.saveUpdateEmployee();
+            $scope.checkEmpName();
           } else {
             $scope.savedisable = 0;
             $scope.showerrorMsg = true;
@@ -975,10 +944,54 @@ angular.module('ctApp.employees', [
           }
         });
       } else {
-        $scope.saveUpdateEmployee();
+        $scope.checkEmpName();
       }
     };
+    $scope.checkEmpName = function () {
+      /*if($scope.empnamecnt===0)
+            {*/
+      filterObj = {
+        field: 'id',
+        filter: 'first_name =\'' + $scope.employeeDBField.first_name + '\' and last_name=\'' + $scope.employeeDBField.last_name + '\' and agency_id = ' + Services.getAgencyID()
+      };
+      if (!angular.isUndefined($scope.employee_id) && $scope.employee_id) {
+        filterObj.filter += ' and id <>' + $scope.employee_id;
+      }
+      Services.employeeService.get(filterObj, function (data) {
+        if (data.record.length > 0) {
+          /*
+                            $scope.empnamecnt++;
+                            $scope.savedisable = 0;
+                            $scope.showerrorMsg = true;
+                            $scope.ErrorClass = "danger";
+                            $scope.ErrorMsg = "User exists with same name, please click Save changes to proceed";
+                            $timeout(function() {
+                                $scope.showerrorMsg = false;
+                                //$state.go("ctApp.jobs");
+                            }, 3000);
+                            return false;
+                            */
+          $scope.savedisable = 0;
+          $scope.modalInstance = $modal.open({
+            template: '<div class="modal-header"> <h3 class="modal-title">Confirm </h3></div><div class="modal-body"><b> Employee exists with same name, please click Submit to proceed</b></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">Cancel</button><button class="btn btn-primary" ng-click="all()">Submit</button> </div>',
+            controller: 'EmpNameCtrl'
+          });
+          $scope.modalInstance.result.then(function (id) {
+            $scope.saveUpdateEmployee();
+          }, function () {
+          });
+          return false;
+        } else {
+          $scope.saveUpdateEmployee();
+        }
+      });  /* }
+            else
+            {
+                $scope.saveUpdateEmployee();  
+            }*/
+    };
     $scope.saveUpdateEmployee = function () {
+      $scope.savedisable = 1;
       if ($scope.updateCertificates) {
         if ($scope.employee_id) {
           Services.employeeService.update({ id: $scope.employee_id }, $scope.employeeDBField, function (data) {
@@ -2076,6 +2089,17 @@ angular.module('ctApp.employees', [
     Services.setModelTempVar();
     $scope.all = function () {
       $modalInstance.close(id);
+    };
+    $scope.cancel = function () {
+      $modalInstance.dismiss('cancel');
+    };
+  }
+]).controller('EmpNameCtrl', [
+  '$scope',
+  '$modalInstance',
+  function ($scope, $modalInstance) {
+    $scope.all = function () {
+      $modalInstance.close('yes');
     };
     $scope.cancel = function () {
       $modalInstance.dismiss('cancel');

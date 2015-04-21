@@ -81,7 +81,7 @@ function($scope, Services, $state, $modal, HelperService, $stateParams, $localSt
             $scope.agency.edited_by = $scope.agencyDBField.edited_by;
             $scope.agency.created_on = HelperService.convertUTCtoMytimeZone($scope.agencyDBField.created_on);
             $scope.agency.created_by = $scope.agencyDBField.created_by;
-
+            /*
             $scope.generateAgencyCode = function(lastIdDB) {
 
                 var temp = lastIdDB;
@@ -89,6 +89,7 @@ function($scope, Services, $state, $modal, HelperService, $stateParams, $localSt
 
             };
             $scope.agency.agency_id = $scope.generateAgencyCode($scope.agencyDBField.id);
+            */
         });
 
     } else {

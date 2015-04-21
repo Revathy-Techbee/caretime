@@ -749,7 +749,8 @@ angular.module("admin/agency/agencies.tpl.html", []).run(["$templateCache", func
     "                </thead>\n" +
     "                <tbody infinite-scroll='getNextData()' infinite-scroll-disabled='disable_infinite_scroll' infinite-scroll-distance='0'>\n" +
     "                    <tr ng-repeat=\"detail in agencyDetailList\" class=\"animate-repeat\">\n" +
-    "                        <td>{{detail.id | generateAgencyCode}}</td>\n" +
+    "                        <!--<td>{{detail.id | generateAgencyCode}}</td> -->\n" +
+    "                        <td>{{detail.id}}</td>\n" +
     "                        <td>{{detail.agency_name}}</td>\n" +
     "                        <td>{{detail.primary_city}}</td>\n" +
     "                        <td>{{detail.primary_state}}</td>\n" +
@@ -1687,7 +1688,7 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "                        <div class=\"form-group\">\n" +
     "                            <div class=\"col-sm-9\">\n" +
     "                                <button type=\"submit\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
-    "                                <button type=\"button\" ng-if=\"pageTitle=='Update'\" class=\"btn btn-primary  btn-rounded\" ng-click=\"employeeManage('general', false)\">Save changes</button>\n" +
+    "                                <button type=\"button\" ng-if=\"pageTitle=='Update'\" class=\"btn btn-primary  btn-rounded\" ng-disabled=\"savedisable == 1\" ng-click=\"employeeManage('general', false)\">Save changes</button>\n" +
     "                                <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">\n" +
     "                                  \n" +
     "                                  {{ErrorMsg}}\n" +
@@ -1869,7 +1870,7 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "                            <div class=\"col-sm-9\">\n" +
     "                                <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click=\"employeeManagePrev('personal')\">Prev</button>\n" +
     "                                <button type=\"submit\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
-    "                                <button type=\"button\" ng-if=\"pageTitle=='Update'\" class=\"btn btn-primary  btn-rounded\" ng-click=\"employeeManage('personal', false)\">Save changes</button>\n" +
+    "                                <button type=\"button\" ng-if=\"pageTitle=='Update'\" class=\"btn btn-primary  btn-rounded\" ng-disabled=\"savedisable == 1\" ng-click=\"employeeManage('personal', false)\">Save changes</button>\n" +
     "                                <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">\n" +
     "                                  {{ErrorMsg}}\n" +
     "                      </span>\n" +
@@ -2136,7 +2137,7 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "                            <div class=\"col-sm-9\">\n" +
     "                                <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click=\"employeeManagePrev('certification')\">Prev</button>\n" +
     "                                <button type=\"button\" ng-if=\"adminUser\" ng-click=\"employeeManage('certification')\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
-    "                                <button type=\"button\" class=\"btn btn-primary  btn-rounded\" ng-click=\"employeeManage('certification', false)\">Save changes</button>\n" +
+    "                                <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-primary  btn-rounded\" ng-click=\"employeeManage('certification', false)\">Save changes</button>\n" +
     "                                <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">\n" +
     "                                    {{ErrorMsg}}\n" +
     "                                </span>\n" +
@@ -2198,7 +2199,7 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "                        <div class=\"form-group\">\n" +
     "                            <div class=\"col-sm-9\">\n" +
     "                                <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click=\"employeeManagePrev('authorization')\">Prev</button>\n" +
-    "                                <button type=\"button\" class=\"btn btn-primary  btn-rounded\" ng-click=\"employeeManage('authorization', false)\">Save changes</button>\n" +
+    "                                <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-primary  btn-rounded\" ng-click=\"employeeManage('authorization', false)\">Save changes</button>\n" +
     "                                <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">\n" +
     "                                  {{ErrorMsg}}\n" +
     "                        </span>\n" +

@@ -307,6 +307,7 @@ angular.module('ctApp.jobs', [
     $scope.job.late_notify = 1;
     $scope.savedisable = 0;
     $scope.generateJobcode_count = 0;
+    //$scope.jobnamecnt = 0;
     // $scope.job.country="United States";
     //$scope.timezonedata = 0;
     $scope.jobcode_length = $localStorage.configCode.job;
@@ -419,45 +420,7 @@ angular.module('ctApp.jobs', [
         } else {
           $scope.savedisable = 0;
           $scope.jobSteps.location = true;
-        }  /*  if (!angular.isUndefined($stateParams.jobId) && $stateParams.jobId) { // means it is in edit state 
-                        if (submit === false) {
-                            $scope.savedisable = 1;
-                            $scope.savejobDetail();
-                        } else {
-                            $scope.savedisable = 0;
-                            $scope.jobSteps.location = true;
-                        }
-
-
-                    } else {
-                        Services.jobService.get({
-                            fields:"id",
-                            filter: "job_code='" + $scope.job.job_code + "'"
-                        }, function(data) {
-
-                            if (data.record.length < 1) {
-                                if (submit === false) {
-                                    $scope.savedisable = 1;
-                                    $scope.savejobDetail();
-                                } else {
-                                    $scope.savedisable = 0;
-                                    $scope.jobSteps.location = true;
-                                }
-                            } else {
-                                $scope.savedisable = 0;
-                                $scope.showerrorMsg = true;
-                                $scope.code_exist = 1;
-                                $scope.ErrorClass = "danger";
-                                $scope.ErrorMsg = "Job Code is already exist, Please retype your Job Name!!!";
-                                jQuery(".basic .ng-invalid").addClass("ng-dirty");
-                                $timeout(function() {
-                                    $scope.showerrorMsg = false;
-                                }, 3000);
-                                return false;
-                            }
-                        });
-                    }
-                    */
+        }
       }
       if (step == 'location') {
         $scope.savedisable = 1;
@@ -537,22 +500,6 @@ angular.module('ctApp.jobs', [
         }, 3000);
         return false;
       }
-      /*Services.employeeZips.get({
-                    "filter": "timezone like '" + $scope.job.timezone + "'",
-                    "fields": "timezone",
-                    "limit": 1
-                }, function(res) {
-                    if (res.record.length <= 0) {
-                        $scope.savedisable = 0;
-                        $scope.showerrorMsg = true;
-                        $scope.ErrorClass = "danger";
-                        $scope.ErrorMsg = "Enter Valid Timezone!!!";
-                        jQuery(".personal .ng-invalid").addClass("ng-dirty");
-                        $timeout(function() {
-                            $scope.showerrorMsg = false;
-                        }, 3000);
-                        return false;
-                    } else {*/
       $scope.prompt_id = [];
       angular.forEach($scope.job.customPrompt, function (item, key) {
         if (item.prompt) {
@@ -623,38 +570,8 @@ angular.module('ctApp.jobs', [
         $scope.jobDBField.authorized_phone_format = $scope.authphoneformat.join(', ');
         $scope.jobDBField.job_notes = $scope.job.job_notes;
         $scope.jobDBField.jobgroup = $scope.job.jobgroup;
-        $scope.saveUpdateJob();  /*if ($scope.jobDBField.job_zip) {
-
-                        Services.employeeZips.get({
-                            fields:"id",
-                            filter: "Zip ='" + $scope.jobDBField.job_zip + "' and status > 0",
-                            limit: 1
-                        }, function(remoteData) {
-
-                            if (remoteData.record.length > 0) {
-                                $scope.saveUpdateJob();
-
-                            } else {
-                                $scope.savedisable = 0;
-                                $scope.showerrorMsg = true;
-                                $scope.ErrorClass = "danger";
-                                $scope.ErrorMsg = "Invalid Zip Code";
-                                jQuery(".personal .ng-invalid").addClass("ng-dirty");
-                                $timeout(function() {
-                                    $scope.showerrorMsg = false;
-                                }, 3000);
-                                return false;
-                            }
-
-                        });
-
-
-
-                    } else {
-                        $scope.saveUpdateJob();
-                    }*/
-      }  /* }
-                });*/
+        $scope.checkJobName();
+      }
     };
     $scope.deleteJob = function (jobCode) {
       Services.shiftService.get({
@@ -702,7 +619,51 @@ angular.module('ctApp.jobs', [
         }
       });
     };
+    $scope.checkJobName = function () {
+      /*if($scope.jobnamecnt===0)
+                {*/
+      filterObj = {
+        field: 'id',
+        filter: 'job_name=\'' + $scope.jobDBField.job_name + '\' and agency_id = ' + Services.getAgencyID()
+      };
+      if (!angular.isUndefined($stateParams.jobId) && $stateParams.jobId) {
+        filterObj.filter += ' and id <>' + $stateParams.jobId;
+      }
+      Services.jobService.get(filterObj, function (data) {
+        if (data.record.length > 0) {
+          /*
+                                $scope.jobnamecnt++;
+                                $scope.savedisable = 0;
+                                $scope.showerrorMsg = true;
+                                $scope.ErrorClass = "danger";
+                                $scope.ErrorMsg = "Job exists with same name, please click Save changes to proceed";
+                                $timeout(function() {
+                                    $scope.showerrorMsg = false;
+                                    //$state.go("ctApp.jobs");
+                                }, 3000);
+                                return false;
+                                */
+          $scope.savedisable = 0;
+          $scope.modalInstance = $modal.open({
+            template: '<div class="modal-header"> <h3 class="modal-title">Confirm </h3></div><div class="modal-body"><b> Job exists with same name, please click Submit to proceed</b></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">Cancel</button><button class="btn btn-primary" ng-click="all()">Submit</button> </div>',
+            controller: 'JobNameCtrl'
+          });
+          $scope.modalInstance.result.then(function (id) {
+            $scope.saveUpdateJob();
+          }, function () {
+          });
+          return false;
+        } else {
+          $scope.saveUpdateJob();
+        }
+      });  /* }
+                else
+                {
+                    $scope.saveUpdateJob();  
+                }*/
+    };
     $scope.saveUpdateJob = function () {
+      $scope.savedisable = 1;
       if (!angular.isUndefined($stateParams.jobId) && $stateParams.jobId) {
         // means it is in edit state 
         $scope.jobDBField.edited_on = moment().utc();
@@ -771,7 +732,6 @@ angular.module('ctApp.jobs', [
           if (data.record.length < 1) {
             Services.jobService.save($scope.jobDBField, function (data) {
               $scope.insertJobAuthorizedPhones();
-              //  $scope.jobDBField.job_code = $scope.generateJobcode(data.id);
               $scope.savedisable = 1;
               $scope.showerrorMsg = true;
               $scope.ErrorClass = 'success';
@@ -824,19 +784,6 @@ angular.module('ctApp.jobs', [
         }, 3000);
       });
     };
-    /*$scope.generateJobcode = function(lastIdDB) {
-                var temp = lastIdDB;
-                var characters = 0;
-                if (($localStorage.configCode.job) && ($localStorage.configCode.job == "4")) {
-                    characters = 1000;
-                } else if (($localStorage.configCode.job) && ($localStorage.configCode.job == "5")) {
-                    characters = 10000;
-                } else if (($localStorage.configCode.job) && ($localStorage.configCode.job == "6")) {
-                    characters = 100000;
-                }
-                return characters + temp;
-
-            };*/
     // coded by Revathy to get  Job code 
     $scope.getJobcode = function () {
       var characters = 0;
@@ -897,7 +844,6 @@ angular.module('ctApp.jobs', [
       $scope.county = '';
       $scope.country = '';
       $scope.mymapVariable = newValue;
-      // console.log($scope.mymapVariable);
       if (newValue) {
         $scope.job.timezone = '';
         if ($scope.mymapVariable.address_components) {
@@ -1086,37 +1032,6 @@ angular.module('ctApp.jobs', [
         });
       });
     };
-    /*  $scope.getTimezone = function(val) {
-
-                  return Services.getTimeZones(val).then(function(res) {
-                      var timezone = [];
-                      angular.forEach(res.data.record, function(item) {
-                          timezone.push(item.timezone);
-                      });
-                      return timezone;
-                  });
-              };*/
-    /* $scope.getmyTimezone = function(val) {
-                 Services.employeeZips.get({
-                     filter: "Zip ='" + val + "'",
-                     fields: "timezone",
-                     limit: 1
-                 }, function(remoteData) {
-                     if (remoteData.record.length > 0) {
-                         $scope.job.timezone = remoteData.record[0].timezone;
-                         $scope.showZipError = false;
-                     } else {
-                         $scope.showZipError = true;
-                         $timeout(function() {
-                             $scope.showZipError = false;
-                         }, 6000);
-                         $scope.job.timezone = "";
-                     }
-
-
-                 });
-
-             };*/
     $scope.preventNext = function (keyEvent) {
       if (keyEvent.which === 13) {
         keyEvent.preventDefault();
@@ -1159,37 +1074,6 @@ angular.module('ctApp.jobs', [
         $scope.jobSteps.customPrompt = false;
       }
     };
-    /* $scope.getZipDetail = function() {
-                 if (!angular.isUndefined($scope.job.zip)) {
-                     if ($scope.job.zip.length == 5) {
-
-                         Services.employeeZips.get({
-                             filter: "Zip ='" + $scope.job.zip + "'",
-                             fields: "timezone,primary_city,state,county",
-                             limit: 1
-                         }, function(remoteData) {
-
-                             if (remoteData.record.length > 0) {
-                                 $scope.job.city = remoteData.record[0].primary_city;
-                                 $scope.job.state = remoteData.record[0].state;
-                                 $scope.job.county = remoteData.record[0].county;
-                                 $scope.job.timezone = remoteData.record[0].timezone;
-                                 $scope.showZipError = false;
-                             } else {
-                                 $scope.showZipError = true;
-                                 $timeout(function() {
-                                     $scope.showZipError = false;
-                                 }, 6000);
-                                 $scope.job.city = "";
-                                 $scope.job.state = "";
-                                 $scope.job.county = "";
-                                 $scope.job.timezone = "";
-                             }
-
-                         });
-                     }
-                 }
-             };*/
     $scope.cancelJob = function () {
       $state.go('ctApp.jobs');
     };
@@ -1276,6 +1160,17 @@ angular.module('ctApp.jobs', [
     Services.setModelTempVar();
     $scope.all = function () {
       $modalInstance.close(id);
+    };
+    $scope.cancel = function () {
+      $modalInstance.dismiss('cancel');
+    };
+  }
+]).controller('JobNameCtrl', [
+  '$scope',
+  '$modalInstance',
+  function ($scope, $modalInstance) {
+    $scope.all = function () {
+      $modalInstance.close('yes');
     };
     $scope.cancel = function () {
       $modalInstance.dismiss('cancel');

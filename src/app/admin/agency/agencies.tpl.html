@@ -51,7 +51,8 @@
                 </thead>
                 <tbody infinite-scroll='getNextData()' infinite-scroll-disabled='disable_infinite_scroll' infinite-scroll-distance='0'>
                     <tr ng-repeat="detail in agencyDetailList" class="animate-repeat">
-                        <td>{{detail.id | generateAgencyCode}}</td>
+                        <!--<td>{{detail.id | generateAgencyCode}}</td> -->
+                        <td>{{detail.id}}</td>
                         <td>{{detail.agency_name}}</td>
                         <td>{{detail.primary_city}}</td>
                         <td>{{detail.primary_state}}</td>

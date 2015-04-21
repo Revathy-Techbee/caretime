@@ -77,12 +77,15 @@ angular.module('ctApp.agency', ['ui.router']).config([
         $scope.agency.editedOn = HelperService.convertUTCtoMytimeZone($scope.agencyDBField.edited_on);
         $scope.agency.edited_by = $scope.agencyDBField.edited_by;
         $scope.agency.created_on = HelperService.convertUTCtoMytimeZone($scope.agencyDBField.created_on);
-        $scope.agency.created_by = $scope.agencyDBField.created_by;
-        $scope.generateAgencyCode = function (lastIdDB) {
-          var temp = lastIdDB;
-          return '1' + ('000' + temp).slice(-4);
-        };
-        $scope.agency.agency_id = $scope.generateAgencyCode($scope.agencyDBField.id);
+        $scope.agency.created_by = $scope.agencyDBField.created_by;  /*
+            $scope.generateAgencyCode = function(lastIdDB) {
+
+                var temp = lastIdDB;
+                return "1" + ('000' + temp).slice(-4);
+
+            };
+            $scope.agency.agency_id = $scope.generateAgencyCode($scope.agencyDBField.id);
+            */
       });
     } else {
       $scope.agency = {};

@@ -139,7 +139,7 @@
                         <div class="form-group">
                             <div class="col-sm-9">
                                 <button type="submit" class="btn btn-default btn-rounded">Next</button>
-                                <button type="button" ng-if="pageTitle=='Update'" class="btn btn-primary  btn-rounded" ng-click="employeeManage('general', false)">Save changes</button>
+                                <button type="button" ng-if="pageTitle=='Update'" class="btn btn-primary  btn-rounded" ng-disabled="savedisable == 1" ng-click="employeeManage('general', false)">Save changes</button>
                                 <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
                                   
                                   {{ErrorMsg}}
@@ -321,7 +321,7 @@
                             <div class="col-sm-9">
                                 <button type="button" class="btn btn-default btn-rounded" ng-click="employeeManagePrev('personal')">Prev</button>
                                 <button type="submit" class="btn btn-default btn-rounded">Next</button>
-                                <button type="button" ng-if="pageTitle=='Update'" class="btn btn-primary  btn-rounded" ng-click="employeeManage('personal', false)">Save changes</button>
+                                <button type="button" ng-if="pageTitle=='Update'" class="btn btn-primary  btn-rounded" ng-disabled="savedisable == 1" ng-click="employeeManage('personal', false)">Save changes</button>
                                 <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
                                   {{ErrorMsg}}
                       </span>
@@ -588,7 +588,7 @@
                             <div class="col-sm-9">
                                 <button type="button" class="btn btn-default btn-rounded" ng-click="employeeManagePrev('certification')">Prev</button>
                                 <button type="button" ng-if="adminUser" ng-click="employeeManage('certification')" class="btn btn-default btn-rounded">Next</button>
-                                <button type="button" class="btn btn-primary  btn-rounded" ng-click="employeeManage('certification', false)">Save changes</button>
+                                <button type="button" ng-disabled="savedisable == 1" class="btn btn-primary  btn-rounded" ng-click="employeeManage('certification', false)">Save changes</button>
                                 <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
                                     {{ErrorMsg}}
                                 </span>
@@ -650,7 +650,7 @@
                         <div class="form-group">
                             <div class="col-sm-9">
                                 <button type="button" class="btn btn-default btn-rounded" ng-click="employeeManagePrev('authorization')">Prev</button>
-                                <button type="button" class="btn btn-primary  btn-rounded" ng-click="employeeManage('authorization', false)">Save changes</button>
+                                <button type="button" ng-disabled="savedisable == 1" class="btn btn-primary  btn-rounded" ng-click="employeeManage('authorization', false)">Save changes</button>
                                 <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
                                   {{ErrorMsg}}
                         </span>
