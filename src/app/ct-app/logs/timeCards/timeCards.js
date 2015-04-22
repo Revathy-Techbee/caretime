@@ -1309,7 +1309,7 @@ angular.module('ctApp.timeCard', [
                     log_type: '1',
                     timestamp: moment(newClockInOut.clockin).utc().format('YYYY-MM-DD HH:mm'),
                     created_on: moment().utc(),
-                    call_status: "Entered by Agency",
+                    //call_status: "Entered by Agency",
                     created_by: JSON.stringify({
                         "username": $localStorage.user_info.username,
                         "firstname": $localStorage.user_info.first_name,
@@ -1329,9 +1329,20 @@ angular.module('ctApp.timeCard', [
                     if (!angular.isUndefined($scope.timecard.zone) && $scope.timecard.zone && $scope.timecard.zone != null) {
                         clock_in.zone_code = $scope.timecard.zone;
                     }
+                    clock_in.call_status= "Timecard Split";
 
 
                 } else {
+                    if($scope.Splittimecnt == 1)
+                    {
+                        clock_in.call_status= "Agency-Manual";
+
+                    }
+                    else
+                    {
+                        clock_in.call_status= "Timecard Split";
+
+                    }
                     clock_in.employee_code = $scope.timecard.employee_code.id;
                     clock_in.job_code = $scope.timecard.job_code.id;
                     if (!angular.isUndefined($scope.timecard.zone) && $scope.timecard.zone && $scope.timecard.zone != null) {
@@ -1348,7 +1359,7 @@ angular.module('ctApp.timeCard', [
                         timestamp: moment(newClockInOut.clockout).utc().format('YYYY-MM-DD HH:mm'),
                         call_duriation: newClockInOut.duration,
                         created_on: moment().utc(),
-                        call_status: "Entered by Agency",
+                        //call_status: "Entered by Agency",
                         //zone_code: $scope.timecard.zone.id,
                         ref_id: data.id,
                         created_by: JSON.stringify({
@@ -1368,8 +1379,17 @@ angular.module('ctApp.timeCard', [
                         if (!angular.isUndefined($scope.timecard.zone) && $scope.timecard.zone && $scope.timecard.zone != null) {
                             clock_in.zone_code = $scope.timecard.zone;
                         }
+                        clock_out.call_status= "Timecard Split";
 
                     } else {
+                        if($scope.Splittimecnt == $scope.newInOut.length)
+                        {
+                            clock_out.call_status= "Agency-Manual";
+                        }
+                        else
+                        {
+                            clock_out.call_status= "Timecard Split";
+                        }
                         clock_out.employee_code = $scope.timecard.employee_code.id;
                         clock_out.job_code = $scope.timecard.job_code.id;
                         if (!angular.isUndefined($scope.timecard.zone) && $scope.timecard.zone && $scope.timecard.zone != null) {

@@ -570,7 +570,7 @@ angular.module('ctApp.jobs', [
         $scope.jobDBField.authorized_phone_format = $scope.authphoneformat.join(', ');
         $scope.jobDBField.job_notes = $scope.job.job_notes;
         $scope.jobDBField.jobgroup = $scope.job.jobgroup;
-        $scope.checkJobName();
+        $scope.saveUpdateJob();
       }
     };
     $scope.deleteJob = function (jobCode) {
@@ -620,47 +620,32 @@ angular.module('ctApp.jobs', [
       });
     };
     $scope.checkJobName = function () {
-      /*if($scope.jobnamecnt===0)
-                {*/
-      filterObj = {
-        field: 'id',
-        filter: 'job_name=\'' + $scope.jobDBField.job_name + '\' and agency_id = ' + Services.getAgencyID()
-      };
-      if (!angular.isUndefined($stateParams.jobId) && $stateParams.jobId) {
-        filterObj.filter += ' and id <>' + $stateParams.jobId;
-      }
-      Services.jobService.get(filterObj, function (data) {
-        if (data.record.length > 0) {
-          /*
-                                $scope.jobnamecnt++;
-                                $scope.savedisable = 0;
-                                $scope.showerrorMsg = true;
-                                $scope.ErrorClass = "danger";
-                                $scope.ErrorMsg = "Job exists with same name, please click Save changes to proceed";
-                                $timeout(function() {
-                                    $scope.showerrorMsg = false;
-                                    //$state.go("ctApp.jobs");
-                                }, 3000);
-                                return false;
-                                */
-          $scope.savedisable = 0;
-          $scope.modalInstance = $modal.open({
-            template: '<div class="modal-header"> <h3 class="modal-title">Confirm </h3></div><div class="modal-body"><b> Job exists with same name, please click Submit to proceed</b></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">Cancel</button><button class="btn btn-primary" ng-click="all()">Submit</button> </div>',
-            controller: 'JobNameCtrl'
-          });
-          $scope.modalInstance.result.then(function (id) {
-            $scope.saveUpdateJob();
-          }, function () {
-          });
-          return false;
-        } else {
-          $scope.saveUpdateJob();
+      if ($scope.job.job_name) {
+        filterObj = {
+          field: 'id',
+          filter: 'job_name=\'' + $scope.job.job_name + '\' and agency_id = ' + Services.getAgencyID()
+        };
+        if (!angular.isUndefined($stateParams.jobId) && $stateParams.jobId) {
+          filterObj.filter += ' and id <>' + $stateParams.jobId;
         }
-      });  /* }
-                else
-                {
-                    $scope.saveUpdateJob();  
-                }*/
+        Services.jobService.get(filterObj, function (data) {
+          if (data.record.length > 0) {
+            $scope.savedisable = 0;
+            $scope.modalInstance = $modal.open({
+              template: '<div class="modal-body"><div class="alert alert-warning"> There is a job already in the system named ' + $scope.job.job_name + '. Please make sure you are not creating a duplicate job.<br>Do you want to still continue creating new job ' + $scope.job.job_name + '?</div></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">No</button><button class="btn btn-primary" ng-click="all()">Yes</button> </div>',
+              controller: 'JobNameCtrl'
+            });
+            /*
+                            $scope.modalInstance.result.then(function(id) {
+                                $state.go("ctApp.jobs");
+                            }, function() {
+
+                            });
+                            */
+            return false;
+          }
+        });
+      }
     };
     $scope.saveUpdateJob = function () {
       $scope.savedisable = 1;
@@ -1168,12 +1153,14 @@ angular.module('ctApp.jobs', [
 ]).controller('JobNameCtrl', [
   '$scope',
   '$modalInstance',
-  function ($scope, $modalInstance) {
+  '$state',
+  function ($scope, $modalInstance, $state) {
     $scope.all = function () {
-      $modalInstance.close('yes');
+      $modalInstance.dismiss('yes');
     };
     $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+      $modalInstance.dismiss('no');
+      $state.go('ctApp.jobs');
     };
   }
 ]);

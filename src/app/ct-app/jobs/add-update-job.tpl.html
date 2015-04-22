@@ -25,7 +25,7 @@
 
                             <div class="col-sm-10">
 
-                                <input type="text" class="form-control" capitalize name="job_name" required="" placeholder="Job Name" ng-model="job.job_name">
+                                <input type="text" class="form-control" capitalize name="job_name" required="" placeholder="Job Name" ng-blur="checkJobName()" ng-model="job.job_name">
                                 <span class="help-block" ng-show="basic.job_name.$error.required
                                 && rc.basic.needsAttention(basic.job_name)">Job Name is required.</span>
 

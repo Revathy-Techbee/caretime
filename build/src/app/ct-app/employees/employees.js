@@ -630,46 +630,24 @@ angular.module('ctApp.employees', [
         }
       }
       if (step == 'personal') {
-        if (!$scope.employee.timezone) {
-          //if ((!$scope.employee.timezone) || (!$scope.employee.workphone) || (!$scope.employee.birthdate)) {
-          $scope.savedisable = 0;
-          $scope.showerrorMsg = true;
-          $scope.ErrorClass = 'danger';
-          $scope.ErrorMsg = 'Required field is missing !!!';
-          jQuery('.personal .ng-invalid').addClass('ng-dirty');
-          $timeout(function () {
-            $scope.showerrorMsg = false;
-          }, 3000);
-          return false;
-        }
+        /*if (!$scope.employee.timezone) {
+                
+                    $scope.savedisable = 0;
+                    $scope.showerrorMsg = true;
+                    $scope.ErrorClass = "danger";
+                    $scope.ErrorMsg = "Required field is missing !!!";
+                    jQuery(".personal .ng-invalid").addClass("ng-dirty");
+                    $timeout(function() {
+                        $scope.showerrorMsg = false;
+                    }, 3000);
+                    return false;
+                }
+                */
         if (submit === false) {
           $scope.save_employeeDetail();
         } else {
           $scope.empSteps.advanced = true;
-        }  /*  Services.employeeZips.get({
-                    filter: "timezone like '" + $scope.employee.timezone + "' and status > 0",
-                    limit: 5
-                }, function(remoteData) {
-                    if (remoteData.record.length > 0) {
-                        if (submit === false) {
-                            $scope.save_employeeDetail();
-                        } else {
-                            $scope.empSteps.advanced = true;
-                        }
-                    } else {
-                        $scope.savedisable = 0;
-                        $scope.showerrorMsg = true;
-                        $scope.ErrorClass = "danger";
-                        $scope.ErrorMsg = "Enter Valid Timezone!!!";
-                        jQuery(".personal .ng-invalid").addClass("ng-dirty");
-                        $timeout(function() {
-                            $scope.showerrorMsg = false;
-                        }, 3000);
-                        return false;
-                    }
-
-
-                });*/
+        }
       }
       if (step == 'advanced') {
         $scope.savedisable = 1;
@@ -682,40 +660,7 @@ angular.module('ctApp.employees', [
           } else {
             $scope.empSteps.authorization = true;
           }
-        }  /*   Services.employeeZips.get({
-                    filter: "timezone like '" + $scope.employee.timezone + "' and status > 0",
-                    limit: 5
-                }, function(remoteData) {
-                    if (remoteData.record.length > 0) {
-                        if (submit === false) {
-                            $scope.savedisable = 1;
-                            $scope.save_employeeDetail();
-
-                        } else {
-                            if (!angular.isUndefined($scope.employee_id) && $scope.employee_id) {
-                                $scope.empSteps.certification = true;
-
-
-                            } else {
-                                $scope.empSteps.authorization = true;
-
-                            }
-
-                        }
-                    } else {
-                        $scope.savedisable = 0;
-                        $scope.showerrorMsg = true;
-                        $scope.ErrorClass = "danger";
-                        $scope.ErrorMsg = "Enter Valid Timezone!!!";
-                        jQuery(".personal .ng-invalid").addClass("ng-dirty");
-                        $timeout(function() {
-                            $scope.showerrorMsg = false;
-                        }, 3000);
-                        return false;
-                    }
-
-
-                });*/
+        }
       }
       if (step == 'certification') {
         $scope.savedisable = 1;
@@ -723,50 +668,22 @@ angular.module('ctApp.employees', [
           $scope.save_employeeDetail();
         } else {
           $scope.empSteps.authorization = true;
-        }  /*
-
-                Services.employeeZips.get({
-                    filter: "timezone like '" + $scope.employee.timezone + "'",
-                    fields: "timezone",
-                    limit: 1
-                }, function(remoteData) {
-                    if (remoteData.record.length > 0) {
-                        $scope.savedisable = 1;
-                        if (submit === false) {
-                            $scope.save_employeeDetail();
-                        } else {
-                            $scope.empSteps.authorization = true;
-
-                        }
-                    } else {
-                        $scope.savedisable = 0;
-                        $scope.showerrorMsg = true;
-                        $scope.ErrorClass = "danger";
-                        $scope.ErrorMsg = "Enter Valid Timezone!!!";
-                        jQuery(".personal .ng-invalid").addClass("ng-dirty");
-                        $timeout(function() {
-                            $scope.showerrorMsg = false;
-                        }, 3000);
-                        return false;
-                    }
-
-
-                });*/
+        }
       }
       if (step == 'authorization') {
-        if (!$scope.employee.timezone) {
-          $scope.savedisable = 0;
-          $scope.showerrorMsg = true;
-          $scope.ErrorClass = 'danger';
-          $scope.ErrorMsg = 'Timezone is required !!!';
-          jQuery('.personal .ng-invalid').addClass('ng-dirty');
-          $timeout(function () {
-            $scope.showerrorMsg = false;
-          }, 3000);
-          return false;
-        } else {
-          $scope.save_employeeDetail();
-        }
+        /*if (!($scope.employee.timezone)) {
+                    $scope.savedisable = 0;
+                    $scope.showerrorMsg = true;
+                    $scope.ErrorClass = "danger";
+                    $scope.ErrorMsg = "Timezone is required !!!";
+                    jQuery(".personal .ng-invalid").addClass("ng-dirty");
+                    $timeout(function() {
+                        $scope.showerrorMsg = false;
+                    }, 3000);
+                    return false;
+                } else {
+                    */
+        $scope.save_employeeDetail();  //}
       }
     };
     $scope.save_employeeDetail = function () {
@@ -887,6 +804,17 @@ angular.module('ctApp.employees', [
           }
         }
       }
+      if (!$scope.employee.timezone) {
+        $scope.savedisable = 0;
+        $scope.showerrorMsg = true;
+        $scope.ErrorClass = 'danger';
+        $scope.ErrorMsg = 'Time Zone is required';
+        jQuery('.personal .ng-invalid').addClass('ng-dirty');
+        $timeout(function () {
+          $scope.showerrorMsg = false;
+        }, 3000);
+        return false;
+      }
       if ($scope.employeeDBField.hire_date && $scope.employeeDBField.birth_date) {
         if (moment($scope.employeeDBField.hire_date).unix() <= moment($scope.employeeDBField.birth_date).unix()) {
           $scope.savedisable = 0;
@@ -931,7 +859,7 @@ angular.module('ctApp.employees', [
         }
         Services.employeeService.get(EmpAgencyObj, function (data) {
           if (data.record.length < 1) {
-            $scope.checkEmpName();
+            $scope.saveUpdateEmployee();
           } else {
             $scope.savedisable = 0;
             $scope.showerrorMsg = true;
@@ -944,51 +872,35 @@ angular.module('ctApp.employees', [
           }
         });
       } else {
-        $scope.checkEmpName();
+        $scope.saveUpdateEmployee();
       }
     };
     $scope.checkEmpName = function () {
-      /*if($scope.empnamecnt===0)
-            {*/
-      filterObj = {
-        field: 'id',
-        filter: 'first_name =\'' + $scope.employeeDBField.first_name + '\' and last_name=\'' + $scope.employeeDBField.last_name + '\' and agency_id = ' + Services.getAgencyID()
-      };
-      if (!angular.isUndefined($scope.employee_id) && $scope.employee_id) {
-        filterObj.filter += ' and id <>' + $scope.employee_id;
-      }
-      Services.employeeService.get(filterObj, function (data) {
-        if (data.record.length > 0) {
-          /*
-                            $scope.empnamecnt++;
-                            $scope.savedisable = 0;
-                            $scope.showerrorMsg = true;
-                            $scope.ErrorClass = "danger";
-                            $scope.ErrorMsg = "User exists with same name, please click Save changes to proceed";
-                            $timeout(function() {
-                                $scope.showerrorMsg = false;
-                                //$state.go("ctApp.jobs");
-                            }, 3000);
-                            return false;
-                            */
-          $scope.savedisable = 0;
-          $scope.modalInstance = $modal.open({
-            template: '<div class="modal-header"> <h3 class="modal-title">Confirm </h3></div><div class="modal-body"><b> Employee exists with same name, please click Submit to proceed</b></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">Cancel</button><button class="btn btn-primary" ng-click="all()">Submit</button> </div>',
-            controller: 'EmpNameCtrl'
-          });
-          $scope.modalInstance.result.then(function (id) {
-            $scope.saveUpdateEmployee();
-          }, function () {
-          });
-          return false;
-        } else {
-          $scope.saveUpdateEmployee();
+      if ($scope.employee.firstname && $scope.employee.lastname) {
+        filterObj = {
+          field: 'id',
+          filter: 'first_name =\'' + $scope.employee.firstname + '\' and last_name=\'' + $scope.employee.lastname + '\' and agency_id = ' + Services.getAgencyID()
+        };
+        if (!angular.isUndefined($scope.employee_id) && $scope.employee_id) {
+          filterObj.filter += ' and id <>' + $scope.employee_id;
         }
-      });  /* }
-            else
-            {
-                $scope.saveUpdateEmployee();  
-            }*/
+        Services.employeeService.get(filterObj, function (data) {
+          if (data.record.length > 0) {
+            $scope.savedisable = 0;
+            $scope.modalInstance = $modal.open({
+              template: '<div class="modal-body"><div class="alert alert-warning"> There is a employee already in the system named ' + $scope.employee.firstname + ' ' + $scope.employee.lastname + '. Please make sure you are not creating a duplicate job.<br>Do you want to still continue creating new employee ' + $scope.employee.firstname + ' ' + $scope.employee.lastname + '?</div></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">No</button><button class="btn btn-primary" ng-click="all()">Yes</button> </div>',
+              controller: 'EmpNameCtrl'
+            });
+            /*$scope.modalInstance.result.then(function(id) {
+                            }, function() {
+
+                                $state.go("ctApp.employees");
+
+                            });*/
+            return false;
+          }
+        });
+      }
     };
     $scope.saveUpdateEmployee = function () {
       $scope.savedisable = 1;
@@ -1165,40 +1077,6 @@ angular.module('ctApp.employees', [
         }, 3000);
       });
     };
-    /* $scope.getZipDetail = function() {
-
-            if (!angular.isUndefined($scope.employee.zip)) {
-                if ($scope.employee.zip.length == 5) {
-
-                    Services.employeeZips.get({
-                       filter: "Zip ='" + $scope.employee.zip + "'",
-                        fields: "timezone,primary_city,state,county",
-                        limit: 1
-                    }, function(remoteData) {
-
-                        if (remoteData.record.length > 0) {
-                            $scope.employee.city = remoteData.record[0].primary_city;
-                            $scope.employee.state = remoteData.record[0].state;
-                            $scope.employee.county = remoteData.record[0].county;
-                            $scope.employee.timezone = remoteData.record[0].timezone;
-
-
-                            $scope.showZipError = false;
-                        } else {
-                            $scope.showZipError = true;
-                            $timeout(function() {
-                                $scope.showZipError = false;
-                            }, 6000);
-                            $scope.employee.city = "";
-                            $scope.employee.state = "";
-                            $scope.employee.county = "";
-                            $scope.employee.timezone = "";
-                        }
-
-                    });
-                }
-            }
-        };*/
     $scope.getmyTimezone = function (lat, lng) {
       if (lat && lng) {
         var tz = new TimeZoneDB();
@@ -1291,30 +1169,6 @@ angular.module('ctApp.employees', [
     $scope.cancelEmployee = function () {
       $state.go('ctApp.employees');
     };
-    /*
-        $scope.getmyTimezone = function(val) {
-            Services.employeeZips.get({
-                filter: "Zip ='" + val + "'",
-                fields: "timezone",
-                limit: 1
-            }, function(remoteData) {
-                if (remoteData.record.length > 0) {
-                    $scope.employee.timezone = remoteData.record[0].timezone;
-
-                    $scope.showZipError = false;
-                } else {
-                    $scope.showZipError = true;
-                    $timeout(function() {
-                        $scope.showZipError = false;
-                    }, 6000);
-                    $scope.employee.timezone = "";
-                }
-
-
-            });
-
-        };
-        */
     $scope.$watch('employee.zip', function (newValue, oldValue) {
       if (newValue != oldValue) {
         if (Object.prototype.toString.call(newValue) == '[object Object]') {
@@ -1428,35 +1282,6 @@ angular.module('ctApp.employees', [
         }
       }
     };
-    /* $scope.getTimezonecheck = function(val) {
-            Services.employeeZips.get({
-                filter: "Zip ='" + val + "'",
-                fields: "timezone",
-                limit: 1
-            }, function(res) {
-                var timezone = [];
-                angular.forEach(res.record, function(item) {
-                    timezone.push(item.timezone);
-                });
-                return timezone;
-
-            });
-        };*/
-    /*  $scope.getTimezone = function(val) {
-
-
-            return Services.getTimeZones(val).then(function(res) {
-                var timezone = [];
-                angular.forEach(res.data.record, function(item) {
-                    timezone.push(item.timezone);
-                });
-                return timezone;
-            });
-
-
-
-
-        };*/
     $scope.employeeManagePrev = function (step) {
       if (step == 'personal') {
         $scope.empSteps.general = true;
@@ -2097,12 +1922,15 @@ angular.module('ctApp.employees', [
 ]).controller('EmpNameCtrl', [
   '$scope',
   '$modalInstance',
-  function ($scope, $modalInstance) {
+  '$state',
+  function ($scope, $modalInstance, $state) {
     $scope.all = function () {
-      $modalInstance.close('yes');
+      $modalInstance.dismiss('yes');
     };
     $scope.cancel = function () {
-      $modalInstance.dismiss('cancel');
+      $modalInstance.dismiss('no');
+      $state.go('ctApp.employees');  //$state.go("ctApp.jobs");
+                                     // $modalInstance.close('no');
     };
   }
 ]);

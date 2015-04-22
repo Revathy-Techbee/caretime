@@ -15,12 +15,12 @@
                             <div class="col-sm-10">
                                 <div class="row">
                                     <div class="col-md-6" ng-class="{'has-error': rc.general.needsAttention(general.firstname)}">
-                                        <input type="text" required="" name="firstname" class="form-control" capitalize placeholder="First Name" ng-model="employee.firstname" ng-keyup="generateUsername()">
+                                        <input type="text" required="" name="firstname" class="form-control" capitalize placeholder="First Name" ng-model="employee.firstname"  ng-blur="checkEmpName()" ng-keyup="generateUsername()">
                                         <span class="help-block" ng-show="general.firstname.$error.required
                                 && rc.general.needsAttention(general.firstname)">First Name is required.</span>
                                     </div>
                                     <div class="col-md-6" ng-class="{'has-error': rc.general.needsAttention(general.lastname)}">
-                                        <input type="text" class="form-control" capitalize name="lastname" required="" placeholder="Last Name" ng-model="employee.lastname" ng-keyup="generateUsername()">
+                                        <input type="text" class="form-control" capitalize name="lastname" required="" placeholder="Last Name" ng-model="employee.lastname" ng-blur="checkEmpName()" ng-keyup="generateUsername()">
                                         <span class="help-block" ng-show="general.lastname.$error.required
                                 && rc.general.needsAttention(general.lastname)">Last Name is required.</span>
                                     </div>

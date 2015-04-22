@@ -1564,12 +1564,12 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "                            <div class=\"col-sm-10\">\n" +
     "                                <div class=\"row\">\n" +
     "                                    <div class=\"col-md-6\" ng-class=\"{'has-error': rc.general.needsAttention(general.firstname)}\">\n" +
-    "                                        <input type=\"text\" required=\"\" name=\"firstname\" class=\"form-control\" capitalize placeholder=\"First Name\" ng-model=\"employee.firstname\" ng-keyup=\"generateUsername()\">\n" +
+    "                                        <input type=\"text\" required=\"\" name=\"firstname\" class=\"form-control\" capitalize placeholder=\"First Name\" ng-model=\"employee.firstname\"  ng-blur=\"checkEmpName()\" ng-keyup=\"generateUsername()\">\n" +
     "                                        <span class=\"help-block\" ng-show=\"general.firstname.$error.required\n" +
     "                                && rc.general.needsAttention(general.firstname)\">First Name is required.</span>\n" +
     "                                    </div>\n" +
     "                                    <div class=\"col-md-6\" ng-class=\"{'has-error': rc.general.needsAttention(general.lastname)}\">\n" +
-    "                                        <input type=\"text\" class=\"form-control\" capitalize name=\"lastname\" required=\"\" placeholder=\"Last Name\" ng-model=\"employee.lastname\" ng-keyup=\"generateUsername()\">\n" +
+    "                                        <input type=\"text\" class=\"form-control\" capitalize name=\"lastname\" required=\"\" placeholder=\"Last Name\" ng-model=\"employee.lastname\" ng-blur=\"checkEmpName()\" ng-keyup=\"generateUsername()\">\n" +
     "                                        <span class=\"help-block\" ng-show=\"general.lastname.$error.required\n" +
     "                                && rc.general.needsAttention(general.lastname)\">Last Name is required.</span>\n" +
     "                                    </div>\n" +
@@ -3115,7 +3115,7 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "\n" +
     "                            <div class=\"col-sm-10\">\n" +
     "\n" +
-    "                                <input type=\"text\" class=\"form-control\" capitalize name=\"job_name\" required=\"\" placeholder=\"Job Name\" ng-model=\"job.job_name\">\n" +
+    "                                <input type=\"text\" class=\"form-control\" capitalize name=\"job_name\" required=\"\" placeholder=\"Job Name\" ng-blur=\"checkJobName()\" ng-model=\"job.job_name\">\n" +
     "                                <span class=\"help-block\" ng-show=\"basic.job_name.$error.required\n" +
     "                                && rc.basic.needsAttention(basic.job_name)\">Job Name is required.</span>\n" +
     "\n" +
