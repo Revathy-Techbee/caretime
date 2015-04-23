@@ -1564,12 +1564,12 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "                            <div class=\"col-sm-10\">\n" +
     "                                <div class=\"row\">\n" +
     "                                    <div class=\"col-md-6\" ng-class=\"{'has-error': rc.general.needsAttention(general.firstname)}\">\n" +
-    "                                        <input type=\"text\" required=\"\" name=\"firstname\" class=\"form-control\" capitalize placeholder=\"First Name\" ng-model=\"employee.firstname\"  ng-blur=\"checkEmpName()\" ng-keyup=\"generateUsername()\">\n" +
+    "                                        <input type=\"text\" required=\"\" name=\"firstname\" class=\"form-control\" capitalize placeholder=\"First Name\" ng-model=\"employee.firstname\" ng-pattern=\"/^[a-zA-Z\\d\\s:]*$/\" ng-blur=\"checkEmpName()\" ng-keyup=\"generateUsername()\">\n" +
     "                                        <span class=\"help-block\" ng-show=\"general.firstname.$error.required\n" +
     "                                && rc.general.needsAttention(general.firstname)\">First Name is required.</span>\n" +
     "                                    </div>\n" +
     "                                    <div class=\"col-md-6\" ng-class=\"{'has-error': rc.general.needsAttention(general.lastname)}\">\n" +
-    "                                        <input type=\"text\" class=\"form-control\" capitalize name=\"lastname\" required=\"\" placeholder=\"Last Name\" ng-model=\"employee.lastname\" ng-blur=\"checkEmpName()\" ng-keyup=\"generateUsername()\">\n" +
+    "                                        <input type=\"text\" class=\"form-control\" capitalize name=\"lastname\" required=\"\" placeholder=\"Last Name\" ng-model=\"employee.lastname\" ng-pattern=\"/^[a-zA-Z\\d\\s:]*$/\" ng-blur=\"checkEmpName()\" ng-keyup=\"generateUsername()\">\n" +
     "                                        <span class=\"help-block\" ng-show=\"general.lastname.$error.required\n" +
     "                                && rc.general.needsAttention(general.lastname)\">Last Name is required.</span>\n" +
     "                                    </div>\n" +
@@ -1687,7 +1687,7 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "                        <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
     "                        <div class=\"form-group\">\n" +
     "                            <div class=\"col-sm-9\">\n" +
-    "                                <button type=\"submit\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
+    "                                <button type=\"submit\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
     "                                <button type=\"button\" ng-if=\"pageTitle=='Update'\" class=\"btn btn-primary  btn-rounded\" ng-disabled=\"savedisable == 1\" ng-click=\"employeeManage('general', false)\">Save changes</button>\n" +
     "                                <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">\n" +
     "                                  \n" +
@@ -1696,8 +1696,8 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "                            </div>\n" +
     "                            <div class=\"col-sm-3\">\n" +
     "                                <div class=\"pull-right\">\n" +
-    "                                    <button type=\"button\" ng-if=\"pageTitle=='Update'\" class=\"btn btn-default btn-rounded\" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>\n" +
-    "                                    <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancelEmployee()'>Cancel</button>\n" +
+    "                                    <button type=\"button\" ng-disabled=\"savedisable == 1\" ng-if=\"pageTitle=='Update'\" class=\"btn btn-default btn-rounded\" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>\n" +
+    "                                    <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\" ng-click='cancelEmployee()'>Cancel</button>\n" +
     "                                </div>\n" +
     "                            </div>\n" +
     "\n" +
@@ -1868,8 +1868,8 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "\n" +
     "                        <div class=\"form-group\">\n" +
     "                            <div class=\"col-sm-9\">\n" +
-    "                                <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click=\"employeeManagePrev('personal')\">Prev</button>\n" +
-    "                                <button type=\"submit\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
+    "                                <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\" ng-click=\"employeeManagePrev('personal')\">Prev</button>\n" +
+    "                                <button type=\"submit\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
     "                                <button type=\"button\" ng-if=\"pageTitle=='Update'\" class=\"btn btn-primary  btn-rounded\" ng-disabled=\"savedisable == 1\" ng-click=\"employeeManage('personal', false)\">Save changes</button>\n" +
     "                                <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">\n" +
     "                                  {{ErrorMsg}}\n" +
@@ -1877,8 +1877,8 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "                            </div>\n" +
     "                            <div class=\"col-sm-3\">\n" +
     "                                <div class=\"pull-right\">\n" +
-    "                                    <button type=\"button\" ng-if=\"pageTitle=='Update'\" class=\"btn btn-default btn-rounded\" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>\n" +
-    "                                    <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancelEmployee()'>Cancel</button>\n" +
+    "                                    <button type=\"button\" ng-disabled=\"savedisable == 1\" ng-if=\"pageTitle=='Update'\" class=\"btn btn-default btn-rounded\" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>\n" +
+    "                                    <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\" ng-click='cancelEmployee()'>Cancel</button>\n" +
     "                                </div>\n" +
     "                            </div>\n" +
     "                        </div>\n" +
@@ -2003,8 +2003,8 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "                        <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
     "                        <div class=\"form-group\">\n" +
     "                            <div class=\"col-sm-9\">\n" +
-    "                                <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click=\"employeeManagePrev('advanced')\">Prev</button>\n" +
-    "                                <button type=\"submit\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
+    "                                <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\" ng-click=\"employeeManagePrev('advanced')\">Prev</button>\n" +
+    "                                <button type=\"submit\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
     "                                <button type=\"button\" class=\"btn btn-primary  btn-rounded\" ng-disabled=\"savedisable == 1\" ng-click=\"employeeManage('advanced', false)\">Save changes</button>\n" +
     "                                <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">\n" +
     "                                  {{ErrorMsg}}\n" +
@@ -2012,8 +2012,8 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "                            </div>\n" +
     "                            <div class=\"col-sm-3\">\n" +
     "                                <div class=\"pull-right\">\n" +
-    "                                    <button type=\"button\" ng-if=\"pageTitle=='Update'\" class=\"btn btn-default btn-rounded\" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>\n" +
-    "                                    <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancelEmployee()'>Cancel</button>\n" +
+    "                                    <button type=\"button\" ng-disabled=\"savedisable == 1\" ng-if=\"pageTitle=='Update'\" class=\"btn btn-default btn-rounded\" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>\n" +
+    "                                    <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\" ng-click='cancelEmployee()'>Cancel</button>\n" +
     "                                </div>\n" +
     "                            </div>\n" +
     "                        </div>\n" +
@@ -2135,8 +2135,8 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "\n" +
     "                        <div class=\"form-group\">\n" +
     "                            <div class=\"col-sm-9\">\n" +
-    "                                <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click=\"employeeManagePrev('certification')\">Prev</button>\n" +
-    "                                <button type=\"button\" ng-if=\"adminUser\" ng-click=\"employeeManage('certification')\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
+    "                                <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\" ng-click=\"employeeManagePrev('certification')\">Prev</button>\n" +
+    "                                <button type=\"button\" ng-disabled=\"savedisable == 1\" ng-if=\"adminUser\" ng-click=\"employeeManage('certification')\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
     "                                <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-primary  btn-rounded\" ng-click=\"employeeManage('certification', false)\">Save changes</button>\n" +
     "                                <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">\n" +
     "                                    {{ErrorMsg}}\n" +
@@ -2148,8 +2148,8 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "\n" +
     "                            <div class=\"col-sm-3\">\n" +
     "                                <div class=\"pull-right\">\n" +
-    "                                    <button type=\"button\" ng-if=\"pageTitle=='Update'\" class=\"btn btn-default btn-rounded\" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>\n" +
-    "                                    <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancelEmployee()'>Cancel</button>\n" +
+    "                                    <button type=\"button\" ng-disabled=\"savedisable == 1\" ng-if=\"pageTitle=='Update'\" class=\"btn btn-default btn-rounded\" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>\n" +
+    "                                    <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\" ng-click='cancelEmployee()'>Cancel</button>\n" +
     "                                </div>\n" +
     "                            </div>\n" +
     "                        </div>\n" +
@@ -2190,7 +2190,7 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "                                <em class=\"help-block m-b-none text-muted\">Example: Jane.Smith@Gmail.com</em>\n" +
     "                            </div>\n" +
     "                            <div class=\"cpl-sm-2\">\n" +
-    "                                <button type=\"button\" class=\"btn btn-info\" ng-click=\"sendAuthorization()\">Send</button>\n" +
+    "                                <button type=\"button\"  class=\"btn btn-info\" ng-click=\"sendAuthorization()\">Send</button>\n" +
     "                            </div>\n" +
     "                        </div>\n" +
     "\n" +
@@ -2198,7 +2198,7 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "                        <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
     "                        <div class=\"form-group\">\n" +
     "                            <div class=\"col-sm-9\">\n" +
-    "                                <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click=\"employeeManagePrev('authorization')\">Prev</button>\n" +
+    "                                <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\" ng-click=\"employeeManagePrev('authorization')\">Prev</button>\n" +
     "                                <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-primary  btn-rounded\" ng-click=\"employeeManage('authorization', false)\">Save changes</button>\n" +
     "                                <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">\n" +
     "                                  {{ErrorMsg}}\n" +
@@ -2206,8 +2206,8 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "                            </div>\n" +
     "                            <div class=\"col-sm-3\">\n" +
     "                                <div class=\"pull-right\">\n" +
-    "                                    <button type=\"button\" ng-if=\"pageTitle=='Update'\" class=\"btn btn-default btn-rounded\" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>\n" +
-    "                                    <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancelEmployee()'>Cancel</button>\n" +
+    "                                    <button type=\"button\" ng-disabled=\"savedisable == 1\" ng-if=\"pageTitle=='Update'\" class=\"btn btn-default btn-rounded\" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>\n" +
+    "                                    <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\" ng-click='cancelEmployee()'>Cancel</button>\n" +
     "                                </div>\n" +
     "                            </div>\n" +
     "                        </div>\n" +
@@ -3115,7 +3115,7 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "\n" +
     "                            <div class=\"col-sm-10\">\n" +
     "\n" +
-    "                                <input type=\"text\" class=\"form-control\" capitalize name=\"job_name\" required=\"\" placeholder=\"Job Name\" ng-blur=\"checkJobName()\" ng-model=\"job.job_name\">\n" +
+    "                                <input type=\"text\" class=\"form-control\" capitalize name=\"job_name\" required=\"\" placeholder=\"Job Name\" ng-pattern=\"/^[a-zA-Z\\d\\s:]*$/\"  ng-blur=\"checkJobName()\" ng-model=\"job.job_name\">\n" +
     "                                <span class=\"help-block\" ng-show=\"basic.job_name.$error.required\n" +
     "                                && rc.basic.needsAttention(basic.job_name)\">Job Name is required.</span>\n" +
     "\n" +
@@ -3195,7 +3195,7 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "\n" +
     "                            <div class=\"col-sm-9\">\n" +
     "\n" +
-    "                                <button type=\"submit\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
+    "                                <button type=\"submit\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
     "\n" +
     "                                <button type=\"button\" class=\"btn btn-primary btn-rounded\" ng-disabled=\"savedisable == 1\" ng-click=\"jobManage('basic', false)\">Save changes</button>\n" +
     "\n" +
@@ -3210,8 +3210,8 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "                            <div class=\"col-sm-3\">\n" +
     "\n" +
     "                                <div class=\"pull-right\">\n" +
-    "                                    <button type=\"button\" ng-show=\"job_id\" class=\"btn btn-default btn-rounded\" ng-click='deleteJob(job.job_code)'>Delete</button>\n" +
-    "                                    <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancelJob()'>Cancel</button>\n" +
+    "                                    <button type=\"button\" ng-disabled=\"savedisable == 1\" ng-show=\"job_id\" class=\"btn btn-default btn-rounded\" ng-click='deleteJob(job.job_code)'>Delete</button>\n" +
+    "                                    <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\" ng-click='cancelJob()'>Cancel</button>\n" +
     "                                </div>\n" +
     "\n" +
     "                            </div>\n" +
@@ -3333,8 +3333,8 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "                        <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
     "                        <div class=\"form-group\">\n" +
     "                            <div class=\"col-sm-9\">\n" +
-    "                                <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click=\"jobManagePrev('location')\">Prev</button>\n" +
-    "                                <button type=\"submit\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
+    "                                <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\" ng-click=\"jobManagePrev('location')\">Prev</button>\n" +
+    "                                <button type=\"submit\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
     "                                <button type=\"button\" class=\"btn btn-primary btn-rounded\" ng-click=\"jobManage('location', false)\" ng-disabled=\"savedisable == 1\">Save changes</button>\n" +
     "\n" +
     "                                <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">\n" +
@@ -3343,8 +3343,8 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "                            </div>\n" +
     "                            <div class=\"col-sm-3\">\n" +
     "                                <div class=\"pull-right\">\n" +
-    "                                     <button type=\"button\" ng-show=\"job_id\" class=\"btn btn-default btn-rounded\" ng-click='deleteJob(job.job_code)'>Delete</button>\n" +
-    "                                    <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancelJob()'>Cancel</button>\n" +
+    "                                     <button type=\"button\" ng-disabled=\"savedisable == 1\" ng-show=\"job_id\" class=\"btn btn-default btn-rounded\" ng-click='deleteJob(job.job_code)'>Delete</button>\n" +
+    "                                    <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\" ng-click='cancelJob()'>Cancel</button>\n" +
     "                                </div>\n" +
     "                            </div>\n" +
     "                        </div>\n" +
@@ -3493,8 +3493,8 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "                            </div>\n" +
     "                            <div class=\"col-sm-3\">\n" +
     "                                <div class=\"pull-right\">\n" +
-    "                                    <button type=\"button\" ng-show=\"job_id\" class=\"btn btn-default btn-rounded\" ng-click='deleteJob(job.job_code)'>Delete</button>\n" +
-    "                                    <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancelJob()'>Cancel</button>\n" +
+    "                                    <button type=\"button\" ng-disabled=\"savedisable == 1\" ng-show=\"job_id\" class=\"btn btn-default btn-rounded\" ng-click='deleteJob(job.job_code)'>Delete</button>\n" +
+    "                                    <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\" ng-click='cancelJob()'>Cancel</button>\n" +
     "                                </div>\n" +
     "                            </div>\n" +
     "                        </div>\n" +
@@ -3545,9 +3545,9 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "\n" +
     "                            <div class=\"col-sm-9\">\n" +
     "\n" +
-    "                                <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click=\"jobManagePrev('notes')\">Prev</button>\n" +
+    "                                <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\" ng-click=\"jobManagePrev('notes')\">Prev</button>\n" +
     "\n" +
-    "                                <button type=\"submit\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
+    "                                <button type=\"submit\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
     "                                <button type=\"button\" ng-click=\"jobManage('notes', false)\" class=\"btn btn-primary btn-rounded\" ng-disabled=\"savedisable == 1\">Save changes</button>\n" +
     "\n" +
     "                                <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">\n" +
@@ -3560,8 +3560,8 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "\n" +
     "                            <div class=\"col-sm-3\">\n" +
     "                                <div class=\"pull-right\">\n" +
-    "                                     <button type=\"button\" ng-show=\"job_id\" class=\"btn btn-default btn-rounded\" ng-click='deleteJob(job.job_code)'>Delete</button>\n" +
-    "                                    <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancelJob()'>Cancel</button>\n" +
+    "                                     <button type=\"button\" ng-disabled=\"savedisable == 1\" ng-show=\"job_id\" class=\"btn btn-default btn-rounded\" ng-click='deleteJob(job.job_code)'>Delete</button>\n" +
+    "                                    <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\" ng-click='cancelJob()'>Cancel</button>\n" +
     "                                </div>\n" +
     "\n" +
     "                            </div>\n" +
@@ -3648,9 +3648,9 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "\n" +
     "                            <div class=\"col-sm-9\">\n" +
     "\n" +
-    "                                <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click=\"jobManagePrev('customPrompt')\">Prev</button>\n" +
+    "                                <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\" ng-click=\"jobManagePrev('customPrompt')\">Prev</button>\n" +
     "\n" +
-    "                                <button type=\"submit\" class=\"btn btn-primary btn-rounded\" ng-disabled=\"savedisable == 1\">Save changes</button>\n" +
+    "                                <button type=\"submit\"  class=\"btn btn-primary btn-rounded\" ng-disabled=\"savedisable == 1\">Save changes</button>\n" +
     "\n" +
     "                                <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">\n" +
     "\n" +
@@ -3662,8 +3662,8 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "\n" +
     "                            <div class=\"col-sm-3\">\n" +
     "                                <div class=\"pull-right\">\n" +
-    "                                     <button type=\"button\" ng-show=\"job_id\" class=\"btn btn-default btn-rounded\" ng-click='deleteJob(job.job_code)'>Delete</button>\n" +
-    "                                    <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancelJob()'>Cancel</button>\n" +
+    "                                     <button type=\"button\" ng-disabled=\"savedisable == 1\" ng-show=\"job_id\" class=\"btn btn-default btn-rounded\" ng-click='deleteJob(job.job_code)'>Delete</button>\n" +
+    "                                    <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\" ng-click='cancelJob()'>Cancel</button>\n" +
     "                                </div>\n" +
     "\n" +
     "                            </div>\n" +

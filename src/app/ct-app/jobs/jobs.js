@@ -671,6 +671,9 @@ angular.module('ctApp.jobs', [
                     $scope.jobDBField.authorized_phone_format = $scope.authphoneformat.join(", ");
                     $scope.jobDBField.job_notes = $scope.job.job_notes;
                     $scope.jobDBField.jobgroup = $scope.job.jobgroup;
+                    $scope.jobDBField.long = ($scope.job.long_lat?$scope.job.long_lat.long:"");
+                    $scope.jobDBField.lat = ($scope.job.long_lat?$scope.job.long_lat.lat:"");
+                            
                     $scope.saveUpdateJob();
                     
 
@@ -746,6 +749,7 @@ angular.module('ctApp.jobs', [
             $scope.checkJobName = function() {
                 if($scope.job.job_name)
                 {
+                    $scope.savedisable = 1;
                     filterObj={
                         field: "id",
                         filter: "job_name='" + $scope.job.job_name + "' and agency_id = " + Services.getAgencyID()
@@ -757,20 +761,32 @@ angular.module('ctApp.jobs', [
                     Services.jobService.get(filterObj, function(data) {
                         if (data.record.length > 0) {
                                
-                                $scope.savedisable = 0;
+                                
                                 $scope.modalInstance = $modal.open({
                                 template: '<div class="modal-body"><div class="alert alert-warning"> There is a job already in the system named '+$scope.job.job_name +'. Please make sure you are not creating a duplicate job.<br>Do you want to still continue creating new job '+$scope.job.job_name+'?</div></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">No</button><button class="btn btn-primary" ng-click="all()">Yes</button> </div>',
                                 controller: "JobNameCtrl"
 
                             });
-                                /*
+                                
                             $scope.modalInstance.result.then(function(id) {
-                                $state.go("ctApp.jobs");
+                                if(id=='yes')
+                                {
+                                    $scope.savedisable = 0;
+                                }
+                                else
+                                {
+                                    $state.go("ctApp.jobs");
+                                }
                             }, function() {
+                                 $scope.savedisable = 0;
 
                             });
-                            */
+                            
                             return false;
+                        }
+                        else
+                        {
+                            $scope.savedisable = 0;
                         }
                        
                     });
@@ -1438,13 +1454,16 @@ angular.module('ctApp.jobs', [
 
           
             $scope.all = function() {
-                $modalInstance.dismiss('yes');
+                $modalInstance.close('yes');
+                //$modalInstance.dismiss('yes');
                 
             };
 
             $scope.cancel = function() {
-               $modalInstance.dismiss('no');
+                $modalInstance.close('no');
+              /* $modalInstance.dismiss('no');
               $state.go("ctApp.jobs");
+              */
 
             };
         }

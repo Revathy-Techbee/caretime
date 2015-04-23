@@ -1459,11 +1459,18 @@ angular.module('ctApp.timeCard', [
         timestamp: moment($scope.TimecardDetails.clock_in).utc().format('YYYY-MM-DD HH:mm'),
         call_status: 'Inactivated'
       };
+      if (!$scope.TimecardDetails.originaldat) {
+        clockin.adjusted_timestamp = moment($scope.TimecardDetails.clock_in).utc().format('YYYY-MM-DD HH:mm');
+      }
       clockout = {
         timestamp: moment($scope.TimecardDetails.clock_in).utc().format('YYYY-MM-DD HH:mm'),
         call_duriation: '0:0',
         call_status: 'Inactivated'
       };
+      if (!$scope.TimecardDetails.originaldat) {
+        clockout.adjusted_timestamp = moment($scope.TimecardDetails.clock_out).utc().format('YYYY-MM-DD HH:mm');
+        clockout.adjusted_call_duriation = $scope.TimecardDetails.duration;
+      }
       Services.timeLog.update({ id: $scope.TimecardDetails.clockinID }, clockin, function (data) {
         Services.timeLog.update({ id: $scope.TimecardDetails.clockoutID }, clockout, function (data) {
           Services.employeeActivitiesService.get({

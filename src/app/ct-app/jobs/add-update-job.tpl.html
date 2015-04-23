@@ -25,7 +25,7 @@
 
                             <div class="col-sm-10">
 
-                                <input type="text" class="form-control" capitalize name="job_name" required="" placeholder="Job Name" ng-blur="checkJobName()" ng-model="job.job_name">
+                                <input type="text" class="form-control" capitalize name="job_name" required="" placeholder="Job Name" ng-pattern="/^[a-zA-Z\d\s:]*$/"  ng-blur="checkJobName()" ng-model="job.job_name">
                                 <span class="help-block" ng-show="basic.job_name.$error.required
                                 && rc.basic.needsAttention(basic.job_name)">Job Name is required.</span>
 
@@ -105,7 +105,7 @@
 
                             <div class="col-sm-9">
 
-                                <button type="submit" class="btn btn-default btn-rounded">Next</button>
+                                <button type="submit" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded">Next</button>
 
                                 <button type="button" class="btn btn-primary btn-rounded" ng-disabled="savedisable == 1" ng-click="jobManage('basic', false)">Save changes</button>
 
@@ -120,8 +120,8 @@
                             <div class="col-sm-3">
 
                                 <div class="pull-right">
-                                    <button type="button" ng-show="job_id" class="btn btn-default btn-rounded" ng-click='deleteJob(job.job_code)'>Delete</button>
-                                    <button type="button" class="btn btn-default btn-rounded" ng-click='cancelJob()'>Cancel</button>
+                                    <button type="button" ng-disabled="savedisable == 1" ng-show="job_id" class="btn btn-default btn-rounded" ng-click='deleteJob(job.job_code)'>Delete</button>
+                                    <button type="button" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded" ng-click='cancelJob()'>Cancel</button>
                                 </div>
 
                             </div>
@@ -243,8 +243,8 @@
                         <div class="line line-dashed b-b line-lg pull-in"></div>
                         <div class="form-group">
                             <div class="col-sm-9">
-                                <button type="button" class="btn btn-default btn-rounded" ng-click="jobManagePrev('location')">Prev</button>
-                                <button type="submit" class="btn btn-default btn-rounded">Next</button>
+                                <button type="button" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded" ng-click="jobManagePrev('location')">Prev</button>
+                                <button type="submit" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded">Next</button>
                                 <button type="button" class="btn btn-primary btn-rounded" ng-click="jobManage('location', false)" ng-disabled="savedisable == 1">Save changes</button>
 
                                 <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
@@ -253,8 +253,8 @@
                             </div>
                             <div class="col-sm-3">
                                 <div class="pull-right">
-                                     <button type="button" ng-show="job_id" class="btn btn-default btn-rounded" ng-click='deleteJob(job.job_code)'>Delete</button>
-                                    <button type="button" class="btn btn-default btn-rounded" ng-click='cancelJob()'>Cancel</button>
+                                     <button type="button" ng-disabled="savedisable == 1" ng-show="job_id" class="btn btn-default btn-rounded" ng-click='deleteJob(job.job_code)'>Delete</button>
+                                    <button type="button" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded" ng-click='cancelJob()'>Cancel</button>
                                 </div>
                             </div>
                         </div>
@@ -403,8 +403,8 @@
                             </div>
                             <div class="col-sm-3">
                                 <div class="pull-right">
-                                    <button type="button" ng-show="job_id" class="btn btn-default btn-rounded" ng-click='deleteJob(job.job_code)'>Delete</button>
-                                    <button type="button" class="btn btn-default btn-rounded" ng-click='cancelJob()'>Cancel</button>
+                                    <button type="button" ng-disabled="savedisable == 1" ng-show="job_id" class="btn btn-default btn-rounded" ng-click='deleteJob(job.job_code)'>Delete</button>
+                                    <button type="button" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded" ng-click='cancelJob()'>Cancel</button>
                                 </div>
                             </div>
                         </div>
@@ -455,9 +455,9 @@
 
                             <div class="col-sm-9">
 
-                                <button type="button" class="btn btn-default btn-rounded" ng-click="jobManagePrev('notes')">Prev</button>
+                                <button type="button" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded" ng-click="jobManagePrev('notes')">Prev</button>
 
-                                <button type="submit" class="btn btn-default btn-rounded">Next</button>
+                                <button type="submit" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded">Next</button>
                                 <button type="button" ng-click="jobManage('notes', false)" class="btn btn-primary btn-rounded" ng-disabled="savedisable == 1">Save changes</button>
 
                                 <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
@@ -470,8 +470,8 @@
 
                             <div class="col-sm-3">
                                 <div class="pull-right">
-                                     <button type="button" ng-show="job_id" class="btn btn-default btn-rounded" ng-click='deleteJob(job.job_code)'>Delete</button>
-                                    <button type="button" class="btn btn-default btn-rounded" ng-click='cancelJob()'>Cancel</button>
+                                     <button type="button" ng-disabled="savedisable == 1" ng-show="job_id" class="btn btn-default btn-rounded" ng-click='deleteJob(job.job_code)'>Delete</button>
+                                    <button type="button" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded" ng-click='cancelJob()'>Cancel</button>
                                 </div>
 
                             </div>
@@ -558,9 +558,9 @@
 
                             <div class="col-sm-9">
 
-                                <button type="button" class="btn btn-default btn-rounded" ng-click="jobManagePrev('customPrompt')">Prev</button>
+                                <button type="button" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded" ng-click="jobManagePrev('customPrompt')">Prev</button>
 
-                                <button type="submit" class="btn btn-primary btn-rounded" ng-disabled="savedisable == 1">Save changes</button>
+                                <button type="submit"  class="btn btn-primary btn-rounded" ng-disabled="savedisable == 1">Save changes</button>
 
                                 <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
 
@@ -572,8 +572,8 @@
 
                             <div class="col-sm-3">
                                 <div class="pull-right">
-                                     <button type="button" ng-show="job_id" class="btn btn-default btn-rounded" ng-click='deleteJob(job.job_code)'>Delete</button>
-                                    <button type="button" class="btn btn-default btn-rounded" ng-click='cancelJob()'>Cancel</button>
+                                     <button type="button" ng-disabled="savedisable == 1" ng-show="job_id" class="btn btn-default btn-rounded" ng-click='deleteJob(job.job_code)'>Delete</button>
+                                    <button type="button" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded" ng-click='cancelJob()'>Cancel</button>
                                 </div>
 
                             </div>

@@ -15,12 +15,12 @@
                             <div class="col-sm-10">
                                 <div class="row">
                                     <div class="col-md-6" ng-class="{'has-error': rc.general.needsAttention(general.firstname)}">
-                                        <input type="text" required="" name="firstname" class="form-control" capitalize placeholder="First Name" ng-model="employee.firstname"  ng-blur="checkEmpName()" ng-keyup="generateUsername()">
+                                        <input type="text" required="" name="firstname" class="form-control" capitalize placeholder="First Name" ng-model="employee.firstname" ng-pattern="/^[a-zA-Z\d\s:]*$/" ng-blur="checkEmpName()" ng-keyup="generateUsername()">
                                         <span class="help-block" ng-show="general.firstname.$error.required
                                 && rc.general.needsAttention(general.firstname)">First Name is required.</span>
                                     </div>
                                     <div class="col-md-6" ng-class="{'has-error': rc.general.needsAttention(general.lastname)}">
-                                        <input type="text" class="form-control" capitalize name="lastname" required="" placeholder="Last Name" ng-model="employee.lastname" ng-blur="checkEmpName()" ng-keyup="generateUsername()">
+                                        <input type="text" class="form-control" capitalize name="lastname" required="" placeholder="Last Name" ng-model="employee.lastname" ng-pattern="/^[a-zA-Z\d\s:]*$/" ng-blur="checkEmpName()" ng-keyup="generateUsername()">
                                         <span class="help-block" ng-show="general.lastname.$error.required
                                 && rc.general.needsAttention(general.lastname)">Last Name is required.</span>
                                     </div>
@@ -138,7 +138,7 @@
                         <div class="line line-dashed b-b line-lg pull-in"></div>
                         <div class="form-group">
                             <div class="col-sm-9">
-                                <button type="submit" class="btn btn-default btn-rounded">Next</button>
+                                <button type="submit" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded">Next</button>
                                 <button type="button" ng-if="pageTitle=='Update'" class="btn btn-primary  btn-rounded" ng-disabled="savedisable == 1" ng-click="employeeManage('general', false)">Save changes</button>
                                 <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
                                   
@@ -147,8 +147,8 @@
                             </div>
                             <div class="col-sm-3">
                                 <div class="pull-right">
-                                    <button type="button" ng-if="pageTitle=='Update'" class="btn btn-default btn-rounded" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>
-                                    <button type="button" class="btn btn-default btn-rounded" ng-click='cancelEmployee()'>Cancel</button>
+                                    <button type="button" ng-disabled="savedisable == 1" ng-if="pageTitle=='Update'" class="btn btn-default btn-rounded" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>
+                                    <button type="button" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded" ng-click='cancelEmployee()'>Cancel</button>
                                 </div>
                             </div>
 
@@ -319,8 +319,8 @@
 
                         <div class="form-group">
                             <div class="col-sm-9">
-                                <button type="button" class="btn btn-default btn-rounded" ng-click="employeeManagePrev('personal')">Prev</button>
-                                <button type="submit" class="btn btn-default btn-rounded">Next</button>
+                                <button type="button" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded" ng-click="employeeManagePrev('personal')">Prev</button>
+                                <button type="submit" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded">Next</button>
                                 <button type="button" ng-if="pageTitle=='Update'" class="btn btn-primary  btn-rounded" ng-disabled="savedisable == 1" ng-click="employeeManage('personal', false)">Save changes</button>
                                 <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
                                   {{ErrorMsg}}
@@ -328,8 +328,8 @@
                             </div>
                             <div class="col-sm-3">
                                 <div class="pull-right">
-                                    <button type="button" ng-if="pageTitle=='Update'" class="btn btn-default btn-rounded" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>
-                                    <button type="button" class="btn btn-default btn-rounded" ng-click='cancelEmployee()'>Cancel</button>
+                                    <button type="button" ng-disabled="savedisable == 1" ng-if="pageTitle=='Update'" class="btn btn-default btn-rounded" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>
+                                    <button type="button" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded" ng-click='cancelEmployee()'>Cancel</button>
                                 </div>
                             </div>
                         </div>
@@ -454,8 +454,8 @@
                         <div class="line line-dashed b-b line-lg pull-in"></div>
                         <div class="form-group">
                             <div class="col-sm-9">
-                                <button type="button" class="btn btn-default btn-rounded" ng-click="employeeManagePrev('advanced')">Prev</button>
-                                <button type="submit" class="btn btn-default btn-rounded">Next</button>
+                                <button type="button" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded" ng-click="employeeManagePrev('advanced')">Prev</button>
+                                <button type="submit" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded">Next</button>
                                 <button type="button" class="btn btn-primary  btn-rounded" ng-disabled="savedisable == 1" ng-click="employeeManage('advanced', false)">Save changes</button>
                                 <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
                                   {{ErrorMsg}}
@@ -463,8 +463,8 @@
                             </div>
                             <div class="col-sm-3">
                                 <div class="pull-right">
-                                    <button type="button" ng-if="pageTitle=='Update'" class="btn btn-default btn-rounded" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>
-                                    <button type="button" class="btn btn-default btn-rounded" ng-click='cancelEmployee()'>Cancel</button>
+                                    <button type="button" ng-disabled="savedisable == 1" ng-if="pageTitle=='Update'" class="btn btn-default btn-rounded" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>
+                                    <button type="button" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded" ng-click='cancelEmployee()'>Cancel</button>
                                 </div>
                             </div>
                         </div>
@@ -586,8 +586,8 @@
 
                         <div class="form-group">
                             <div class="col-sm-9">
-                                <button type="button" class="btn btn-default btn-rounded" ng-click="employeeManagePrev('certification')">Prev</button>
-                                <button type="button" ng-if="adminUser" ng-click="employeeManage('certification')" class="btn btn-default btn-rounded">Next</button>
+                                <button type="button" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded" ng-click="employeeManagePrev('certification')">Prev</button>
+                                <button type="button" ng-disabled="savedisable == 1" ng-if="adminUser" ng-click="employeeManage('certification')" class="btn btn-default btn-rounded">Next</button>
                                 <button type="button" ng-disabled="savedisable == 1" class="btn btn-primary  btn-rounded" ng-click="employeeManage('certification', false)">Save changes</button>
                                 <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
                                     {{ErrorMsg}}
@@ -599,8 +599,8 @@
 
                             <div class="col-sm-3">
                                 <div class="pull-right">
-                                    <button type="button" ng-if="pageTitle=='Update'" class="btn btn-default btn-rounded" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>
-                                    <button type="button" class="btn btn-default btn-rounded" ng-click='cancelEmployee()'>Cancel</button>
+                                    <button type="button" ng-disabled="savedisable == 1" ng-if="pageTitle=='Update'" class="btn btn-default btn-rounded" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>
+                                    <button type="button" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded" ng-click='cancelEmployee()'>Cancel</button>
                                 </div>
                             </div>
                         </div>
@@ -641,7 +641,7 @@
                                 <em class="help-block m-b-none text-muted">Example: Jane.Smith@Gmail.com</em>
                             </div>
                             <div class="cpl-sm-2">
-                                <button type="button" class="btn btn-info" ng-click="sendAuthorization()">Send</button>
+                                <button type="button"  class="btn btn-info" ng-click="sendAuthorization()">Send</button>
                             </div>
                         </div>
 
@@ -649,7 +649,7 @@
                         <div class="line line-dashed b-b line-lg pull-in"></div>
                         <div class="form-group">
                             <div class="col-sm-9">
-                                <button type="button" class="btn btn-default btn-rounded" ng-click="employeeManagePrev('authorization')">Prev</button>
+                                <button type="button" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded" ng-click="employeeManagePrev('authorization')">Prev</button>
                                 <button type="button" ng-disabled="savedisable == 1" class="btn btn-primary  btn-rounded" ng-click="employeeManage('authorization', false)">Save changes</button>
                                 <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
                                   {{ErrorMsg}}
@@ -657,8 +657,8 @@
                             </div>
                             <div class="col-sm-3">
                                 <div class="pull-right">
-                                    <button type="button" ng-if="pageTitle=='Update'" class="btn btn-default btn-rounded" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>
-                                    <button type="button" class="btn btn-default btn-rounded" ng-click='cancelEmployee()'>Cancel</button>
+                                    <button type="button" ng-disabled="savedisable == 1" ng-if="pageTitle=='Update'" class="btn btn-default btn-rounded" ng-click='deleteEmployee(employee.accesscode)'>Delete</button>
+                                    <button type="button" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded" ng-click='cancelEmployee()'>Cancel</button>
                                 </div>
                             </div>
                         </div>

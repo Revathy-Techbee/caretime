@@ -877,27 +877,32 @@ angular.module('ctApp.employees', [
     };
     $scope.checkEmpName = function () {
       if ($scope.employee.firstname && $scope.employee.lastname) {
+        $scope.savedisable = 1;
         filterObj = {
           field: 'id',
-          filter: 'first_name =\'' + $scope.employee.firstname + '\' and last_name=\'' + $scope.employee.lastname + '\' and agency_id = ' + Services.getAgencyID()
+          filter: '(first_name =\'' + $scope.employee.firstname + '\' and last_name=\'' + $scope.employee.lastname + '\') or (last_name =\'' + $scope.employee.firstname + '\' and first_name=\'' + $scope.employee.lastname + '\') and agency_id = ' + Services.getAgencyID()
         };
         if (!angular.isUndefined($scope.employee_id) && $scope.employee_id) {
           filterObj.filter += ' and id <>' + $scope.employee_id;
         }
         Services.employeeService.get(filterObj, function (data) {
           if (data.record.length > 0) {
-            $scope.savedisable = 0;
             $scope.modalInstance = $modal.open({
-              template: '<div class="modal-body"><div class="alert alert-warning"> There is a employee already in the system named ' + $scope.employee.firstname + ' ' + $scope.employee.lastname + '. Please make sure you are not creating a duplicate job.<br>Do you want to still continue creating new employee ' + $scope.employee.firstname + ' ' + $scope.employee.lastname + '?</div></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">No</button><button class="btn btn-primary" ng-click="all()">Yes</button> </div>',
+              template: '<div class="modal-body"><div class="alert alert-warning"> There is a employee already in the system named ' + $scope.employee.firstname + ' ' + $scope.employee.lastname + '. Please make sure you are not creating a duplicate employee.<br>Do you want to still continue creating new employee ' + $scope.employee.firstname + ' ' + $scope.employee.lastname + '?</div></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">No</button><button class="btn btn-primary" ng-click="all()">Yes</button> </div>',
               controller: 'EmpNameCtrl'
             });
-            /*$scope.modalInstance.result.then(function(id) {
-                            }, function() {
-
-                                $state.go("ctApp.employees");
-
-                            });*/
+            $scope.modalInstance.result.then(function (id) {
+              if (id == 'yes') {
+                $scope.savedisable = 0;
+              } else {
+                $state.go('ctApp.employees');
+              }
+            }, function () {
+              $scope.savedisable = 0;  // $state.go("ctApp.employees");
+            });
             return false;
+          } else {
+            $scope.savedisable = 0;
           }
         });
       }
@@ -1925,12 +1930,13 @@ angular.module('ctApp.employees', [
   '$state',
   function ($scope, $modalInstance, $state) {
     $scope.all = function () {
-      $modalInstance.dismiss('yes');
+      $modalInstance.close('yes');  //$modalInstance.dismiss('yes');
     };
     $scope.cancel = function () {
-      $modalInstance.dismiss('no');
-      $state.go('ctApp.employees');  //$state.go("ctApp.jobs");
-                                     // $modalInstance.close('no');
+      $modalInstance.close('no');  //   $modalInstance.dismiss('no');
+                                   //   $state.go("ctApp.employees");
+                                   //$state.go("ctApp.jobs");
+                                   // $modalInstance.close('no');
     };
   }
 ]);
