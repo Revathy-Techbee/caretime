@@ -204,7 +204,7 @@ angular.module('ctApp.employees', [
                     }
                     $scope.filterObj.filter =$scope.filterObj.filter +' and '+ $scope.config.general.filterDBField.id + ' like "%' + searchtxt + '%"';
                 } else if ($scope.config.general.searchtxt && $scope.config.general.searchtxt !== '') {
-                    $scope.filterObj.filter = $scope.filterObj.filter +' and first_name like "%' + $scope.config.general.searchtxt + '%" or last_name like "%' + $scope.config.general.searchtxt + '%" or username like "%' + $scope.config.general.searchtxt + '%" or zone_id like "%' + $scope.config.general.searchtxt + '%" or primary_city like "%' + $scope.config.general.searchtxt + '%" or primary_state like "%' + $scope.config.general.searchtxt + '%" or zone_detail like "%' + $scope.config.general.searchtxt + '%"';
+                    $scope.filterObj.filter = $scope.filterObj.filter +' and (first_name like "%' + $scope.config.general.searchtxt + '%" or last_name like "%' + $scope.config.general.searchtxt + '%" or username like "%' + $scope.config.general.searchtxt + '%" or zone_id like "%' + $scope.config.general.searchtxt + '%" or primary_city like "%' + $scope.config.general.searchtxt + '%" or primary_state like "%' + $scope.config.general.searchtxt + '%" or zone_detail like "%' + $scope.config.general.searchtxt + '%")';
                 }
                 /* if($localStorage.user_info.iszone_code)
                 {
@@ -857,6 +857,8 @@ angular.module('ctApp.employees', [
 
             }
             $scope.employeeDBField.certificates = JSON.stringify(angular.fromJson(angular.toJson($scope.employee.certificates)));
+            $scope.employeeDBField.long = ($scope.employee.long_lat?$scope.employee.long_lat.long:"");
+            $scope.employeeDBField.lat = ($scope.employee.long_lat?$scope.employee.long_lat.lat:"");
 
 
 
@@ -886,7 +888,7 @@ angular.module('ctApp.employees', [
             $scope.employeeDBField.preferred_communication = JSON.stringify($scope.employee.communication);
             $scope.employeeDBField.agency_empid = $scope.employee.agency_empid;
             $scope.employeeDBField.track_location=$scope.employee.track_location;
-
+            
             if ($scope.updateCertificates === true) {
 
             } else {

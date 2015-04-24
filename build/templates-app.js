@@ -4950,7 +4950,7 @@ angular.module("ct-app/logs/timeCards/add-update-timeCard.tpl.html", []).run(["$
     "                <div class=\"form-group\">\n" +
     "                    <div class=\"col-sm-10\">\n" +
     "                        <button type=\"submit\" class=\"btn btn-primary  btn-rounded\" ng-disabled=\"savedisable == 1\">Save changes</button>\n" +
-    "                        <button type=\"button\" ng-show=\"timecardId\" class=\"btn btn-default btn-rounded\" ng-click='inactiveTimecard(timecard)'>Inactive Timecard</button>\n" +
+    "                        <button type=\"button\" ng-show=\"timecardId && showinactive==1\" class=\"btn btn-default btn-rounded\" ng-click='inactiveTimecard(timecard)'>Inactive Timecard</button>\n" +
     "                        <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">\n" +
     "                                  {{ErrorMsg}}\n" +
     "                        </span>\n" +

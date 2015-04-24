@@ -476,6 +476,7 @@ angular.module('ctApp.timeCard', [
     $scope.timecardDBField = {};
     $scope.authWarning = false;
     // $scope.timecard.clock_in = '';
+    $scope.showinactive = 0;
     $scope.clock_in_flag = 0;
     var timecard_details = Services.getModelTempVar();
     if (timecard_details) {
@@ -526,6 +527,7 @@ angular.module('ctApp.timeCard', [
         $scope.getempyid($scope.timecard.employee_code);
         $scope.getjobbyid($scope.timecard.job_code);
         if ($scope.log_type == 2) {
+          $scope.showinactive = 1;
           Services.timeLog.get({
             fields: 'id,timestamp,call_status',
             limit: '1',
@@ -549,6 +551,7 @@ angular.module('ctApp.timeCard', [
             filter: 'ref_id=\'' + $scope.timecardId + '\''
           }, function (remoteData) {
             if (remoteData.record.length !== 0) {
+              $scope.showinactive = 1;
               $scope.timeLogDBField = remoteData.record[0];
               var lastTimeLogUTC = moment.tz($scope.timeLogDBField.timestamp, 'UTC').format();
               // set incoming time zone as UTC
@@ -564,6 +567,7 @@ angular.module('ctApp.timeCard', [
               $scope.timecard.authorization = $scope.timecard.authorizationID;
             } else {
               $scope.clock_in_flag = 1;
+              $scope.showinactive = 0;
             }
           });
         }
