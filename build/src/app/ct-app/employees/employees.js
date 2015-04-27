@@ -882,7 +882,7 @@ angular.module('ctApp.employees', [
         $scope.savedisable = 1;
         filterObj = {
           field: 'id',
-          filter: '(first_name =\'' + $scope.employee.firstname + '\' and last_name=\'' + $scope.employee.lastname + '\') or (last_name =\'' + $scope.employee.firstname + '\' and first_name=\'' + $scope.employee.lastname + '\') and agency_id = ' + Services.getAgencyID()
+          filter: '((first_name =\'' + $scope.employee.firstname + '\' and last_name=\'' + $scope.employee.lastname + '\') or (last_name =\'' + $scope.employee.firstname + '\' and first_name=\'' + $scope.employee.lastname + '\')) and agency_id = ' + Services.getAgencyID()
         };
         if (!angular.isUndefined($scope.employee_id) && $scope.employee_id) {
           filterObj.filter += ' and id <>' + $scope.employee_id;
