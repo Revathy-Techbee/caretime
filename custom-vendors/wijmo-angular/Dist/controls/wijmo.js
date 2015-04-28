@@ -1,6 +1,6 @@
 /*
     *
-    * Wijmo Library 5.20143.32
+    * Wijmo Library 5.20151.48
     * http://wijmo.com/
     *
     * Copyright(c) GrapeCity, Inc.  All rights reserved.
@@ -21,10 +21,7 @@ var wijmo;
     // major (EMACScript version required).
     // year/trimester.
     // sequential
-    var _VERSION = '5.20143.32';
-
-    // whether this is a touch device (initialized in the isTouchDevice method)
-    var _isTouch;
+    var _VERSION = '5.20151.48';
 
     // for escaping HTML without jQuery
     // (http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery)
@@ -718,18 +715,6 @@ var wijmo;
     }
     wijmo.toggleClass = toggleClass;
 
-    /**
-    * Determines whether the current device is touch-enabled.
-    */
-    function isTouchDevice() {
-        if (_isTouch == null) {
-            // https://hacks.mozilla.org/2013/04/detecting-touch-its-the-why-not-the-how/
-            _isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
-        }
-        return _isTouch;
-    }
-    wijmo.isTouchDevice = isTouchDevice;
-
     // ** jQuery replacement methods
     /**
     * Gets an element from a jQuery-style selector.
@@ -756,7 +741,7 @@ var wijmo;
     function createElement(html) {
         var div = document.createElement('div');
         div.innerHTML = html;
-        return div.firstChild;
+        return div.removeChild(div.firstChild);
     }
     wijmo.createElement = createElement;
 
@@ -798,13 +783,18 @@ var wijmo;
     function setCss(e, css) {
         var s = e.style;
         for (var p in css) {
+            // add pixel units to numeric geometric properties
             var val = css[p];
             if (isNumber(val)) {
                 if (p.match(/width|height|left|top|right|bottom|size|padding|margin'/i)) {
-                    val += 'px'; // default unit for geometry properties
+                    val += 'px';
                 }
             }
-            s[p] = val.toString();
+
+            // set the attribute if it changed
+            if (s[p] != val) {
+                s[p] = val.toString();
+            }
         }
     }
     wijmo.setCss = setCss;
@@ -859,8 +849,8 @@ var wijmo;
             apply(pct);
             t += step;
             if (t >= duration) {
-                if (pct > 1)
-                    apply(1); // finish
+                if (pct < 1)
+                    apply(1); // ensure apply(1) is called to finish
                 clearInterval(timer);
             }
         }, step);
@@ -1169,16 +1159,16 @@ var wijmo;
     /**
     * Provides binding to complex properties (e.g. 'customer.address.city')
     */
-    var _Binding = (function () {
+    var Binding = (function () {
         /**
-        * Initializes a new instance of a _Binding.
+        * Initializes a new instance of a @see:Binding object.
         *
         * @param path Name of the property to bind to.
         */
-        function _Binding(path) {
+        function Binding(path) {
             this.path = path;
         }
-        Object.defineProperty(_Binding.prototype, "path", {
+        Object.defineProperty(Binding.prototype, "path", {
             /**
             * Gets or sets the path for the binding.
             *
@@ -1204,7 +1194,7 @@ var wijmo;
         *
         * @param object The object that contains the data to be retrieved.
         */
-        _Binding.prototype.getValue = function (object) {
+        Binding.prototype.getValue = function (object) {
             for (var i = 0; i < this._parts.length; i++) {
                 object = object[this._parts[i]];
             }
@@ -1217,15 +1207,15 @@ var wijmo;
         * @param object The object that contains the data to be set.
         * @param value Data value to set.
         */
-        _Binding.prototype.setValue = function (object, value) {
+        Binding.prototype.setValue = function (object, value) {
             for (var i = 0; i < this._parts.length - 1; i++) {
                 object = object[this._parts[i]];
             }
             object[this._parts[this._parts.length - 1]] = value;
         };
-        return _Binding;
+        return Binding;
     })();
-    wijmo._Binding = _Binding;
+    wijmo.Binding = Binding;
 })(wijmo || (wijmo = {}));
 //# sourceMappingURL=Util.js.map
 
@@ -1297,9 +1287,9 @@ var wijmo;
         *      Custom Date and Time Format Strings</a></li>
         * </ul>
         *
-        * @param value Number or Date to format.
+        * @param value Number or Date to format (all other types are converted to strings).
         * @param format Format string to use when formatting numbers or dates.
-        * @return A string representation of the given number or date.
+        * @return A string representation of the given value.
         */
         Globalize.format = function (value, format) {
             // if a format was not provided, create one
@@ -1311,15 +1301,14 @@ var wijmo;
                 }
             }
 
-            // format numbers and dates
+            // format numbers and dates, convert others to string
             if (wijmo.isNumber(value)) {
                 return Globalize.formatNumber(value, format);
             } else if (wijmo.isDate(value)) {
                 return Globalize.formatDate(value, format);
+            } else {
+                return value != null ? value.toString() : '';
             }
-
-            // anything that is not a number or a date returns as-is
-            return value;
         };
 
         /**
@@ -1741,7 +1730,7 @@ var wijmo;
         };
         Globalize._h12 = function (d) {
             var cal = wijmo.culture.Globalize.calendar, h = d.getHours();
-            if (cal.am && cal.am[0] && h > 11) {
+            if (cal.am && cal.am[0]) {
                 h = h % 12;
                 if (h == 0)
                     h = 12;
@@ -1782,12 +1771,12 @@ var wijmo;
     *
     * Wijmo events are similar to .NET events. Any class may define events by
     * declaring them as fields. Any class may subscribe to events using the
-    * event's @see:addHandler method, or unsubscribe using the @see:removeHandler
+    * event's @see:addHandler method and unsubscribe using the @see:removeHandler
     * method.
     *
     * Wijmo event handlers take two parameters: <i>sender</i> and <i>args</i>.
     * The first is the object that raised the event, and the second is an object
-    * that contains the the event parameters.
+    * that contains the event parameters.
     *
     * Classes that define events follow the .NET pattern where for every event
     * there is an <i>on[EVENTNAME]</i> method that raises the event. This pattern
@@ -2032,14 +2021,25 @@ var wijmo;
             host.addEventListener('click', this._ehDisabled, true);
             host.addEventListener('keydown', this._ehDisabled, true);
 
-            // keep track of touch actions
-            if (wijmo.isTouchDevice()) {
-                this._ehTouchStart = this._handleTouchStart.bind(this);
-                this._ehTouchEnd = this._handleTouchEnd.bind(this);
-                host.addEventListener('touchstart', this._ehTouchStart);
-                host.addEventListener('touchend', this._ehTouchEnd);
-                host.addEventListener('touchcancel', this._ehTouchEnd);
-                host.addEventListener('touchleave', this._ehTouchEnd);
+            // keep track of touch actions at the document level
+            // (no need to add/remove event handlers to every Wijmo control)
+            if (Control._touching == null) {
+                Control._touching = false;
+                if ('ontouchstart' in window || 'onpointerdown' in window) {
+                    var b = document.body, ts = this._handleTouchStart, te = this._handleTouchEnd;
+                    if ('ontouchstart' in window) {
+                        b.addEventListener('touchstart', ts);
+                        b.addEventListener('touchend', te);
+                        b.addEventListener('touchcancel', te);
+                        b.addEventListener('touchleave', te);
+                    } else if ('onpointerdown' in window) {
+                        b.addEventListener('pointerdown', ts);
+                        b.addEventListener('pointerup', te);
+                        b.addEventListener('pointerout', te);
+                        b.addEventListener('pointercancel', te);
+                        b.addEventListener('pointerleave', te);
+                    }
+                }
             }
 
         }
@@ -2062,7 +2062,7 @@ var wijmo;
         };
 
         /**
-        * Applies the template to a new instance of a control.
+        * Applies the template to a new instance of a control, and returns the root element.
         *
         * This method should be called by constructors of templated controls.
         * It is responsible for binding the template parts to the
@@ -2096,7 +2096,7 @@ var wijmo;
             var tpl = null;
             if (template) {
                 tpl = wijmo.createElement(template);
-                this.hostElement.appendChild(tpl);
+                tpl = this.hostElement.appendChild(tpl);
             }
 
             // bind control variables to template parts
@@ -2133,6 +2133,8 @@ var wijmo;
                     }
                 }
             }
+
+            return tpl;
         };
 
         /**
@@ -2152,12 +2154,6 @@ var wijmo;
             host.removeEventListener('mousedown', this._ehDisabled);
             host.removeEventListener('click', this._ehDisabled);
             host.removeEventListener('keydown', this._ehDisabled);
-            if (wijmo.isTouchDevice()) {
-                host.removeEventListener('touchstart', this._ehTouchStart);
-                host.removeEventListener('touchend', this._ehTouchEnd);
-                host.removeEventListener('touchcancel', this._ehTouchEnd);
-                host.removeEventListener('touchleave', this._ehTouchEnd);
-            }
 
             // restore original content
             this._e.outerHTML = this._orgOuter;
@@ -2200,6 +2196,16 @@ var wijmo;
         * Checks whether this control contains the focused element.
         */
         Control.prototype.containsFocus = function () {
+            // scan child controls (they may have popups, TFS 112676)
+            var c = this.hostElement.querySelectorAll('.wj-control');
+            for (var i = 0; i < c.length; i++) {
+                var ctl = Control.getControl(c[i]);
+                if (ctl && ctl != this && ctl.containsFocus()) {
+                    return true;
+                }
+            }
+
+            // check for actual HTML containment
             return wijmo.contains(this._e, document.activeElement);
         };
 
@@ -2244,7 +2250,7 @@ var wijmo;
         * the control's visibility or dimensions. For example, splitters, accordions,
         * and tab controls usually change the visibility of its content elements.
         * In this case, failing to notify the controls contained in the element
-        * may cause them to update their layouts and to stop working properly.
+        * may cause them to stop working properly.
         *
         * If this happens, you must handle the appropriate event in the dynamic
         * container and call the @see:Control.invalidateAll method so the contained
@@ -2300,7 +2306,7 @@ var wijmo;
             * Gets a value that indicates whether the control is currently handling a touch event.
             */
             get: function () {
-                return this._touching;
+                return Control._touching;
             },
             enumerable: true,
             configurable: true
@@ -2322,6 +2328,29 @@ var wijmo;
                 this.endUpdate();
             }
         };
+
+        Object.defineProperty(Control.prototype, "disabled", {
+            /**
+            * Gets or sets whether the control is disabled.
+            *
+            * Disabled controls cannot get mouse or keyboard events.
+            */
+            get: function () {
+                return this._e && this._e.getAttribute('disabled') != null;
+            },
+            set: function (value) {
+                value = wijmo.asBoolean(value, true);
+                if (value != this.disabled) {
+                    if (value) {
+                        this._e.setAttribute('disabled', 'true');
+                    } else {
+                        this._e.removeAttribute('disabled');
+                    }
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
 
         /**
         * Initializes the control by copying the properties from a given object.
@@ -2372,19 +2401,22 @@ var wijmo;
         };
 
         // keep track of touch events
-        Control.prototype._handleTouchStart = function () {
-            this._touching = true;
+        Control.prototype._handleTouchStart = function (e) {
+            if (e.pointerType == null || e.pointerType == 'touch') {
+                Control._touching = true;
+            }
         };
-        Control.prototype._handleTouchEnd = function () {
-            var self = this;
-            setTimeout(function () {
-                self._touching = false;
-            }, 50);
+        Control.prototype._handleTouchEnd = function (e) {
+            if (e.pointerType == null || e.pointerType == 'touch') {
+                setTimeout(function () {
+                    Control._touching = false;
+                }, 400); // 300ms click event delay on IOS, plus some safety
+            }
         };
 
         // suppress mouse and keyboard events if the control is disabled
         Control.prototype._handleDisabled = function (e) {
-            if (this.hostElement.hasAttribute('disabled')) {
+            if (this.disabled) {
                 e.preventDefault();
                 e.stopPropagation();
                 e.stopImmediatePropagation();
@@ -2514,7 +2546,7 @@ var wijmo;
             * @param ascending Whether to sort in ascending order.
             */
             function SortDescription(property, ascending) {
-                this._bnd = new wijmo._Binding(property);
+                this._bnd = new wijmo.Binding(property);
                 this._asc = ascending;
             }
             Object.defineProperty(SortDescription.prototype, "property", {
@@ -2637,7 +2669,7 @@ var wijmo;
             */
             function PropertyGroupDescription(property, converter) {
                 _super.call(this);
-                this._bnd = new wijmo._Binding(property);
+                this._bnd = new wijmo.Binding(property);
                 this._converter = converter;
             }
             Object.defineProperty(PropertyGroupDescription.prototype, "propertyName", {
@@ -2759,14 +2791,14 @@ var wijmo;
     * @param binding Name of the property to aggregate on (in case the items are not simple values).
     */
     function getAggregate(aggType, items, binding) {
-        var cnt = 0, cntn = 0, sum = 0, sum2 = 0, min = null, max = null, bnd = binding ? new wijmo._Binding(binding) : null;
+        var cnt = 0, cntn = 0, sum = 0, sum2 = 0, min = null, max = null, bnd = binding ? new wijmo.Binding(binding) : null;
 
         for (var i = 0; i < items.length; i++) {
             // get item/value
             var val = items[i];
             if (bnd) {
                 val = bnd.getValue(val);
-                //assert(val != undefined, 'item does not define property "' + binding + '".');
+                //assert(!isUndefined(val), 'item does not define property "' + binding + '".');
             }
 
             // aggregate
@@ -2885,14 +2917,29 @@ var wijmo;
         */
         var ObservableArray = (function (_super) {
             __extends(ObservableArray, _super);
-            function ObservableArray() {
-                _super.apply(this, arguments);
+            /**
+            * Initializes a new instance of an @see:ObservableArray.
+            *
+            * @param data Array containing items used to populate the @see:ObservableArray.
+            */
+            function ObservableArray(data) {
+                _super.call(this);
                 this._updating = 0;
                 // ** INotifyCollectionChanged
                 /**
                 * Occurs when the collection changes.
                 */
                 this.collectionChanged = new wijmo.Event();
+
+                // initialize the array
+                if (data) {
+                    data = wijmo.asArray(data);
+                    this._updating++;
+                    for (var i = 0; i < data.length; i++) {
+                        this.push(data[i]);
+                    }
+                    this._updating--;
+                }
             }
             /**
             * Appends an item to the array.
@@ -3025,9 +3072,8 @@ var wijmo;
             */
             ObservableArray.prototype.clear = function () {
                 if (this.length !== 0) {
-                    this.length = 0;
+                    this.length = 0; // fastest way to clear an array
                     this._raiseCollectionChanged();
-                    //this.splice(0, this.length); // << this is slooooowww
                 }
             };
 
@@ -3165,7 +3211,7 @@ var wijmo;
             */
             function CollectionView(sourceCollection) {
                 this._idx = -1;
-                this._srtDesc = new collections.ObservableArray();
+                this._srtDsc = new collections.ObservableArray();
                 this._grpDesc = new collections.ObservableArray();
                 this._newItem = null;
                 this._edtItem = null;
@@ -3206,10 +3252,10 @@ var wijmo;
                 this.pageChanging = new wijmo.Event();
                 // check that sortDescriptions contains SortDescriptions
                 var self = this;
-                self._srtDesc.collectionChanged.addHandler(function () {
-                    var arr = self._srtDesc;
+                self._srtDsc.collectionChanged.addHandler(function () {
+                    var arr = self._srtDsc;
                     for (var i = 0; i < arr.length; i++) {
-                        var sd = wijmo.tryCast(arr[i], wijmo.collections.SortDescription);
+                        var sd = wijmo.tryCast(arr[i], collections.SortDescription);
                         if (!sd) {
                             throw 'sortDescriptions array must contain SortDescription objects.';
                         }
@@ -3223,7 +3269,7 @@ var wijmo;
                 self._grpDesc.collectionChanged.addHandler(function () {
                     var arr = self._grpDesc;
                     for (var i = 0; i < arr.length; i++) {
-                        var gd = wijmo.tryCast(arr[i], wijmo.collections.GroupDescription);
+                        var gd = wijmo.tryCast(arr[i], collections.GroupDescription);
                         if (!gd) {
                             throw 'groupDescriptions array must contain GroupDescription objects.';
                         }
@@ -3252,6 +3298,42 @@ var wijmo;
                 },
                 set: function (value) {
                     this._itemCreator = wijmo.asFunction(value);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(CollectionView.prototype, "sortConverter", {
+                /**
+                * Gets or sets a function used to convert values when sorting.
+                *
+                * If provided, the function should take as parameters a
+                * @see:SortDescription, a data item, and a value to convert,
+                * and should return the converted value.
+                *
+                * This property provides a way to customize sorting. For example,
+                * the @see:FlexGrid control uses it to sort mapped columns by
+                * display value instead of by raw value.
+                *
+                * For example, the code below causes a @see:CollectionView to
+                * sort the 'country' property, which contains country code integers,
+                * using the corresponding country names:
+                *
+                * <pre>var countries = 'US,Germany,UK,Japan,Italy,Greece'.split(',');
+                * collectionView.sortConverter = function (sd, item, value) {
+                *   if (sd.property == 'countryMapped') {
+                *     value = countries[value]; // convert country id into name
+                *   }
+                *   return value;
+                * }</pre>
+                */
+                get: function () {
+                    return this._srtCvt;
+                },
+                set: function (value) {
+                    if (value != this._srtCvt) {
+                        this._srtCvt = wijmo.asFunction(value, true);
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -3512,7 +3594,7 @@ var wijmo;
                 * in the collection are sorted in the view.
                 */
                 get: function () {
-                    return this._srtDesc;
+                    return this._srtDsc;
                 },
                 enumerable: true,
                 configurable: true
@@ -3668,9 +3750,9 @@ var wijmo;
                 if (!this._src) {
                     this._view = [];
                 } else if (!this._filter || !this.canFilter) {
-                    this._view = (this._srtDesc.length > 0 && this.canSort) ? this._src.slice(0) : this._src; // don't waste time cloning
+                    this._view = (this._srtDsc.length > 0 && this.canSort) ? this._src.slice(0) : this._src; // don't waste time cloning
                 } else {
-                    this._view = this._pgView = [];
+                    this._view = [];
                     for (var i = 0; i < this._src.length; i++) {
                         var item = this._src[i];
                         if (this._filter(item)) {
@@ -3680,16 +3762,26 @@ var wijmo;
                 }
 
                 // apply sort
-                if (this._srtDesc.length > 0 && this.canSort) {
+                if (this._srtDsc.length > 0 && this.canSort) {
                     this._view.sort(this._compareItems());
                 }
 
-                // apply paging
+                // apply grouping
+                this._groups = this.canGroup ? this._createGroups(this._view) : null;
+                this._fullGroups = this._groups;
+                if (this._groups) {
+                    this._view = this._mergeGroupItems(this._groups);
+                }
+
+                // apply paging to view
                 this._pgIdx = wijmo.clamp(this._pgIdx, 0, this.pageCount - 1);
                 this._pgView = this._getPageView();
 
-                // apply grouping
-                this._groups = this.canGroup ? this._createGroups() : null;
+                // update groups to take paging into account
+                if (this._groups && this.pageCount > 1) {
+                    this._groups = this._createGroups(this._pgView);
+                    this._mergeGroupItems(this._groups);
+                }
 
                 // restore current item
                 var index = this._pgView.indexOf(current);
@@ -3708,11 +3800,11 @@ var wijmo;
 
             // comparison function used in array sort
             CollectionView.prototype._compareItems = function () {
-                var sortDesc = this._srtDesc;
+                var sortDsc = this._srtDsc, sortCvt = this._srtCvt, init = true;
                 return function (a, b) {
-                    for (var i = 0; i < sortDesc.length; i++) {
+                    for (var i = 0; i < sortDsc.length; i++) {
                         // get values
-                        var sd = sortDesc[i], v1 = sd._bnd.getValue(a), v2 = sd._bnd.getValue(b);
+                        var sd = sortDsc[i], v1 = sd._bnd.getValue(a), v2 = sd._bnd.getValue(b);
 
                         // check for NaN (isNaN returns true for NaN but also for non-numbers)
                         if (v1 !== v1)
@@ -3726,6 +3818,19 @@ var wijmo;
                             v1 = v1.toLowerCase() + v1;
                         if (wijmo.isString(v2))
                             v2 = v2.toLowerCase() + v2;
+
+                        // convert values
+                        if (sortCvt) {
+                            v1 = sortCvt(sd, a, v1, init);
+                            v2 = sortCvt(sd, b, v2, false);
+                            init = false;
+                        }
+
+                        // nulls always at the bottom (like excel)
+                        if (v1 != null && v2 == null)
+                            return -1;
+                        if (v1 == null && v2 != null)
+                            return +1;
 
                         // compare the values (at last!)
                         var cmp = (v1 < v2) ? -1 : (v1 > v2) ? +1 : 0;
@@ -4005,12 +4110,15 @@ var wijmo;
                         return;
                     }
 
-                    // restore original item value
+                    // check that we can do this (TFS 110168)
                     var index = this._src.indexOf(item);
-                    if (this._edtClone) {
-                        this._copy(this._src[index], this._edtClone);
-                        this._edtClone = null;
+                    if (index < 0 || !this._edtClone) {
+                        return;
                     }
+
+                    // restore original item value
+                    this._copy(this._src[index], this._edtClone);
+                    this._edtClone = null;
 
                     // notify listeners
                     this._raiseCollectionChanged(2 /* Change */, item, index);
@@ -4032,7 +4140,7 @@ var wijmo;
             * Ends the current edit transaction and saves the pending changes.
             */
             CollectionView.prototype.commitEdit = function () {
-                var item = this._edtItem;
+                var item = this._edtItem, e;
                 if (item != null) {
                     // check if anything really changed
                     var sameContent = this._sameContent(item, this._edtClone);
@@ -4046,23 +4154,28 @@ var wijmo;
                     var digest = this._getGroupsDigest(this.groups);
                     this._performRefresh();
 
-                    // issue notifications (single item change or full refresh)
-                    if (this._pgView.indexOf(item) == index && digest == this._getGroupsDigest(this.groups)) {
-                        this._raiseCollectionChanged(2 /* Change */, item, index);
-                    } else {
-                        this._raiseCollectionChanged(); // full refresh
-                    }
-
-                    // handle changes
+                    // track changes (before notifying)
                     if (this._trackChanges == true && !sameContent) {
                         var idx = this._chgEdited.indexOf(item);
                         if (idx < 0 && this._chgAdded.indexOf(item) < 0) {
                             this._chgEdited.push(item);
                         } else if (idx > -1) {
-                            this._chgEdited.onCollectionChanged();
-                        } else if (this._chgAdded.indexOf(item) > -1) {
-                            this._chgAdded.onCollectionChanged();
+                            e = new collections.NotifyCollectionChangedEventArgs(2 /* Change */, item, idx);
+                            this._chgEdited.onCollectionChanged(e);
+                        } else {
+                            idx = this._chgAdded.indexOf(item);
+                            if (idx > -1) {
+                                e = new collections.NotifyCollectionChangedEventArgs(2 /* Change */, item, idx);
+                                this._chgAdded.onCollectionChanged(e);
+                            }
                         }
+                    }
+
+                    // notify (single item change or full refresh)
+                    if (this._pgView.indexOf(item) == index && digest == this._getGroupsDigest(this.groups)) {
+                        this._raiseCollectionChanged(2 /* Change */, item, index);
+                    } else {
+                        this._raiseCollectionChanged(); // full refresh
                     }
                 }
             };
@@ -4081,12 +4194,7 @@ var wijmo;
                     var digest = this._getGroupsDigest(this.groups);
                     this._performRefresh();
 
-                    // issue notifications (full refresh if the item moved)
-                    if (this._pgView.indexOf(item) != index || digest != this._getGroupsDigest(this.groups)) {
-                        this._raiseCollectionChanged(); // full refresh
-                    }
-
-                    // tracking changes
+                    // track changes (before notifying)
                     if (this._trackChanges == true) {
                         var idx = this._chgEdited.indexOf(item);
                         if (idx > -1) {
@@ -4095,6 +4203,13 @@ var wijmo;
                         if (this._chgAdded.indexOf(item) < 0) {
                             this._chgAdded.push(item);
                         }
+                    }
+
+                    // notify (full refresh if the item moved)
+                    if (this._pgView.indexOf(item) == index && digest == this._getGroupsDigest(this.groups)) {
+                        this._raiseCollectionChanged(2 /* Change */, item, index);
+                    } else {
+                        this._raiseCollectionChanged(); // full refresh
                     }
                 }
             };
@@ -4150,20 +4265,7 @@ var wijmo;
                     var digest = this._getGroupsDigest(this.groups);
                     this._performRefresh();
 
-                    // issue notifications (item removed or full refresh) (TFS 85001)
-                    var paged = this.pageSize > 0 && this._pgIdx > -1;
-                    if (paged || digest != this._getGroupsDigest(this.groups)) {
-                        this._raiseCollectionChanged();
-                    } else {
-                        this._raiseCollectionChanged(1 /* Remove */, item, index);
-                    }
-
-                    // raise currentChanged if needed
-                    if (this.currentItem !== current) {
-                        this.onCurrentChanged();
-                    }
-
-                    // tracking changes
+                    // track changes (before notifying)
                     if (this._trackChanges == true) {
                         var idx = this._chgAdded.indexOf(item);
                         if (idx > -1) {
@@ -4178,6 +4280,19 @@ var wijmo;
                                 this._chgRemoved.push(item);
                             }
                         }
+                    }
+
+                    // notify (item removed or full refresh) (TFS 85001)
+                    var paged = this.pageSize > 0 && this._pgIdx > -1;
+                    if (paged || digest != this._getGroupsDigest(this.groups)) {
+                        this._raiseCollectionChanged();
+                    } else {
+                        this._raiseCollectionChanged(1 /* Remove */, item, index);
+                    }
+
+                    // raise currentChanged if needed
+                    if (this.currentItem !== current) {
+                        this.onCurrentChanged();
                     }
                 }
             };
@@ -4395,6 +4510,36 @@ var wijmo;
                 return !e.cancel;
             };
 
+            // gets the full group that corresponds to a paged group view
+            CollectionView.prototype._getFullGroup = function (g) {
+                // look for the group by level and name
+                // this gets the full (unpaged) and updated group (TFS 109119)
+                var fg = this._getGroupByPath(this._fullGroups, g.level, g._path);
+                if (fg != null) {
+                    g = fg;
+                }
+
+                // return the group
+                return g;
+            };
+
+            // gets a group from a collection by path
+            CollectionView.prototype._getGroupByPath = function (groups, level, path) {
+                for (var i = 0; i < groups.length; i++) {
+                    var g = groups[i];
+                    if (g.level == level && g._path == path) {
+                        return g;
+                    }
+                    if (g.level < level && g._path.indexOf(path) == 0) {
+                        g = this._getGroupByPath(g.items, level, path);
+                        if (g != null) {
+                            return g;
+                        }
+                    }
+                }
+                return null;
+            };
+
             // gets the list that corresponds to the current page
             CollectionView.prototype._getPageView = function () {
                 // not paging? return the whole view
@@ -4408,7 +4553,7 @@ var wijmo;
             };
 
             // creates a grouped view of the current page
-            CollectionView.prototype._createGroups = function () {
+            CollectionView.prototype._createGroups = function (items) {
                 // not grouping? return null
                 if (!this._grpDesc || !this._grpDesc.length) {
                     return null;
@@ -4416,13 +4561,19 @@ var wijmo;
 
                 // build group tree
                 var root = [];
-                for (var i = 0; i < this._pgView.length; i++) {
+                for (var i = 0; i < items.length; i++) {
                     // get the item
-                    var item = this._pgView[i], groups = root, levels = this._grpDesc.length;
+                    var item = items[i], groups = root, levels = this._grpDesc.length;
 
+                    // add this item to the tree
+                    var path = '';
                     for (var level = 0; level < levels; level++) {
                         // get the group name for this level
                         var gd = this._grpDesc[level], name = gd.groupNameFromItem(item, level), last = level == levels - 1, group = this._getGroup(gd, groups, name, level, last);
+
+                        // keep group path (all names in the hierarchy)
+                        path += '/' + name;
+                        group._path = path;
 
                         // add data items to last level groups
                         if (last) {
@@ -4433,9 +4584,6 @@ var wijmo;
                         groups = group.groups;
                     }
                 }
-
-                // update group items and view
-                this._pgView = this._mergeGroupItems(root);
 
                 // done
                 return root;
@@ -4582,10 +4730,12 @@ var wijmo;
             *
             * @param aggType Type of aggregate to calculate.
             * @param binding Property to aggregate on.
+            * @param view CollectionView that owns this group.
             * @return The aggregate value.
             */
-            CollectionViewGroup.prototype.getAggregate = function (aggType, binding) {
-                return wijmo.getAggregate(aggType, this.items, binding);
+            CollectionViewGroup.prototype.getAggregate = function (aggType, binding, view) {
+                var cv = wijmo.tryCast(view, CollectionView), group = cv ? cv._getFullGroup(this) : this;
+                return wijmo.getAggregate(aggType, group.items, binding);
             };
             return CollectionViewGroup;
         })();
@@ -4720,24 +4870,13 @@ var wijmo;
             if (e.content && !e.cancel) {
                 // update tooltip content with customize content, if any
                 this._setContent(e.content);
+                tip.style.minWidth = '';
 
-                // calculate tooltip position
-                var sz = this._getOuterSize(tip), pt = new wijmo.Point(bounds.left + (bounds.width - sz.width) / 2, bounds.top - sz.height - this._gap);
-                if (pt.y < 0) {
-                    pt.y = bounds.bottom + this._gap;
-                }
-                if (pt.x + sz.width > window.innerWidth) {
-                    pt.x = window.innerWidth - sz.width - this._gap;
-                }
-                if (pt.x < 0) {
-                    pt.x = this._gap;
-                }
+                // apply gap and align to the center of the reference element
+                bounds = new wijmo.Rect(bounds.left - (tip.offsetWidth - bounds.width) / 2, bounds.top - this.gap, tip.offsetWidth, bounds.height + 2 * this.gap);
 
                 // show tooltip
-                var style = tip.style;
-                style.left = Math.round(window.pageXOffset + pt.x) + 'px';
-                style.top = Math.round(window.pageYOffset + pt.y) + 'px';
-                style.visibility = '';
+                wijmo.showPopup(tip, bounds, true);
 
                 // hide when the mouse goes down
                 document.addEventListener('mousedown', this._hideAutoTipBnd);
@@ -4894,12 +5033,6 @@ var wijmo;
                 clearTimeout(this._toHide);
                 this._toHide = null;
             }
-        };
-
-        // get an element's size including margins
-        Tooltip.prototype._getOuterSize = function (e) {
-            var s = window.getComputedStyle(e), my = parseFloat(s.marginTop) + parseFloat(s.marginBottom), mx = parseFloat(s.marginLeft) + parseFloat(s.marginRight);
-            return new wijmo.Size(e.offsetWidth + mx, e.offsetHeight + my);
         };
 
         // gets content that may be a string or an element id
@@ -5482,13 +5615,145 @@ var wijmo;
                 if (typeof (textOrCallback) == 'function') {
                     textOrCallback(text);
                 }
-            }, 10);
+            }, 100); // Apple needs extra timeOut
         };
         return Clipboard;
     })();
     wijmo.Clipboard = Clipboard;
 })(wijmo || (wijmo = {}));
 //# sourceMappingURL=Clipboard.js.map
+
+var wijmo;
+(function (wijmo) {
+    'use strict';
+
+    /**
+    * Shows an element as a popup.
+    *
+    * The popup element becomes a child of the body element,
+    * and is positioned using a reference that may be a
+    * @see:MouseEvent, an @see:HTMLElement, or a @see:Rect.
+    *
+    * To hide the popup, either call the @see:hidePopup method
+    * or simply remove the popup element from the document body.
+    *
+    * @param popup Element to show as a popup.
+    * @param ref Reference used to position the popup.
+    * @param above Position popup above the reference if possible.
+    */
+    function showPopup(popup, ref, above) {
+        if (typeof above === "undefined") { above = false; }
+        // get parent element
+        // this is usually the body, but if there are any ancestors
+        // with position:fixed, then use that as a reference instead
+        var parent = document.body;
+        if (ref instanceof HTMLElement) {
+            var prel;
+            for (var e = ref.parentElement; e; e = e.parentElement) {
+                var p = getComputedStyle(e).position;
+                if (p == 'relative' && !prel) {
+                    prel = e;
+                } else if (p == 'fixed') {
+                    parent = prel ? prel : e;
+                    break;
+                }
+            }
+        }
+
+        // make sure popup is a child of the parent element
+        var pp = popup.parentElement;
+        if (pp != parent) {
+            if (pp) {
+                pp.removeChild(popup);
+            }
+            parent.appendChild(popup);
+        }
+
+        // copy style elements from ref element to popup
+        // (since the popup no longer a child of the ref element)
+        if (ref instanceof HTMLElement) {
+            var sr = getComputedStyle(ref);
+            wijmo.setCss(popup, {
+                color: sr.color,
+                backgroundColor: sr.backgroundColor,
+                fontFamily: sr.fontFamily,
+                fontSize: sr.fontSize,
+                fontWeight: sr.fontWeight,
+                fontStyle: sr.fontStyle
+            });
+        }
+
+        // get popup's size, including margins
+        wijmo.setCss(popup, {
+            visibility: 'hidden',
+            display: ''
+        });
+        var sp = getComputedStyle(popup), my = parseFloat(sp.marginTop) + parseFloat(sp.marginBottom), mx = parseFloat(sp.marginLeft) + parseFloat(sp.marginRight), sz = new wijmo.Size(popup.offsetWidth + mx, popup.offsetHeight + my);
+
+        // ref can be a point, a rect, or an element
+        var pos = new wijmo.Point(), rc = null;
+        if (ref instanceof MouseEvent) {
+            pos.x = ref.clientX - sz.width / 2;
+            pos.y = ref.clientY - sz.height / 2;
+        } else if (ref instanceof HTMLElement) {
+            rc = ref.getBoundingClientRect();
+        } else if (ref.top != null && ref.left != null) {
+            rc = ref;
+        } else {
+            throw 'Invalid ref parameter.';
+        }
+
+        // calculate min width for the popup
+        var minWidth = parseFloat(sp.minWidth);
+
+        // if we have a rect, position popup above or below the rect
+        if (rc) {
+            var spcAbove = rc.top, spcBelow = innerHeight - rc.bottom;
+            pos.x = Math.max(0, Math.min(rc.left, innerWidth - sz.width));
+            if (above) {
+                pos.y = spcAbove > sz.height || spcAbove > spcBelow ? Math.max(0, rc.top - sz.height) : rc.bottom;
+            } else {
+                pos.y = spcBelow > sz.height || spcBelow > spcAbove ? rc.bottom : Math.max(0, rc.top - sz.height);
+            }
+
+            // make popup at least as wide as the element
+            minWidth = Math.max(minWidth, rc.width);
+        }
+
+        // handle scroll offset
+        var rcp = parent == document.body ? new wijmo.Rect(-pageXOffset, -pageYOffset, 0, 0) : parent.getBoundingClientRect();
+
+        // show the popup
+        wijmo.setCss(popup, {
+            position: 'absolute',
+            left: pos.x - rcp.left,
+            top: pos.y - rcp.top,
+            minWidth: minWidth,
+            display: '',
+            visibility: 'visible',
+            zIndex: 1500
+        });
+    }
+    wijmo.showPopup = showPopup;
+
+    /**
+    * Hides a popup element previously displayed with the @see:showPopup
+    * method.
+    *
+    * @param popup Popup element to hide.
+    * @param remove Whether to remove the popup from the DOM or just
+    * to hide it.
+    */
+    function hidePopup(popup, remove) {
+        if (typeof remove === "undefined") { remove = true; }
+        popup.style.display = 'none';
+        if (remove && popup.parentElement) {
+            popup.parentElement.removeChild(popup);
+        }
+    }
+    wijmo.hidePopup = hidePopup;
+})(wijmo || (wijmo = {}));
+//# sourceMappingURL=Popup.js.map
 
 var wijmo;
 (function (wijmo) {
@@ -5600,7 +5865,10 @@ var wijmo;
         // ** event handlers
         // validate content after any changes
         _MaskProvider.prototype._hInput = function () {
-            this._valueChanged();
+            var self = this;
+            setTimeout(function () {
+                self._valueChanged();
+            });
         };
 
         // filter input keys to prevent cursor from moving on invalid chars
@@ -5635,14 +5903,7 @@ var wijmo;
 
         // special handling for backspacing over literals
         _MaskProvider.prototype._hKeyDown = function (e) {
-            if (e.keyCode == 8) {
-                var el = this.input, start = el.selectionStart;
-                setTimeout(function () {
-                    if (el.selectionStart == start) {
-                        el.setSelectionRange(start - 1, start - 1);
-                    }
-                }, 0);
-            }
+            this._backSpace = e.keyCode == 8;
         };
 
         // ** implementation
@@ -5751,9 +6012,23 @@ var wijmo;
         // skip over literals
         _MaskProvider.prototype._validatePosition = function (start) {
             var msk = this._mskArr;
-            while (start < msk.length && msk[start].literal) {
-                start++;
+
+            // skip left if the last key pressed was a backspace
+            if (this._backSpace) {
+                while (start > 0 && start < msk.length && msk[start - 1].literal) {
+                    start--;
+                }
             }
+
+            // skip right over literals
+            if (start == 0 || !this._backSpace) {
+                while (start < msk.length && msk[start].literal) {
+                    start++;
+                }
+            }
+
+            // move selection and be done
+            this._backSpace = false;
             this.input.setSelectionRange(start, start);
         };
 

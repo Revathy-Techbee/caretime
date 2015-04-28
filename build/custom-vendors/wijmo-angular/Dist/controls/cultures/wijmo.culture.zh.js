@@ -1,6 +1,6 @@
 /*
     *
-    * Wijmo Library 5.20143.32
+    * Wijmo Library 5.20151.48
     * http://wijmo.com/
     *
     * Copyright(c) GrapeCity, Inc.  All rights reserved.
@@ -46,25 +46,35 @@ var wijmo;
             }
         },
         FlexGrid: {
-            groupHeaderFormat: '{name}: <b>{value} </b>({count} 项)'
+            groupHeaderFormat: '{name}: <b>{value} </b>({count:n0} 项)'
         },
         FlexGridFilter: {
-            header: '显示行',
-            and: '与',
-            or: '或',
+            // filter
+            ascending: '\u2191 升序',
+            descending: '\u2193 降序',
             apply: '应用',
             clear: '清除',
+            conditions: '条件',
+            values: '值',
+            // value filter
+            search: '搜索',
+            selectAll: '全选',
+            null: '(空)',
+            // condition filter
+            header: '筛选条件',
+            and: '与',
+            or: '或',
             stringOperators: [
-                { name: '（空白）', op: null },
+                { name: '（缺省）', op: null },
                 { name: '等于', op: 0 },
                 { name: '不等于', op: 1 },
-                { name: '开始是', op: 6 },
+                { name: '开头是', op: 6 },
                 { name: '结尾是', op: 7 },
                 { name: '包含', op: 8 },
                 { name: '不包含', op: 9 }
             ],
             numberOperators: [
-                { name: '（空白）', op: null },
+                { name: '（缺省）', op: null },
                 { name: '等于', op: 0 },
                 { name: '不等于', op: 1 },
                 { name: '大于', op: 2 },
@@ -73,13 +83,13 @@ var wijmo;
                 { name: '小于或等于', op: 5 }
             ],
             dateOperators: [
-                { name: '（空白）', op: null },
+                { name: '（缺省）', op: null },
                 { name: '等于', op: 0 },
-                { name: '是前', op: 4 },
-                { name: '是后', op: 3 }
+                { name: '早于', op: 4 },
+                { name: '晚于', op: 3 }
             ],
             booleanOperators: [
-                { name: '（空白）', op: null },
+                { name: '（缺省）', op: null },
                 { name: '等于', op: 0 },
                 { name: '不等于', op: 1 }
             ]

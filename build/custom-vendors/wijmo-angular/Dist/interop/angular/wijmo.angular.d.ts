@@ -1,6 +1,6 @@
 /*
     *
-    * Wijmo Library 5.20143.32
+    * Wijmo Library 5.20151.48
     * http://wijmo.com/
     *
     * Copyright(c) GrapeCity, Inc.  All rights reserved.
@@ -21,6 +21,7 @@ declare module wijmo {
             static findComplexProp(propName: string, props: ComplexPropDescBase[]): ComplexPropDescBase;
             static getMetaData(metaDataId: any): MetaDataBase;
             static getClassName(classRef: any): string;
+            static toCamelCase(s: any): any;
             private static findInArr(arr, propName, value);
         }
         class PropDescBase {
@@ -77,11 +78,13 @@ declare module wijmo {
             public isParentPropertyArray: boolean;
             public ownsObject: boolean;
             public parentReferenceProperty: string;
-            constructor(props: PropDescBase[], events?: EventDescBase[], complexProps?: ComplexPropDescBase[], parentProperty?: string, isParentPropertyArray?: boolean, ownsObject?: boolean, parentReferenceProperty?: string);
+            public ngModelProperty: string;
+            constructor(props: PropDescBase[], events?: EventDescBase[], complexProps?: ComplexPropDescBase[], parentProperty?: string, isParentPropertyArray?: boolean, ownsObject?: boolean, parentReferenceProperty?: string, ngModelProperty?: string);
             public props : PropDescBase[];
             public events : EventDescBase[];
             public complexProps : ComplexPropDescBase[];
-            public add(props: PropDescBase[], events?: EventDescBase[], complexProps?: ComplexPropDescBase[], parentProperty?: string, isParentPropertyArray?: boolean, ownsObject?: boolean): MetaDataBase;
+            public add(props: PropDescBase[], events?: EventDescBase[], complexProps?: ComplexPropDescBase[], parentProperty?: string, isParentPropertyArray?: boolean, ownsObject?: boolean, parentReferenceProperty?: string, ngModelProperty?: string): MetaDataBase;
+            public addOptions(options: any): MetaDataBase;
             public prepare(): void;
         }
     }
@@ -112,33 +115,40 @@ declare module wijmo.angular {
 declare module wijmo.angular {
     class WjDirective implements ng.IDirective {
         static _parPropAttr: string;
+        static _wjModelPropAttr: string;
         static _initPropAttr: string;
         static _initEventAttr: string;
         static _cntrlScopeProp: string;
         static _cntrlLinkProp: string;
         static _scopeChildrenProp: string;
+        static _dirIdAttr: string;
         static _optionalAttr: boolean;
+        static _dynaTemplates: boolean;
         static _angStripPrefixes: string[];
-        public link: (scope: ng.IScope, templateElement: ng.IAugmentedJQuery, templateAttributes: ng.IAttributes, controller: any, transclude: ng.ITranscludeFunction) => any;
+        private static _dirIdCounter;
+        public link: (scope: ng.IScope, templateElement: ng.IAugmentedJQuery, templateAttributes: ng.IAttributes, controller: any) => any;
         public controller: any;
         public replace: boolean;
         public require: any;
         public restrict: string;
         public scope: any;
-        public template: string;
-        public transclude: boolean;
+        public template: any;
+        public transclude: any;
         public _property: string;
         public _isPropertyArray: boolean;
         public _ownObject: boolean;
         public _parentReferenceProperty: string;
+        public _ngModelProperty: string;
         public _isCustomParentInit: boolean;
         public _props: PropDesc[];
         public _events: EventDesc[];
         public _complexProps: ComplexPropDesc[];
         public _$parse: any;
         private _stripReq;
+        private _dirId;
         public _controlConstructor : any;
         public _getMetaDataId(): any;
+        public _getMetaData(): interop.MetaDataBase;
         constructor();
         private _initDirective();
         public _initSharedMeta(): void;
@@ -157,6 +167,7 @@ declare module wijmo.angular {
         public _postLinkFn(): (scope: any, tElement: ng.IAugmentedJQuery, tAttrs: ng.IAttributes, controller?: any) => void;
         private _prepareProps();
         private _stripRequire(index);
+        public _getId(): string;
         static _versionOk(minVer: string): boolean;
     }
     class WjLink {
@@ -168,6 +179,8 @@ declare module wijmo.angular {
         public directiveTemplateElement: JQuery;
         public control: any;
         public parent: WjLink;
+        public ngModel: ng.INgModelController;
+        private _ngModelPropDesc;
         private _nonAssignable;
         private _parentPropDesc;
         private _definedProps;
@@ -176,6 +189,8 @@ declare module wijmo.angular {
         public _isInitialized: boolean;
         private _scopeSuspend;
         private _suspendedEvents;
+        private _siblingInsertedEH;
+        public _areChlildrenReady: boolean;
         constructor();
         public _link(): void;
         public _onChildrenReady(): void;
@@ -183,6 +198,7 @@ declare module wijmo.angular {
         private _parentReady(parentLink);
         public _initParent(): void;
         public _destroy(): void;
+        private _siblingInserted(e);
         private _notifyReady();
         public _initControl(): any;
         private _prepareControl();
@@ -201,6 +217,7 @@ declare module wijmo.angular {
         private _addEventHandlers();
         private _addEventHandler(eventDesc);
         private _updateScope(eventInfo?);
+        private _ngModelRender();
         private _castValueToType(value, prop);
         private _parseDate(value);
         private _isChild();
@@ -211,10 +228,13 @@ declare module wijmo.angular {
         private _useParentObj();
         private _isParentArray();
         private _parentInCtor();
+        private _getNgModelProperty();
+        private _updateNgModelPropDesc();
         public _safeApply(scope: any, name: any, value: any): void;
         public _shouldApply(scope: any, name: any, value: any): boolean;
         public _canApply(scope: any, name: any): boolean;
         public _nullOrValue(value: any): any;
+        public _getIndex(): number;
     }
 }
 
@@ -288,6 +308,8 @@ declare module wijmo.angular {
     *                                     child rows in hierarchical grids.</dd>
     *   <dt>control</dt>                  <dd><code>=</code> A reference to the @see:FlexGrid control
     *                                     created by this directive.</dd>
+    *   <dt>defer-resizing</dt>           <dd><code>=</code> A boolean value indicating whether row and column
+    *                                     resizing should be deferred until the user releases the mouse button.</dd>
     *   <dt>frozen-columns</dt>           <dd><code>@</code> The number of frozen (non-scrollable) columns in the grid.</dd>
     *   <dt>frozen-rows</dt>              <dd><code>@</code> The number of frozen (non-scrollable) rows in the grid.</dd>
     *   <dt>group-header-format</dt>      <dd><code>@</code> The format string used to create the group
@@ -306,16 +328,14 @@ declare module wijmo.angular {
     *                                     prevented from editing grid cells by typing into them.</dd>
     *   <dt>merge-manager</dt>            <dd><code>=</code> A @see:MergeManager object that specifies
     *                                     the merged extent of the specified cell.</dd>
-    *   <dt>scroll-position</dt>          <dd><code>=</code> A @see:Point that represents the value of the
-    *                                     grid's scrollbars.</dd>
-    *   <dt>selection</dt>                <dd><code>=</code> A @see:CellRange that represents the
-    *                                     currently selected cells.</dd>
     *   <dt>selection-mode</dt>           <dd><code>@</code> A @see:SelectionMode value
     *                                     indicating whether and how the user can select cells.</dd>
     *   <dt>show-groups</dt>              <dd><code>@</code> A boolean value indicating whether to insert group
     *                                     rows to delimit data groups.</dd>
     *   <dt>show-sort</dt>                <dd><code>@</code> A boolean value indicating whether to display sort
     *                                     indicators in the column headers.</dd>
+    *   <dt>sort-row-index</dt>           <dd><code>@</code> A number specifying the index of row in the column
+    *                                     header panel that shows and changes the current sort.</dd>
     *   <dt>tree-indent</dt>              <dd><code>@</code> The indentation, in pixels, used to offset row
     *                                     groups of different levels.</dd>
     *   <dt>beginning-edit</dt>           <dd><code>&</code> Handler for the @see:beginningEdit event.</dd>
@@ -346,7 +366,7 @@ declare module wijmo.angular {
     *   <dt>scroll-position-changed</dt>  <dd><code>&</code> Handler for the @see:scrollPositionChanged event.</dd>
     * </dl>
     *
-    * The <b>wj-flex-grid</b> directive may contain @see:WjFlexGridColumn child directives.
+    * The <b>wj-flex-grid</b> directive may contain @see:WjFlexGridColumn and @see:WjFlexGridCellTemplate child directives.
     */
     class WjFlexGrid extends WjDirective {
         public _$compile: ng.ICompileService;
@@ -361,8 +381,30 @@ declare module wijmo.angular {
         public _wrapperFormatter: Function;
         public _userFormatter: Function;
         public _onChildrenReady(): void;
-        private _initCellScope(scope, panel, rowIndex, columnIndex);
-        private _getCellTemplate(column);
+        private _initCellScope(scope, row, col, dataItem, cellValue);
+        private _getCellTemplate(tpl);
+    }
+    /**
+    * Defines the type of cell to which to apply the template. This value is specified in the <b>cell-type</b> attribute
+    * of the @see:WjFlexGridCellTemplate directive.
+    */
+    enum CellTemplateType {
+        /** Defines a regular (data) cell. */
+        Cell = 0,
+        /** Defines a cell in edit mode. */
+        CellEdit = 1,
+        /** Defines a column header cell. */
+        ColumnHeader = 2,
+        /** Defines a row header cell. */
+        RowHeader = 3,
+        /** Defines a row header cell in edit mode. */
+        RowHeaderEdit = 4,
+        /** Defines a top left cell. */
+        TopLeft = 5,
+        /** Defines a group header cell in a group row. */
+        GroupHeader = 6,
+        /** Defines a regular cell in a group row. */
+        Group = 7,
     }
 }
 
@@ -407,7 +449,7 @@ declare module wijmo.angular {
 *   items-source="ctx.countries"
 *   is-editable="true"
 *   selected-index-changed="ctx.selChanged(s, e)"&gt;
-*   &lt;/wj-combo-box&gt;</pre>
+* &lt;/wj-combo-box&gt;</pre>
 *
 * Notice that the <b>text</b> property of the @see:ComboBox is bound to a controller
 * variable called "ctx.theCountry." The binding goes two ways; changes in the control

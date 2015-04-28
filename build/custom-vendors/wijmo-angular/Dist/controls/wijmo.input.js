@@ -1,6 +1,6 @@
 /*
     *
-    * Wijmo Library 5.20143.32
+    * Wijmo Library 5.20151.48
     * http://wijmo.com/
     *
     * Copyright(c) GrapeCity, Inc.  All rights reserved.
@@ -42,8 +42,6 @@ var wijmo;
                 _super.call(this, element);
                 // property storage
                 this._showBtn = true;
-                // by setting to true allows to suppress closing of a drop-down on scroll
-                this._noScrollClose = false;
                 /**
                 * Occurs when the value of the @see:text property changes.
                 */
@@ -71,15 +69,26 @@ var wijmo;
                 // host element events
                 var self = this;
                 this.hostElement.addEventListener('focus', function () {
-                    self._tbx.focus();
+                    if (!self.isTouching) {
+                        self._tbx.focus();
+                    }
                 });
-                this.hostElement.addEventListener('focusout', function () {
+
+                // use blur+capture to emulate focusout (not supported in FireFox)
+                this.hostElement.addEventListener('blur', function () {
                     setTimeout(function () {
                         if (!self.containsFocus()) {
                             self.isDroppedDown = false;
                         }
-                    }, 0);
-                });
+                    }, 100);
+                }, true);
+                this._dropDown.addEventListener('blur', function () {
+                    setTimeout(function () {
+                        if (!self.containsFocus()) {
+                            self.isDroppedDown = false;
+                        }
+                    }, 100);
+                }, true);
 
                 // textbox events
                 this._tbx.addEventListener('input', function () {
@@ -100,25 +109,29 @@ var wijmo;
                     e.stopPropagation();
 
                     // if this was a tap, keep focus on button; OW transfer to textbox
-                    setTimeout(function () {
-                        if (self.isTouching) {
-                            self._btn.focus();
-                        } else {
-                            self._tbx.focus();
-                        }
-                    }, 0);
+                    if (self.isTouching && self.showDropDownButton) {
+                        self._btn.focus();
+                    } else {
+                        self._tbx.focus();
+                    }
                 });
-
-                // events that fire while the drop-down is open
-                this._ehBoundsChanged = this._boundsChanged.bind(this);
-                this._ehWheel = this._wheel.bind(this);
 
                 // initializing from <input> tag
                 if (this._orgTag == 'INPUT') {
                     this._copyOriginalAttributes(this._tbx);
                 }
             }
+            //--------------------------------------------------------------------------
+            //#region ** overrides
+            /**
+            * Checks whether this control or its drop-down contain the focused element.
+            */
+            DropDown.prototype.containsFocus = function () {
+                return _super.prototype.containsFocus.call(this) || wijmo.contains(this._dropDown, document.activeElement);
+            };
+
             Object.defineProperty(DropDown.prototype, "text", {
+                //#endregion
                 //--------------------------------------------------------------------------
                 //#region ** object model
                 /**
@@ -173,28 +186,39 @@ var wijmo;
                 },
                 set: function (value) {
                     if (value != this.isDroppedDown) {
+                        var dd = this._dropDown;
                         if (value) {
+                            // set minWidth (if not already set)
+                            if (!dd.style.minWidth) {
+                                dd.style.minWidth = this.hostElement.getBoundingClientRect().width + 'px';
+                            }
+                            dd.style.display = 'block';
                             this._updateDropDown();
-                            this._dropDown.style.display = '';
-                            window.addEventListener('resize', this._ehBoundsChanged);
-                            window.addEventListener('scroll', this._ehBoundsChanged);
-                            window.addEventListener('wheel', this._ehWheel);
                         } else {
-                            // retain focus in the control; otherwise, after hiding the _dropDown Chrome will move focus to BODY.
+                            // retain focus in the control; or Chrome will move focus to BODY
                             if (this.containsFocus()) {
-                                if (this.showDropDownButton) {
+                                if (this.isTouching && this.showDropDownButton) {
                                     this._btn.focus();
                                 } else {
                                     this._tbx.focus();
                                 }
                             }
-                            this._dropDown.style.display = 'none';
-                            window.removeEventListener('resize', this._ehBoundsChanged);
-                            window.removeEventListener('scroll', this._ehBoundsChanged);
-                            window.removeEventListener('wheel', this._ehWheel);
+                            wijmo.hidePopup(dd);
                         }
                         this.onIsDroppedDownChanged();
                     }
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(DropDown.prototype, "dropDown", {
+                /**
+                * Gets the drop down element shown when the @see:isDroppedDown
+                * property is set to true.
+                */
+                get: function () {
+                    return this._dropDown;
                 },
                 enumerable: true,
                 configurable: true
@@ -272,66 +296,11 @@ var wijmo;
 
             // update drop down content before showing it
             DropDown.prototype._updateDropDown = function () {
-                var dds = this._dropDown.style, ddd = dds.display, rch = this.hostElement.getBoundingClientRect(), rct = this._elRef.getBoundingClientRect(), rcp = this._getParentRect(), marginY = rct.height > 0 ? Math.round(rch.top - rct.top) : -1, marginX = rct.width > 0 ? Math.round(rch.left - rct.left) : -1, css = {};
-
-                // set margin and minWidth (if not already set)
-                if (!dds.margin) {
-                    css.margin = marginY + 'px ' + marginX + 'px';
-                }
-                if (!dds.minWidth) {
-                    css.minWidth = rch.width;
-                }
-
-                // get drop-down dimensions
-                dds.display = '';
-                var rcd = this._dropDown.getBoundingClientRect();
-                dds.display = ddd;
-
-                // update vertical position
-                var ddHei = rcd.height, spcAbove = rch.top - Math.max(0, rcp.top), spcBelow = Math.min(window.innerHeight, rcp.bottom) - rch.bottom;
-                css.top = spcBelow < ddHei && spcAbove >= spcBelow ? Math.max(0, rch.top - ddHei) : rch.top + rch.height; // show below
-
-                // update horizontal position
-                var ddWid = rcd.width, spcLeft = rch.left, spcRight = window.innerWidth - rch.left;
-                css.left = spcRight < ddWid && spcLeft >= spcRight ? rch.left + rch.width - ddWid - 6 : rch.left; // align to the left
-
-                // set position, margins, min width
-                wijmo.setCss(this._dropDown, css);
-            };
-
-            // get nearest parent that has overflow set to hidden/scroll/auto
-            DropDown.prototype._getParentRect = function () {
-                var e = this.hostElement;
-                for (; e.parentElement; e = e.parentElement) {
-                    switch (e.style.overflow) {
-                        case 'hidden':
-                        case 'scroll':
-                        case 'auto':
-                            return e.getBoundingClientRect();
-                    }
-                }
-                return e.getBoundingClientRect();
-            };
-
-            // close the drop-down when control bounds change
-            // (window resized, scrolling, etc)
-            DropDown.prototype._boundsChanged = function (e) {
-                if (this._noScrollClose && e.type == 'scroll') {
-                    this._noScrollClose = false;
-                    this._updateDropDown();
-                    return;
-                }
-                this.isDroppedDown = false;
-            };
-
-            // close the drop-down when user moves the mouse wheel on
-            // other controls
-            DropDown.prototype._wheel = function (e) {
-                if (!wijmo.contains(this._dropDown, e.target)) {
-                    this.isDroppedDown = false;
+                if (this.isDroppedDown) {
+                    wijmo.showPopup(this._dropDown, this.hostElement);
                 }
             };
-            DropDown.controlTemplate = '<div style="position:relative" class="wj-template">' + '<div class="wj-input">' + '<div class="wj-input-group wj-input-btn-visible">' + '<input wj-part="input" type="text" class="wj-form-control" />' + '<span wj-part="btn" class="wj-input-group-btn">' + '<button class="wj-btn wj-btn-default" type="button" tabindex="-1">' + '<span class="wj-glyph-down"></span>' + '</button>' + '</span>' + '</div>' + '</div>' + '<div wj-part="dropdown" class="wj-content wj-dropdown-panel" ' + 'style="display:none;position:fixed;z-index:100;width:auto">' + '</div>' + '</div>';
+            DropDown.controlTemplate = '<div style="position:relative" class="wj-template">' + '<div class="wj-input">' + '<div class="wj-input-group wj-input-btn-visible">' + '<input wj-part="input" type="text" class="wj-form-control" />' + '<span wj-part="btn" class="wj-input-group-btn" tabindex="-1">' + '<button class="wj-btn wj-btn-default" type="button" tabindex="-1">' + '<span class="wj-glyph-down"></span>' + '</button>' + '</span>' + '</div>' + '</div>' + '<div wj-part="dropdown" class="wj-content wj-dropdown-panel" ' + 'style="display:none;position:absolute;z-index:100;width:auto">' + '</div>' + '</div>';
             return DropDown;
         })(wijmo.Control);
         input.DropDown = DropDown;
@@ -398,7 +367,10 @@ var wijmo;
                 this.refresh(true);
 
                 // handle mouse and keyboard
-                this.hostElement.addEventListener('click', this._click.bind(this));
+                // The 'click' event may not be triggered on iOS Safari if focus changed
+                // during previous tap. So use 'mouseup' instead.
+                //this.hostElement.addEventListener('click', this._click.bind(this));
+                this.hostElement.addEventListener('mouseup', this._click.bind(this));
                 this.hostElement.addEventListener('keydown', this._keydown.bind(this));
 
                 // initialize control options
@@ -569,7 +541,8 @@ var wijmo;
                 * If specified, the function takes two parameters:
                 * <ul>
                 *     <li>the date being formatted </li>
-                *     <li>the HTML element that represents the date</li></ul>
+                *     <li>the HTML element that represents the date</li>
+                * </ul>
                 *
                 * For example, the code below shows weekends in a disabled state:
                 * <pre>
@@ -616,6 +589,9 @@ var wijmo;
             Calendar.prototype.refresh = function (fullUpdate) {
                 if (typeof fullUpdate === "undefined") { fullUpdate = true; }
                 var cells, day, s, enabled, today = new Date(), fdw = this.firstDayOfWeek != null ? this.firstDayOfWeek : wijmo.Globalize.getFirstDayOfWeek();
+
+                // call base class to suppress any pending invalidations
+                _super.prototype.refresh.call(this, fullUpdate);
 
                 // calculate first day of the calendar
                 this._firstDay = wijmo.DateTime.addDays(this.displayMonth, -(this.displayMonth.getDay() - fdw + 7) % 7);
@@ -916,7 +892,7 @@ var wijmo;
             Calendar.prototype._highlightElement = function (e, highlight) {
                 wijmo.toggleClass(e, 'wj-state-selected', highlight);
             };
-            Calendar.controlTemplate = '<div style="cursor:default">' + '<div class="wj-calendar-outer wj-content">' + '<div wj-part="tbl-header" class="wj-calendar-header">' + '<div wj-part="btn-month" class="wj-month-select">' + '<span wj-part="span-month"></span> <span class="wj-glyph-down"></span>' + '</div>' + '<div class="wj-btn-group">' + '<button type="button" wj-part="btn-prev" class="wj-btn wj-btn-default"><span class="wj-glyph-left"></span></button>' + '<button type="button" wj-part="btn-today" class="wj-btn wj-btn-default"><span class="wj-glyph-circle"></span></button>' + '<button type="button" wj-part="btn-next" class="wj-btn wj-btn-default"><span class="wj-glyph-right"></span></button>' + '</div>' + '</div>' + '<table wj-part="tbl-month" class="wj-calendar-month" />' + '<table wj-part="tbl-year" class="wj-calendar-year" style="display:none" />' + '</div>' + '</div>';
+            Calendar.controlTemplate = '<div style="cursor:default;-ms-user-select: none">' + '<div class="wj-calendar-outer wj-content">' + '<div wj-part="tbl-header" class="wj-calendar-header">' + '<div wj-part="btn-month" class="wj-month-select">' + '<span wj-part="span-month"></span> <span class="wj-glyph-down"></span>' + '</div>' + '<div class="wj-btn-group">' + '<button type="button" wj-part="btn-prev" class="wj-btn wj-btn-default"><span class="wj-glyph-left"></span></button>' + '<button type="button" wj-part="btn-today" class="wj-btn wj-btn-default"><span class="wj-glyph-circle"></span></button>' + '<button type="button" wj-part="btn-next" class="wj-btn wj-btn-default"><span class="wj-glyph-right"></span></button>' + '</div>' + '</div>' + '<table wj-part="tbl-month" class="wj-calendar-month" />' + '<table wj-part="tbl-year" class="wj-calendar-year" style="display:none" />' + '</div>' + '</div>';
             return Calendar;
         })(wijmo.Control);
         input.Calendar = Calendar;
@@ -1298,6 +1274,16 @@ var wijmo;
                 * Occurs when the list of items changes.
                 */
                 this.itemsChanged = new wijmo.Event();
+                /**
+                * Occurs when the current item is checked or unchecked.
+                *
+                * This event is raised when the @see:checkedMemberPath is set to the name of a
+                * property to add checkboxes to each item in the control.
+                *
+                * Use the @see:selectedItem property to retrieve the item that was checked or
+                * unchecked.
+                */
+                this.itemChecked = new wijmo.Event();
 
                 // instantiate and apply template
                 var tpl = this.getTemplate();
@@ -1307,7 +1293,7 @@ var wijmo;
 
                 // handle mouse and keyboard
                 var e = this.hostElement;
-                e.addEventListener('mousedown', this._mousedown.bind(this));
+                e.addEventListener('click', this._click.bind(this));
                 e.addEventListener('keydown', this._keydown.bind(this));
                 e.addEventListener('keypress', this._keypress.bind(this));
 
@@ -1320,7 +1306,18 @@ var wijmo;
                 // initialize control options
                 this.initialize(options);
             }
+            //--------------------------------------------------------------------------
+            //#region ** ovrerrides
+            /**
+            * Refreshes the list.
+            */
+            ListBox.prototype.refresh = function () {
+                _super.prototype.refresh.call(this);
+                this._populateList();
+            };
+
             Object.defineProperty(ListBox.prototype, "itemsSource", {
+                //#endregion
                 //--------------------------------------------------------------------------
                 //#region ** object model
                 /**
@@ -1437,13 +1434,36 @@ var wijmo;
 
             Object.defineProperty(ListBox.prototype, "selectedValuePath", {
                 /**
-                * Gets or sets the name of the property used to get the @see:selectedValue from the @see:selectedItem.
+                * Gets or sets the name of the property used to get the @see:selectedValue
+                * from the @see:selectedItem.
                 */
                 get: function () {
                     return this._pathValue;
                 },
                 set: function (value) {
                     this._pathValue = wijmo.asString(value);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
+            Object.defineProperty(ListBox.prototype, "checkedMemberPath", {
+                /**
+                * Gets or sets the name of the property used to control checkboxes placed next
+                * to each item.
+                *
+                * Use this property to create multi-select lisboxes.
+                * When an item is checked or unchecked, the control raises the @see:itemChecked event.
+                * Use the @see:selectedItem property to retrieve the item that was checked or unchecked.
+                */
+                get: function () {
+                    return this._pathChecked;
+                },
+                set: function (value) {
+                    if (value != this._pathChecked) {
+                        this._pathChecked = wijmo.asString(value);
+                        this._populateList();
+                    }
                 },
                 enumerable: true,
                 configurable: true
@@ -1462,9 +1482,9 @@ var wijmo;
                 var item = null;
                 if (index > -1 && this._cv && this._cv.items) {
                     item = this._cv.items[index];
-                    if (this.displayMemberPath) {
+                    if (item && this.displayMemberPath) {
+                        //assert(this.displayMemberPath in item, 'item does not define displayMemberPath property "' + this.displayMemberPath + '".');
                         item = item[this.displayMemberPath];
-                        wijmo.assert(item != undefined, 'item does not define displayMemberPath property "' + this.displayMemberPath + '".');
                     }
                 }
                 var text = item != null ? item.toString() : '';
@@ -1603,6 +1623,13 @@ var wijmo;
                 this.itemsChanged.raise(this, e);
             };
 
+            /**
+            * Raises the @see:itemCheched event.
+            */
+            ListBox.prototype.onItemChecked = function (e) {
+                this.itemChecked.raise(this, e);
+            };
+
             //#endregion
             //--------------------------------------------------------------------------
             //#region ** implementation
@@ -1618,30 +1645,49 @@ var wijmo;
 
             // populate the list from the current itemsSource
             ListBox.prototype._populateList = function () {
+                // remember if we have focus
+                var focus = this.containsFocus();
+
+                // populate
                 this._div.innerHTML = '';
                 if (this._cv) {
                     for (var i = 0; i < this._cv.items.length; i++) {
-                        var item = document.createElement('div'), text = this.getDisplayValue(i);
-                        if (this._html == true) {
-                            item.innerHTML = text;
-                        } else {
-                            item.textContent = text;
+                        // get item text
+                        var text = this.getDisplayValue(i);
+                        if (this._html != true) {
+                            text = wijmo.escapeHtml(text);
                         }
+
+                        // add checkbox
+                        if (this.checkedMemberPath) {
+                            var checked = this._cv.items[i][this.checkedMemberPath];
+                            text = '<label><input type="checkbox"' + (checked ? ' checked' : '') + '> ' + text + '</label>';
+                        }
+
+                        // build item
+                        var item = document.createElement('div');
+                        item.innerHTML = text;
                         item.className = 'wj-listbox-item';
                         if (wijmo.hasClass(item.firstChild, 'wj-separator')) {
                             item.className += ' wj-separator';
                         }
+
+                        // add item to list
                         this._div.appendChild(item);
                     }
                 }
+
+                // restore focus
+                if (focus && !this.containsFocus()) {
+                    this.focus();
+                }
+
+                // scroll selection into view
                 this.showSelection();
             };
 
-            // handle mouse down on the ListBox
-            // (better than click because it happens before the browser scrolls
-            // to bring elements into view, which happens for example when the
-            // FlexGrid uses ListBox for cell drop-downs)
-            ListBox.prototype._mousedown = function (e) {
+            // click to select elements
+            ListBox.prototype._click = function (e) {
                 // get the listbox element (child of div)
                 var elem = e.target;
                 while (elem && elem.parentNode != this._div) {
@@ -1651,9 +1697,24 @@ var wijmo;
                 for (var index = 0; index < this._div.childElementCount; index++) {
                     if (this._div.childNodes[index] == elem) {
                         this.selectedIndex = index;
-                        e.preventDefault();
                         e.stopPropagation();
                         break;
+                    }
+                }
+
+                // handle checkboxes
+                if (this.checkedMemberPath && this.selectedItem) {
+                    var cb = wijmo.tryCast(e.target, HTMLInputElement);
+                    if (cb && cb.type == 'checkbox') {
+                        var ecv = wijmo.tryCast(this._cv, 'IEditableCollectionView');
+                        if (ecv) {
+                            ecv.editItem(this.selectedItem);
+                            this.selectedItem[this.checkedMemberPath] = cb.checked;
+                            ecv.commitEdit();
+                        } else {
+                            this.selectedItem[this.checkedMemberPath] = cb.checked;
+                        }
+                        this.onItemChecked();
                     }
                 }
             };
@@ -1719,10 +1780,10 @@ var wijmo;
                 }
             };
             ListBox.prototype._keypress = function (e) {
-                var count = this._div.childElementCount;
                 if (e.charCode > 0) {
+                    var count = this._div.childElementCount;
                     for (var off = 1; off < count; off++) {
-                        var index = (this.selectedIndex + off) % count, text = this.getDisplayText(index).toLowerCase();
+                        var index = (this.selectedIndex + off) % count, text = this.getDisplayText(index).trim().toLowerCase();
                         if (text.charCodeAt(0) == e.charCode) {
                             this.selectedIndex = index;
                             e.preventDefault();
@@ -1827,6 +1888,7 @@ var wijmo;
                 this._required = true;
                 this._editable = false;
                 // private stuff
+                this._composing = false;
                 this._deleting = false;
                 this._settingText = false;
                 /**
@@ -1836,6 +1898,16 @@ var wijmo;
 
                 // handle cursor keys
                 this._tbx.addEventListener('keydown', this._handleKeyDown.bind(this));
+
+                // handle IME
+                var self = this;
+                this._tbx.addEventListener('compositionstart', function () {
+                    self._composing = true;
+                });
+                this._tbx.addEventListener('compositionend', function () {
+                    self._composing = false;
+                    self._setText(self.text, true);
+                });
 
                 // initializing from <select> tag
                 if (this._orgTag == 'SELECT') {
@@ -2159,37 +2231,37 @@ var wijmo;
             //#region ** implementation
             // update text in textbox
             ComboBox.prototype._setText = function (text, fullMatch) {
-                // prevent reentrant calls while moving CollectioView cursor
+                // not while composing IME text...
+                if (this._composing)
+                    return;
+
+                // prevent reentrant calls while moving CollectionView cursor
                 if (this._settingText)
                     return;
                 this._settingText = true;
 
                 // get variables we need
-                var index = this.selectedIndex, cv = this.collectionView, start = this._tbx.selectionStart, len = -1;
+                var index = this.selectedIndex, cv = this.collectionView, start = this._getSelStart(), len = -1;
 
                 // make sure we don't have nulls
                 if (text == null)
                     text = '';
 
-                // do not try auto-completion with CJK characters
-                // so we don't interfere with the IME editor (TFS 97636)
-                if (text.match(/^[\u0020-\u1000]*$/)) {
-                    // try autocompletion
-                    if (!this.isEditable || !this._deleting) {
-                        index = this.indexOf(text, fullMatch);
-                        if (index < 0 && fullMatch) {
-                            index = this.indexOf(text, false);
-                        }
-                        if (index < 0 && start > 0) {
-                            index = this.indexOf(text.substr(0, start), false);
-                        }
-                        if (index < 0 && !this.isEditable && this.required && cv && cv.items) {
-                            index = Math.max(0, this.indexOf(this._oldText, false));
-                        }
-                        if (index > -1) {
-                            len = start;
-                            text = this.getDisplayText(index);
-                        }
+                // try autocompletion
+                if (!this.isEditable || !this._deleting) {
+                    index = this.indexOf(text, fullMatch);
+                    if (index < 0 && fullMatch) {
+                        index = this.indexOf(text, false);
+                    }
+                    if (index < 0 && start > 0) {
+                        index = this.indexOf(text.substr(0, start), false);
+                    }
+                    if (index < 0 && !this.isEditable && this.required && cv && cv.items) {
+                        index = Math.max(0, this.indexOf(this._oldText, false));
+                    }
+                    if (index > -1) {
+                        len = start;
+                        text = this.getDisplayText(index);
                     }
                 }
 
@@ -2204,7 +2276,7 @@ var wijmo;
                 }
 
                 // update text selection
-                if (len > -1 && this.containsFocus()) {
+                if (len > -1 && this.containsFocus() && !this.isTouching) {
                     this._setSelectionRange(len, text.length);
                 }
 
@@ -2249,7 +2321,7 @@ var wijmo;
                 var start = -1;
                 switch (e.keyCode) {
                     case 38 /* Up */:
-                        start = this._tbx.selectionStart;
+                        start = this._getSelStart();
                         this.selectedIndex = this._findNext(this.text.substr(0, start), -1);
                         this._setSelectionRange(start, this.text.length);
                         e.preventDefault();
@@ -2259,7 +2331,7 @@ var wijmo;
                         if (!this.isDroppedDown && (e.ctrlKey || e.shiftKey)) {
                             this.isDroppedDown = true;
                         } else {
-                            start = this._tbx.selectionStart;
+                            start = this._getSelStart();
                             this.selectedIndex = this._findNext(this.text.substr(0, start), +1);
                             this._setSelectionRange(start, this.text.length);
                         }
@@ -2294,6 +2366,11 @@ var wijmo;
                 if (this._elRef == this._tbx) {
                     this._tbx.setSelectionRange(start, end);
                 }
+            };
+
+            // get selection start in an extra-safe way (TFS 82372)
+            ComboBox.prototype._getSelStart = function () {
+                return this._tbx && this._tbx.value ? this._tbx.selectionStart : 0;
             };
             return ComboBox;
         })(input.DropDown);
@@ -2344,6 +2421,7 @@ var wijmo;
                 _super.call(this, element);
                 this._minLength = 2;
                 this._maxItems = 6;
+                this._itemCount = 0;
                 this._delay = 500;
                 this._query = '';
                 this._handlingCallback = false;
@@ -2407,7 +2485,8 @@ var wijmo;
                 * <ul>
                 *     <li>the query string typed by the user</li>
                 *     <li>the maximum number of items to return</li>
-                *     <li>the callback function to call when the results become available</li></ul>
+                *     <li>the callback function to call when the results become available</li>
+                * </ul>
                 *
                 * For example:
                 * <pre>
@@ -2481,7 +2560,10 @@ var wijmo;
 
                 // raise textChanged
                 if (text != this._oldText) {
-                    this._tbx.value = text;
+                    // assign only if necessary to prevent occasionally swapping chars (Android 4.4.2)
+                    if (this._tbx.value != text) {
+                        this._tbx.value = text;
+                    }
                     this._oldText = text;
                     this.onTextChanged();
                 }
@@ -2587,7 +2669,9 @@ var wijmo;
                 this._query = '';
                 if (!this.isDroppedDown && this.selectedIndex > -1) {
                     this._setText(this.getDisplayText());
-                    this.selectAll();
+                    if (!this.isTouching) {
+                        this.selectAll();
+                    }
                 }
             };
 
@@ -2601,6 +2685,7 @@ var wijmo;
                     // apply the filter
                     this._handlingCallback = true;
                     cv.beginUpdate();
+                    this._itemCount = 0;
                     cv.filter = this._filter.bind(this);
                     cv.moveCurrentToPosition(-1);
                     cv.endUpdate();
@@ -2612,7 +2697,6 @@ var wijmo;
                             this.isDroppedDown = true;
                         }
                     } else {
-                        this.isDroppedDown = false;
                         this.selectedIndex = -1;
                     }
                 }
@@ -2621,7 +2705,7 @@ var wijmo;
             // filter the items and show only the matches
             AutoComplete.prototype._filter = function (item) {
                 // honor maxItems
-                if (this.collectionView.items.length >= this._maxItems) {
+                if (this._itemCount >= this._maxItems) {
                     return false;
                 }
 
@@ -2630,7 +2714,15 @@ var wijmo;
                     item = item[this.displayMemberPath];
                 }
                 var text = item != null ? item.toString() : '';
-                return this._rxMatch.test(text);
+
+                // count matches
+                if (this._rxMatch.test(text)) {
+                    this._itemCount++;
+                    return true;
+                }
+
+                // no pass
+                return false;
             };
 
             // default item formatter: show matches in bold
@@ -2724,9 +2816,15 @@ var wijmo;
                 }
 
                 // toggle drop-down when clicking on the header
+                // or fire the click event if this menu is a split-button
                 var self = this;
                 this._header.addEventListener('click', function () {
-                    self.isDroppedDown = !self.isDroppedDown;
+                    if (self._isButton) {
+                        self.isDroppedDown = false;
+                        self._raiseCommand(wijmo.EventArgs.empty);
+                    } else {
+                        self.isDroppedDown = !self.isDroppedDown;
+                    }
                 });
 
                 // change some defaults
@@ -2813,6 +2911,56 @@ var wijmo;
                 configurable: true
             });
 
+            Object.defineProperty(Menu.prototype, "isButton", {
+                /**
+                * Gets or sets a value that determines whether this @see:Menu should act
+                * as a split button instead of a regular menu.
+                *
+                * The difference between regular menus and split buttons is what happens
+                * when the user clicks the menu header.
+                * In regular menus, clicking the header shows or hides the menu options.
+                * In split buttons, clicking the header raises the @see:menuItemClicked event
+                * and/or invokes the command associated with the last option selected by
+                * the user as if the user had picked the item from the drop-down list.
+                *
+                * If you want to differentiate between clicks on menu items and the button
+                * part of a split button, check the value of the @see:isDroppedDown property
+                * of the event sender. If that is true, then a menu item was clicked; if it
+                * is false, then the button was clicked.
+                *
+                * For example, the code below implements a split button that uses the drop-down
+                * list only to change the default item/command, and triggers actions only when
+                * the button is clicked:
+                *
+                * <pre>&lt;-- view --&gt;
+                * &lt;wj-menu is-button="true" header="Run" value="browser"
+                *   item-clicked="menuItemClicked(s, e)"&gt;
+                *   &lt;wj-menu-item value="'Internet Explorer'"&gt;Internet Explorer&lt;/wj-menu-item&gt;
+                *   &lt;wj-menu-item value="'Chrome'"&gt;Chrome&lt;/wj-menu-item&gt;
+                *   &lt;wj-menu-item value="'FireFox'"&gt;FireFox&lt;/wj-menu-item&gt;
+                *   &lt;wj-menu-item value="'Safari'"&gt;Safari&lt;/wj-menu-item&gt;
+                *   &lt;wj-menu-item value="'Opera'"&gt;Opera&lt;/wj-menu-item&gt;
+                * &lt;/wj-menu&gt;
+                *
+                * // controller
+                * $scope.browser = 'Internet Explorer';
+                * $scope.menuItemClicked = function (s, e) {
+                *   // if not dropped down, click was on the button
+                *   if (!s.isDroppedDown) {
+                *     alert('running ' + $scope.browser);
+                *   }
+                *}</pre>
+                */
+                get: function () {
+                    return this._isButton;
+                },
+                set: function (value) {
+                    this._isButton = wijmo.asBoolean(value);
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             /**
             * Raises the @see:itemClicked event.
             */
@@ -2825,21 +2973,7 @@ var wijmo;
             Menu.prototype.onTextChanged = function (e) {
                 _super.prototype.onTextChanged.call(this, e);
                 if (!this._closing && this.isDroppedDown) {
-                    // execute command if available
-                    var canExecute = true, item = this.selectedItem, cmd = this._getCommand(this.selectedItem);
-                    if (cmd) {
-                        var parm = this._cmdParamPath ? item[this._cmdParamPath] : null;
-
-                        canExecute = this._canExecuteCommand(cmd, parm);
-                        if (canExecute) {
-                            this._executeCommand(cmd, parm);
-                        }
-                    }
-
-                    // raise itemClicked
-                    if (canExecute) {
-                        this.onItemClicked(e);
-                    }
+                    this._raiseCommand(e);
                 }
             };
 
@@ -2869,6 +3003,23 @@ var wijmo;
                     // restore events
                     this._closing = false;
                 }
+            };
+
+            // ** implementation
+            // raise itemClicked and/or invoke the current command
+            Menu.prototype._raiseCommand = function (e) {
+                // execute command if available
+                var item = this.selectedItem, cmd = this._getCommand(item);
+                if (cmd) {
+                    var parm = this._cmdParamPath ? item[this._cmdParamPath] : null;
+                    if (!this._canExecuteCommand(cmd, parm)) {
+                        return;
+                    }
+                    this._executeCommand(cmd, parm);
+                }
+
+                // raise itemClicked
+                this.onItemClicked(e);
             };
 
             // gets the command to be executed when an item is clicked
@@ -3155,16 +3306,7 @@ var wijmo;
             InputDate.prototype.onIsDroppedDownChanged = function (e) {
                 // transfer focus to Calendar
                 if (this.isDroppedDown) {
-                    var scrollBefore = new wijmo.Point(window.pageXOffset, window.pageYOffset);
                     this._calendar.focus();
-                    var scrollAfter = new wijmo.Point(window.pageXOffset, window.pageYOffset);
-
-                    // In case if the just focused element doesn't fit in the screen, Chrome may perform scrolling to best fit it.
-                    // The latter normally causes closing of the drop-down. We detect whether scrolling has occured
-                    // after the _calendar gained focus, and suppress closing if this is the case.
-                    if (!scrollBefore.equals(scrollAfter)) {
-                        this._noScrollClose = true;
-                    }
                 }
 
                 // raise event as usual
@@ -3189,7 +3331,11 @@ var wijmo;
                 this._dropDown.addEventListener('mousedown', function () {
                     dtDown = self.value;
                 });
-                this._dropDown.addEventListener('click', function () {
+
+                // The 'click' event may not be triggered on iOS Safari if focus change happend during previous user's tap.
+                // We use 'mouseup' instead.
+                //this._dropDown.addEventListener('click', function () {
+                this._dropDown.addEventListener('mouseup', function () {
                     var value = self._calendar.value;
                     if (value && !wijmo.DateTime.sameDate(dtDown, value)) {
                         self.isDroppedDown = false;
@@ -3207,6 +3353,7 @@ var wijmo;
                 // update size
                 var cs = getComputedStyle(this.hostElement);
                 this._dropDown.style.minWidth = parseFloat(cs.fontSize) * 18 + 'px';
+                this._calendar.refresh(); // update layout/size now
 
                 // let base class update position
                 _super.prototype._updateDropDown.call(this);
@@ -3328,10 +3475,11 @@ var wijmo;
                 this._maskProvider = new wijmo._MaskProvider(this._tbx);
 
                 // commit text when losing focus
+                // use blur+capture to emulate focusout (not supported in FireFox)
                 var self = this;
-                this.hostElement.addEventListener('focusout', function () {
+                this.hostElement.addEventListener('blur', function () {
                     self._commitText();
-                });
+                }, true);
 
                 // initializing from <input> tag
                 if (this._orgTag == 'INPUT') {
@@ -3663,9 +3811,9 @@ var wijmo;
 
                 // textbox events
                 var tb = self._tbx;
-                tb.addEventListener('keypress', self._keypress.bind(this));
-                tb.addEventListener('keydown', self._keydown.bind(this));
-                tb.addEventListener('input', self._input.bind(this));
+                tb.addEventListener('keypress', this._keypress.bind(this));
+                tb.addEventListener('keydown', this._keydown.bind(this));
+                tb.addEventListener('input', this._input.bind(this));
                 tb.addEventListener('focus', function () {
                     setTimeout(self._ehSelectAll, 0);
                 });
@@ -3674,20 +3822,16 @@ var wijmo;
                 // if this was a tap, keep focus on button; OW transfer to textbox
                 this._btnUp.addEventListener('click', function (e) {
                     if (self.value != null) {
-                        self.value = self._clamp(self.value + self.step);
-                        if (self.isTouching) {
-                            self._btnUp.focus();
-                        } else {
+                        self.value += self.step;
+                        if (!self.isTouching) {
                             setTimeout(self._ehSelectAll, 0);
                         }
                     }
                 });
                 this._btnDn.addEventListener('click', function (e) {
                     if (self.value != null) {
-                        self.value = self._clamp(self.value - self.step);
-                        if (self.isTouching) {
-                            self._btnDn.focus();
-                        } else {
+                        self.value -= self.step;
+                        if (!self.isTouching) {
                             setTimeout(self._ehSelectAll, 0);
                         }
                     }
@@ -3695,11 +3839,16 @@ var wijmo;
 
                 // host element
                 this.hostElement.addEventListener('focus', function () {
-                    tb.focus();
+                    if (!this.isTouching) {
+                        tb.focus();
+                    }
                 });
-                this.hostElement.addEventListener('focusout', function () {
-                    self.value = self._clamp(self.value);
-                });
+
+                // use blur+capture to emulate focusout (not supported in FireFox)
+                this.hostElement.addEventListener('blur', function () {
+                    var text = wijmo.Globalize.format(self.value, self.format);
+                    self._setText(text);
+                }, true);
 
                 // initialize value
                 this.value = 0;
@@ -3984,7 +4133,7 @@ var wijmo;
                     if (!this._required) {
                         this._tbx.value = '';
                         if (this._value != null) {
-                            this._value = value;
+                            this._value = null;
                             this.onValueChanged();
                         }
                         if (this._oldText) {
@@ -4031,6 +4180,7 @@ var wijmo;
                 }
 
                 // update value, raise valueChanged
+                value = this._clamp(value);
                 if (value != this._value) {
                     this._value = value;
                     this.onValueChanged();
@@ -4074,7 +4224,7 @@ var wijmo;
                     if (chr == this._decChar) {
                         var pos = this._tbx.value.indexOf(chr);
                         if (pos > -1) {
-                            if (this._tbx.selectionStart <= pos) {
+                            if (this._getSelStart() <= pos) {
                                 pos++;
                             }
                             this._tbx.setSelectionRange(pos, pos);
@@ -4097,8 +4247,8 @@ var wijmo;
                         break;
 
                     case 8 /* Back */:
-                        if (this._tbx.selectionStart == this._tbx.selectionEnd) {
-                            var sel = this._tbx.selectionStart;
+                        if (this._getSelStart() == this._tbx.selectionEnd) {
+                            var sel = this._getSelStart();
                             if (sel > 0 && this.text[sel - 1] == this._decChar) {
                                 this._tbx.setSelectionRange(sel - 1, sel - 1);
                                 e.preventDefault();
@@ -4107,8 +4257,8 @@ var wijmo;
                         break;
 
                     case 46 /* Delete */:
-                        if (this._tbx.selectionStart == this._tbx.selectionEnd) {
-                            var sel = this._tbx.selectionStart;
+                        if (this._getSelStart() == this._tbx.selectionEnd) {
+                            var sel = this._getSelStart();
                             if (sel > 0 && this.text[sel] == this._decChar) {
                                 this._tbx.setSelectionRange(sel + 1, sel + 1);
                                 e.preventDefault();
@@ -4121,7 +4271,7 @@ var wijmo;
             // handle user input
             InputNumber.prototype._input = function (e) {
                 // remember cursor position
-                var tbx = this._tbx, text = tbx.value, sel = tbx.selectionStart, dec = text.indexOf(this._decChar);
+                var tbx = this._tbx, text = tbx.value, sel = this._getSelStart(), dec = text.indexOf(this._decChar);
 
                 // set the text
                 this._setText(text);
@@ -4149,7 +4299,12 @@ var wijmo;
                     tbx.setSelectionRange(sel, sel);
                 }
             };
-            InputNumber.controlTemplate = '<div class="wj-input">' + '<div class="wj-input-group">' + '<span wj-part="btn-dec" class="wj-input-group-btn">' + '<button class="wj-btn wj-btn-default" type="button" tabindex="-1">-</button>' + '</span>' + '<input type="tel" wj-part="input" class="wj-form-control wj-numeric"/>' + '<span wj-part="btn-inc" class="wj-input-group-btn">' + '<button class="wj-btn wj-btn-default" type="button" tabindex="-1">+</button>' + '</span>' + '</div>';
+
+            // get selection start
+            InputNumber.prototype._getSelStart = function () {
+                return this._tbx && this._tbx.value ? this._tbx.selectionStart : 0;
+            };
+            InputNumber.controlTemplate = '<div class="wj-input">' + '<div class="wj-input-group">' + '<span wj-part="btn-dec" class="wj-input-group-btn" tabindex="-1">' + '<button class="wj-btn wj-btn-default" type="button" tabindex="-1">-</button>' + '</span>' + '<input type="tel" wj-part="input" class="wj-form-control wj-numeric"/>' + '<span wj-part="btn-inc" class="wj-input-group-btn" tabindex="-1">' + '<button class="wj-btn wj-btn-default" type="button" tabindex="-1">+</button>' + '</span>' + '</div>';
             return InputNumber;
         })(wijmo.Control);
         input.InputNumber = InputNumber;
@@ -4419,18 +4574,8 @@ var wijmo;
                 // initialize control options
                 this.initialize(options);
 
-                // close drop-down when losing focus
-                var self = this;
-                this.hostElement.addEventListener('focusout', function () {
-                    setTimeout(function () {
-                        if (!self.containsFocus()) {
-                            self.isDroppedDown = false;
-                            self._commitText();
-                        }
-                    }, 0);
-                });
-
                 // handle keyboard
+                var self = this;
                 this._tbx.addEventListener('keydown', function (e) {
                     switch (e.keyCode) {
                         case 13 /* Enter */:

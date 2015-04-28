@@ -453,4 +453,13 @@ angular.module('utils.ct.filters', []).filter('fromNow', function () {
       return '-';
     }
   };
+}).filter('stripslashes', function () {
+  return function (data) {
+    if (data) {
+      data = data.replace(/\\'/g, '\'');
+      return data;
+    } else {
+      return '';
+    }
+  };
 });

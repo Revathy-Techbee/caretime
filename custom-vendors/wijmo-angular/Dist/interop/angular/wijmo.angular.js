@@ -1,6 +1,6 @@
 /*
     *
-    * Wijmo Library 5.20143.32
+    * Wijmo Library 5.20151.48
     * http://wijmo.com/
     *
     * Copyright(c) GrapeCity, Inc.  All rights reserved.
@@ -126,7 +126,7 @@ var wijmo;
                             this.CreateProp('selectedValue', 7 /* Any */, 1 /* TwoWay */, null, true, 1000)
                         ], [
                             this.CreateEvent('selectedIndexChanged', true)
-                        ]);
+                        ]).addOptions({ ngModelProperty: 'selectedValue' });
 
                     case wijmo.input && wijmo.input.AutoComplete:
                         return this.getMetaData(wijmo.input.ComboBox).add([
@@ -150,7 +150,7 @@ var wijmo;
                         ], [
                             this.CreateEvent('valueChanged', true),
                             this.CreateEvent('displayMonthChanged', true)
-                        ]);
+                        ]).addOptions({ ngModelProperty: 'value' });
 
                     case wijmo.input && wijmo.input.ColorPicker:
                         return new MetaDataBase([
@@ -160,7 +160,7 @@ var wijmo;
                             this.CreateProp('value', 3 /* String */, 1 /* TwoWay */)
                         ], [
                             this.CreateEvent('valueChanged', true)
-                        ]);
+                        ]).addOptions({ ngModelProperty: 'value' });
 
                     case wijmo.input && wijmo.input.ListBox:
                         return new MetaDataBase([
@@ -169,20 +169,23 @@ var wijmo;
                             this.CreateProp('selectedValuePath', 3 /* String */),
                             this.CreateProp('itemFormatter', 5 /* Function */),
                             this.CreateProp('displayMemberPath', 3 /* String */),
+                            this.CreateProp('checkedMemberPath', 3 /* String */),
                             this.CreateProp('itemsSource', 7 /* Any */),
                             this.CreateProp('selectedIndex', 1 /* Number */, 1 /* TwoWay */),
                             this.CreateProp('selectedItem', 7 /* Any */, 1 /* TwoWay */),
                             this.CreateProp('selectedValue', 7 /* Any */, 1 /* TwoWay */)
                         ], [
                             this.CreateEvent('itemsChanged', true),
+                            this.CreateEvent('itemChecked', false),
                             this.CreateEvent('selectedIndexChanged', true)
-                        ]);
+                        ]).addOptions({ ngModelProperty: 'selectedValue' });
 
                     case wijmo.input && wijmo.input.Menu:
                         return this.getMetaData(wijmo.input.ComboBox).add([
                             this.CreateProp('header', 3 /* String */),
                             this.CreateProp('commandParameterPath', 3 /* String */),
                             this.CreateProp('commandPath', 3 /* String */),
+                            this.CreateProp('isButton', 0 /* Boolean */),
                             this.CreateProp('value', 7 /* Any */, 1 /* TwoWay */, null, false, 1000)
                         ], [
                             this.CreateEvent('itemClicked')
@@ -205,7 +208,7 @@ var wijmo;
                             this.CreateProp('value', 2 /* Date */, 1 /* TwoWay */, null, true, 1000)
                         ], [
                             this.CreateEvent('valueChanged', true)
-                        ]);
+                        ]).addOptions({ ngModelProperty: 'value' });
 
                     case wijmo.input && wijmo.input.InputNumber:
                         return new MetaDataBase([
@@ -222,7 +225,7 @@ var wijmo;
                         ], [
                             this.CreateEvent('valueChanged', true),
                             this.CreateEvent('textChanged', true)
-                        ]);
+                        ]).addOptions({ ngModelProperty: 'value' });
 
                     case wijmo.input && wijmo.input.InputMask:
                         return new MetaDataBase([
@@ -232,7 +235,7 @@ var wijmo;
                             this.CreateProp('value', 3 /* String */, 1 /* TwoWay */)
                         ], [
                             this.CreateEvent('valueChanged', true)
-                        ]);
+                        ]).addOptions({ ngModelProperty: 'value' });
 
                     case wijmo.input && wijmo.input.InputTime:
                         return this.getMetaData(wijmo.input.ComboBox).add([
@@ -244,7 +247,7 @@ var wijmo;
                             this.CreateProp('value', 2 /* Date */, 1 /* TwoWay */, null, true, 1000)
                         ], [
                             this.CreateEvent('valueChanged', true)
-                        ]);
+                        ]).addOptions({ ngModelProperty: 'value' });
 
                     case wijmo.input && wijmo.input.InputColor:
                         return this.getMetaData(wijmo.input.DropDown).add([
@@ -253,7 +256,7 @@ var wijmo;
                             this.CreateProp('value', 3 /* String */, 1 /* TwoWay */)
                         ], [
                             this.CreateEvent('valueChanged', true)
-                        ]);
+                        ]).addOptions({ ngModelProperty: 'value' });
 
                     case 'CollectionViewNavigator':
                         return new MetaDataBase([
@@ -288,7 +291,9 @@ var wijmo;
                             this.CreateProp('itemsSource', 7 /* Any */),
                             this.CreateProp('autoClipboard', 0 /* Boolean */),
                             this.CreateProp('frozenRows', 1 /* Number */),
-                            this.CreateProp('frozenColumns', 1 /* Number */)
+                            this.CreateProp('frozenColumns', 1 /* Number */),
+                            this.CreateProp('deferResizing', 0 /* Boolean */),
+                            this.CreateProp('sortRowIndex', 1 /* Number */)
                         ], [
                             this.CreateEvent('beginningEdit'),
                             this.CreateEvent('cellEditEnded'),
@@ -333,6 +338,7 @@ var wijmo;
                             this.CreateProp('dataMap', 7 /* Any */),
                             this.CreateProp('dataType', 4 /* Enum */, 0 /* OneWay */, wijmo.DataType),
                             this.CreateProp('binding', 3 /* String */),
+                            this.CreateProp('sortMemberPath', 3 /* String */),
                             this.CreateProp('format', 3 /* String */),
                             this.CreateProp('header', 3 /* String */),
                             this.CreateProp('width', 1 /* Number */),
@@ -356,6 +362,12 @@ var wijmo;
                             this.CreateProp('showDropDown', 0 /* Boolean */)
                         ], [], [], 'columns', true);
 
+                    case 'FlexGridCellTemplate':
+                        return new MetaDataBase([
+                            this.CreateProp('cellType', 3 /* String */, 0 /* OneWay */, null, false),
+                            this.CreateProp('cellOverflow', 3 /* String */, 0 /* OneWay */)
+                        ], [], [], undefined, undefined, undefined, 'owner');
+
                     case wijmo.grid && wijmo.grid.filter && wijmo.grid.filter.FlexGridFilter:
                         return new MetaDataBase([
                             this.CreateProp('showFilterIcons', 0 /* Boolean */),
@@ -363,6 +375,14 @@ var wijmo;
                         ], [
                             this.CreateEvent('filterApplied')
                         ], [], undefined, undefined, undefined, '');
+
+                    case wijmo.grid && wijmo.grid.grouppanel && wijmo.grid.grouppanel.GroupPanel:
+                        return new MetaDataBase([
+                            this.CreateProp('hideGroupedColumns', 0 /* Boolean */),
+                            this.CreateProp('maxGroups', 1 /* Number */),
+                            this.CreateProp('placeholder', 3 /* String */),
+                            this.CreateProp('grid', 7 /* Any */)
+                        ]);
 
                     case wijmo.chart && wijmo.chart.FlexChartBase:
                         return new MetaDataBase([
@@ -442,6 +462,22 @@ var wijmo;
                             this.CreateProp('position', 4 /* Enum */, 0 /* OneWay */, wijmo.chart.Position)
                         ], [], [], 'legend', false, false);
 
+                    case wijmo.chart && wijmo.chart.DataLabelBase:
+                        return new MetaDataBase([
+                            this.CreateProp('content', 7 /* Any */, 0 /* OneWay */),
+                            this.CreateProp('border', 0 /* Boolean */)
+                        ], [], [], 'dataLabel', false, false);
+
+                    case wijmo.chart && wijmo.chart.DataLabel:
+                        return this.getMetaData(wijmo.chart.DataLabelBase).add([
+                            this.CreateProp('position', 4 /* Enum */, 0 /* OneWay */, wijmo.chart.LabelPosition)
+                        ]);
+
+                    case wijmo.chart && wijmo.chart.PieDataLabel:
+                        return this.getMetaData(wijmo.chart.DataLabelBase).add([
+                            this.CreateProp('position', 4 /* Enum */, 0 /* OneWay */, wijmo.chart.PieLabelPosition)
+                        ]);
+
                     case wijmo.chart && wijmo.chart.Series:
                         return new MetaDataBase([
                             this.CreateProp('binding', 3 /* String */),
@@ -460,11 +496,39 @@ var wijmo;
                             this.CreateComplexProp('axisY', false, true)
                         ], 'series', true);
 
+                    case wijmo.chart && wijmo.chart.LineMarker:
+                        return new MetaDataBase([
+                            this.CreateProp('isVisible', 0 /* Boolean */),
+                            this.CreateProp('seriesIndex', 1 /* Number */),
+                            this.CreateProp('horizontalPosition', 1 /* Number */),
+                            this.CreateProp('content', 5 /* Function */),
+                            this.CreateProp('verticalPosition', 1 /* Number */),
+                            this.CreateProp('alignment', 4 /* Enum */, 0 /* OneWay */, wijmo.chart.LineMarkerAlignment),
+                            this.CreateProp('lines', 4 /* Enum */, 0 /* OneWay */, wijmo.chart.LineMarkerLines),
+                            this.CreateProp('interaction', 4 /* Enum */, 0 /* OneWay */, wijmo.chart.LineMarkerInteraction),
+                            this.CreateProp('dragLines', 0 /* Boolean */),
+                            this.CreateProp('dragThreshold', 1 /* Number */),
+                            this.CreateProp('dragContent', 0 /* Boolean */)
+                        ], [
+                            this.CreateEvent('positionChanged')
+                        ], [], undefined, undefined, undefined, '');
+
+                    case wijmo.chart && wijmo.chart.interaction && wijmo.chart.interaction.RangeSelector:
+                        return new MetaDataBase([
+                            this.CreateProp('isVisible', 0 /* Boolean */),
+                            this.CreateProp('min', 1 /* Number */),
+                            this.CreateProp('max', 1 /* Number */),
+                            this.CreateProp('orientation', 4 /* Enum */, 0 /* OneWay */, wijmo.chart.interaction.Orientation)
+                        ], [
+                            this.CreateEvent('rangeChanged')
+                        ], [], undefined, undefined, undefined, '');
+
                     case wijmo.gauge && wijmo.gauge.Gauge:
                         return new MetaDataBase([
                             this.CreateProp('value', 1 /* Number */, 1 /* TwoWay */),
                             this.CreateProp('min', 1 /* Number */),
                             this.CreateProp('max', 1 /* Number */),
+                            this.CreateProp('origin', 1 /* Number */),
                             this.CreateProp('isReadOnly', 0 /* Boolean */),
                             this.CreateProp('step', 1 /* Number */),
                             this.CreateProp('format', 3 /* String */),
@@ -479,7 +543,7 @@ var wijmo;
                             this.CreateComplexProp('ranges', true),
                             this.CreateComplexProp('pointer', false, false),
                             this.CreateComplexProp('face', false, false)
-                        ]);
+                        ]).addOptions({ ngModelProperty: 'value' });
 
                     case wijmo.gauge && wijmo.gauge.LinearGauge:
                         return this.getMetaData(wijmo.gauge.Gauge).add([
@@ -517,6 +581,13 @@ var wijmo;
             // getClassName(wijmo.input.ComboBox) returns 'ComboBox'.
             ControlMetaFactory.getClassName = function (classRef) {
                 return (classRef.toString().match(/function (.+?)\(/) || [, ''])[1];
+            };
+
+            // Returns a camel case representation of the dash delimited name.
+            ControlMetaFactory.toCamelCase = function (s) {
+                return s.toLowerCase().replace(/-(.)/g, function (match, group1) {
+                    return group1.toUpperCase();
+                });
             };
 
             ControlMetaFactory.findInArr = function (arr, propName, value) {
@@ -695,7 +766,10 @@ var wijmo;
 
         // Stores a control metadata as arrays of property, event and complex property descriptors.
         var MetaDataBase = (function () {
-            function MetaDataBase(props, events, complexProps, parentProperty, isParentPropertyArray, ownsObject, parentReferenceProperty) {
+            function MetaDataBase(props, events, complexProps, parentProperty, isParentPropertyArray, ownsObject, parentReferenceProperty, ngModelProperty) {
+                this._props = [];
+                this._events = [];
+                this._complexProps = [];
                 this.props = props;
                 this.events = events;
                 this.complexProps = complexProps;
@@ -703,6 +777,7 @@ var wijmo;
                 this.isParentPropertyArray = isParentPropertyArray;
                 this.ownsObject = ownsObject;
                 this.parentReferenceProperty = parentReferenceProperty;
+                this.ngModelProperty = ngModelProperty;
             }
             Object.defineProperty(MetaDataBase.prototype, "props", {
                 get: function () {
@@ -739,18 +814,46 @@ var wijmo;
 
             // Adds the specified arrays to the end of corresponding arrays of this object, and overwrite the simple properties
             // if specified. Returns 'this'.
-            MetaDataBase.prototype.add = function (props, events, complexProps, parentProperty, isParentPropertyArray, ownsObject) {
-                this._props = this._props.concat(props || []);
-                this._events = this._events.concat(events || []);
-                this._complexProps = this._complexProps.concat(complexProps || []);
-                if (parentProperty !== undefined) {
-                    this.parentProperty = parentProperty;
-                }
-                if (isParentPropertyArray !== undefined) {
-                    this.isParentPropertyArray = isParentPropertyArray;
-                }
-                if (ownsObject !== undefined) {
-                    this.ownsObject = ownsObject;
+            MetaDataBase.prototype.add = function (props, events, complexProps, parentProperty, isParentPropertyArray, ownsObject, parentReferenceProperty, ngModelProperty) {
+                return this.addOptions({
+                    props: props,
+                    events: events,
+                    complexProps: complexProps,
+                    parentProperty: parentProperty,
+                    isParentPropertyArray: isParentPropertyArray,
+                    ownsObject: ownsObject,
+                    parentReferenceProperty: parentReferenceProperty,
+                    ngModelProperty: ngModelProperty
+                });
+                //this._props = this._props.concat(props || []);
+                //this._events = this._events.concat(events || []);
+                //this._complexProps = this._complexProps.concat(complexProps || []);
+                //if (parentProperty !== undefined) {
+                //    this.parentProperty = parentProperty;
+                //}
+                //if (isParentPropertyArray !== undefined) {
+                //    this.isParentPropertyArray = isParentPropertyArray;
+                //}
+                //if (ownsObject !== undefined) {
+                //    this.ownsObject = ownsObject;
+                //}
+                //if (parentReferenceProperty !== undefined) {
+                //    this.parentReferenceProperty = parentReferenceProperty;
+                //}
+                //if (ngModelProperty !== undefined) {
+                //    this.ngModelProperty = ngModelProperty;
+                //}
+                //return this;
+            };
+
+            MetaDataBase.prototype.addOptions = function (options) {
+                for (var prop in options) {
+                    var thisValue = this[prop], optionsValue = options[prop];
+                    if (thisValue instanceof Array) {
+                        this[prop] = thisValue.concat(optionsValue || []);
+                    } else if (optionsValue !== undefined) {
+                        this[prop] = optionsValue;
+                    }
                 }
                 return this;
             };
@@ -912,14 +1015,17 @@ var wijmo;
                 // Property descriptions used by nested directives.
                 this._complexProps = [];
                 var self = this;
+                this._dirId = (++WjDirective._dirIdCounter) + '';
                 this.link = this._postLinkFn();
-                this.controller = function ($scope, $parse, $element) {
-                    // 'this' points to the controller instance here
-                    self._$parse = $parse;
-                    this[WjDirective._cntrlScopeProp] = $scope;
-                    $scope[WjDirective._scopeChildrenProp] = [];
-                    self._controllerImpl(this, $scope, $element);
-                };
+                this.controller = [
+                    '$scope', '$parse', '$element', function ($scope, $parse, $element) {
+                        // 'this' points to the controller instance here
+                        self._$parse = $parse;
+                        this[WjDirective._cntrlScopeProp] = $scope;
+                        $scope[WjDirective._scopeChildrenProp] = [];
+                        self._controllerImpl(this, $scope, $element);
+                    }];
+
                 this._initDirective();
             }
             Object.defineProperty(WjDirective.prototype, "_controlConstructor", {
@@ -937,6 +1043,11 @@ var wijmo;
                 return this._controlConstructor;
             };
 
+            // Gets directive metadata.
+            WjDirective.prototype._getMetaData = function () {
+                return angular.MetaFactory.getMetaData(this._getMetaDataId());
+            };
+
             // Initializes DDO properties
             WjDirective.prototype._initDirective = function () {
                 this._initSharedMeta();
@@ -948,11 +1059,7 @@ var wijmo;
 
             // Initialize _props, _events and _complexProps with the shared metadata from wijmo.interop.ControlMetaFactory.
             WjDirective.prototype._initSharedMeta = function () {
-                var metaId = this._getMetaDataId();
-                if (metaId == null) {
-                    throw 'Directive metadata ID is undefined';
-                }
-                var meta = angular.MetaFactory.getMetaData(metaId);
+                var meta = this._getMetaData();
                 this._props = meta.props;
                 this._events = meta.events;
                 this._complexProps = meta.complexProps;
@@ -960,6 +1067,7 @@ var wijmo;
                 this._isPropertyArray = meta.isParentPropertyArray;
                 this._ownObject = meta.ownsObject;
                 this._parentReferenceProperty = meta.parentReferenceProperty;
+                this._ngModelProperty = meta.ngModelProperty;
             };
 
             // Initializes control's property map. Abstract member, must be overridden in inherited class
@@ -1066,6 +1174,7 @@ var wijmo;
                 scope[WjDirective._initPropAttr] = byRefMark;
                 scope[WjDirective._initEventAttr] = '&';
                 scope[WjDirective._parPropAttr] = '@';
+                scope[WjDirective._wjModelPropAttr] = '@';
 
                 // save result
                 this.scope = scope;
@@ -1076,7 +1185,7 @@ var wijmo;
             // @param beforeLinkDelegate Delegate to run before the link function
             // @param afterLinkDelegate Delegate to run after the link function
             // @return Directive's link function
-            WjDirective.prototype._postLinkFn = function ( /*beforeLinkDelegate?: (scope: any, tElement: ng.IAugmentedJQuery, tAttrs: ng.IAttributes, controller: any) => void, afterLinkDelegate?: (scope: any, tElement: ng.IAugmentedJQuery, tAttrs: ng.IAttributes, control: wijmo.Control) => void*/ ) {
+            WjDirective.prototype._postLinkFn = function () {
                 var self = this;
 
                 // Final directive link function
@@ -1098,6 +1207,7 @@ var wijmo;
                         for (var i in controller) {
                             var curCntrl = controller[i];
                             if (curCntrl != undefined) {
+                                //if (!link.controller) {
                                 if (curCntrl[WjDirective._cntrlScopeProp] === scope) {
                                     //require parent controller by name
                                     curCntrl = tElement.parent().controller(self._stripRequire(i));
@@ -1105,13 +1215,17 @@ var wijmo;
                                 if (curCntrl && curCntrl[WjDirective._cntrlScopeProp] === parScope) {
                                     link.controller = curCntrl;
                                     break;
+                                    //continue;
                                 }
+                                //}
                             }
                         }
-                    } else
+                    } else {
                         link.controller = controller;
+                    }
 
-                    //}
+                    link.ngModel = tElement.controller('ngModel');
+
                     link._link();
                 };
                 return linkFunction;
@@ -1147,6 +1261,11 @@ var wijmo;
                 return this._stripReq[index];
             };
 
+            // Gets a directive unique ID
+            WjDirective.prototype._getId = function () {
+                return this._dirId;
+            };
+
             // Determines whether the specified version is not older than the current Angular version.
             WjDirective._versionOk = function (minVer) {
                 var angVer = window['angular'].version;
@@ -1166,19 +1285,26 @@ var wijmo;
             };
             WjDirective._parPropAttr = 'wjProperty';
 
+            WjDirective._wjModelPropAttr = 'wjModelProperty';
+
             WjDirective._initPropAttr = 'isInitialized';
 
             WjDirective._initEventAttr = 'initialized';
 
             WjDirective._cntrlScopeProp = '_cntrlScope';
 
-            WjDirective._cntrlLinkProp = '_thisLink';
+            WjDirective._cntrlLinkProp = '$_thisLink';
 
-            WjDirective._scopeChildrenProp = '_childLinks';
+            WjDirective._scopeChildrenProp = '$_childLinks';
+
+            WjDirective._dirIdAttr = 'wj-directive-id';
 
             WjDirective._optionalAttr = WjDirective._versionOk("1.1.4");
 
+            WjDirective._dynaTemplates = WjDirective._optionalAttr;
+
             WjDirective._angStripPrefixes = ['data', 'x'];
+            WjDirective._dirIdCounter = 0;
             return WjDirective;
         })();
         angular.WjDirective = WjDirective;
@@ -1196,11 +1322,13 @@ var wijmo;
                 /* private */ this._isInitialized = false;
                 this._scopeSuspend = 0;
                 this._suspendedEvents = [];
+                this._areChlildrenReady = false;
                 // #region 'initialized' stuff
                 this._isAppliedToParent = false;
             }
             WjLink.prototype._link = function () {
                 var dir = this.directive;
+                this.tElement[0].setAttribute(WjDirective._dirIdAttr, dir._getId());
                 this.directiveTemplateElement = dir.replace ? this.tElement : window['angular'].element(this.tElement.children()[0]);
                 this._initNonAssignable();
                 if (this._isChild()) {
@@ -1211,7 +1339,7 @@ var wijmo;
                     this.controller[WjDirective._cntrlScopeProp][WjDirective._scopeChildrenProp].push(this);
 
                     var parentScope = this.controller[WjDirective._cntrlScopeProp], parentLink = parentScope[WjDirective._cntrlLinkProp];
-                    if (parentLink && parentLink._isInitialized) {
+                    if (parentLink && parentLink._areChlildrenReady) {
                         this._parentReady(parentLink);
                     }
                 } else {
@@ -1284,7 +1412,16 @@ var wijmo;
                 var dir = this.directive, propName = this._getParentProp(), parCtrl = this.parent.control, ctrl = this.control;
                 if (this._isParentInitializer()) {
                     if (this._isParentArray()) {
-                        parCtrl[propName].push(ctrl);
+                        // insert child at correct index, which is the same as an index of the directive element amid sibling directives
+                        // of the same type
+                        var parArr = parCtrl[propName], linkIdx = this._getIndex();
+                        if (linkIdx < 0 || linkIdx >= parArr.length) {
+                            linkIdx = parArr.length;
+                        }
+                        parArr.splice(linkIdx, 0, ctrl);
+                        var self = this;
+                        this._siblingInsertedEH = this._siblingInserted.bind(this);
+                        this.tElement[0].addEventListener('DOMNodeInserted', this._siblingInsertedEH);
                     } else {
                         parCtrl[propName] = ctrl;
                     }
@@ -1296,6 +1433,9 @@ var wijmo;
 
             // Performes directive removal (currently called for child directives only).
             WjLink.prototype._destroy = function () {
+                if (this._siblingInsertedEH) {
+                    this.tElement[0].removeEventListener('DOMNodeInserted', this._siblingInsertedEH);
+                }
                 if (this._isParentArray()) {
                     var parControl = this.parent.control, parProp = this._getParentProp(), control = this.control;
 
@@ -1311,6 +1451,17 @@ var wijmo;
                 }
             };
 
+            WjLink.prototype._siblingInserted = function (e) {
+                if (e.target === this.tElement[0]) {
+                    var lIdx = this._getIndex(), parArr = this.parent.control[this._getParentProp()], ctrl = this.control, arrIdx = parArr.indexOf(ctrl);
+                    if (lIdx >= 0 && arrIdx >= 0 && lIdx !== arrIdx) {
+                        parArr.splice(arrIdx, 1);
+                        lIdx = Math.min(lIdx, parArr.length);
+                        parArr.splice(lIdx, 0, ctrl);
+                    }
+                }
+            };
+
             // Notify child links after this directive was attached to its control.
             WjLink.prototype._notifyReady = function () {
                 // Notify child links
@@ -1318,13 +1469,15 @@ var wijmo;
                 this.scope[WjDirective._cntrlLinkProp] = this;
 
                 //
-                var childLinks = this.scope[WjDirective._scopeChildrenProp];
+                var childLinks = [].concat(this.scope[WjDirective._scopeChildrenProp]);
                 for (var i = 0; i < childLinks.length; i++) {
                     childLinks[i]._parentReady(this);
                 }
 
                 // Clear children list to free references for GC.
                 //childLinks.length = 0; //cleared one by one by the _childInitialized method
+                this._areChlildrenReady = true;
+
                 this._onChildrenReady();
             };
 
@@ -1441,10 +1594,37 @@ var wijmo;
             //#endregion 'initialized' stuff
             // Adds watchers for scope properties to update control values
             WjLink.prototype._addWatchers = function () {
-                var props = this.directive._props;
+                var self = this, props = this.directive._props, scope = this.scope;
                 if (!props) {
                     return;
                 }
+
+                if (this.ngModel) {
+                    var ngModel = this.ngModel;
+
+                    // Patch: in Angular 1.3+ these classes are initially set but then removed by Angular,
+                    // probably because directive's replace=true ???
+                    if (ngModel.$pristine) {
+                        wijmo.addClass(this.tElement[0], 'ng-pristine');
+                    }
+                    if (ngModel.$valid) {
+                        wijmo.addClass(this.tElement[0], 'ng-valid');
+                    }
+                    if (ngModel.$untouched) {
+                        wijmo.addClass(this.tElement[0], 'ng-untouched');
+                    }
+
+                    // end patch
+                    ngModel.$render = this._ngModelRender.bind(this);
+                    this._updateNgModelPropDesc();
+                    if (this._isAttrDefined(WjDirective._wjModelPropAttr)) {
+                        scope.$watch(WjDirective._wjModelPropAttr, function () {
+                            self._updateNgModelPropDesc();
+                            self._ngModelRender();
+                        });
+                    }
+                }
+
                 var i, name, prop;
                 for (i = 0; i < props.length; i++) {
                     prop = props[i];
@@ -1453,7 +1633,7 @@ var wijmo;
                         this._definedProps[name] = prop;
                     }
                 }
-                var self = this, control = this.control, scope = this.scope;
+                var control = this.control;
                 scope.$watch(function (scope) {
                     try  {
                         var assignValues = {};
@@ -1463,19 +1643,17 @@ var wijmo;
                             }
                         }
 
-                        for (var i in props) {
-                            var prop = props[i];
-                            name = prop.propertyName;
-                            if (assignValues.hasOwnProperty(name) && assignValues[name] !== self._oldValues[name]) {
-                                self._oldValues[name] = assignValues[name];
-                                if (typeof (assignValues[name]) !== 'undefined' || self._isInitialized) {
+                        for (var name in assignValues) {
+                            var newVal = assignValues[name], oldVal = self._oldValues[name];
+                            if (newVal !== oldVal) {
+                                self._oldValues[name] = newVal;
+                                if (self._isInitialized || newVal !== undefined) {
                                     // get value from scope
-                                    var value = self._nullOrValue(self._castValueToType(assignValues[name], prop));
+                                    var prop = self._definedProps[name], value = self._nullOrValue(self._castValueToType(newVal, prop));
 
                                     // check that the control value is out-of-date
-                                    if (control[name] != value) {
-                                        var oldVal = control[name];
-
+                                    var oldCtrlVal = control[name];
+                                    if (oldCtrlVal != value) {
                                         // apply value to control if it's a native property
                                         // (as opposed to directive-only property)
                                         if (prop.isNativeControlProperty) {
@@ -1484,7 +1662,7 @@ var wijmo;
 
                                         // invoke custom handler (if any) to handle the change
                                         if (prop.customHandler != null) {
-                                            prop.customHandler(scope, control, value, oldVal, self);
+                                            prop.customHandler(scope, control, value, oldCtrlVal, self);
                                         }
                                     }
                                 }
@@ -1544,7 +1722,8 @@ var wijmo;
                 var update = eventInfo ? eventInfo.eventDesc.isPropChanged : this._suspendedEvents.some(function (value) {
                     return value.eventDesc.isPropChanged;
                 }), self = this;
-                var hasChanges = false;
+
+                //var hasChanges = false;
                 if (update) {
                     var props = this.directive._props;
                     for (var i = 0; i < props.length; i++) {
@@ -1556,9 +1735,14 @@ var wijmo;
 
                                 //
                                 this.directive._$parse(this.tAttrs[this.directive._scopeToAttrName(name)]).assign(this.scope.$parent, value);
-
                                 //
-                                hasChanges = true;
+                                //hasChanges = true;
+                            }
+                            if (this._ngModelPropDesc && this._ngModelPropDesc.propertyName == name && this.ngModel.$viewValue !== value) {
+                                this.ngModel.$setViewValue(value);
+                                if (!this._isInitialized) {
+                                    this.ngModel.$setPristine();
+                                }
                             }
                         }
                     }
@@ -1596,6 +1780,18 @@ var wijmo;
                     }
                 }
                 raiseEvents();
+            };
+
+            // ngModel.$render function implementation
+            WjLink.prototype._ngModelRender = function () {
+                var viewValue = this.ngModel.$viewValue, propDesc = this._ngModelPropDesc;
+                if (!propDesc || viewValue === undefined && !this._isInitialized) {
+                    return;
+                }
+                var value = this._nullOrValue(this._castValueToType(viewValue, propDesc));
+                if (viewValue !== this.control[propDesc.propertyName]) {
+                    this.control[propDesc.propertyName] = viewValue;
+                }
             };
 
             // Casts value to the property type
@@ -1705,6 +1901,15 @@ var wijmo;
                 return this._isParentReferencer() && this._getParentReferenceProperty() == '';
             };
 
+            WjLink.prototype._getNgModelProperty = function () {
+                return this.scope[WjDirective._wjModelPropAttr] || this.directive._ngModelProperty;
+            };
+
+            WjLink.prototype._updateNgModelPropDesc = function () {
+                var ngModelProp = this._getNgModelProperty();
+                this._ngModelPropDesc = wijmo.isNullOrWhiteSpace(ngModelProp) ? null : angular.MetaFactory.findProp(ngModelProp, this.directive._props);
+            };
+
             // apply value to scope and notify
             WjLink.prototype._safeApply = function (scope, name, value) {
                 // check that value and scope are defined, and that value changed
@@ -1730,6 +1935,22 @@ var wijmo;
             // Returns null for undefined or null value; otherwise, the original value.
             WjLink.prototype._nullOrValue = function (value) {
                 return value != undefined ? value : null;
+            };
+
+            // Gets an index of this link among another links pertain to the same directive type.
+            WjLink.prototype._getIndex = function () {
+                var siblings = this.tElement[0].parentElement.childNodes, thisEl = this.tElement[0], idx = -1, dirId = this.directive._getId();
+                for (var i = 0; i < siblings.length; i++) {
+                    var curEl = siblings[i];
+                    if (curEl.nodeType == 1 && curEl.getAttribute(WjDirective._dirIdAttr) == dirId) {
+                        ++idx;
+                        if (curEl === thisEl) {
+                            return idx;
+                        }
+                    }
+                }
+
+                return -1;
             };
             return WjLink;
         })();
@@ -1837,65 +2058,72 @@ var wijmo;
         //#region "Input directives registration"
         var wijmoInput = window['angular'].module('wj.input', []);
 
-        wijmoInput.directive('wjAutoComplete', [function () {
-                return new WjAutoComplete();
-            }]);
+        // register only if module is loaded
+        if (wijmo.input) {
+            wijmoInput.directive('wjAutoComplete', [function () {
+                    return new WjAutoComplete();
+                }]);
 
-        wijmoInput.directive('wjCalendar', [function () {
-                return new WjCalendar();
-            }]);
+            wijmoInput.directive('wjCalendar', [function () {
+                    return new WjCalendar();
+                }]);
 
-        wijmoInput.directive('wjColorPicker', [function () {
-                return new WjColorPicker();
-            }]);
+            wijmoInput.directive('wjColorPicker', [function () {
+                    return new WjColorPicker();
+                }]);
 
-        wijmoInput.directive('wjComboBox', [function () {
-                return new WjComboBox();
-            }]);
+            wijmoInput.directive('wjComboBox', [function () {
+                    return new WjComboBox();
+                }]);
 
-        wijmoInput.directive('wjInputDate', [function () {
-                return new WjInputDate();
-            }]);
+            wijmoInput.directive('wjInputDate', [function () {
+                    return new WjInputDate();
+                }]);
 
-        wijmoInput.directive('wjInputNumber', [function () {
-                return new WjInputNumber();
-            }]);
+            wijmoInput.directive('wjInputNumber', [function () {
+                    return new WjInputNumber();
+                }]);
 
-        wijmoInput.directive('wjInputMask', [function () {
-                return new WjInputMask();
-            }]);
+            wijmoInput.directive('wjInputMask', [function () {
+                    return new WjInputMask();
+                }]);
 
-        wijmoInput.directive('wjInputTime', [function () {
-                return new WjInputTime();
-            }]);
+            wijmoInput.directive('wjInputTime', [function () {
+                    return new WjInputTime();
+                }]);
 
-        wijmoInput.directive('wjInputColor', [function () {
-                return new WjInputColor();
-            }]);
+            wijmoInput.directive('wjInputColor', [function () {
+                    return new WjInputColor();
+                }]);
 
-        wijmoInput.directive('wjListBox', [function () {
-                return new WjListBox();
-            }]);
+            wijmoInput.directive('wjListBox', [function () {
+                    return new WjListBox();
+                }]);
 
-        wijmoInput.directive('wjMenu', [function () {
-                return new WjMenu();
-            }]);
+            wijmoInput.directive('wjMenu', [function () {
+                    return new WjMenu();
+                }]);
 
-        wijmoInput.directive('wjMenuItem', [function () {
-                return new WjMenuItem();
-            }]);
+            wijmoInput.directive('wjMenuItem', [function () {
+                    return new WjMenuItem();
+                }]);
 
-        wijmoInput.directive('wjMenuSeparator', [function () {
-                return new WjMenuSeparator();
-            }]);
+            wijmoInput.directive('wjMenuSeparator', [function () {
+                    return new WjMenuSeparator();
+                }]);
 
-        wijmoInput.directive('wjCollectionViewNavigator', [function () {
-                return new WjCollectionViewNavigator();
-            }]);
+            wijmoInput.directive('wjContextMenu', [function () {
+                    return new WjContextMenu();
+                }]);
 
-        wijmoInput.directive('wjCollectionViewPager', [function () {
-                return new WjCollectionViewPager();
-            }]);
+            wijmoInput.directive('wjCollectionViewNavigator', [function () {
+                    return new WjCollectionViewNavigator();
+                }]);
+
+            wijmoInput.directive('wjCollectionViewPager', [function () {
+                    return new WjCollectionViewPager();
+                }]);
+        }
 
         //#endregion "Input directives definitions"
         //#region "Input directives classes"
@@ -1942,6 +2170,13 @@ var wijmo;
         * The <b>wj-combo-box</b> directive supports the following attributes:
         *
         * <dl class="dl-horizontal">
+        *   <dt>ng-model</dt>      <dd><code>@</code> Binds the control's <b>selectedValue</b> property using the ng-model Angular
+        *                          directive. Binding the property using the ng-model directive provides standard benefits
+        *                          like validation, adding the control's state to the form instance, and so on. To redefine
+        *                          properties on a control that is bound by the ng-model directive, use the wj-model-property
+        *                          attribute.</dd>
+        *   <dt>wj-model-property</dt>  <dd><code>@</code> Specifies a control property that is bound to a scope using the
+        *                               <b>ng-model</b> directive.</dd>
         *   <dt>control</dt>              <dd><code>=</code> A reference to the @see:ComboBox
         *                                 control created by this directive.</dd>
         *   <dt>display-member-path</dt>    <dd><code>@</code> The name of the property to use as
@@ -2076,6 +2311,13 @@ var wijmo;
         * The <b>wj-calendar</b> directive supports the following attributes:
         *
         * <dl class="dl-horizontal">
+        *   <dt>ng-model</dt>      <dd><code>@</code> Binds the control's <b>value</b> property using the ng-model Angular
+        *                          directive. Binding the property using the ng-model directive provides standard benefits
+        *                          like validation, adding the control's state to the form instance, and so on. To redefine
+        *                          properties on a control that is bound by the ng-model directive, use the wj-model-property
+        *                          attribute.</dd>
+        *   <dt>wj-model-property</dt>  <dd><code>@</code> Specifies a control property that is bound to a scope using the
+        *                               <b>ng-model</b> directive.</dd>
         *   <dt>control</dt>        <dd><code>=</code> A reference to the @see:Calendar control
         *                           created by this directive.</dd>
         *   <dt>display-month</dt>  <dd><code>=</code> The month being displayed in the calendar.</dd>
@@ -2135,6 +2377,13 @@ var wijmo;
         * The <b>wj-color-picker</b> directive supports the following attributes:
         *
         * <dl class="dl-horizontal">
+        *   <dt>ng-model</dt>      <dd><code>@</code> Binds the control's <b>value</b> property using the ng-model Angular
+        *                          directive. Binding the property using the ng-model directive provides standard benefits
+        *                          like validation, adding the control's state to the form instance, and so on. To redefine
+        *                          properties on a control that is bound by the ng-model directive, use the wj-model-property
+        *                          attribute.</dd>
+        *   <dt>wj-model-property</dt>  <dd><code>@</code> Specifies a control property that is bound to a scope using the
+        *                               <b>ng-model</b> directive.</dd>
         *   <dt>control</dt>           <dd><code>=</code> A reference to the @see:ColorPicker
         *                              control created by this directive.</dd>
         *   <dt>initialized</dt>          <dd><code>&</code> This event occurs after the binding has finished
@@ -2191,6 +2440,13 @@ var wijmo;
         * The <b>wj-list-box</b> directive supports the following attributes:
         *
         * <dl class="dl-horizontal">
+        *   <dt>ng-model</dt>      <dd><code>@</code> Binds the control's <b>selectedValue</b> property using the ng-model Angular
+        *                          directive. Binding the property using the ng-model directive provides standard benefits
+        *                          like validation, adding the control's state to the form instance, and so on. To redefine
+        *                          properties on a control that is bound by the ng-model directive, use the wj-model-property
+        *                          attribute.</dd>
+        *   <dt>wj-model-property</dt>  <dd><code>@</code> Specifies a control property that is bound to a scope using the
+        *                               <b>ng-model</b> directive.</dd>
         *   <dt>control</dt>              <dd><code>=</code> A reference to the @see:ListBox
         *                                 control created by this directive.</dd>
         *   <dt>display-member-path</dt>  <dd><code>@</code> The property to use as the visual
@@ -2257,13 +2513,11 @@ var wijmo;
         * The <b>wj-menu</b> directive extends @see:WjComboBox with the following attributes:
         *
         * <dl class="dl-horizontal">
-        *   <dt>command-path</dt>          <dd><code>@</code> A property that contains the command
-        *                                  to be executed when the item is clicked.</dd>
-        *   <dt>command-parameter-path</dt><dd><code>@</code> A property that contains a parameter
-        *                                  to be used with the command.</dd>
+        *   <dt>command-path</dt>          <dd><code>@</code> The command to be executed when the item is clicked.</dd>
+        *   <dt>command-parameter-path</dt><dd><code>@</code> The name of the property that contains command parameters.</dd>
         *   <dt>header</dt>                <dd><code>@</code> The text shown on the control.</dd>
-        *   <dt>value</dt>                 <dd><code>@</code> The value of the selected <b>wj-menu-item</b>
-        *                                  value property. </dd>
+        *   <dt>is-button</dt>             <dd><code>@</code> Whether the menu should react to clicks on its header area.</dd>
+        *   <dt>value</dt>                 <dd><code>@</code> The value of the selected <b>wj-menu-item</b> value property. </dd>
         *   <dt>item-clicked</dt>          <dd><code>&</code> The @see:itemClicked event handler.</dd>
         * </dl>
         *
@@ -2389,7 +2643,7 @@ var wijmo;
         *                      when the item is clicked.</dd>
         *   <dt>value</dt>     <dd><code>=</code> The value to select when the item is clicked
         *                      (use either this or <b>cmd</b>).</dd>
-        * </dl class="dl-horizontal">
+        * </dl>
         *
         * The content displayed by the item is defined by the HTML contained in <b>wj-menu-item</b> directive.
         */
@@ -2449,6 +2703,68 @@ var wijmo;
         })(angular.WjDirective);
 
         /**
+        * AngularJS directive for context menus.
+        *
+        * Use the <b>wj-context-menu</b> directive to add context menus to elements
+        * on the page. The wj-context-menu directive is based on the <b>wj-menu</b>
+        * directive; it displays a popup menu when the user performs a context menu
+        * request on an element (usually a right-click).
+        *
+        * The wj-context-menu directive is specified as a parameter added to the
+        * element that the context menu applies to. The parameter value is a
+        * selector for the element that contains the menu. For example:
+        *
+        * <pre>&lt;!-- paragraph with a context menu --&gt;
+        *&lt;p wj-context-menu="#idMenu" &gt;
+        *  This paragraph has a context menu.&lt;/p&gt;
+        *
+        *&lt;!-- define the context menu (hidden and with an id) --&gt;
+        *&lt;wj-menu id="idMenu" ng-show="false"&gt;
+        *  &lt;wj-menu-item cmd="cmdOpen" cmd-param ="1"&gt;Open...&lt;/wj-menu-item&gt;
+        *  &lt;wj-menu-item cmd="cmdSave" cmd-param="2"&gt;Save &lt;/wj-menu-item&gt;
+        *  &lt;wj-menu-item cmd="cmdSave" cmd-param="3"&gt;Save As...&lt;/wj-menu-item&gt;
+        *  &lt;wj-menu-item cmd="cmdNew" cmd-param ="4"&gt;New...&lt;/wj-menu-item&gt;
+        *  &lt;wj-menu-separator&gt;&lt;/wj-menu-separator&gt;
+        *  &lt;wj-menu-item cmd="cmdExit" cmd-param="5"&gt;Exit&lt;/wj-menu-item&gt;
+        *&lt;/wj-menu &gt;</pre>
+        */
+        var WjContextMenu = (function (_super) {
+            __extends(WjContextMenu, _super);
+            // Initializes a new instance of a WjContextMenu
+            function WjContextMenu() {
+                _super.call(this);
+                this.template = undefined;
+
+                //this.require = '^wjMenu';
+                this.restrict = 'A';
+                this.scope = false;
+            }
+            WjContextMenu.prototype._getMetaDataId = function () {
+                return 'WjContextMenu';
+            };
+
+            // Gets the WjContextMenu's link function. Overrides parent member
+            WjContextMenu.prototype._postLinkFn = function () {
+                return function (scope, tElement, tAttrs) {
+                    // get context menu and drop-down list
+                    var host = wijmo.getElement(tAttrs['wjContextMenu']);
+
+                    // show the drop-down list in response to the contextmenu command
+                    tElement[0].addEventListener('contextmenu', function (e) {
+                        var menu = wijmo.Control.getControl(host), dropDown = menu.dropDown;
+                        if (menu && dropDown) {
+                            e.preventDefault();
+                            menu.selectedIndex = -1;
+                            wijmo.showPopup(dropDown, e);
+                            dropDown.focus();
+                        }
+                    });
+                };
+            };
+            return WjContextMenu;
+        })(angular.WjDirective);
+
+        /**
         * AngularJS directive for the @see:InputDate control.
         *
         * Use the <b>wj-input-date</b> directive to add @see:InputDate controls to your
@@ -2473,6 +2789,13 @@ var wijmo;
         * The <b>wj-input-date</b> directive supports the following attributes:
         *
         * <dl class="dl-horizontal">
+        *   <dt>ng-model</dt>      <dd><code>@</code> Binds the control's <b>value</b> property using the ng-model Angular
+        *                          directive. Binding the property using the ng-model directive provides standard benefits
+        *                          like validation, adding the control's state to the form instance, and so on. To redefine
+        *                          properties on a control that is bound by the ng-model directive, use the wj-model-property
+        *                          attribute.</dd>
+        *   <dt>wj-model-property</dt>  <dd><code>@</code> Specifies a control property that is bound to a scope using the
+        *                               <b>ng-model</b> directive.</dd>
         *   <dt>control</dt>             <dd><code>=</code> A reference to the @see:InputDate
         *                                control created by this directive.</dd>
         *   <dt>format</dt>              <dd><code>@</code> The format used to display the date
@@ -2501,7 +2824,7 @@ var wijmo;
         *                                handler.</dd>
         *   <dt>text-changed</dt>         <dd><code>&</code> The @see:textChanged event handler.</dd>
         *   <dt>value-changed</dt>        <dd><code>&</code> The @see:valueChanged event handler.</dd>
-        * </dl class="dl-horizontal">
+        * </dl>
         *
         * If provided, the <b>min</b> and <b>max</b> attributes are strings in the format
         * "yyyy-MM-dd". Technically, you can use any full date as defined in the W3C
@@ -2549,6 +2872,13 @@ var wijmo;
         * The <b>wj-input-number</b> directive supports the following attributes:
         *
         * <dl class="dl-horizontal">
+        *   <dt>ng-model</dt>      <dd><code>@</code> Binds the control's <b>value</b> property using the ng-model Angular
+        *                          directive. Binding the property using the ng-model directive provides standard benefits
+        *                          like validation, adding the control's state to the form instance, and so on. To redefine
+        *                          properties on a control that is bound by the ng-model directive, use the wj-model-property
+        *                          attribute.</dd>
+        *   <dt>wj-model-property</dt>  <dd><code>@</code> Specifies a control property that is bound to a scope using the
+        *                               <b>ng-model</b> directive.</dd>
         *   <dt>control</dt>       <dd><code>=</code> A reference to the @see:InputNumber
         *                          control created by this directive.</dd>
         *   <dt>format</dt>        <dd><code>@</code> The format used to display the number
@@ -2573,7 +2903,7 @@ var wijmo;
         *   <dt>value</dt>         <dd><code>=</code> The number being edited.</dd>
         *   <dt>text-changed</dt>  <dd><code>&</code> The @see:textChanged event handler.</dd>
         *   <dt>value-changed</dt> <dd><code>&</code> The @see:valueChanged event handler.</dd>
-        * </dl class="dl-horizontal">
+        * </dl>
         */
         var WjInputNumber = (function (_super) {
             __extends(WjInputNumber, _super);
@@ -2608,6 +2938,13 @@ var wijmo;
         * The <b>wj-input-mask</b> directive supports the following attributes:
         *
         * <dl class="dl-horizontal">
+        *   <dt>ng-model</dt>      <dd><code>@</code> Binds the control's <b>value</b> property using the ng-model Angular
+        *                          directive. Binding the property using the ng-model directive provides standard benefits
+        *                          like validation, adding the control's state to the form instance, and so on. To redefine
+        *                          properties on a control that is bound by the ng-model directive, use the wj-model-property
+        *                          attribute.</dd>
+        *   <dt>wj-model-property</dt>  <dd><code>@</code> Specifies a control property that is bound to a scope using the
+        *                               <b>ng-model</b> directive.</dd>
         *   <dt>control</dt>           <dd><code>=</code> A reference to the @see:InputNumber
         *                              control created by this directive.</dd>
         *   <dt>initialized</dt>          <dd><code>&</code> This event occurs after the binding has finished
@@ -2622,7 +2959,7 @@ var wijmo;
         *                              is empty.</dd>
         *   <dt>value</dt>             <dd><code>=</code> The number being edited.</dd>
         *   <dt>value-changed</dt>     <dd><code>&</code> The @see:valueChanged event handler.</dd>
-        * </dl class="dl-horizontal">
+        * </dl>
         */
         var WjInputMask = (function (_super) {
             __extends(WjInputMask, _super);
@@ -2666,6 +3003,13 @@ var wijmo;
         * The <b>wj-input-time</b> directive extends @see:WjComboBox with the following attributes:
         *
         * <dl class="dl-horizontal">
+        *   <dt>ng-model</dt>      <dd><code>@</code> Binds the control's <b>value</b> property using the ng-model Angular
+        *                          directive. Binding the property using the ng-model directive provides standard benefits
+        *                          like validation, adding the control's state to the form instance, and so on. To redefine
+        *                          properties on a control that is bound by the ng-model directive, use the wj-model-property
+        *                          attribute.</dd>
+        *   <dt>wj-model-property</dt>  <dd><code>@</code> Specifies a control property that is bound to a scope using the
+        *                               <b>ng-model</b> directive.</dd>
         *   <dt>control</dt>   <dd><code>=</code> A reference to the @see:InputDate control
         *                      created by this directive.</dd>
         *   <dt>format</dt>    <dd><code>@</code> The format used to display the selected time.</dd>
@@ -2720,6 +3064,13 @@ var wijmo;
         * The <b>wj-input-color</b> directive supports the following attributes:
         *
         * <dl class="dl-horizontal">
+        *   <dt>ng-model</dt>      <dd><code>@</code> Binds the control's <b>value</b> property using the ng-model Angular
+        *                          directive. Binding the property using the ng-model directive provides standard benefits
+        *                          like validation, adding the control's state to the form instance, and so on. To redefine
+        *                          properties on a control that is bound by the ng-model directive, use the wj-model-property
+        *                          attribute.</dd>
+        *   <dt>wj-model-property</dt>  <dd><code>@</code> Specifies a control property that is bound to a scope using the
+        *                               <b>ng-model</b> directive.</dd>
         *   <dt>control</dt>               <dd><code>=</code> A reference to the InputColor
         *                                  control created by this directive.</dd>
         *   <dt>is-dropped-down</dt>       <dd><code>@</code> A value indicating whether the drop-down
@@ -2741,7 +3092,7 @@ var wijmo;
         *   <dt>is-dropped-down-changed</dt><dd><code>&</code> The @see:isDroppedDownChanged event handler.</dd>
         *   <dt>text-changed</dt>          <dd><code>&</code> The @see:textChanged event handler.</dd>
         *   <dt>value-changed</dt>         <dd><code>&</code> The @see:valueChanged event handler.</dd>
-        * </dl class="dl-horizontal">
+        * </dl>
         */
         var WjInputColor = (function (_super) {
             __extends(WjInputColor, _super);
@@ -2868,28 +3219,46 @@ var wijmo;
         //#region "Charts directives registration"
         var wijmoChart = window['angular'].module('wj.chart', []);
 
-        wijmoChart.directive('wjFlexChart', [function () {
-                return new WjFlexChart();
-            }]);
+        // register only if module is loaded
+        if (wijmo.chart) {
+            wijmoChart.directive('wjFlexChart', [function () {
+                    return new WjFlexChart();
+                }]);
 
-        wijmoChart.directive('wjFlexChartAxis', [function () {
-                return new WjFlexChartAxis();
-            }]);
+            wijmoChart.directive('wjFlexChartAxis', [function () {
+                    return new WjFlexChartAxis();
+                }]);
 
-        wijmoChart.directive('wjFlexChartSeries', [function () {
-                return new WjFlexChartSeries();
-            }]);
+            wijmoChart.directive('wjFlexChartSeries', [function () {
+                    return new WjFlexChartSeries();
+                }]);
 
-        wijmoChart.directive('wjFlexChartLegend', [function () {
-                return new WjFlexChartLegend();
-            }]);
+            wijmoChart.directive('wjFlexChartLegend', [function () {
+                    return new WjFlexChartLegend();
+                }]);
 
-        //wijmoChart.directive('wjFlexChartMarker', [function () {
-        //    return new WjFlexChartMarker();
-        //}]);
-        wijmoChart.directive('wjFlexPie', [function () {
-                return new WjFlexPie();
-            }]);
+            wijmoChart.directive('wjFlexChartDataLabel', [function () {
+                    return new WjFlexChartDataLabel();
+                }]);
+
+            wijmoChart.directive('wjFlexPieDataLabel', [function () {
+                    return new WjFlexPieDataLabel();
+                }]);
+
+            wijmoChart.directive('wjFlexChartLineMarker', [function () {
+                    return new WjFlexChartLineMarker();
+                }]);
+
+            if (wijmo.chart.interaction) {
+                wijmoChart.directive('wjFlexChartRangeSelector', [function () {
+                        return new WjFlexChartRangeSelector();
+                    }]);
+            }
+
+            wijmoChart.directive('wjFlexPie', [function () {
+                    return new WjFlexPie();
+                }]);
+        }
 
         //#endregion "Charts directives definitions"
         //#region "Charts directives classes"
@@ -3012,6 +3381,7 @@ var wijmo;
         *                              this at the series level.</dd>
         *   <dt>tooltip-content</dt>   <dd><code>@</code> The value to display in the
         *                              @see:ChartTooltip content property.</dd>
+        *   <dt>rendering</dt>          <dd><code>&</code> The @see:rendering event handler.</dd>
         *   <dt>rendered</dt>          <dd><code>&</code> The @see:rendered event handler.</dd>
         *   <dt>series-visibility-changed</dt>
         *                              <dd><code>&</code> The @see:seriesVisibilityChanged event handler.</dd>
@@ -3019,8 +3389,7 @@ var wijmo;
         * </dl>
         *
         * The wj-flex-chart directive may contain the following child directives:
-        * wj-flex-chart-axis, wj-flex-chart-series, and wj-flex-chart-legend.
-        * See @see:WjFlexChartAxis, @see:WjFlexChartSeries, and @see:WjFlexChartLegend for details.
+        * @see:WjFlexChartAxis, @see:WjFlexChartSeries, @see:WjFlexChartLegend and @see:WjFlexChartDataLabel.
         */
         var WjFlexChart = (function (_super) {
             __extends(WjFlexChart, _super);
@@ -3058,7 +3427,7 @@ var wijmo;
         *
         * <dl class="dl-horizontal">
         *   <dt>wj-property</dt>     <dd><code>@</code> Defines the @see:FlexChart property name,
-        *                            axis-x or axis-y, to initialize with this directive.</dd>
+        *                            axis-x or axis-y, to initialize with the directive.</dd>
         *   <dt>axis-line</dt>       <dd><code>@</code> The value indicating whether the axis line is visible.</dd>
         *   <dt>format</dt>          <dd><code>@</code> The format string used for the axis labels
         *                            (see @see:wijmo.Globalize).</dd>
@@ -3149,6 +3518,81 @@ var wijmo;
             return WjFlexChartLegend;
         })(angular.WjDirective);
 
+        // abstract
+        var WjFlexChartDataLabelBase = (function (_super) {
+            __extends(WjFlexChartDataLabelBase, _super);
+            function WjFlexChartDataLabelBase() {
+                _super.call(this);
+
+                this.require = ['?^wjFlexChart', '?^wjFlexPie'];
+                this.template = '<div />';
+            }
+            Object.defineProperty(WjFlexChartDataLabelBase.prototype, "_controlConstructor", {
+                get: function () {
+                    return wijmo.chart.DataLabelBase;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return WjFlexChartDataLabelBase;
+        })(angular.WjDirective);
+
+        /**
+        * AngularJS directive for the @see:FlexChart @see:DataLabel object.
+        *
+        * The <b>wj-flex-chart-data-label</b> directive must be contained in a @see:WjFlexChart directive.
+        * It supports the following attributes:
+        *
+        * <dl class="dl-horizontal">
+        *   <dt>content</dt>       <dd><code>=</code> A string or function that gets or sets the content of data labels.</dd>
+        *   <dt>border</dt>        <dd><code>@</code> Gets or sets a value indicating whether data labels have borders.</dd>
+        *   <dt>position</dt>      <dd><code>@</code> The @see:LabelPosition value indicating the position of data labels.</dd>
+        * </dl>
+        */
+        var WjFlexChartDataLabel = (function (_super) {
+            __extends(WjFlexChartDataLabel, _super);
+            function WjFlexChartDataLabel() {
+                _super.call(this);
+                this.require = '^wjFlexChart';
+            }
+            Object.defineProperty(WjFlexChartDataLabel.prototype, "_controlConstructor", {
+                get: function () {
+                    return wijmo.chart.DataLabel;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return WjFlexChartDataLabel;
+        })(WjFlexChartDataLabelBase);
+
+        /**
+        * AngularJS directive for the @see:FlexPie @see:PieDataLabel object.
+        *
+        * The <b>wj-flex-pie-data-label</b> directive must be contained in a @see:WjFlexPie directive.
+        * It supports the following attributes:
+        *
+        * <dl class="dl-horizontal">
+        *   <dt>content</dt>       <dd><code>=</code> A string or function that gets or sets the content of data labels.</dd>
+        *   <dt>border</dt>        <dd><code>@</code> Gets or sets a value indicating whether data labels have borders.</dd>
+        *   <dt>position</dt>      <dd><code>@</code> The @see:PieLabelPosition value indicating the position of data labels.</dd>
+        * </dl>
+        */
+        var WjFlexPieDataLabel = (function (_super) {
+            __extends(WjFlexPieDataLabel, _super);
+            function WjFlexPieDataLabel() {
+                _super.call(this);
+                this.require = '^wjFlexPie';
+            }
+            Object.defineProperty(WjFlexPieDataLabel.prototype, "_controlConstructor", {
+                get: function () {
+                    return wijmo.chart.PieDataLabel;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return WjFlexPieDataLabel;
+        })(WjFlexChartDataLabelBase);
+
         /**
         * AngularJS directive for the @see:FlexChart @see:Series object.
         *
@@ -3208,28 +3652,89 @@ var wijmo;
             return WjFlexChartSeries;
         })(angular.WjDirective);
 
-        //class WjFlexChartMarker extends WjDirective {
-        //    // Initializes a new instance of a WjFlexChartSeries
-        //    constructor() {
-        //        super();
-        //        this.require = '^wjFlexChart';
-        //        this.template = '<div ng-transclude />';
-        //        this.transclude = true;
-        //    }
-        //    get _controlConstructor(): any {
-        //        return wijmo.chart.extended.Marker;
-        //    }
-        //}
+        /**
+        * AngularJS directive for the @see:FlexChart @see:LineMarker object.
+        *
+        * The <b>wj-flex-line-marker</b> directive must be contained in a @see:WjFlexChart directive.
+        * It supports the following attributes:
+        *
+        * <dl class="dl-horizontal">
+        *   <dt>isVisible</dt>             <dd><code>@</code> The value indicating whether the LineMarker is visible.</dd>
+        *   <dt>seriesIndex</dt>           <dd><code>@</code> The index of the series in the chart in which the LineMarker appears.</dd>
+        *   <dt>horizontalPosition</dt>    <dd><code>@</code> The horizontal position of the LineMarker relative to the plot area.</dd>
+        *   <dt>content</dt>               <dd><code>@</code> The function that allows you to customize the text content of the LineMarker.</dd>
+        *   <dt>verticalPosition</dt>      <dd><code>@</code> The vertical position of the LineMarker relative to the plot area.</dd>
+        *   <dt>alignment</dt>             <dd><code>@</code> The @see:LineMarkerAlignment value indicating the alignment of the LineMarker content.</dd>
+        *   <dt>lines</dt>                 <dd><code>@</code> The @see:LineMarkerLines value indicating the appearance of the LineMarker's lines.</dd>
+        *   <dt>interaction</dt>           <dd><code>@</code> The @see:LineMarkerInteraction value indicating the interaction mode of the LineMarker.</dd>
+        *   <dt>dragThreshold</dt>         <dd><code>@</code> The maximum distance from the horizontal or vertical line that you can drag the marker.</dd>
+        *   <dt>dragContent</dt>           <dd><code>@</code> The value indicating whether you can drag the content of the marker when the interaction mode is "Drag."</dd>
+        *   <dt>dragLines</dt>             <dd><code>@</code> The value indicating whether the lines are linked when you drag the horizontal or vertical line when the interaction mode is "Drag."</dd>
+        * </dl>
+        */
+        var WjFlexChartLineMarker = (function (_super) {
+            __extends(WjFlexChartLineMarker, _super);
+            // Initializes a new instance of a WjFlexChartLineMarker
+            function WjFlexChartLineMarker() {
+                _super.call(this);
+                this.require = '^wjFlexChart';
+            }
+            Object.defineProperty(WjFlexChartLineMarker.prototype, "_controlConstructor", {
+                get: function () {
+                    return wijmo.chart.LineMarker;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return WjFlexChartLineMarker;
+        })(angular.WjDirective);
+
+        /**
+        * AngularJS directive for the @see:FlexChart @see:wijmo.chart.interaction.RangeSelector object.
+        *
+        * The <b>wj-flex-range-selector</b> directive must be contained in a @see:WjFlexChart directive.
+        * It supports the following attributes:
+        *
+        * <dl class="dl-horizontal">
+        *   <dt>isVisible</dt>     <dd><code>@</code> The value indicating whether the RangeSelector is visible.</dd>
+        *   <dt>min</dt>           <dd><code>@</code> The minimum value of the range.</dd>
+        *   <dt>max</dt>           <dd><code>@</code> The maximum value of the range.</dd>
+        *   <dt>orientation</dt>   <dd><code>@</code> The orientation of the RangeSelector.</dd>
+        * </dl>
+        */
+        var WjFlexChartRangeSelector = (function (_super) {
+            __extends(WjFlexChartRangeSelector, _super);
+            // Initializes a new instance of a WjFlexChartRangeSelector
+            function WjFlexChartRangeSelector() {
+                _super.call(this);
+                this.require = '^wjFlexChart';
+            }
+            Object.defineProperty(WjFlexChartRangeSelector.prototype, "_controlConstructor", {
+                get: function () {
+                    return wijmo.chart.interaction.RangeSelector;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return WjFlexChartRangeSelector;
+        })(angular.WjDirective);
+
         /**
         * AngularJS directive for the @see:FlexPie control.
         *
         * <dl class="dl-horizontal">
         *   <dt>items-source</dt>      <dd><code>=</code> An array or @see:ICollectionView
-        *                              object that contains data for this series.</dd>
+        *                              object that contains data for the chart.</dd>
         *   <dt>binding</dt>           <dd><code>@</code> The name of the property that
         *                              contains item values.</dd>
         *   <dt>binding-name</dt>      <dd><code>@</code> The name of the property that
         *                              contains item names.</dd>
+        *   <dt>footer</dt>            <dd><code>@</code> The text to display in the chart footer (plain
+        *                              text).</dd>
+        *   <dt>footer-style</dt>       <dd><code>=</code> The style to apply to the chart footer.</dd>
+        *   <dt>header</dt>            <dd><code>@</code> The text to display in the chart header (plain
+        *                              text).</dd>
+        *   <dt>header-style</dt>      <dd><code>=</code> The style to apply to the chart header.</dd>
         *   <dt>initialized</dt>       <dd><code>&</code> This event occurs after the binding has finished
         *                              initializing the control with attribute values.</dd>
         *   <dt>is-initialized</dt><dd><code>=</code> A value indicating whether the binding has finished
@@ -3238,8 +3743,14 @@ var wijmo;
         *                              pie, measured as a fraction of the pie radius.</dd>
         *   <dt>is-animated</dt>       <dd><code>@</code> A value indicating whether to use animation
         *                              to move selected items to the selectedItemPosition.</dd>
+        *   <dt>item-formatter</dt>    <dd><code>=</code> The formatter function that customizes the
+        *                              appearance of data points.</dd>
         *   <dt>offset</dt>            <dd><code>@</code> The extent to which pie slices are pulled
         *                              out from the center, as a fraction of the pie radius.</dd>
+        *   <dt>palette</dt>           <dd><code>=</code> An array that contains the default colors used for
+        *                              displaying pie slices.</dd>
+        *   <dt>plot-margin</dt>       <dd><code>=</code> The number of pixels of space to leave between the
+        *                              edges of the control and the plot area, or CSS-style margins.</dd>
         *   <dt>reversed</dt>          <dd><code>@</code> A value indicating whether to draw pie
         *                              slices in a counter-clockwise direction.</dd>
         *   <dt>start-angle</dt>       <dd><code>@</code> The starting angle for pie slices,
@@ -3250,9 +3761,16 @@ var wijmo;
         *   <dt>selected-item-position</dt>
         *                              <dd><code>@</code> The @see:Position value indicating where to display
         *                              the selected slice.</dd>
+        *   <dt>selection-mode</dt>    <dd><code>@</code> The @see:SelectionMode value indicating whether or what is
+        *                              selected when the user clicks a series.</dd>
         *   <dt>tooltip-content</dt>   <dd><code>@</code> The value to display in the
         *                              @see:ChartTooltip content property.</dd>
+        *   <dt>rendering</dt>         <dd><code>&</code> The @see:rendering event handler.</dd>
+        *   <dt>rendered</dt>          <dd><code>&</code> The @see:rendered event handler.</dd>
         * </dl>
+        *
+        * The wj-flex-pie directive may contain the following child directives:
+        * @see:WjFlexChartLegend and @see:WjFlexPieDataLabel.
         */
         var WjFlexPie = (function (_super) {
             __extends(WjFlexPie, _super);
@@ -3301,21 +3819,24 @@ var wijmo;
         //#region "Gauge directives registration"
         var wijmoGauge = window['angular'].module('wj.gauge', []);
 
-        wijmoGauge.directive('wjLinearGauge', [function () {
-                return new WjLinearGauge();
-            }]);
+        // register only if module is loaded
+        if (wijmo.gauge) {
+            wijmoGauge.directive('wjLinearGauge', [function () {
+                    return new WjLinearGauge();
+                }]);
 
-        wijmoGauge.directive('wjBulletGraph', [function () {
-                return new WjBulletGraph();
-            }]);
+            wijmoGauge.directive('wjBulletGraph', [function () {
+                    return new WjBulletGraph();
+                }]);
 
-        wijmoGauge.directive('wjRadialGauge', [function () {
-                return new WjRadialGauge();
-            }]);
+            wijmoGauge.directive('wjRadialGauge', [function () {
+                    return new WjRadialGauge();
+                }]);
 
-        wijmoGauge.directive('wjRange', [function () {
-                return new WjRange();
-            }]);
+            wijmoGauge.directive('wjRange', [function () {
+                    return new WjRange();
+                }]);
+        }
 
         //#endregion "Gauge directives definitions"
         //#region "Gauge directives classes"
@@ -3375,6 +3896,13 @@ var wijmo;
         * The <b>wj-linear-gauge</b> directive supports the following attributes:
         *
         * <dl class="dl-horizontal">
+        *   <dt>ng-model</dt>      <dd><code>@</code> Binds the control's <b>value</b> property using the ng-model Angular
+        *                          directive. Binding the property using the ng-model directive provides standard benefits
+        *                          like validation, adding the control's state to the form instance, and so on. To redefine
+        *                          properties on a control that is bound by the ng-model directive, use the wj-model-property
+        *                          attribute.</dd>
+        *   <dt>wj-model-property</dt>  <dd><code>@</code> Specifies a control property that is bound to a scope using the
+        *                               <b>ng-model</b> directive.</dd>
         *   <dt>control</dt>       <dd><code>=</code> A reference to the @see:LinearGauge
         *                          control created by this directive.</dd>
         *   <dt>direction</dt>     <dd><code>@</code> The @see:GaugeDirection value in
@@ -3498,6 +4026,13 @@ var wijmo;
         * The <b>wj-radial-gauge</b> directive supports the following attributes:
         *
         * <dl class="dl-horizontal">
+        *   <dt>ng-model</dt>      <dd><code>@</code> Binds the control's <b>value</b> property using the ng-model Angular
+        *                          directive. Binding the property using the ng-model directive provides standard benefits
+        *                          like validation, adding the control's state to the form instance, and so on. To redefine
+        *                          properties on a control that is bound by the ng-model directive, use the wj-model-property
+        *                          attribute.</dd>
+        *   <dt>wj-model-property</dt>  <dd><code>@</code> Specifies a control property that is bound to a scope using the
+        *                               <b>ng-model</b> directive.</dd>
         *   <dt>control</dt>       <dd><code>=</code> A reference to the RadialGauge
         *                          control created by this directive.</dd>
         *   <dt>auto-scale</dt>    <dd><code>@</code> A value indicating whether the gauge
@@ -3639,18 +4174,34 @@ var wijmo;
         //#region "Grid directives registration"
         var wijmoGrid = window['angular'].module('wj.grid', []);
 
-        wijmoGrid.directive('wjFlexGrid', [
-            '$compile', '$interpolate', function ($compile, $interpolate) {
-                return new WjFlexGrid($compile, $interpolate);
-            }]);
+        // register only if module is loaded
+        if (wijmo.grid) {
+            wijmoGrid.directive('wjFlexGrid', [
+                '$compile', '$interpolate', function ($compile, $interpolate) {
+                    return new WjFlexGrid($compile, $interpolate);
+                }]);
 
-        wijmoGrid.directive('wjFlexGridColumn', [function () {
-                return new WjFlexGridColumn();
-            }]);
+            wijmoGrid.directive('wjFlexGridColumn', [
+                '$compile', function ($compile) {
+                    return new WjFlexGridColumn($compile);
+                }]);
 
-        wijmoGrid.directive('wjFlexGridFilter', [function () {
-                return new WjFlexGridFilter();
-            }]);
+            wijmoGrid.directive('wjFlexGridCellTemplate', [function () {
+                    return new WjFlexGridCellTemplate();
+                }]);
+
+            if (wijmo.grid.filter) {
+                wijmoGrid.directive('wjFlexGridFilter', [function () {
+                        return new WjFlexGridFilter();
+                    }]);
+            }
+
+            if (wijmo.grid.grouppanel) {
+                wijmoGrid.directive('wjGroupPanel', [function () {
+                        return new WjGroupPanel();
+                    }]);
+            }
+        }
 
         //#endregion "Grid directives definitions"
         //#region "Grid directives classes"
@@ -3708,6 +4259,8 @@ var wijmo;
         *                                     child rows in hierarchical grids.</dd>
         *   <dt>control</dt>                  <dd><code>=</code> A reference to the @see:FlexGrid control
         *                                     created by this directive.</dd>
+        *   <dt>defer-resizing</dt>           <dd><code>=</code> A boolean value indicating whether row and column
+        *                                     resizing should be deferred until the user releases the mouse button.</dd>
         *   <dt>frozen-columns</dt>           <dd><code>@</code> The number of frozen (non-scrollable) columns in the grid.</dd>
         *   <dt>frozen-rows</dt>              <dd><code>@</code> The number of frozen (non-scrollable) rows in the grid.</dd>
         *   <dt>group-header-format</dt>      <dd><code>@</code> The format string used to create the group
@@ -3726,16 +4279,14 @@ var wijmo;
         *                                     prevented from editing grid cells by typing into them.</dd>
         *   <dt>merge-manager</dt>            <dd><code>=</code> A @see:MergeManager object that specifies
         *                                     the merged extent of the specified cell.</dd>
-        *   <dt>scroll-position</dt>          <dd><code>=</code> A @see:Point that represents the value of the
-        *                                     grid's scrollbars.</dd>
-        *   <dt>selection</dt>                <dd><code>=</code> A @see:CellRange that represents the
-        *                                     currently selected cells.</dd>
         *   <dt>selection-mode</dt>           <dd><code>@</code> A @see:SelectionMode value
         *                                     indicating whether and how the user can select cells.</dd>
         *   <dt>show-groups</dt>              <dd><code>@</code> A boolean value indicating whether to insert group
         *                                     rows to delimit data groups.</dd>
         *   <dt>show-sort</dt>                <dd><code>@</code> A boolean value indicating whether to display sort
         *                                     indicators in the column headers.</dd>
+        *   <dt>sort-row-index</dt>           <dd><code>@</code> A number specifying the index of row in the column
+        *                                     header panel that shows and changes the current sort.</dd>
         *   <dt>tree-indent</dt>              <dd><code>@</code> The indentation, in pixels, used to offset row
         *                                     groups of different levels.</dd>
         *   <dt>beginning-edit</dt>           <dd><code>&</code> Handler for the @see:beginningEdit event.</dd>
@@ -3766,7 +4317,7 @@ var wijmo;
         *   <dt>scroll-position-changed</dt>  <dd><code>&</code> Handler for the @see:scrollPositionChanged event.</dd>
         * </dl>
         *
-        * The <b>wj-flex-grid</b> directive may contain @see:WjFlexGridColumn child directives.
+        * The <b>wj-flex-grid</b> directive may contain @see:WjFlexGridColumn and @see:WjFlexGridCellTemplate child directives.
         */
         var WjFlexGrid = (function (_super) {
             __extends(WjFlexGrid, _super);
@@ -3834,102 +4385,216 @@ var wijmo;
                 // honor cell templates
                 self._userFormatter = control.itemFormatter;
                 control.itemFormatter = self._wrapperFormatter = function (panel, rowIndex, colIndex, cell) {
+                    // restore overflow for any cell
+                    if (cell.style.overflow) {
+                        cell.style.overflow = '';
+                    }
+
                     // call original formatter if any
                     if (self._userFormatter) {
                         self._userFormatter(panel, rowIndex, colIndex, cell);
                     }
 
-                    // do not format in edit mode
-                    var editRange = panel.grid.editRange;
-                    if (editRange && editRange.row === rowIndex && editRange.col === colIndex) {
+                    //var editRange = panel.grid.editRange;
+                    var grid = panel.grid, editRange = grid.editRange, templateType, row = panel.rows[rowIndex], dataItem = row.dataItem, isGridCtx = false, needCellValue = false, isEdit = false, isCvGroup = false;
+
+                    switch (panel.cellType) {
+                        case 1 /* Cell */:
+                            if (row instanceof wijmo.grid.GroupRow) {
+                                isCvGroup = dataItem instanceof wijmo.collections.CollectionViewGroup;
+                                var isHierNonGroup = !(isCvGroup || row.hasChildren);
+                                if (colIndex == panel.columns.firstVisibleIndex) {
+                                    //templateType = isHierNonGroup ? CellTemplateType.Group : CellTemplateType.GroupHeader;
+                                    templateType = isHierNonGroup ? 0 /* Cell */ : 6 /* GroupHeader */;
+                                } else {
+                                    //templateType = CellTemplateType.Group;
+                                    templateType = isHierNonGroup ? 0 /* Cell */ : 7 /* Group */;
+                                    needCellValue = true;
+                                }
+                            } else if (editRange && editRange.row === rowIndex && editRange.col === colIndex) {
+                                templateType = 1 /* CellEdit */;
+                                needCellValue = isEdit = true;
+                            } else {
+                                templateType = 0 /* Cell */;
+                            }
+                            break;
+                        case 2 /* ColumnHeader */:
+                            templateType = 2 /* ColumnHeader */;
+                            break;
+                        case 3 /* RowHeader */:
+                            templateType = grid.collectionView && grid.collectionView.currentEditItem === dataItem ? 4 /* RowHeaderEdit */ : 3 /* RowHeader */;
+                            isGridCtx = true;
+                            break;
+                        case 4 /* TopLeft */:
+                            templateType = 5 /* TopLeft */;
+                            isGridCtx = true;
+                            break;
+                    }
+
+                    if (templateType == null) {
                         return;
                     }
 
-                    // no templates in GroupRows
-                    if (panel.rows[rowIndex] instanceof wijmo.grid.GroupRow) {
+                    var col = (isCvGroup && templateType == 6 /* GroupHeader */ ? grid.columns.getColumn(dataItem.groupDescription['propertyName']) : panel.columns[colIndex]);
+                    if (!col) {
                         return;
+                    }
+                    var templContextProp = WjFlexGridCellTemplate._getTemplContextProp(templateType), templContext = (isGridCtx ? grid : col)[templContextProp];
+
+                    // maintain template inheritance
+                    if (!templContext) {
+                        if (templateType === 4 /* RowHeaderEdit */) {
+                            templateType = 3 /* RowHeader */;
+                            templContextProp = WjFlexGridCellTemplate._getTemplContextProp(templateType);
+                            templContext = grid[templContextProp];
+                        } else if (templateType === 7 /* Group */ || templateType === 6 /* GroupHeader */) {
+                            if (!isCvGroup) {
+                                templateType = 0 /* Cell */;
+                                templContextProp = WjFlexGridCellTemplate._getTemplContextProp(templateType);
+                                templContext = col[templContextProp];
+                            }
+                        }
+                        if (!templContext) {
+                            return;
+                        }
                     }
 
                     // apply directive template and style
-                    if (panel.cellType == 1 /* Cell */) {
-                        var col = panel.columns[colIndex], tpl = self._getCellTemplate(col);
+                    var tpl = self._getCellTemplate(templContext.cellTemplate), cellValue;
+                    if (needCellValue) {
+                        cellValue = panel.getCellData(rowIndex, colIndex, false);
+                    }
 
-                        // apply cell template
-                        if (!wijmo.isNullOrWhiteSpace(tpl)) {
-                            // Create a new cell scope, as a child of the controller scope, or reuse the one created earlier
-                            // for this cell and cached in the cell.__wjCellScope property. In any case initialize the scope with
-                            // cell specific properties.
-                            var cellScope = cell.__wjCellScope;
-                            if (!cellScope) {
-                                cellScope = cell.__wjCellScope = scope.$parent.$new();
+                    // apply cell template
+                    if (!wijmo.isNullOrWhiteSpace(tpl)) {
+                        // if this is false then we can't reuse previously cached scope and linked tree.
+                        var cellContext = (cell[templContextProp] || {}), isForeignCell = cellContext.column !== col;
+
+                        // create a new cell scope, as a child of the column's parent scope
+                        // (which could be ng-repeat with its specific properties),
+                        // or reuse the one created earlier for this cell and cached in the
+                        // cellContext.cellScope property.
+                        // in any case initialize the scope with cell specific properties.
+                        var cellScope = cellContext.cellScope;
+                        if (isForeignCell) {
+                            cellContext.cellScope = cellScope = templContext.templLink.scope.$parent.$new();
+                            cellContext.column = col;
+                            cell[templContextProp] = cellContext;
+                        }
+
+                        self._initCellScope(cellScope, row, col, dataItem, cellValue);
+
+                        // compile column template to get a link function, or reuse the
+                        // link function got earlier for this column and cached in the
+                        // templContext.cellLink property.
+                        var cellLink = templContext.cellLink;
+                        if (!cellLink) {
+                            cellLink = templContext.cellLink = self.directive._$compile('<div>' + tpl + '</div>');
+                        }
+
+                        // link the cell template to the cell scope and get a bound DOM
+                        // subtree to use as the cell content,
+                        // or reuse the bound subtree linked earlier and cached in the
+                        // cellContext.clonedElement property.
+                        // we pass a clone function to the link function to force it to
+                        // return a clone of the template.
+                        var clonedElement = cellContext.clonedElement;
+                        if (isForeignCell) {
+                            cellContext.clonedElement = clonedElement = cellLink(cellScope, function (clonedEl, scope) {
+                            });
+                        }
+
+                        // insert the bound content subtree to the cell,
+                        // after $apply to prevent flickering.
+                        var replaceFirst = false;
+                        if (isEdit) {
+                            var rootEl = cell.childNodes[0];
+                            if (rootEl && rootEl.nodeType == 1) {
+                                cell.childNodes[0].style.display = 'none';
                             }
-                            self._initCellScope(cellScope, panel, rowIndex, colIndex);
-
-                            // Compile column template to get a link function, or reuse the link function got earlier
-                            // for this column and cached in the col.__whCellLink property.
-                            var cellLink = col.__whCellLink;
-                            if (!cellLink) {
-                                cellLink = col.__whCellLink = self.directive._$compile(tpl);
+                        } else {
+                            replaceFirst = cell.childNodes.length == 1;
+                            if (!replaceFirst) {
+                                cell.textContent = '';
                             }
-
-                            // Link the cell template to the cell scope and get a bound DOM subtree to use as the cell content,
-                            // or reuse the bound subtree linked earlier and cached in the cell.__wjClonedElement property.
-                            // We pass a clone function to the link function to force it to return a clone of the template.
-                            var clonedElement = cell.__wjClonedElement;
-                            if (!clonedElement) {
-                                cell.__wjClonedElement = clonedElement = window['angular'].element('<div>').append(cellLink(cellScope, function (clonedEl, scope) {
-                                }));
-                            }
-
-                            // Apply new scope values to the bound cell content subtree. Do it before inserting the subtree to
-                            // the cell in order to prevent flickering.
-                            if (!cellScope.$root.$$phase) {
-                                cellScope.$apply();
-                            }
-
-                            // Insert the bound content subtree to the cell, after $apply to prevent flickering.
-                            cell.innerHTML = '';
+                        }
+                        if (replaceFirst) {
+                            cell.replaceChild(clonedElement[0], cell.firstChild);
+                        } else {
                             cell.appendChild(clonedElement[0]);
-
-                            //Enlarge rows height if cell doesn't fit in the current row height.
-                            var cellHeight = cell.scrollHeight;
-                            if (panel.rows[rowIndex].renderHeight < cellHeight) {
-                                panel.rows.defaultSize = cellHeight;
-                            }
+                        }
+                        if (templContext.cellOverflow) {
+                            cell.style.overflow = templContext.cellOverflow;
                         }
 
-                        // apply cell style
-                        if (col.cellStyle) {
-                            // build cell style object
-                            var cellStyle = col.cellStyle, cellScope = self._initCellScope({}, panel, rowIndex, colIndex), style = scope.$parent.$eval(cellStyle, cellScope);
+                        // apply new scope values to the bound cell content subtree.
+                        // Do it before inserting the subtree in order to prevent flickering.
+                        if (!cellScope.$root.$$phase) {
+                            cellScope.$apply();
+                        }
 
-                            // apply style to cell
-                            if (style) {
-                                var rootElement = document.createElement('div');
+                        // increase row height if cell doesn't fit in the current row height.
+                        setTimeout(function () {
+                            var cellHeight = cell.scrollHeight, panelRows = panel.rows;
+                            if (rowIndex < panelRows.length && panelRows[rowIndex].renderHeight < cellHeight) {
+                                panelRows.defaultSize = cellHeight;
+                            }
+                        }, 0);
+                    }
 
-                                while (cell.firstChild) {
-                                    rootElement.appendChild(cell.firstChild);
-                                }
-                                cell.appendChild(rootElement);
-                                for (var key in style) {
-                                    rootElement.style[key] = style[key];
-                                }
+                    // apply cell style
+                    var cellStyle = templContext.cellStyle;
+                    if (cellStyle) {
+                        // build cell style object
+                        var cellScope = self._initCellScope({}, row, col, dataItem, cellValue), style = scope.$parent.$eval(cellStyle, cellScope);
+
+                        // apply style to cell
+                        if (style) {
+                            var rootElement = document.createElement('div');
+
+                            while (cell.firstChild) {
+                                rootElement.appendChild(cell.firstChild);
+                            }
+                            cell.appendChild(rootElement);
+                            for (var key in style) {
+                                rootElement.style[key] = style[key];
                             }
                         }
+                    }
+
+                    if (isEdit) {
+                        var editEndingEH = function (s, e) {
+                            grid.cellEditEnding.removeHandler(editEndingEH);
+                            if (!e.cancel) {
+                                e.cancel = true;
+                                panel.grid.setCellData(rowIndex, colIndex, cellScope.$value);
+                            }
+
+                            // close all open dropdowns
+                            var dropDowns = cell.querySelectorAll('.wj-dropdown');
+                            [].forEach.call(dropDowns, function (el) {
+                                var ctrl = wijmo.Control.getControl(el);
+                                if (ctrl && ctrl instanceof wijmo.input.DropDown) {
+                                    ctrl.isDroppedDown = false;
+                                }
+                            });
+                        };
+
+                        // subscribe the handler to the cellEditEnding event
+                        grid.cellEditEnding.addHandler(editEndingEH);
                     }
                 };
             };
 
-            // creates, initializes and adds new instance of wijmo.grid.Column according to WjFlexGridColumn DDO
-            WjFlexGridLink.prototype._initCellScope = function (scope, panel, rowIndex, columnIndex) {
-                scope.$row = panel.rows[rowIndex];
-                scope.$col = panel.rows[columnIndex];
-                scope.$item = panel.rows[rowIndex].dataItem;
+            WjFlexGridLink.prototype._initCellScope = function (scope, row, col, dataItem, cellValue) {
+                scope.$row = row;
+                scope.$col = col;
+                scope.$item = dataItem;
+                scope.$value = cellValue;
                 return scope;
             };
 
-            WjFlexGridLink.prototype._getCellTemplate = function (column) {
-                var tpl = column.cellTemplate;
+            WjFlexGridLink.prototype._getCellTemplate = function (tpl) {
                 if (tpl) {
                     tpl = tpl.replace(/ class\=\"ng\-scope\"( \"ng\-binding\")?/g, '');
                     tpl = tpl.replace(/<span>\s*<\/span>/g, '');
@@ -3994,53 +4659,57 @@ var wijmo;
         *                              star value.</dd>
         *   <dt>word-wrap</dt>         <dd><code>@</code> The value indicating whether cells in the column wrap
         *                              their content.</dd>
-        * </dl class="dl-horizontal">
+        * </dl>
         *
-        * In addition to regular attributes that match properties in the @see:Column class,
-        * wj-flex-grid-column directives may contain an <b>ng-style</b> attribute that provides
-        * conditional formatting and an HTML fragment that is used as a cell template. Grid rows
-        * automatically stretch vertically to fit custom cell contents.
+        * Any html content within the <b>wj-flex-grid-column</b> directive is treated as a template for the cells in that column.
+        * The template is applied only to regular cells. If you wish to apply templates to specific cell types such as
+        * column or group headers, then please see the @see:WjFlexGridCellTemplate directive.
         *
-        * Both the <b>ng-style</b> attribute and the HTML fragment can use the <b>$item</b> property in
-        * AngularJS bindings to refer to the item that is bound to the current row. For example:
-        *
-        * <pre>&lt;wj-flex-grid-column
-        *     header="Symbol"
-        *     binding="symbol"
-        *     read-only="true"
-        *     width="*"&gt;
-        *   &lt;a href="https://finance.yahoo.com/q?s={&#8203;{$item.symbol}}"&gt;
-        *     {&#8203;{$item.symbol}}
-        *   &lt;/a&gt;
-        * &lt;/wj-flex-grid-column&gt;
-        * &lt;wj-flex-grid-column
-        *     header="Change"
-        *     binding="changePercent"
-        *     format="p2"
-        *     width="*"
-        *     ng-style="{color:getAmountColor($item.change)}"&gt;
-        * &lt;/wj-flex-grid-column&gt;</pre>
-        *
-        * These directives create two columns.
-        * The first has a template that produces a hyperlink based on the bound item's <b>symbol</b> property.
-        * The second has a conditional style that renders values with a color determined by a function
-        * implemented in the controller.
+        * The following example creates two columns with a template and a conditional style:
         *
         * @fiddle:5L423
+        *
+        * The <b>wj-flex-grid-column</b> directive may contain @see:WjFlexGridCellTemplate child directives.
         */
         var WjFlexGridColumn = (function (_super) {
             __extends(WjFlexGridColumn, _super);
             // Initializes a new instance of a WjGridColumn
-            function WjFlexGridColumn() {
+            function WjFlexGridColumn($compile) {
                 _super.call(this);
+
+                this._$compile = $compile;
 
                 // The 'data-map' HTML attribute is converted to 'map' by Angular, so we give it the 'map' alias.
                 this.scope["dataMap"] += "map";
                 this.scope["dataType"] += "type";
 
                 this.require = '^wjFlexGrid';
-                this.transclude = true;
-                this.template = '<div class="wjGridColumn" ng-transclude/>';
+
+                this['terminal'] = true;
+
+                // If Angular supports template definition via a function (available starting with ver. 1.1.4) then we utilize this
+                // possibility, because this is the only entry point where we have an access to an unprocessed version of a column
+                // cell template with element level directives definitions in their original state.
+                if (angular.WjDirective._dynaTemplates) {
+                    // must be false, otherwise directive's subtree will no be available in the template function
+                    this.transclude = false;
+
+                    // should be less then at ng-repeat/ng-if etc (to let them take a control over a column directive creation),
+                    // but bigger than at ordinal directives (like ng-style, to not allow them to evaluate during the column directive
+                    // linking).
+                    this['priority'] = 100;
+                    this.template = function (tElement, tAttrs) {
+                        // stores cell template definition, tAttrs is the only object that allows us to share a data
+                        // with the link function.
+                        tAttrs[WjFlexGridColumn._colTemplateProp] = tElement[0].innerHTML;
+                        return '<div class="wjGridColumn"/>';
+                    };
+                    // under old Angular work in the degraded mode without element level directives support,
+                    // retrieve cell template in the link function where element level directives are already compiled.
+                } else {
+                    this.transclude = true;
+                    this.template = '<div class="wjGridColumn" ng-transclude/>';
+                }
             }
             Object.defineProperty(WjFlexGridColumn.prototype, "_controlConstructor", {
                 get: function () {
@@ -4057,6 +4726,9 @@ var wijmo;
             WjFlexGridColumn.prototype._createLink = function () {
                 return new WjFlexGridColumnLink();
             };
+            WjFlexGridColumn._colTemplateProp = '$__wjColTemplate';
+            WjFlexGridColumn._colWjLinkProp = '$__wjLink';
+            WjFlexGridColumn._cellCtxProp = '$_cellCtxProp';
             return WjFlexGridColumn;
         })(angular.WjDirective);
 
@@ -4075,19 +4747,399 @@ var wijmo;
 
                 _super.prototype._initParent.call(this);
 
+                // Assign cell template defined without WjFlexGridCellTemplate tag if the latter was not specified.
+                var cellCtxProp = WjFlexGridCellTemplate._getTemplContextProp(0 /* Cell */), cellCtxByTag = this.control[cellCtxProp], cellCtxWoTag = this[WjFlexGridColumn._cellCtxProp];
+                if (!cellCtxByTag && cellCtxWoTag) {
+                    this.control[cellCtxProp] = cellCtxWoTag;
+                }
+
+                this.control[WjFlexGridColumn._colWjLinkProp] = this;
+            };
+
+            WjFlexGridColumnLink.prototype._link = function () {
                 // get column template (HTML content)
-                var template = this.tElement[0].innerHTML;
+                var rootEl = this.tElement[0], dynaTempl = this.tAttrs[WjFlexGridColumn._colTemplateProp], template = dynaTempl != null ? dynaTempl : WjFlexGridCellTemplateLink._removeTransclude(rootEl.innerHTML), cellTemplContext = {};
                 if (!wijmo.isNullOrWhiteSpace(template)) {
-                    this.control['cellTemplate'] = template;
+                    //this.control['cellTemplate'] = template;
+                    var templRoot = document.createElement('div');
+                    templRoot.innerHTML = template;
+                    var childElements = [];
+                    [].forEach.call(templRoot.children, function (value) {
+                        childElements.push(value);
+                    });
+                    var linkScope;
+                    for (var i = 0; i < childElements.length; i++) {
+                        var curTempl = childElements[i];
+                        if (curTempl.tagName.toLocaleLowerCase() === WjFlexGridCellTemplate._tagName) {
+                            if (!linkScope) {
+                                //linkScope = this.scope.$parent;
+                                linkScope = this.scope.$parent.$new();
+                            }
+
+                            // remove cell template directive from cell's template
+                            templRoot.removeChild(curTempl);
+
+                            // compile and link cell template directive
+                            rootEl.appendChild(curTempl);
+                            this.directive._$compile(curTempl)(linkScope);
+                        }
+                    }
+
+                    var cleanCellTempl = templRoot.innerHTML;
+                    if (!wijmo.isNullOrWhiteSpace(cleanCellTempl)) {
+                        cellTemplContext.cellTemplate = cleanCellTempl;
+                    }
                 }
 
                 // get column style
                 var style = this.tAttrs['ngStyle'];
                 if (style) {
-                    this.control['cellStyle'] = style;
+                    cellTemplContext.cellStyle = style;
                 }
+
+                if (cellTemplContext.cellTemplate || cellTemplContext.cellStyle) {
+                    cellTemplContext.templLink = this;
+                    this[WjFlexGridColumn._cellCtxProp] = cellTemplContext;
+                }
+
+                _super.prototype._link.call(this);
             };
             return WjFlexGridColumnLink;
+        })(angular.WjLink);
+
+        /**
+        * Defines the type of cell to which to apply the template. This value is specified in the <b>cell-type</b> attribute
+        * of the @see:WjFlexGridCellTemplate directive.
+        */
+        (function (CellTemplateType) {
+            /** Defines a regular (data) cell. */
+            CellTemplateType[CellTemplateType["Cell"] = 0] = "Cell";
+
+            /** Defines a cell in edit mode. */
+            CellTemplateType[CellTemplateType["CellEdit"] = 1] = "CellEdit";
+
+            /** Defines a column header cell. */
+            CellTemplateType[CellTemplateType["ColumnHeader"] = 2] = "ColumnHeader";
+
+            /** Defines a row header cell. */
+            CellTemplateType[CellTemplateType["RowHeader"] = 3] = "RowHeader";
+
+            /** Defines a row header cell in edit mode. */
+            CellTemplateType[CellTemplateType["RowHeaderEdit"] = 4] = "RowHeaderEdit";
+
+            /** Defines a top left cell. */
+            CellTemplateType[CellTemplateType["TopLeft"] = 5] = "TopLeft";
+
+            /** Defines a group header cell in a group row. */
+            CellTemplateType[CellTemplateType["GroupHeader"] = 6] = "GroupHeader";
+
+            /** Defines a regular cell in a group row. */
+            CellTemplateType[CellTemplateType["Group"] = 7] = "Group";
+        })(angular.CellTemplateType || (angular.CellTemplateType = {}));
+        var CellTemplateType = angular.CellTemplateType;
+
+        /**
+        * AngularJS directive for the @see:FlexGrid cell templates.
+        *
+        * The <b>wj-flex-grid-cell-template</b> directive defines a template for a certain
+        * cell type in @see:FlexGrid, and must contain a <b>cell-type</b> attribute that
+        * specifies the @see:CellTemplateType. Depending on the template's cell type,
+        * the <b>wj-flex-grid-cell-template</b> directive must be a child of either @see:WjFlexGrid
+        * or @see:WjFlexGridColumn directives.
+        *
+        * Column-specific cell templates must be contained in <b>wj-flex-grid-column</b>
+        * directives, and cells that are not column-specific (like row header or top left cells)
+        * must be contained in the <b>wj-flex-grid directive</b>.
+        *
+        * In addition to an HTML fragment, <b>wj-flex-grid-cell-template</b> directives may
+        * contain an <b>ng-style</b> attribute that provides conditional formatting for cells.
+        *
+        * Both the <b>ng-style</b> attribute and the HTML fragment can use the <b>$col</b>,
+        * <b>$row</b> and <b>$item</b> template variables that refer to the @see:Column,
+        * @see:Row and <b>Row.dataItem</b> objects pertaining to the cell.
+        *
+        * For cell types like <b>Group</b> and <b>CellEdit</b>, an additional <b>$value</b>
+        * variable containing an unformatted cell value is provided. For example, here is a
+        * FlexGrid control with templates for row headers and for the Country column's regular
+        * and column header cells:
+        *
+        * <pre>&lt;wj-flex-grid items-source="data"&gt;
+        *   &lt;wj-flex-grid-cell-template cell-type="RowHeader"&gt;
+        *     {&#8203;{$row.index}}
+        *   &lt;/wj-flex-grid-cell-template&gt;
+        *   &lt;wj-flex-grid-cell-template cell-type="RowHeaderEdit"&gt;
+        *     ...
+        *   &lt;/wj-flex-grid-cell-template&gt;
+        * &nbsp;
+        *   &lt;wj-flex-grid-column header="Country" binding="country"&gt;
+        *     &lt;wj-flex-grid-cell-template cell-type="ColumnHeader"&gt;
+        *       &lt;img ng-src="resources/globe.png" /&gt;
+        *         {&#8203;{$col.header}}
+        *       &lt;/wj-flex-grid-cell-template&gt;
+        *       &lt;wj-flex-grid-cell-template cell-type="Cell"&gt;
+        *         &lt;img ng-src="resources/{&#8203;{$item.country}}.png" /&gt;
+        *         {&#8203;{$item.country}}
+        *       &lt;/wj-flex-grid-cell-template&gt;
+        *     &lt;/wj-flex-grid-column&gt;
+        *   &lt;wj-flex-grid-column header="Sales" binding="sales"&gt;&lt;/wj-flex-grid-column&gt;
+        * &lt;/wj-flex-grid&gt;</pre>
+        *
+        * For more detailed information on specific cell type templates refer to the
+        * documentation for the @see:CellTemplateType enumeration.
+        *
+        * Note that the <b>wj-flex-grid-column</b> directive may also contain arbitrary content
+        * that is treated as a template for a regular data cell (<i>cell-type="Cell"</i>). But if
+        * a <b>wj-flex-grid-cell-template</b> directive exists and is set to <i>cell-type="Cell"</i>
+        * under the <b>wj-flex-grid-column</b> directive, it takes priority and overrides the
+        * arbitrary content.
+        *
+        * The <b>wj-flex-grid-cell-template</b> directive supports the following attributes:
+        *
+        * <dl class="dl-horizontal">
+        *   <dt>cell-type</dt>
+        *   <dd><code>@</code>
+        *     The @see:CellTemplateType value defining the type of cell the template applies to.
+        *   </dd>
+        *   <dt>cell-overflow</dt>
+        *   <dd><code>@</code>
+        *     Defines the <b>style.overflow</b> property value for cells.
+        *   </dd>
+        * </dl>
+        *
+        * The <b>cell-type</b> attribute takes any of the following enumerated values:
+        *
+        * <p><b>Cell</b><p>
+        * Defines a regular (data) cell template. Must be a child of the @see:WjFlexGridColumn directive.
+        * For example, this cell template shows flags in the Country column's cells:
+        *
+        * <pre>&lt;wj-flex-grid-column header="Country" binding="country"&gt;
+        *   &lt;wj-flex-grid-cell-template cell-type="Cell"&gt;
+        *     &lt;img ng-src="resources/{&#8203;{$item.country}}.png" /&gt;
+        *     {&#8203;{$item.country}}
+        *   &lt;/wj-flex-grid-cell-template&gt;
+        * &lt;/wj-flex-grid-column&gt;</pre>
+        *
+        * For a hierarchical @see:FlexGrid (that is, one with the <b>childItemsPath</b> property
+        * specified), if no <b>Group</b> template is provided, non-header cells in group rows in
+        * this @see:Column also use this template.
+        *
+        * <p><b>CellEdit</b></p>
+        *
+        * Defines a template for a cell in edit mode. Must be a child of the @see:WjFlexGridColumn directive.
+        * This cell type has an additional <b>$value</b> property available for binding. It contains the
+        * original cell value before editing, and the updated value after editing.
+        
+        * For example, here is a template that uses the Wijmo @see:InputNumber control as an editor
+        * for the "Sales" column:
+        *
+        * <pre>&lt;wj-flex-grid-column header="Sales" binding="sales"&gt;
+        *   &lt;wj-flex-grid-cell-template cell-type="CellEdit"&gt;
+        *     &lt;wj-input-number value="$value" step="1"&gt;&lt;/wj-input-number&gt;
+        *   &lt;/wj-flex-grid-cell-template&gt;
+        * &lt;/wj-flex-grid-column&gt;</pre>
+        *
+        * <p><b>ColumnHeader</b></p>
+        *
+        * Defines a template for a column header cell. Must be a child of the @see:WjFlexGridColumn directive.
+        * For example, this template adds an image to the header of the "Country" column:
+        *
+        * <pre>&lt;wj-flex-grid-column header="Country" binding="country"&gt;
+        *   &lt;wj-flex-grid-cell-template cell-type="ColumnHeader"&gt;
+        *     &lt;img ng-src="resources/globe.png" /&gt;
+        *     {&#8203;{$col.header}}
+        *   &lt;/wj-flex-grid-cell-template&gt;
+        * &lt;/wj-flex-grid-column&gt;</pre>
+        *
+        * <p><b>RowHeader</b></p>
+        *
+        * Defines a template for a row header cell. Must be a child of the @see:WjFlexGrid directive.
+        * For example, this template shows row indices in the row headers:
+        *
+        * <pre>&lt;wj-flex-grid items-source="data"&gt;
+        *   &lt;wj-flex-grid-cell-template cell-type="RowHeader"&gt;
+        *     {&#8203;{$row.index}}
+        *   &lt;/wj-flex-grid-cell-template&gt;
+        * &lt;/wj-flex-grid&gt;</pre>
+        *
+        * Note that this template is applied to a row header cell, even if it is in a row that is
+        * in edit mode. In order to provide an edit-mode version of a row header cell with alternate
+        * content, define the <b>RowHeaderEdit</b> template.
+        *
+        * <p><b>RowHeaderEdit</b></p>
+        *
+        * Defines a template for a row header cell in edit mode. Must be a child of the
+        * @see:WjFlexGrid directive. For example, this template shows dots in the header
+        * of rows being edited:
+        *
+        * <pre>&lt;wj-flex-grid items-source="data"&gt;
+        *   &lt;wj-flex-grid-cell-template cell-type="RowHeaderEdit"&gt;
+        *       ...
+        *   &lt;/wj-flex-grid-cell-template&gt;
+        * &lt;/wj-flex-grid&gt;</pre>
+        *
+        * To add the standard edit-mode indicator to cells where the <b>RowHeader</b> template
+        * applies, use the following <b>RowHeaderEdit</b> template:
+        *
+        * <pre>&lt;wj-flex-grid items-source="data"&gt;
+        *   &lt;wj-flex-grid-cell-template cell-type="RowHeaderEdit"&gt;
+        *     {&#8203;{&amp;#x270e;}}
+        *   &lt;/wj-flex-grid-cell-template&gt;
+        * &lt;/wj-flex-grid&gt;</pre>
+        *
+        * <p><b>TopLeft</b></p>
+        *
+        * Defines a template for the top left cell. Must be a child of the @see:WjFlexGrid directive.
+        * For example, this template shows a down/right glyph in the top-left cell of the grid:
+        *
+        * <pre>&lt;wj-flex-grid items-source="data"&gt;
+        *   &lt;wj-flex-grid-cell-template cell-type="TopLeft"&gt;
+        *     &lt;span class="wj-glyph-down-right"&gt;&lt;/span&gt;
+        *   &lt;/wj-flex-grid-cell-template&gt;
+        * &lt;/wj-flex-grid&gt;</pre>
+        *
+        * <p><b>GroupHeader</b></p>
+        *
+        * Defines a template for a group header cell in a @see:GroupRow, Must be a child of the @see:WjFlexGridColumn directive.
+        *
+        * The <b>$row</b> variable contains an instance of the <b>GroupRow</b> class. If the grouping comes
+        * from the a @see:CollectionView, the <b>$item</b> variable references the @see:CollectionViewGroup object.
+        *
+        * For example, this template uses a checkbox element as an expand/collapse toggle:
+        *
+        * <pre>&lt;wj-flex-grid-column header="Country" binding="country"&gt;
+        *   &lt;wj-flex-grid-cell-template cell-type="GroupHeader"&gt;
+        *     &lt;input type="checkbox" ng-model="$row.isCollapsed"/&gt;
+        *     {&#8203;{$item.name}} ({&#8203;{$item.items.length}} items)
+        *   &lt;/wj-flex-grid-cell-template&gt;
+        * &lt;/wj-flex-grid-column&gt;</pre>
+        *
+        * <p><b>Group</b></p>
+        *
+        * Defines a template for a regular cell (not a group header) in a @see:GroupRow. Must be a child of the
+        * @see:WjFlexGridColumn directive. This cell type has an additional <b>$value</b> varible available for
+        * binding. In cases where columns have the <b>aggregate</b> property specified, it contains the unformatted
+        * aggregate value.
+        *
+        * For example, this template shows an aggregate's value and kind for group row cells in the "Sales"
+        * column:
+        *
+        * <pre>&lt;wj-flex-grid-column header="Sales" binding="sales" aggregate="Avg"&gt;
+        *   &lt;wj-flex-grid-cell-template cell-type="Group"&gt;
+        *     Average: {&#8203;{$value | number:2}}
+        *   &lt;/wj-flex-grid-cell-template&gt;
+        * &lt;/wj-flex-grid-column&gt;</pre>
+        */
+        var WjFlexGridCellTemplate = (function (_super) {
+            __extends(WjFlexGridCellTemplate, _super);
+            function WjFlexGridCellTemplate() {
+                _super.call(this);
+
+                this.require = ['?^wjFlexGridColumn', '?^wjFlexGrid'];
+
+                // The same approach like in WjFlexGridColumn
+                this['terminal'] = true;
+                if (angular.WjDirective._dynaTemplates) {
+                    this.transclude = false;
+                    this['priority'] = 100;
+                    this.template = function (tElement, tAttrs) {
+                        tAttrs[WjFlexGridColumn._colTemplateProp] = tElement[0].innerHTML;
+                        return '<div />';
+                    };
+                } else {
+                    this.transclude = true;
+                    this.template = '<div ng-transclude/>';
+                }
+            }
+            // returns the name of the property on control instance that stores info for the specified cell template type.
+            WjFlexGridCellTemplate._getTemplContextProp = function (templateType) {
+                return '$__cellTempl' + CellTemplateType[templateType];
+            };
+
+            WjFlexGridCellTemplate.prototype._initControl = function (element) {
+                return {};
+            };
+
+            WjFlexGridCellTemplate.prototype._createLink = function () {
+                return new WjFlexGridCellTemplateLink();
+            };
+
+            WjFlexGridCellTemplate.prototype._getMetaDataId = function () {
+                return 'FlexGridCellTemplate';
+            };
+            WjFlexGridCellTemplate._tagName = 'wj-flex-grid-cell-template';
+            return WjFlexGridCellTemplate;
+        })(angular.WjDirective);
+
+        var WjFlexGridCellTemplateLink = (function (_super) {
+            __extends(WjFlexGridCellTemplateLink, _super);
+            function WjFlexGridCellTemplateLink() {
+                _super.apply(this, arguments);
+            }
+            WjFlexGridCellTemplateLink.prototype._initParent = function () {
+                _super.prototype._initParent.call(this);
+
+                var cts = this.scope['cellType'], cellType;
+                if (cts) {
+                    cellType = CellTemplateType[cts];
+                } else {
+                    return;
+                }
+
+                // get column template (HTML content)
+                var dynaTempl = this.tAttrs[WjFlexGridColumn._colTemplateProp], template = dynaTempl != null ? dynaTempl : WjFlexGridCellTemplateLink._removeTransclude(this.tElement[0].innerHTML), control = this.control;
+                if (!wijmo.isNullOrWhiteSpace(template)) {
+                    control.cellTemplate = template;
+                }
+
+                // get column style
+                var style = this.tAttrs['ngStyle'];
+                if (style) {
+                    control.cellStyle = style;
+                }
+
+                if (control.cellTemplate || control.cellStyle) {
+                    control.templLink = this;
+                    this.parent.control[WjFlexGridCellTemplate._getTemplContextProp(cellType)] = control;
+                }
+
+                WjFlexGridCellTemplateLink._invalidateGrid(this.parent.control);
+            };
+
+            WjFlexGridCellTemplateLink.prototype._destroy = function () {
+                var parentControl = this.parent && this.parent.control, cts = this.scope['cellType'];
+                _super.prototype._destroy.call(this);
+                if (cts) {
+                    parentControl[WjFlexGridCellTemplate._getTemplContextProp(CellTemplateType[cts])] = undefined;
+                    WjFlexGridCellTemplateLink._invalidateGrid(parentControl);
+                }
+            };
+
+            WjFlexGridCellTemplateLink._invalidateGrid = function (parentControl) {
+                var grid = parentControl;
+                if (grid) {
+                    if (grid instanceof wijmo.grid.Column) {
+                        grid = grid.grid;
+                    }
+                    if (grid) {
+                        grid.invalidate();
+                    }
+                }
+            };
+
+            WjFlexGridCellTemplateLink._removeTransclude = function (html) {
+                if (!html) {
+                    return html;
+                }
+                var root = document.createElement('div');
+                root.innerHTML = html;
+                var transNodes = root.querySelectorAll('[ng-transclude]');
+                [].forEach.call(transNodes, function (elem, idx) {
+                    elem.removeAttribute('ng-transclude');
+                });
+
+                return root.innerHTML;
+            };
+            return WjFlexGridCellTemplateLink;
         })(angular.WjLink);
 
         /**
@@ -4121,12 +5173,11 @@ var wijmo;
         *
         * <dl class="dl-horizontal">
         *   <dt>filter-columns</dt>    <dd><code>=</code> An array containing the names or bindings of the columns
-        *                              that should have filters.</dd>
+        *                              to filter.</dd>
         *   <dt>show-filter-icons</dt> <dd><code>@</code>  The value indicating whether filter editing buttons
-        *                              should be added to the grid's column headers.</dd>
+        *                              appear in the grid's column headers.</dd>
         *   <dt>filter-applied</dt>    <dd><code>&</code> Handler for the @see:filterApplied event.</dd>
-        * </dl class="dl-horizontal">
-        *
+        * </dl>
         */
         var WjFlexGridFilter = (function (_super) {
             __extends(WjFlexGridFilter, _super);
@@ -4147,6 +5198,62 @@ var wijmo;
                 configurable: true
             });
             return WjFlexGridFilter;
+        })(angular.WjDirective);
+
+        /**
+        * AngularJS directive for the @see:FlexGrid @see:GroupPanel control.
+        *
+        * The <b>wj-group-panel</b> directive connects to the <b>FlexGrid</b> control via the <b>grid</b> property.
+        * For example:
+        *
+        * <pre>&lt;p&gt;Here is a FlexGrid control with GroupPanel:&lt;/p&gt;
+        * &nbsp;
+        * &lt;wj-group-panel grid="flex" placeholder="Drag columns here to create groups."&gt;&lt;/wj-group-panel&gt;
+        * &nbsp;
+        * &lt;wj-flex-grid control="flex" items-source="data"&gt;
+        *   &lt;wj-flex-grid-column
+        *     header="Country"
+        *     binding="country"&gt;
+        *   &lt;/wj-flex-grid-column&gt;
+        *   &lt;wj-flex-grid-column
+        *     header="Sales"
+        *     binding="sales"&gt;
+        *   &lt;/wj-flex-grid-column&gt;
+        *   &lt;wj-flex-grid-column
+        *     header="Expenses"
+        *     binding="expenses"&gt;
+        *   &lt;/wj-flex-grid-column&gt;
+        *   &lt;wj-flex-grid-column
+        *     header="Downloads"
+        *     binding="downloads"&gt;
+        *   &lt;/wj-flex-grid-column&gt;
+        * &lt;/wj-flex-grid&gt;</pre>
+        *
+        * The <b>wj-group-panel</b> directive supports the following attributes:
+        *
+        * <dl class="dl-horizontal">
+        *   <dt>grid</dt>                      <dd><code>@</code>The <b>FlexGrid</b> that is connected to this <b>GroupPanel</b>.</dd>
+        *   <dt>hide-grouped-columns</dt>      <dd><code>@</code>A value indicating whether the panel hides grouped columns
+        *                                      in the owner grid.</dd>
+        *   <dt>max-groups</dt>                <dd><code>@</code>The maximum number of groups allowed.</dd>
+        *   <dt>placeholder</dt>               <dd><code>@</code>A string to display in the control when it
+        *                                      contains no groups.</dd>
+        * </dl>
+        *
+        */
+        var WjGroupPanel = (function (_super) {
+            __extends(WjGroupPanel, _super);
+            function WjGroupPanel() {
+                _super.apply(this, arguments);
+            }
+            Object.defineProperty(WjGroupPanel.prototype, "_controlConstructor", {
+                get: function () {
+                    return wijmo.grid.grouppanel.GroupPanel;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            return WjGroupPanel;
         })(angular.WjDirective);
     })(wijmo.angular || (wijmo.angular = {}));
     var angular = wijmo.angular;
@@ -4196,7 +5303,7 @@ var wijmo;
     *   items-source="ctx.countries"
     *   is-editable="true"
     *   selected-index-changed="ctx.selChanged(s, e)"&gt;
-    *   &lt;/wj-combo-box&gt;</pre>
+    * &lt;/wj-combo-box&gt;</pre>
     *
     * Notice that the <b>text</b> property of the @see:ComboBox is bound to a controller
     * variable called "ctx.theCountry." The binding goes two ways; changes in the control

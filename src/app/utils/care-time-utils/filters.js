@@ -489,4 +489,16 @@ angular.module('utils.ct.filters', [])
                 return "-";
             }
         };
+    })
+  .filter('stripslashes', function() {
+        return function(data) {
+            if (data) {
+                data = data.replace(/\\'/g, "'");
+                 return data;
+
+
+            } else {
+                return "";
+            }
+        };
     });

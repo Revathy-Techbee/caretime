@@ -4,6 +4,177 @@
 //
 /////////////////////////////////////////////////////////////////////////////////////////
 
+
+=========================================================================================
+Build Number 5.20151.48          Build Date: 04/10/2015
+=========================================================================================
+
+* Improvements
+    - Added a Control.disabled property (maps to disabled attribute of the host element)
+    - Added class names to facilitate custom styling of column headers: 
+        wj-sort-asc (column is sorted in ascending order)
+        wj-sort-desc (column is sorted in descending order)
+        wj-filter-on (column has an active filter)
+        wj-filter-off (column has an inactive filter)
+
+=========================================================================================
+Build Number 5.20151.47          Build Date: 04/08/2015
+=========================================================================================
+
+* Improvements
+    - Improved FlexGrid cell templates for Angular performance.
+    - Changed FlexGrid mouse handler to sort/select on left button only (TFS 114623)
+      (reserving the right button for context menus)
+* Bug fixes
+    - Allow wj-context-menu directive on element level directives.
+    - Fixed FlexGrid hit-testing after window resize (TFS 112961)
+
+=========================================================================================
+Build Number 5.20151.45          Build Date: 04/02/2015
+=========================================================================================
+
+* Improvements
+    - Improved grid filter to support value and condition filtering.
+    - Added a Menu.isButton property that turns menus into split-buttons.
+    - Input and Gauge directives can bind using ng-model directive now, gaining 
+      the features specific to ng-model this way.
+    - Added WjFlexGridCellTemplate.cell-overflow attribute that allows to change
+      cells' style.overflow property declaratively.
+    - Optimized grid scrolling performance (especially visible in IE).
+* Bug fixes
+    - columnLayout method did not work properly in IE9/10 (TFS 112895).
+    - CollectionView notified before updating tracking arrays, should notify after.
+    - Fixed issue with popup width (popups were sometimes wider than they should be).
+    - Fixed old scrolling issue with IE and very large grids (100,000+ rows)
+    - Fixed issue with hierarchical FlexGrid's (with childItemsPath assigned) Angular 
+      cell templates for regular cells that didn't apply to group header cells.
+
+=========================================================================================
+Build Number 5.20151.42          Build Date: 03/17/2015
+=========================================================================================
+
+* Improvements
+    - Optimized grid scrolling performance.
+    - Added markers to indicate the position of rows and columns being dragged.
+    - Improved behavior of drop-down grid cells on mobile devices.
+    - Added select-all functionality when the user clicks the top-left fixed cell.
+    - Changed row and column resize cursors to 'col-resize' and 'row-resize.'
+    - Added a FlexGrid.deferResizing property to defer row and column resizing until the 
+      user releases the mouse.
+    - Added a Column.sortMemberPath property to sort columns based on an alternate binding.
+    - Exposed wijmo.showPopup and hidePopup utility methods for positioning popup elements.
+    - Added support for multi-item selection in the ListBox control. Set the checkedMemberPath 
+      property to the name of a Boolean property in the itemsSource collection and the 
+      ListBox adds checkboxes to each item, and fires the itemChecked event when
+      the current item is checked or unchecked.
+    - Deprecated and removed the wijmo.isTouchDevice method. The method
+      actually tested the browser, not the device, so it was useless.
+    - Added a LineMarker class to the wijmo.chart module that provides FlexChart with a 
+      continuous data point information with optional directional lines  
+      as mouse pointer moves over a chart surface.
+    - Added a wijmo.chart.interaction extension module with a RangeSelector class
+      that allows the user to choose the range of data to display on the specified FlexChart.
+    - Added WjFlexGridCellTemplate directive for Angular that allows to define
+      a custom template for any type of a FlexGrid cell (column and row headers,
+      editing cell, and so on).
+    - Cell templates now support element level directives.
+    - Wijmo child directives for Angular (like WjFlexGridColumn or WjFlexChartSeries),
+      when used in conjunction with ng-repeat directive, now support full-functional
+      synchronization with ng-repeat's source array, including items order.
+
+* Bug fixes
+    - Fixed issues related to 'focusout,' which is not supported in FireFox.
+    - Fixed FlexGrid.getCellBoundingRect so that it works correctly when dir="RTL."
+    - Fixed a problem in chart selection when using itemFormatter.
+    - Fixed the Clipboard so that it works on Apple OS (detects the 'Apple' key).
+    - HitTestInfo.item returns correct value when chart is bounded to CollectionView.
+    - Fixed rendering of merged cells when there are frozen areas (TFS 110627).
+    - Fixed handling of IME text in ComboBox when isEditable = false (TFS 108547).
+
+=========================================================================================
+Build Number 5.20143.39        Build Date: 02/23/2015
+=========================================================================================
+
+* Improvements
+    - Added a FlexGrid.sortRowIndex property. This property determines the index of 
+      the row in the column headers panel that displays the sort icon and can be clicked
+      to sort the column. By default, it is set to null, causing the last row in the 
+      panel to be the 'sort row.'
+    - Raise editing events when pasting data into the FlexGrid (this allows users to
+      prevent overwriting of specific cells when pasting).
+    - Improved column filters to work with complex properties (e.g. 'state.name', 'state.pop').
+    - Exposed wijmo.Binding class used to work with complex properties.
+
+* Bug fixes
+    - Fixed several problems with rendering mixed chart types (TFS 96721, 98617).
+    - Made pie chart handle negative data values correctly (TFS 89936).
+    - Fixed a problem with the pie chart tooltip for the selected slice (TFS 108871).
+    - Fixed a problem with chart tooltips in IE11 (TFS 109876).
+    - Fixed InputMask cursor positioning on Safari (TFS 109969, 102148, 96927).
+    - Fixed aggregate so that it updates correctly after adding new rows (TFS 109119).
+    - Improved date/time detection in the FlexGridFilter editor (TFS 109409).
+    - Prevented users from dragging rows below the new row template (TFS 109012).
+    - Fixed RTL layout so that it works properly in Safari (TFS 109371).
+    - Fixed cell templates so that they are honored in GroupRows (regression).
+    - Fixed a problem with dropdown controls on mobile browsers.
+    - Fixed Wijmo directives for Angular so that they work with the ng-inspector tool.
+
+=========================================================================================
+Build Number 5.20143.37        Build Date: 02/15/2015
+=========================================================================================
+
+* Improvements
+    - Added wijmo.grid.grouppanel module with the GroupPanel control to provide drag&drop
+      grouping functionality to the FlexGrid control.
+    - Improved the CollectionView sorting logic to place nulls at the bottom of the list,
+      regardless of sort direction (Excel behavior).
+    - Allow initialization of ObservableArray in constructor.
+    - Improved formatting of values in GroupRow node cells.
+* Bug fixes
+    - The data labels are not visible for data points outside plot area (TFS 109293).
+    - Fixed problem with stacked charts when first series has custom chart type (TFS 107530).
+    - Fixed problem with FlexGrid.autoSizeRows in grids with word-wrapping and merged columns.
+    - Fixed problem with disappearing dropdown controls on mobile devices in case of zoomed in
+      pages.
+    - Fixed problem with Autocomplete in the Android 4.4.2 Browser where typed characters 
+      can be swapped.
+
+=========================================================================================
+Build Number 5.20143.35        Build Date: 02/09/2015
+=========================================================================================
+
+* Improvements
+    - Improved the grouping logic of paged CollectionViews to avoid splitting groups
+      between pages and to include all items in aggregates (as opposed to items in
+      the current page which was the previous behavior).
+    - Added a CollectionView.sortConverter property. The property specifies a function
+      that can be used to customize the sorting behavior of the CollectionView.
+    - Improved FlexGrid sorting to take dataMaps into account. Now the grid sorts based
+      on display value (as opposed to raw data values which was the previous behavior).
+    - Expanded grid keyboard handling: now ctrl+home and ctrl+end navigate to the
+      first and last cells on the grid (as opposed to home/end, which navigate to the
+      first and last cells on the current row).
+    - Added Gauge.origin property. This property determines the starting point used
+      for painting the pointer range. Setting it to null causes the gauge to use
+      the min property or zero if the range extends from negative to positive values.
+    - Clamp InputNumber value between min/max as the user types the value in.
+    - Improved behavior of input controls on touch devices.
+* Bug fixes
+    - Fixed problem with FlexChart updating after changing collection (TFS 107253).
+    - Fixed problem with FlexPie bound to CollectionView with currentPosition=-1 (TFS 106270).
+    - Fixed problem with calculating axis limits in stacked chart with series that has
+      custom chart-type (TFS 106988).
+    - FlexPie labels rendered correctly when offset > 0 (TFS 105891).
+    - Fixed problem with FlexChart axis minor ticks and grid lines (TFS 101264, 101401).
+    - FlexChart legend and titles rendered with default text color (TFS 98329).
+    - Fixed problem with rendering bubble and financial charts bound to CollectionView.
+    - Fixed problem with FlexGrid when selectionMode == ListBox and empty item sources.
+    - Fixed positioning of grid filter editor on frozen columns (TFS 105593).
+    - Fixed problem with merging cells in group rows with aggregates (TFS 98610).
+    - Allow clearing cells pressing Delete when column has map and is not required (TFS 107058).
+    - Improved positioning of InputDate dropdown calendar (TFS 102162).
+    - Fixed regression with dropdowns not showing in iOS Safari.
+
 =========================================================================================
 Build Number 5.20143.32      Build Date: 01/22/2015
 =========================================================================================
@@ -18,6 +189,8 @@ Build Number 5.20143.30      Build Date: 01/15/2015
 * Improvements
     - Added support of chart data labels(new properties FlexChart.dataLabel and
       FlexPie.dataLabel).
+    - Added wijmo.grid.filter module with FlexGridFilter extension to provide
+      Excel-style filtering in grid columns.
     - Added FlexGrid.getCellBoundingRect and GridPanel.getCellBoundingRect methods
       to retrieve the bounds of a given cell.
     - Added FlexGrid.formatItem event to allow multiple subscribers to customize cells
@@ -25,18 +198,18 @@ Build Number 5.20143.30      Build Date: 01/15/2015
     - Added FlexGrid.AutoSizeMode property to customize auto-sizing behavior, as
       well as new events autoSizingColumn, autoSizedColumn, autoSizingRow, autoSizedRow.
     - Improved DropDown control behavior in clipping containers.
-    - Added two new glyphs: .wj-glyph-check and .wj-glyph-filter
+    - Added two new glyphs: .wj-glyph-check and .wj-glyph-filter.
     - Child Angular directives for Wijmo (like wj-flex-grid-column) can now be defined using
       the ng-repeat directive.
 * Bug fixes
     - Fixed issue with freezing logic in merged cells.
-    - Prevent startEditing from working on invisible rows/columns (TFS 100707)
-    - Improved selection/sort behavior (TFS 100326)
-    - Allow removing boolean values with delete key (TFS 96566)
-    - Prevent dragging Group rows and New rows (TFS 88118)
-    - Fixed position of drop-down arrows on RTL systems (TFS 97498)
-    - Improved position and behavior of sorting glyph on merged columns (TFS 88149)
-    - Improved behavior of selection while typing into AutoComplete (TFS 98114)
+    - Prevent startEditing from working on invisible rows/columns (TFS 100707).
+    - Improved selection/sort behavior (TFS 100326).
+    - Allow removing boolean values with delete key (TFS 96566).
+    - Prevent dragging Group rows and New rows (TFS 88118).
+    - Fixed position of drop-down arrows on RTL systems (TFS 97498).
+    - Improved position and behavior of sorting glyph on merged columns (TFS 88149).
+    - Improved behavior of selection while typing into AutoComplete (TFS 98114).
 
 =========================================================================================
 Build Number 5.20143.27      Build Date: 01/06/2015

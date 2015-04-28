@@ -1,6 +1,6 @@
 /*
     *
-    * Wijmo Library 5.20143.32
+    * Wijmo Library 5.20151.48
     * http://wijmo.com/
     *
     * Copyright(c) GrapeCity, Inc.  All rights reserved.
@@ -35,10 +35,6 @@ module wijmo.input {
 
         // private stuff
         _oldText: string;
-        _ehBoundsChanged;
-        _ehWheel;
-        // by setting to true allows to suppress closing of a drop-down on scroll
-        _noScrollClose = false;
 
         /**
          * Gets or sets the template used to instantiate @see:DropDown controls.
@@ -47,7 +43,7 @@ module wijmo.input {
                 '<div class="wj-input">' +
                     '<div class="wj-input-group wj-input-btn-visible">' +
                         '<input wj-part="input" type="text" class="wj-form-control" />' +
-                        '<span wj-part="btn" class="wj-input-group-btn">' +
+                        '<span wj-part="btn" class="wj-input-group-btn" tabindex="-1">' +
                             '<button class="wj-btn wj-btn-default" type="button" tabindex="-1">' +
                                 '<span class="wj-glyph-down"></span>' +
                             '</button>' +
@@ -55,7 +51,7 @@ module wijmo.input {
                     '</div>' +
                 '</div>' +
                 '<div wj-part="dropdown" class="wj-content wj-dropdown-panel" ' +
-                     'style="display:none;position:fixed;z-index:100;width:auto">' +
+                    'style="display:none;position:absolute;z-index:100;width:auto">' +
                 '</div>' +
             '</div>';
 
@@ -86,15 +82,26 @@ module wijmo.input {
             // host element events
             var self = this;
             this.hostElement.addEventListener('focus', function () {
-                self._tbx.focus();
+                if (!self.isTouching) {
+                    self._tbx.focus();
+                }
             });
-            this.hostElement.addEventListener('focusout', function () {
+
+            // use blur+capture to emulate focusout (not supported in FireFox)
+            this.hostElement.addEventListener('blur', function () {
                 setTimeout(function () {
                     if (!self.containsFocus()) {
                         self.isDroppedDown = false;
                     }
-                }, 0);
-            });
+                }, 100);
+            }, true);
+            this._dropDown.addEventListener('blur', function () {
+                setTimeout(function () {
+                    if (!self.containsFocus()) {
+                        self.isDroppedDown = false;
+                    }
+                }, 100);
+            }, true);
 
             // textbox events
             this._tbx.addEventListener('input', function () {
@@ -115,24 +122,30 @@ module wijmo.input {
                 e.stopPropagation();
 
                 // if this was a tap, keep focus on button; OW transfer to textbox
-                setTimeout(function () {
-                    if (self.isTouching) {
-                        self._btn.focus();
-                    } else {
-                        self._tbx.focus();
-                    }
-                }, 0);
+                if (self.isTouching && self.showDropDownButton) {
+                    self._btn.focus();
+                } else {
+                    self._tbx.focus();
+                }
             });
-
-            // events that fire while the drop-down is open
-            this._ehBoundsChanged = this._boundsChanged.bind(this);
-            this._ehWheel = this._wheel.bind(this);
 
             // initializing from <input> tag
             if (this._orgTag == 'INPUT') {
                 this._copyOriginalAttributes(this._tbx);
             }
         }
+
+        //--------------------------------------------------------------------------
+        //#region ** overrides
+
+        /**
+         * Checks whether this control or its drop-down contain the focused element.
+         */
+        containsFocus(): boolean {
+            return super.containsFocus() || contains(this._dropDown, document.activeElement);
+        }
+
+        //#endregion
 
         //--------------------------------------------------------------------------
         //#region ** object model
@@ -174,29 +187,37 @@ module wijmo.input {
         }
         set isDroppedDown(value: boolean) {
             if (value != this.isDroppedDown) {
+                var dd = this._dropDown;
                 if (value) {
+
+                    // set minWidth (if not already set)
+                    if (!dd.style.minWidth) {
+                        dd.style.minWidth = this.hostElement.getBoundingClientRect().width + 'px';
+                    }
+                    dd.style.display = 'block';
                     this._updateDropDown();
-                    this._dropDown.style.display = '';
-                    window.addEventListener('resize', this._ehBoundsChanged);
-                    window.addEventListener('scroll', this._ehBoundsChanged);
-                    window.addEventListener('wheel', this._ehWheel);
+
                 } else {
-                    // retain focus in the control; otherwise, after hiding the _dropDown Chrome will move focus to BODY.
+
+                    // retain focus in the control; or Chrome will move focus to BODY
                     if (this.containsFocus()) {
-                        if (this.showDropDownButton) {
+                        if (this.isTouching && this.showDropDownButton) {
                             this._btn.focus();
-                        }
-                        else {
+                        } else {
                             this._tbx.focus();
                         }
                     }
-                    this._dropDown.style.display = 'none';
-                    window.removeEventListener('resize', this._ehBoundsChanged);
-                    window.removeEventListener('scroll', this._ehBoundsChanged);
-                    window.removeEventListener('wheel', this._ehWheel);
+                    hidePopup(dd);
                 }
                 this.onIsDroppedDownChanged();
             }
+        }
+        /**
+         * Gets the drop down element shown when the @see:isDroppedDown 
+         * property is set to true.
+         */
+        get dropDown(): HTMLElement {
+            return this._dropDown;
         }
         /**
          * Gets or sets a value indicating whether the control should display a drop-down button.
@@ -273,78 +294,8 @@ module wijmo.input {
 
         // update drop down content before showing it
         _updateDropDown() {
-            var dds = this._dropDown.style,
-                ddd = dds.display,
-                rch = this.hostElement.getBoundingClientRect(),
-                rct = this._elRef.getBoundingClientRect(),
-                rcp = this._getParentRect(),
-                marginY = rct.height > 0 ? Math.round(rch.top - rct.top) : -1,
-                marginX = rct.width > 0 ? Math.round(rch.left - rct.left) : -1,
-                css: any = {};
-
-            // set margin and minWidth (if not already set)
-            if (!dds.margin) {
-                css.margin = marginY + 'px ' + marginX + 'px';
-            }
-            if (!dds.minWidth) {
-                css.minWidth = rch.width;
-            }
-
-            // get drop-down dimensions
-            dds.display = '';
-            var rcd = this._dropDown.getBoundingClientRect();
-            dds.display = ddd;
-
-            // update vertical position
-            var ddHei = rcd.height,
-                spcAbove = rch.top - Math.max(0, rcp.top),
-                spcBelow = Math.min(window.innerHeight, rcp.bottom) - rch.bottom;
-            css.top = spcBelow < ddHei && spcAbove >= spcBelow //ddHei
-                ? Math.max(0, rch.top - ddHei) // show above
-                : rch.top + rch.height; // show below
-
-            // update horizontal position
-            var ddWid = rcd.width,
-                spcLeft = rch.left,
-                spcRight = window.innerWidth - rch.left;
-            css.left = spcRight < ddWid && spcLeft >= spcRight
-                ? rch.left + rch.width - ddWid - 6 // align to the right
-                : rch.left; // align to the left
-
-            // set position, margins, min width
-            setCss(this._dropDown, css);
-        }
-
-        // get nearest parent that has overflow set to hidden/scroll/auto
-        _getParentRect(): ClientRect {
-            var e = this.hostElement;
-            for (; e.parentElement; e = e.parentElement) {
-                switch (e.style.overflow) {
-                    case 'hidden':
-                    case 'scroll':
-                    case 'auto':
-                        return e.getBoundingClientRect();
-                }
-            }
-            return e.getBoundingClientRect();
-        }
-
-        // close the drop-down when control bounds change
-        // (window resized, scrolling, etc)
-        _boundsChanged(e) {
-            if (this._noScrollClose && e.type == 'scroll') {
-                this._noScrollClose = false;
-                this._updateDropDown();
-                return;
-            }
-            this.isDroppedDown = false;
-        }
-
-        // close the drop-down when user moves the mouse wheel on 
-        // other controls
-        _wheel(e) {
-            if (!contains(this._dropDown, e.target)) {
-                this.isDroppedDown = false;
+            if (this.isDroppedDown) {
+                showPopup(this._dropDown, this.hostElement);
             }
         }
     }
@@ -393,7 +344,7 @@ module wijmo.input {
         /**
          * Gets or sets the template used to instantiate @see:Calendar controls.
          */
-        static controlTemplate = '<div style="cursor:default">' +
+        static controlTemplate = '<div style="cursor:default;-ms-user-select: none">' +
             '<div class="wj-calendar-outer wj-content">' +
                 '<div wj-part="tbl-header" class="wj-calendar-header">' +
                     '<div wj-part="btn-month" class="wj-month-select">' +
@@ -430,7 +381,10 @@ module wijmo.input {
             this.refresh(true);
 
             // handle mouse and keyboard
-            this.hostElement.addEventListener('click', this._click.bind(this));
+            // The 'click' event may not be triggered on iOS Safari if focus changed
+            // during previous tap. So use 'mouseup' instead.
+            //this.hostElement.addEventListener('click', this._click.bind(this));
+            this.hostElement.addEventListener('mouseup', this._click.bind(this));
             this.hostElement.addEventListener('keydown', this._keydown.bind(this));
 
             // initialize control options
@@ -568,7 +522,8 @@ module wijmo.input {
          * If specified, the function takes two parameters: 
          * <ul>
          *     <li>the date being formatted </li>
-         *     <li>the HTML element that represents the date</li></ul>
+         *     <li>the HTML element that represents the date</li>
+         * </ul>
          *
          * For example, the code below shows weekends in a disabled state:
          * <pre>
@@ -622,6 +577,9 @@ module wijmo.input {
                 enabled: boolean,
                 today = new Date(),
                 fdw = this.firstDayOfWeek != null ? this.firstDayOfWeek : Globalize.getFirstDayOfWeek();
+
+            // call base class to suppress any pending invalidations
+            super.refresh(fullUpdate);
 
             // calculate first day of the calendar
             this._firstDay = DateTime.addDays(this.displayMonth, -(this.displayMonth.getDay() - fdw + 7) % 7);
@@ -1314,6 +1272,7 @@ module wijmo.input {
         _itemFormatter: Function;
         _pathDisplay: string;
         _pathValue: string;
+        _pathChecked: string;
         _html = false;
         
         /**
@@ -1341,7 +1300,7 @@ module wijmo.input {
 
             // handle mouse and keyboard
             var e = this.hostElement;
-            e.addEventListener('mousedown', this._mousedown.bind(this));
+            e.addEventListener('click', this._click.bind(this));
             e.addEventListener('keydown', this._keydown.bind(this));
             e.addEventListener('keypress', this._keypress.bind(this));
 
@@ -1354,6 +1313,18 @@ module wijmo.input {
             // initialize control options
             this.initialize(options);
         }
+
+        //--------------------------------------------------------------------------
+        //#region ** ovrerrides
+
+        /**
+         * Refreshes the list.
+         */
+        refresh() {
+            super.refresh();
+            this._populateList();
+        }
+        //#endregion
 
         //--------------------------------------------------------------------------
         //#region ** object model
@@ -1448,13 +1419,31 @@ module wijmo.input {
             }
         }
         /**
-         * Gets or sets the name of the property used to get the @see:selectedValue from the @see:selectedItem.
+         * Gets or sets the name of the property used to get the @see:selectedValue 
+         * from the @see:selectedItem.
          */
         get selectedValuePath(): string {
             return this._pathValue;
         }
         set selectedValuePath(value: string) {
             this._pathValue = asString(value);
+        }
+        /**
+         * Gets or sets the name of the property used to control checkboxes placed next
+         * to each item.
+         *
+         * Use this property to create multi-select lisboxes.
+         * When an item is checked or unchecked, the control raises the @see:itemChecked event.
+         * Use the @see:selectedItem property to retrieve the item that was checked or unchecked.
+         */
+        get checkedMemberPath() {
+            return this._pathChecked;
+        }
+        set checkedMemberPath(value: string) {
+            if (value != this._pathChecked) {
+                this._pathChecked = asString(value);
+                this._populateList();
+            }
         }
         /**
          * Gets the string displayed for the item at a given index.
@@ -1470,9 +1459,9 @@ module wijmo.input {
             var item = null;
             if (index > -1 && this._cv && this._cv.items) {
                 item = this._cv.items[index];
-                if (this.displayMemberPath) {
+                if (item && this.displayMemberPath) {
+                    //assert(this.displayMemberPath in item, 'item does not define displayMemberPath property "' + this.displayMemberPath + '".');
                     item = item[this.displayMemberPath];
-                    assert(item != undefined, 'item does not define displayMemberPath property "' + this.displayMemberPath + '".');
                 }
             }
             var text = item != null ? item.toString() : '';
@@ -1599,6 +1588,22 @@ module wijmo.input {
         onItemsChanged(e?: EventArgs) {
             this.itemsChanged.raise(this, e);
         }
+        /**
+         * Occurs when the current item is checked or unchecked.
+         *
+         * This event is raised when the @see:checkedMemberPath is set to the name of a 
+         * property to add checkboxes to each item in the control.
+         *
+         * Use the @see:selectedItem property to retrieve the item that was checked or 
+         * unchecked.
+         */
+        itemChecked = new Event();
+        /**
+         * Raises the @see:itemCheched event.
+         */
+        onItemChecked(e?: EventArgs) {
+            this.itemChecked.raise(this, e);
+        }
         //#endregion
 
         //--------------------------------------------------------------------------
@@ -1616,31 +1621,51 @@ module wijmo.input {
 
         // populate the list from the current itemsSource
         private _populateList() {
+
+            // remember if we have focus
+            var focus = this.containsFocus();
+
+            // populate
             this._div.innerHTML = '';
             if (this._cv) {
                 for (var i = 0; i < this._cv.items.length; i++) {
-                    var item = document.createElement('div'),
-                        text = this.getDisplayValue(i);
-                    if (this._html == true) {
-                        item.innerHTML = text;
-                    } else {
-                        item.textContent = text;
+
+                    // get item text
+                    var text = this.getDisplayValue(i);
+                    if (this._html != true) {
+                        text = escapeHtml(text);
                     }
+
+                    // add checkbox
+                    if (this.checkedMemberPath) {
+                        var checked = this._cv.items[i][this.checkedMemberPath];
+                        text = '<label><input type="checkbox"' + (checked ? ' checked' : '') + '> ' + text + '</label>';
+                    }
+
+                    // build item
+                    var item = document.createElement('div');
+                    item.innerHTML = text;
                     item.className = 'wj-listbox-item';
                     if (hasClass(<HTMLElement>item.firstChild, 'wj-separator')) {
                         item.className += ' wj-separator';
                     }
+
+                    // add item to list
                     this._div.appendChild(item);
                 }
             }
+
+            // restore focus
+            if (focus && !this.containsFocus()) {
+                this.focus();
+            }
+
+            // scroll selection into view
             this.showSelection();
         }
 
-        // handle mouse down on the ListBox
-        // (better than click because it happens before the browser scrolls 
-        // to bring elements into view, which happens for example when the 
-        // FlexGrid uses ListBox for cell drop-downs)
-        private _mousedown(e: MouseEvent) {
+        // click to select elements
+        private _click(e: MouseEvent) {
 
             // get the listbox element (child of div)
             var elem = <Node>e.target;
@@ -1652,9 +1677,24 @@ module wijmo.input {
             for (var index = 0; index < this._div.childElementCount; index++) {
                 if (this._div.childNodes[index] == elem) {
                     this.selectedIndex = index;
-                    e.preventDefault();
                     e.stopPropagation();
                     break;
+                }
+            }
+
+            // handle checkboxes
+            if (this.checkedMemberPath && this.selectedItem) {
+                var cb = <HTMLInputElement>tryCast(e.target, HTMLInputElement);
+                if (cb && cb.type == 'checkbox') {
+                    var ecv = <wijmo.collections.IEditableCollectionView>tryCast(this._cv, 'IEditableCollectionView');
+                    if (ecv) {
+                        ecv.editItem(this.selectedItem);
+                        this.selectedItem[this.checkedMemberPath] = cb.checked;
+                        ecv.commitEdit();
+                    } else {
+                        this.selectedItem[this.checkedMemberPath] = cb.checked;
+                    }
+                    this.onItemChecked();
                 }
             }
         }
@@ -1726,11 +1766,11 @@ module wijmo.input {
             }
         }
         private _keypress(e: KeyboardEvent) {
-            var count = this._div.childElementCount;
             if (e.charCode > 0) {
+                var count = this._div.childElementCount;
                 for (var off = 1; off < count; off++) {
                     var index = (this.selectedIndex + off) % count,
-                        text = this.getDisplayText(index).toLowerCase();
+                        text = this.getDisplayText(index).trim().toLowerCase();
                     if (text.charCodeAt(0) == e.charCode) {
                         this.selectedIndex = index;
                         e.preventDefault();
@@ -1820,6 +1860,7 @@ module wijmo.input {
         _editable = false;
 
         // private stuff
+        _composing = false;
         _deleting = false;
         _settingText = false;
 
@@ -1834,6 +1875,16 @@ module wijmo.input {
 
             // handle cursor keys
             this._tbx.addEventListener('keydown', this._handleKeyDown.bind(this));
+
+            // handle IME
+            var self = this;
+            this._tbx.addEventListener('compositionstart', function () {
+                self._composing = true;
+            });
+            this._tbx.addEventListener('compositionend', function () {
+                self._composing = false;
+                self._setText(self.text, true);
+            });
 
             // initializing from <select> tag
             if (this._orgTag == 'SELECT') {
@@ -2100,39 +2151,37 @@ module wijmo.input {
         // update text in textbox
         _setText(text: string, fullMatch: boolean) {
 
-            // prevent reentrant calls while moving CollectioView cursor
+            // not while composing IME text...
+            if (this._composing) return;
+
+            // prevent reentrant calls while moving CollectionView cursor
             if (this._settingText) return;
             this._settingText = true;
 
             // get variables we need
             var index = this.selectedIndex,
                 cv = this.collectionView,
-                start = this._tbx.selectionStart,
+                start = this._getSelStart(),
                 len = -1;
 
             // make sure we don't have nulls
             if (text == null) text = '';
 
-            // do not try auto-completion with CJK characters
-            // so we don't interfere with the IME editor (TFS 97636)
-            if (text.match(/^[\u0020-\u1000]*$/)) {
-
-                // try autocompletion
-                if (!this.isEditable || !this._deleting) {
-                    index = this.indexOf(text, fullMatch);
-                    if (index < 0 && fullMatch) { // not found, try partial match
-                        index = this.indexOf(text, false);
-                    }
-                    if (index < 0 && start > 0) { // not found, try up to cursor
-                        index = this.indexOf(text.substr(0, start), false);
-                    }
-                    if (index < 0 && !this.isEditable && this.required && cv && cv.items) { // not found, restore old text
-                        index = Math.max(0, this.indexOf(this._oldText, false));
-                    }
-                    if (index > -1) {
-                        len = start;
-                        text = this.getDisplayText(index);
-                    }
+            // try autocompletion
+            if (!this.isEditable || !this._deleting) {
+                index = this.indexOf(text, fullMatch);
+                if (index < 0 && fullMatch) { // not found, try partial match
+                    index = this.indexOf(text, false);
+                }
+                if (index < 0 && start > 0) { // not found, try up to cursor
+                    index = this.indexOf(text.substr(0, start), false);
+                }
+                if (index < 0 && !this.isEditable && this.required && cv && cv.items) { // not found, restore old text
+                    index = Math.max(0, this.indexOf(this._oldText, false));
+                }
+                if (index > -1) {
+                    len = start;
+                    text = this.getDisplayText(index);
                 }
             }
 
@@ -2147,7 +2196,7 @@ module wijmo.input {
             }
 
             // update text selection
-            if (len > -1 && this.containsFocus()) {
+            if (len > -1 && this.containsFocus() && !this.isTouching) {
                 this._setSelectionRange(len, text.length);
             }
 
@@ -2160,7 +2209,7 @@ module wijmo.input {
         }
 
         // skip to the next/previous item that starts with a given string, wrapping
-        _findNext(text: string, step: number): number {
+        private _findNext(text: string, step: number): number {
             if (this.collectionView) {
                 text = text.toLowerCase();
                 var len = this.collectionView.items.length,
@@ -2197,7 +2246,7 @@ module wijmo.input {
 
                 // select previous item (or wrap back to the last)
                 case Key.Up:
-                    start = this._tbx.selectionStart;
+                    start = this._getSelStart();
                     this.selectedIndex = this._findNext(this.text.substr(0, start), -1);
                     this._setSelectionRange(start, this.text.length);
                     e.preventDefault();
@@ -2208,7 +2257,7 @@ module wijmo.input {
                     if (!this.isDroppedDown && (e.ctrlKey || e.shiftKey)) {
                         this.isDroppedDown = true;
                     } else {
-                        start = this._tbx.selectionStart;
+                        start = this._getSelStart();
                         this.selectedIndex = this._findNext(this.text.substr(0, start), +1);
                         this._setSelectionRange(start, this.text.length);
                     }
@@ -2242,11 +2291,19 @@ module wijmo.input {
         }
 
         // set selection range in input element (if it is visible)
-        _setSelectionRange(start: number, end: number) {
+        private _setSelectionRange(start: number, end: number) {
             if (this._elRef == this._tbx) {
                 this._tbx.setSelectionRange(start, end);
             }
         }
+
+        // get selection start in an extra-safe way (TFS 82372)
+        private _getSelStart(): number {
+            return this._tbx && this._tbx.value
+                ? this._tbx.selectionStart
+                : 0;
+        }
+
 
         //#endregion ** implementation
     }
@@ -2277,6 +2334,7 @@ module wijmo.input {
         private _itemsSourceFn: Function;
         private _minLength = 2;
         private _maxItems = 6;
+        private _itemCount = 0;
         private _delay = 500;
         private _cssMatch: string;
 
@@ -2342,7 +2400,8 @@ module wijmo.input {
          * <ul>
          *     <li>the query string typed by the user</li>
          *     <li>the maximum number of items to return</li>
-         *     <li>the callback function to call when the results become available</li></ul>
+         *     <li>the callback function to call when the results become available</li>
+         * </ul>
          *
          * For example:
          * <pre>
@@ -2411,7 +2470,11 @@ module wijmo.input {
 
             // raise textChanged
             if (text != this._oldText) {
-                this._tbx.value = text;
+
+                // assign only if necessary to prevent occasionally swapping chars (Android 4.4.2)
+                if (this._tbx.value != text) {
+                    this._tbx.value = text;
+                }
                 this._oldText = text;
                 this.onTextChanged();
             }
@@ -2526,7 +2589,9 @@ module wijmo.input {
             this._query = '';
             if (!this.isDroppedDown && this.selectedIndex > -1) {
                 this._setText(this.getDisplayText());
-                this.selectAll();
+                if (!this.isTouching) {
+                    this.selectAll();
+                }
             }
         }
 
@@ -2543,6 +2608,7 @@ module wijmo.input {
                 // apply the filter
                 this._handlingCallback = true;
                 cv.beginUpdate();
+                this._itemCount = 0;
                 cv.filter = this._filter.bind(this);
                 cv.moveCurrentToPosition(-1);
                 cv.endUpdate();
@@ -2554,7 +2620,6 @@ module wijmo.input {
                         this.isDroppedDown = true;
                     }
                 } else {
-                    this.isDroppedDown = false;
                     this.selectedIndex = -1;
                 }
             }
@@ -2564,7 +2629,7 @@ module wijmo.input {
         _filter(item: any): boolean {
 
             // honor maxItems
-            if (this.collectionView.items.length >= this._maxItems) {
+            if (this._itemCount >= this._maxItems) {
                 return false;
             }
 
@@ -2573,7 +2638,15 @@ module wijmo.input {
                 item = item[this.displayMemberPath];
             }
             var text = item != null ? item.toString() : '';
-            return this._rxMatch.test(text);
+
+            // count matches
+            if (this._rxMatch.test(text)) {
+                this._itemCount++;
+                return true;
+            }
+
+            // no pass
+            return false;
         }
 
         // default item formatter: show matches in bold
@@ -2624,6 +2697,7 @@ module wijmo.input {
         _command: any;
         _cmdPath: string;
         _cmdParamPath: string;
+        _isButton: boolean;
 
         /**
          * Initializes a new instance of a @see:Menu control.
@@ -2653,9 +2727,15 @@ module wijmo.input {
             }
 
             // toggle drop-down when clicking on the header
+            // or fire the click event if this menu is a split-button
             var self = this;
             this._header.addEventListener('click', function () {
-                self.isDroppedDown = !self.isDroppedDown;
+                if (self._isButton) {
+                    self.isDroppedDown = false;
+                    self._raiseCommand(EventArgs.empty);
+                } else {
+                    self.isDroppedDown = !self.isDroppedDown;
+                }
             });
 
             // change some defaults
@@ -2723,6 +2803,51 @@ module wijmo.input {
             this._cmdParamPath = asString(value);
         }
         /**
+         * Gets or sets a value that determines whether this @see:Menu should act
+         * as a split button instead of a regular menu.
+         *
+         * The difference between regular menus and split buttons is what happens 
+         * when the user clicks the menu header.
+         * In regular menus, clicking the header shows or hides the menu options.
+         * In split buttons, clicking the header raises the @see:menuItemClicked event
+         * and/or invokes the command associated with the last option selected by
+         * the user as if the user had picked the item from the drop-down list.
+         *
+         * If you want to differentiate between clicks on menu items and the button
+         * part of a split button, check the value of the @see:isDroppedDown property 
+         * of the event sender. If that is true, then a menu item was clicked; if it 
+         * is false, then the button was clicked.
+         *
+         * For example, the code below implements a split button that uses the drop-down
+         * list only to change the default item/command, and triggers actions only when
+         * the button is clicked:
+         *
+         * <pre>&lt;-- view --&gt;
+         * &lt;wj-menu is-button="true" header="Run" value="browser"
+         *   item-clicked="menuItemClicked(s, e)"&gt;
+         *   &lt;wj-menu-item value="'Internet Explorer'"&gt;Internet Explorer&lt;/wj-menu-item&gt;
+         *   &lt;wj-menu-item value="'Chrome'"&gt;Chrome&lt;/wj-menu-item&gt;
+         *   &lt;wj-menu-item value="'FireFox'"&gt;FireFox&lt;/wj-menu-item&gt;
+         *   &lt;wj-menu-item value="'Safari'"&gt;Safari&lt;/wj-menu-item&gt;
+         *   &lt;wj-menu-item value="'Opera'"&gt;Opera&lt;/wj-menu-item&gt;
+         * &lt;/wj-menu&gt;
+         *
+         * // controller
+         * $scope.browser = 'Internet Explorer';
+         * $scope.menuItemClicked = function (s, e) {
+         *   // if not dropped down, click was on the button
+         *   if (!s.isDroppedDown) {
+         *     alert('running ' + $scope.browser);
+         *   }
+         *}</pre>
+         */
+        get isButton(): boolean {
+            return this._isButton;
+        }
+        set isButton(value: boolean) {
+            this._isButton = asBoolean(value);
+        }
+        /**
          * Occurs when the user picksk an item from the menu.
          * 
          * The handler can determine which item was picked by reading the event sender's
@@ -2741,24 +2866,7 @@ module wijmo.input {
         onTextChanged(e?: EventArgs) {
             super.onTextChanged(e);
             if (!this._closing && this.isDroppedDown) {
-
-                // execute command if available
-                var canExecute = true,
-                    item = this.selectedItem,
-                    cmd = this._getCommand(this.selectedItem);
-                if (cmd) {
-                    var parm = this._cmdParamPath ? item[this._cmdParamPath] : null;
-
-                    canExecute = this._canExecuteCommand(cmd, parm);
-                    if (canExecute) {
-                        this._executeCommand(cmd, parm);
-                    }
-                }
-
-                // raise itemClicked
-                if (canExecute) {
-                    this.onItemClicked(e);
-                }
+                this._raiseCommand(e);
             }
         }
 
@@ -2790,6 +2898,26 @@ module wijmo.input {
                 // restore events
                 this._closing = false;
             }
+        }
+
+        // ** implementation
+
+        // raise itemClicked and/or invoke the current command
+        _raiseCommand(e?: EventArgs) {
+
+            // execute command if available
+            var item = this.selectedItem,
+                cmd = this._getCommand(item);
+            if (cmd) {
+                var parm = this._cmdParamPath ? item[this._cmdParamPath] : null;
+                if (!this._canExecuteCommand(cmd, parm)) {
+                    return; // command not currently available
+                }
+                this._executeCommand(cmd, parm);
+            }
+
+            // raise itemClicked
+            this.onItemClicked(e);
         }
 
         // gets the command to be executed when an item is clicked
@@ -2897,7 +3025,7 @@ module wijmo.input {
         }
         set value(value: Date) {
             if (DateTime.equals(this._value, value)) {
-                this._tbx.value = wijmo.Globalize.format(value, this.format);
+                this._tbx.value = Globalize.format(value, this.format);
             } else {
 
                 // check type
@@ -2921,7 +3049,7 @@ module wijmo.input {
 
                 // update control
                 this._value = value;
-                this._tbx.value = value ? wijmo.Globalize.format(value, this.format) : '';
+                this._tbx.value = value ? Globalize.format(value, this.format) : '';
                 this.onValueChanged();
             }
         }
@@ -2977,8 +3105,8 @@ module wijmo.input {
         }
         set format(value: string) {
             if (value != this.format) {
-                this._format = wijmo.asString(value);
-                this._tbx.value = wijmo.Globalize.format(this.value, this.format);
+                this._format = asString(value);
+                this._tbx.value = Globalize.format(this.value, this.format);
             }
         }
         /**
@@ -3028,7 +3156,7 @@ module wijmo.input {
             if (this._calendar) {
                 this._calendar.refresh();
             }
-            this._tbx.value = wijmo.Globalize.format(this.value, this.format);
+            this._tbx.value = Globalize.format(this.value, this.format);
         }
 
         // override to send focus to calendar when dropping down
@@ -3036,15 +3164,7 @@ module wijmo.input {
 
             // transfer focus to Calendar
             if (this.isDroppedDown) {
-                var scrollBefore = new Point(window.pageXOffset, window.pageYOffset);
                 this._calendar.focus();
-                var scrollAfter = new Point(window.pageXOffset, window.pageYOffset);
-                // In case if the just focused element doesn't fit in the screen, Chrome may perform scrolling to best fit it.
-                // The latter normally causes closing of the drop-down. We detect whether scrolling has occured 
-                // after the _calendar gained focus, and suppress closing if this is the case.
-                if (!scrollBefore.equals(scrollAfter)) {
-                    this._noScrollClose = true;
-                }
             }
 
             // raise event as usual
@@ -3069,7 +3189,10 @@ module wijmo.input {
             this._dropDown.addEventListener('mousedown', function () {
                 dtDown = self.value;
             });
-            this._dropDown.addEventListener('click', function () {
+            // The 'click' event may not be triggered on iOS Safari if focus change happend during previous user's tap.
+            // We use 'mouseup' instead.
+            //this._dropDown.addEventListener('click', function () {
+            this._dropDown.addEventListener('mouseup', function () {
                 var value = self._calendar.value;
                 if (value && !DateTime.sameDate(dtDown, value)) {
                     self.isDroppedDown = false;
@@ -3088,6 +3211,7 @@ module wijmo.input {
             // update size
             var cs = getComputedStyle(this.hostElement);
             this._dropDown.style.minWidth = parseFloat(cs.fontSize) * 18 + 'px';
+            this._calendar.refresh(); // update layout/size now
 
             // let base class update position
             super._updateDropDown();
@@ -3137,11 +3261,11 @@ module wijmo.input {
             if (!txt && !this.required) {
                 this.value = null;
             } else {
-                var dt = wijmo.Globalize.parseDate(txt, this.format);
+                var dt = Globalize.parseDate(txt, this.format);
                 if (dt) {
                     this.value = DateTime.fromDateTime(dt, this.value);
                 } else {
-                    this._tbx.value = wijmo.Globalize.format(this.value, this.format);
+                    this._tbx.value = Globalize.format(this.value, this.format);
                 }
             }
         }
@@ -3203,10 +3327,11 @@ module wijmo.input {
             this._maskProvider = new _MaskProvider(this._tbx);
 
             // commit text when losing focus
+            // use blur+capture to emulate focusout (not supported in FireFox)
             var self = this;
-            this.hostElement.addEventListener('focusout', function () {
+            this.hostElement.addEventListener('blur', function () {
                 self._commitText();
-            });
+            }, true);
 
             // initializing from <input> tag
             if (this._orgTag == 'INPUT') {
@@ -3246,7 +3371,7 @@ module wijmo.input {
 
             // update control
             if (value != this._value) {
-                this._setText(value ? wijmo.Globalize.format(value, this.format) : '', true);
+                this._setText(value ? Globalize.format(value, this.format) : '', true);
                 this._value = value;
                 this.onValueChanged();
             }
@@ -3308,8 +3433,8 @@ module wijmo.input {
         }
         set format(value: string) {
             if (value != this.format) {
-                this._format = wijmo.asString(value);
-                this._tbx.value = wijmo.Globalize.format(this.value, this.format);
+                this._format = asString(value);
+                this._tbx.value = Globalize.format(this.value, this.format);
                 if (this.collectionView && this.collectionView.items.length) {
                     this._updateItems();
                 }
@@ -3351,7 +3476,7 @@ module wijmo.input {
         refresh() {
             this.isDroppedDown = false;
             this._maskProvider.refresh();
-            this._tbx.value = wijmo.Globalize.format(this.value, this.format);
+            this._tbx.value = Globalize.format(this.value, this.format);
             this._updateItems();
         }
 
@@ -3378,7 +3503,7 @@ module wijmo.input {
             }
             if (step > 0) {
                 for (var dt = min; dt <= max; dt = DateTime.addMinutes(dt, step)) {
-                    items.push(wijmo.Globalize.format(dt, this.format));
+                    items.push(Globalize.format(dt, this.format));
                 }
             }
 
@@ -3415,11 +3540,11 @@ module wijmo.input {
             if (!this.text && !this.required) {
                 this.value = null;
             } else {
-                var dt = wijmo.Globalize.parseDate(this.text, this.format);
+                var dt = Globalize.parseDate(this.text, this.format);
                 if (dt) {
                     this.value = DateTime.fromDateTime(this.value, dt);
                 } else {
-                    this._tbx.value = wijmo.Globalize.format(this.value, this.format);
+                    this._tbx.value = Globalize.format(this.value, this.format);
                 }
             }
         }
@@ -3478,11 +3603,11 @@ module wijmo.input {
          */
         static controlTemplate = '<div class="wj-input">' +
                 '<div class="wj-input-group">' +
-                    '<span wj-part="btn-dec" class="wj-input-group-btn">' +
+                    '<span wj-part="btn-dec" class="wj-input-group-btn" tabindex="-1">' +
                         '<button class="wj-btn wj-btn-default" type="button" tabindex="-1">-</button>' +
                     '</span>' +
                     '<input type="tel" wj-part="input" class="wj-form-control wj-numeric"/>' +
-                    '<span wj-part="btn-inc" class="wj-input-group-btn">' +
+                    '<span wj-part="btn-inc" class="wj-input-group-btn" tabindex="-1">' +
                         '<button class="wj-btn wj-btn-default" type="button" tabindex="-1">+</button>' +
                     '</span>' +
                 '</div>'; 
@@ -3529,9 +3654,9 @@ module wijmo.input {
 
             // textbox events
             var tb = self._tbx;
-            tb.addEventListener('keypress', self._keypress.bind(this));
-            tb.addEventListener('keydown', self._keydown.bind(this));
-            tb.addEventListener('input', self._input.bind(this));
+            tb.addEventListener('keypress', this._keypress.bind(this));
+            tb.addEventListener('keydown', this._keydown.bind(this));
+            tb.addEventListener('input', this._input.bind(this));
             tb.addEventListener('focus', function () {
                 setTimeout(self._ehSelectAll, 0);
             });
@@ -3540,20 +3665,16 @@ module wijmo.input {
             // if this was a tap, keep focus on button; OW transfer to textbox
             this._btnUp.addEventListener('click', function (e) {
                 if (self.value != null) {
-                    self.value = self._clamp(self.value + self.step);
-                    if (self.isTouching) {
-                        self._btnUp.focus();
-                    } else {
+                    self.value += self.step;
+                    if (!self.isTouching) {
                         setTimeout(self._ehSelectAll , 0);
                     }
                 }
             });
             this._btnDn.addEventListener('click', function (e) {
                 if (self.value != null) {
-                    self.value = self._clamp(self.value - self.step);
-                    if (self.isTouching) {
-                        self._btnDn.focus();
-                    } else {
+                    self.value -= self.step;
+                    if (!self.isTouching) {
                         setTimeout(self._ehSelectAll, 0);
                     }
                 }
@@ -3561,11 +3682,16 @@ module wijmo.input {
 
             // host element
             this.hostElement.addEventListener('focus', function () {
-                tb.focus();
+                if (!this.isTouching) {
+                    tb.focus();
+                }
             });
-            this.hostElement.addEventListener('focusout', function () {
-                self.value = self._clamp(self.value);
-            });
+
+            // use blur+capture to emulate focusout (not supported in FireFox)
+            this.hostElement.addEventListener('blur', function () {
+                var text = Globalize.format(self.value, self.format);
+                self._setText(text);
+            }, true);
 
             // initialize value
             this.value = 0;
@@ -3615,7 +3741,7 @@ module wijmo.input {
                     this._setText('');
                 } else if (!isNaN(value)) {
                     value = this._clamp(value);
-                    var text = wijmo.Globalize.format(value, this.format);
+                    var text = Globalize.format(value, this.format);
                     this._setText(text);
                 }
             }
@@ -3671,7 +3797,7 @@ module wijmo.input {
         }
         set format(value: string) {
             if (value != this.format) {
-                this._format = wijmo.asString(value);
+                this._format = asString(value);
                 this.refresh();
             }
         }
@@ -3741,7 +3867,7 @@ module wijmo.input {
 
         refresh(fullUpdate?: boolean) {
             this._decChar = Globalize.getNumberDecimalSeparator();
-            this._setText(wijmo.Globalize.format(this.value, this.format));
+            this._setText(Globalize.format(this.value, this.format));
         }
 
         //#endregion
@@ -3809,7 +3935,7 @@ module wijmo.input {
                 if (!this._required) {
                     this._tbx.value = '';
                     if (this._value != null) {
-                        this._value = value;
+                        this._value = null;
                         this.onValueChanged();
                     }
                     if (this._oldText) {
@@ -3836,7 +3962,7 @@ module wijmo.input {
             }
 
             // parse input
-            var value = wijmo.Globalize.parseFloat(text);
+            var value = Globalize.parseFloat(text);
             if (isNaN(value)) {
                 this._tbx.value = this._oldText;
                 return;
@@ -3848,7 +3974,7 @@ module wijmo.input {
             }
 
             // update text with formatted value
-            text = wijmo.Globalize.format(value, this.format);
+            text = Globalize.format(value, this.format);
 
             // update text
             if (text != this._tbx.value) {
@@ -3856,6 +3982,7 @@ module wijmo.input {
             }
 
             // update value, raise valueChanged
+            value = this._clamp(value);
             if (value != this._value) {
                 this._value = value;
                 this.onValueChanged();
@@ -3900,7 +4027,7 @@ module wijmo.input {
                 if (chr == this._decChar) {
                     var pos = this._tbx.value.indexOf(chr);
                     if (pos > -1) {
-                        if (this._tbx.selectionStart <= pos) {
+                        if (this._getSelStart() <= pos) {
                             pos++;
                         }
                         this._tbx.setSelectionRange(pos, pos);
@@ -3926,8 +4053,8 @@ module wijmo.input {
 
                 // skip over decimal point when pressing backspace (TFS 80472)
                 case Key.Back:
-                    if (this._tbx.selectionStart == this._tbx.selectionEnd) {
-                        var sel = this._tbx.selectionStart;
+                    if (this._getSelStart() == this._tbx.selectionEnd) {
+                        var sel = this._getSelStart();
                         if (sel > 0 && this.text[sel - 1] == this._decChar) {
                             this._tbx.setSelectionRange(sel - 1, sel - 1);
                             e.preventDefault();
@@ -3937,8 +4064,8 @@ module wijmo.input {
 
                 // skip over decimal point when pressing delete (TFS 80472)
                 case Key.Delete:
-                    if (this._tbx.selectionStart == this._tbx.selectionEnd) {
-                        var sel = this._tbx.selectionStart;
+                    if (this._getSelStart() == this._tbx.selectionEnd) {
+                        var sel = this._getSelStart();
                         if (sel > 0 && this.text[sel] == this._decChar) {
                             this._tbx.setSelectionRange(sel + 1, sel + 1);
                             e.preventDefault();
@@ -3954,7 +4081,7 @@ module wijmo.input {
             // remember cursor position
             var tbx = this._tbx,
                 text = tbx.value,
-                sel = tbx.selectionStart,
+                sel = this._getSelStart(),
                 dec = text.indexOf(this._decChar);
 
             // set the text
@@ -3981,6 +4108,13 @@ module wijmo.input {
                 // set cursor position
                 tbx.setSelectionRange(sel, sel);
             }
+        }
+
+        // get selection start
+        private _getSelStart(): number {
+            return this._tbx && this._tbx.value
+                ? this._tbx.selectionStart
+                : 0;
         }
     }
 }
@@ -4217,18 +4351,8 @@ module wijmo.input {
             // initialize control options
             this.initialize(options);
 
-            // close drop-down when losing focus
-            var self = this;
-            this.hostElement.addEventListener('focusout', function () {
-                setTimeout(function () {
-                    if (!self.containsFocus()) {
-                        self.isDroppedDown = false;
-                        self._commitText();
-                    }
-                }, 0);
-            });
-
             // handle keyboard
+            var self = this;
             this._tbx.addEventListener('keydown', function (e) {
                 switch (e.keyCode) {
                     case Key.Enter:

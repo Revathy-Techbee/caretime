@@ -353,9 +353,9 @@ angular.module("admin/agency/add-update-agency.tpl.html", []).run(["$templateCac
     "				            \n" +
     "				              </div>\n" +
     "				              <div class=\"col-md-3\">\n" +
-    "				                <input type=\"text\" class=\"form-control\" capitalize placeholder=\"County\" ng-model=\"agency.primary_county\" name=\"primary_county\" required=\"\">\n" +
-    "				                 <span class=\"help-block\" ng-show=\"general.primary_county.$error.required\n" +
-    "                                && rc.general.needsAttention(general.primary_county)\">County is required.</span>\n" +
+    "				                <input type=\"text\" class=\"form-control\" capitalize placeholder=\"County\" ng-model=\"agency.primary_county\" name=\"primary_county\" >\n" +
+    "				                <!-- <span class=\"help-block\" ng-show=\"general.primary_county.$error.required\n" +
+    "                                && rc.general.needsAttention(general.primary_county)\">County is required.</span> -->\n" +
     "				              </div>\n" +
     "				              <div class=\"col-md-4\">\n" +
     "				                <input type=\"text\" class=\"form-control\" capitalize  placeholder=\"City\" ng-model=\"agency.primary_city\" name=\"primary_city\" required=\"\" >\n" +
@@ -921,9 +921,9 @@ angular.module("ct-app/agency/add-update-agency.tpl.html", []).run(["$templateCa
     "\n" +
     "                                </div>\n" +
     "                                <div class=\"col-md-3\">\n" +
-    "                                    <input type=\"text\" class=\"form-control\" capitalize placeholder=\"County\" ng-model=\"agency.primary_county\" name=\"primary_county\" required=\"\">\n" +
-    "                                    <span class=\"help-block\" ng-show=\"general.primary_county.$error.required\n" +
-    "                                && rc.general.needsAttention(general.primary_county)\">County is required.</span>\n" +
+    "                                    <input type=\"text\" class=\"form-control\" capitalize placeholder=\"County\" ng-model=\"agency.primary_county\" name=\"primary_county\" >\n" +
+    "                                    <!--<span class=\"help-block\" ng-show=\"general.primary_county.$error.required\n" +
+    "                                && rc.general.needsAttention(general.primary_county)\">County is required.</span> -->\n" +
     "                                </div>\n" +
     "                                <div class=\"col-md-4\">\n" +
     "                                    <input type=\"text\" class=\"form-control\" capitalize placeholder=\"City\" ng-model=\"agency.primary_city\" name=\"primary_city\" required=\"\">\n" +
@@ -3820,8 +3820,8 @@ angular.module("ct-app/jobs/jobs.tpl.html", []).run(["$templateCache", function(
     "                </thead>\n" +
     "                <tbody infinite-scroll='getNextData()' infinite-scroll-disabled='disable_infinite_scroll' infinite-scroll-distance='0'>\n" +
     "                    <tr ng-repeat=\"detail in jobDetailList\" class=\"animate-repeat\">\n" +
-    "                        <td>{{detail.job_code}}</td>\n" +
-    "                        <td> <span ng-bind-html=\"detail.last_clocked_in_date | iconColor\">{{detail.last_clocked_in_date  | iconColor}}</span> &nbsp;   <span ng-bind-html=\"detail.last_scheduled_date | calenderIconColor\">{{detail.last_scheduled_date  | iconColor}}</span> &nbsp; {{detail.job_name}}</td>\n" +
+    "                        <td>{{detail.job_code }}</td>\n" +
+    "                        <td> <span ng-bind-html=\"detail.last_clocked_in_date | iconColor\">{{detail.last_clocked_in_date  | iconColor}}</span> &nbsp;   <span ng-bind-html=\"detail.last_scheduled_date | calenderIconColor\">{{detail.last_scheduled_date  | iconColor}}</span> &nbsp; {{detail.job_name | stripslashes }}</td>\n" +
     "                        <td>{{detail.job_zone_detail |  parseToJson:0:'zone' }}</td>\n" +
     "                        <td ng-if=\"empCountry=='' || empCountry=='United States'\">{{detail.authorized_phone_format }}</td>\n" +
     "                        <td ng-if=\"empCountry!='' && empCountry!='United States'\">{{detail.work_phone_format}}</td>\n" +
@@ -4877,12 +4877,13 @@ angular.module("ct-app/logs/timeCards/add-update-timeCard.tpl.html", []).run(["$
     "                </div>\n" +
     "\n" +
     "                <div class=\"form-group\" ng-if=\"pageTitle=='Update'\">\n" +
-    "                    <label class=\"col-sm-2 control-label text-danger\">Current Date/time</label>\n" +
+    "                    <label class=\"col-sm-2 text-right \">Current Date/time</label>\n" +
     "                    <div class=\"col-sm-10\">\n" +
-    "                        <div class=\"input-group w-md\">\n" +
+    "                        <span class=\"padding\"> {{timecard.current_date}}</span>\n" +
+    "                        <!--<div class=\"input-group w-md\">\n" +
     "                            <input type=\"text\" Readonly class=\"form-control w-md\" ng-model=\"timecard.current_date\">\n" +
     "\n" +
-    "                        </div>\n" +
+    "                        </div>-->\n" +
     "                    </div>\n" +
     "                </div>\n" +
     "\n" +

@@ -411,28 +411,47 @@ angular.module('utils.ct.services', [])
        
         },
         AddEditUser: function AddEditUser(data) {
+            if (data) {
+                try {
+                    var temp = JSON.parse(data);
+                    var tempar = '-';
+                    if (temp.lastname) {
+                        tempar = temp.lastname + ', ' + temp.firstname + " (" + temp.username + ")";
+                    } else if (temp.firstname) {
+                        tempar = temp.firstname + " (" + temp.username + ")";
 
-                if (data) {
-                    try {
-                        var temp = JSON.parse(data);
-                        var tempar = '-';
-                        if (temp.lastname) {
-                            tempar = temp.lastname + ', ' + temp.firstname + " (" + temp.username + ")";
-                        } else if (temp.firstname) {
-                            tempar = temp.firstname + " (" + temp.username + ")";
-
-                        }
-
-                        return tempar;
-                    } catch (e) {
-                        return data;
                     }
 
-                } else {
-                    return "-";
+                    return tempar;
+                } catch (e) {
+                    return data;
                 }
 
+            } else {
+                return "-";
             }
+
+        },
+        addslashes: function addslashes(data) {
+
+            if (data) {
+                data = data.replace(/'/g, "\\'");
+                 return data;
+            } else {
+                return "";
+            }
+
+        },
+         stripslashes: function stripslashes(data) {
+
+            if (data) {
+                 data = data.replace(/\\'/g, "'");
+                 return data;
+            } else {
+                return "";
+            }
+
+        }
 
     
         };

@@ -1,6 +1,6 @@
 /*
     *
-    * Wijmo Library 5.20143.32
+    * Wijmo Library 5.20151.48
     * http://wijmo.com/
     *
     * Copyright(c) GrapeCity, Inc.  All rights reserved.
@@ -22,10 +22,9 @@
  * at least two ranges: the "face" and the "pointer".
  *
  * <ul><li>
- * The "face" represents the background gauge background. The "min" and "max"
+ * The "face" represents the gauge background. The "min" and "max"
  * properties of the face range correspond to the "min" and "max" properties 
- * of the gauge control, and limit the values that can be displayed by the 
- * gauge.
+ * of the gauge control, and limit the values that the gauge can display.
  * </li><li>
  * The "pointer" is the range that indicates the gauge's current value. The 
  * "max" property of the pointer range corresponds to the "value" property 
@@ -38,7 +37,7 @@
  *
  * <ul><li>
  * By default, the extra ranges appear as part of the gauge background. 
- * This way you can show 'zones' within the gauge, like 'good', 'average', 
+ * This way you can show 'zones' within the gauge, like 'good,' 'average,' 
  * and 'bad' for example.
  * </li><li>
  * If you set the gauge's "showRanges" property to false, the additional 
@@ -50,7 +49,7 @@ module wijmo.gauge {
     'use strict';
 
     /**
-     * Specifies which values should be displayed as text.
+     * Specifies which values to display as text.
      */
     export enum ShowText {
         /** Do not show any text in the gauge. */
@@ -83,6 +82,7 @@ module wijmo.gauge {
         private _showText = ShowText.None;
         private _filterID: string;
         private _rangesDirty: boolean;
+        private _origin: number;
 
         // protected
         _thickness = 0.8;
@@ -144,8 +144,8 @@ module wijmo.gauge {
         /**
          * Initializes a new instance of a @see:Gauge control.
          *
-         * @param element The DOM element that will host the control, or a selector for the host element (e.g. '#theCtrl').
-         * @param options JavaScript object containing initialization data for the control.
+         * @param element The DOM element that hosts the control, or a selector for the host element (e.g. '#theCtrl').
+         * @param options The JavaScript object containing initialization data for the control.
          */
         constructor(element: any, options?) {
             super(element, null, true);
@@ -227,7 +227,7 @@ module wijmo.gauge {
         }
 
         /**
-         * Gets or sets the value displayed on the gauge.
+         * Gets or sets the value to display on the gauge.
          */
         get value(): number {
             return this._pointer.max;
@@ -256,7 +256,23 @@ module wijmo.gauge {
             this._face.max = value;
         }
         /**
-         * Gets or whether the user can edit the value using the mouse and
+         * Gets or sets the starting point used for painting the range.
+         *
+         * By default, this property is set to null, which causes the value range
+         * to start at the gauge's minimum value, or zero if the minimum is less
+         * than zero.
+         */
+        get origin(): number {
+            return this._origin;
+        }
+        set origin(value: number) {
+            if (value != this._origin) {
+                this._origin = asNumber(value, true);
+                this.invalidate();
+            }
+        }
+        /**
+         * Gets or sets a value indicating whether the user can edit the value using the mouse and
          * the keyboard.
          */
         get isReadOnly(): boolean {
@@ -270,7 +286,7 @@ module wijmo.gauge {
             this._setAttribute(this._gPointer, 'cursor', cursor);
         }
         /**
-         * Gets or sets the amount to add or subtract to the @see:value property
+         * Gets or sets the amount to add to or subtract from the @see:value property
          * when the user presses the arrow keys.
          */
         get step(): number {
@@ -280,7 +296,7 @@ module wijmo.gauge {
             this._step = asNumber(value, true);
         }
         /**
-         * Gets or sets the format string used for displaying the gauge values
+         * Gets or sets the format string to use for displaying the gauge values
          * as text.
          */
         get format(): string {
@@ -321,7 +337,7 @@ module wijmo.gauge {
             return this._pointer;
         }
         /**
-         * Gets or sets which values should be displayed as text in the gauge.
+         * Gets or sets the @see:ShowText values to display as text in the gauge.
          */
         get showText(): ShowText {
             return this._showText;
@@ -333,7 +349,7 @@ module wijmo.gauge {
             }
         }
         /**
-         * Gets or sets whether the gauge should display the ranges contained in the @see:ranges property.
+         * Gets or sets a value indicating whether the gauge displays the ranges contained in the @see:ranges property.
          *
          * If this property is set to false, the ranges contained in the @see:ranges property are not
          * displayed in the gauge. Instead, they are used to interpolate the color of the @see:pointer
@@ -351,7 +367,7 @@ module wijmo.gauge {
             }
         }
         /**
-         * Gets or sets whether the gauge should display a shadow effect.
+         * Gets or sets a value indicating whether the gauge displays a shadow effect.
          */
         get hasShadow(): boolean {
             return this._shadow;
@@ -363,7 +379,7 @@ module wijmo.gauge {
             }
         }
         /**
-         * Gets or sets whether the gauge should animate value changes.
+         * Gets or sets a value indicating whether the gauge animates value changes.
          */
         get isAnimated(): boolean {
             return this._animated;
@@ -392,7 +408,7 @@ module wijmo.gauge {
         /**
          * Refreshes the control.
          *
-         * @param fullUpdate Whether to update the control layout as well as the content.
+         * @param fullUpdate Indicates whether to update the control layout as well as the content.
          */
         refresh(fullUpdate = true) {
             super.refresh(fullUpdate);
@@ -464,9 +480,10 @@ module wijmo.gauge {
          * });
          * </pre>
          *
-         * @param pt Point to investigate, in window coordinates, or a MoueEvent object, or x coordinate of the point.
-         * @param y Y coordinate of the point (if the first parameter is a number).
-         * @return Value of the gauge at the point, or null if the point on the gauge's face.
+         * @param pt The point to investigate, in window coordinates, or a MoueEvent object, 
+         * or the x coordinate of the point.
+         * @param y The Y coordinate of the point (if the first parameter is a number).
+         * @return Value of the gauge at the point, or null if the point is not on the gauge's face.
          */
         hitTest(pt: any, y?: number): number {
 
@@ -617,7 +634,9 @@ module wijmo.gauge {
 
             // update pointer's min value
             if (rng == this._pointer) {
-                rng.min = (this.min < 0 && this.max > 0) ? 0 : this.min;
+                rng.min = this.origin != null
+                    ? this.origin
+                    : (this.min < 0 && this.max > 0) ? 0 : this.min;
             }
 
             // update the range's element
@@ -990,7 +1009,7 @@ module wijmo.gauge {
      * reference values.
      *
      * If you set the gauge's @see:isReadOnly property to false, then the
-     * user will be able to edit the value by clicking on the gauge.
+     * user can edit the value by clicking on the gauge.
      *
      * @fiddle:7ec2144u
      */
@@ -1004,8 +1023,8 @@ module wijmo.gauge {
         /**
          * Initializes a new instance of a @see:RadialGauge control.
          *
-         * @param element The DOM element that will host the control, or a selector for the host element (e.g. '#theCtrl').
-         * @param options JavaScript object containing initialization data for the control.
+         * @param element The DOM element that hosts the control, or a selector for the host element (e.g. '#theCtrl').
+         * @param options The JavaScript object containing initialization data for the control.
          */
         constructor(element: any, options?) {
             super(element, null);
@@ -1048,7 +1067,7 @@ module wijmo.gauge {
             }
         }
         /**
-         * Gets or sets whether the gauge should automatically scale to fill the host element.
+         * Gets or sets a value indicating whether the gauge automatically scales to fill the host element.
          */
         get autoScale(): boolean {
             return this._autoScale;
@@ -1065,7 +1084,7 @@ module wijmo.gauge {
         /**
          * Refreshes the control.
          *
-         * @param fullUpdate Whether to update the control layout as well as the content.
+         * @param fullUpdate Indicates whether to update the control layout as well as the content.
          */
         refresh(fullUpdate = true) {
 
@@ -1227,8 +1246,8 @@ module wijmo.gauge {
         /**
          * Initializes a new instance of a @see:BulletGraph control.
          *
-         * @param element The DOM element that will host the control, or a selector for the host element (e.g. '#theCtrl').
-         * @param options JavaScript object containing initialization data for the control.
+         * @param element The DOM element that hosts the control, or a selector for the host element (e.g. '#theCtrl').
+         * @param options The JavaScript object containing initialization data for the control.
          */
         constructor(element: any, options?) {
             super(element, null);
@@ -1344,7 +1363,7 @@ module wijmo.gauge {
         /**
          * Initializes a new instance of a @see:Range.
          *
-         * @param name Name of the range.
+         * @param name The name of the range.
          */
         constructor(name?: string) {
             this._name = name;
@@ -1388,7 +1407,7 @@ module wijmo.gauge {
             this._setProp('_thickness', clamp(asNumber(value), 0, 1));
         }
         /**
-         * Gets or sets whether the name of this @see:Range.
+         * Gets or sets the name of this @see:Range.
          */
         get name(): string {
             return this._name;

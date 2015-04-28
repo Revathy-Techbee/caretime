@@ -1,6 +1,6 @@
 /*
     *
-    * Wijmo Library 5.20143.32
+    * Wijmo Library 5.20151.48
     * http://wijmo.com/
     *
     * Copyright(c) GrapeCity, Inc.  All rights reserved.
@@ -45,14 +45,27 @@ module wijmo {
             }
         },
         FlexGrid: {
-            groupHeaderFormat: '{name}: <b>{value} </b>({count} 항목)'
+            groupHeaderFormat: '{name}: <b>{value} </b>({count:n0} 항목)'
         },
         FlexGridFilter: {
+
+            // filter
+            ascending: '\u2191 오름차순',
+            descending: '\u2193 내림차순',
+            apply: '적용',
+            clear: '확인',
+            conditions: '조건',
+            values: '값',
+
+            // value filter
+            search: '검색',
+            selectAll: '모든 선택',
+            null: '(제로)',
+
+            // condition filter
             header: '자료 행 보기',
             and: '그리고',
             or: '또는',
-            apply: '적용',
-            clear: '확인',
             stringOperators: [
                 { name: '(설정되지 않음)', op: null },
                 { name: '같음', op: 0 },

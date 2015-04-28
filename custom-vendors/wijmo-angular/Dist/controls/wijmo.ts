@@ -1,6 +1,6 @@
 /*
     *
-    * Wijmo Library 5.20143.32
+    * Wijmo Library 5.20151.48
     * http://wijmo.com/
     *
     * Copyright(c) GrapeCity, Inc.  All rights reserved.
@@ -20,10 +20,7 @@ module wijmo {
     // major (EMACScript version required).
     // year/trimester.
     // sequential
-    var _VERSION = '5.20143.32';
-
-    // whether this is a touch device (initialized in the isTouchDevice method)
-    var _isTouch;
+    var _VERSION = '5.20151.48';
 
     // for escaping HTML without jQuery
     // (http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery)
@@ -352,7 +349,7 @@ module wijmo {
 
                 // apply static format
                 if (fmt) {
-                    val = wijmo.Globalize.format(val, fmt);
+                    val = Globalize.format(val, fmt);
                 }
 
                 // apply format function
@@ -615,16 +612,6 @@ module wijmo {
             removeClass(e, className);
         }
     }
-    /**
-     * Determines whether the current device is touch-enabled.
-     */
-    export function isTouchDevice(): boolean {
-        if (_isTouch == null) {
-            // https://hacks.mozilla.org/2013/04/detecting-touch-its-the-why-not-the-how/
-            _isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
-        }
-        return _isTouch;
-    }
 
     // ** jQuery replacement methods
 
@@ -648,7 +635,7 @@ module wijmo {
     export function createElement(html: string) : HTMLElement {
         var div = document.createElement('div');
         div.innerHTML = html;
-        return <HTMLElement>div.firstChild;
+        return <HTMLElement>div.removeChild(div.firstChild);
     }
     /**
      * Checks whether an HTML element contains another.
@@ -683,13 +670,19 @@ module wijmo {
     export function setCss(e: HTMLElement, css: any) {
         var s = e.style;
         for (var p in css) {
+
+            // add pixel units to numeric geometric properties
             var val = css[p];
             if (isNumber(val)) {
                 if (p.match(/width|height|left|top|right|bottom|size|padding|margin'/i)) {
-                    val += 'px'; // default unit for geometry properties
+                    val += 'px';
                 }
             }
-            s[p] = val.toString();
+
+            // set the attribute if it changed
+            if (s[p] != val) {
+                s[p] = val.toString();
+            }
         }
     }
     /**
@@ -740,7 +733,7 @@ module wijmo {
             apply(pct);
             t += step;
             if (t >= duration) {
-                if (pct > 1) apply(1); // finish
+                if (pct < 1) apply(1); // ensure apply(1) is called to finish
                 clearInterval(timer);
             }
         }, step);
@@ -1053,12 +1046,12 @@ module wijmo {
     /**
      * Provides binding to complex properties (e.g. 'customer.address.city')
      */
-    export class _Binding {
+    export class Binding {
         _path: string;
         _parts: string[];
 
         /**
-         * Initializes a new instance of a _Binding.
+         * Initializes a new instance of a @see:Binding object.
          *
          * @param path Name of the property to bind to.
          */
@@ -1173,9 +1166,9 @@ module wijmo {
          *      Custom Date and Time Format Strings</a></li>
          * </ul>
          *
-         * @param value Number or Date to format.
+         * @param value Number or Date to format (all other types are converted to strings).
          * @param format Format string to use when formatting numbers or dates.
-         * @return A string representation of the given number or date.
+         * @return A string representation of the given value.
          */
         static format(value: any, format: string): string {
 
@@ -1189,15 +1182,14 @@ module wijmo {
                 }
             }
 
-            // format numbers and dates
+            // format numbers and dates, convert others to string
             if (isNumber(value)) {
                 return Globalize.formatNumber(value, format);
             } else if (isDate(value)) {
                 return Globalize.formatDate(value, format);
+            } else {
+                return value != null ? value.toString() : '';
             }
-
-            // anything that is not a number or a date returns as-is
-            return value;
         }
         /**
          * Formats a number using the current culture.
@@ -1640,7 +1632,7 @@ module wijmo {
         private static _h12(d: Date) {
             var cal = wijmo.culture.Globalize.calendar,
                 h = d.getHours();
-            if (cal.am && cal.am[0] && h > 11) {
+            if (cal.am && cal.am[0]) {
                 h = h % 12;
                 if (h == 0) h = 12;
             }
@@ -1680,12 +1672,12 @@ module wijmo {
      *
      * Wijmo events are similar to .NET events. Any class may define events by 
      * declaring them as fields. Any class may subscribe to events using the 
-     * event's @see:addHandler method, or unsubscribe using the @see:removeHandler 
+     * event's @see:addHandler method and unsubscribe using the @see:removeHandler 
      * method.
      * 
      * Wijmo event handlers take two parameters: <i>sender</i> and <i>args</i>. 
      * The first is the object that raised the event, and the second is an object 
-     * that contains the the event parameters.
+     * that contains the event parameters.
      *
      * Classes that define events follow the .NET pattern where for every event 
      * there is an <i>on[EVENTNAME]</i> method that raises the event. This pattern 
@@ -1841,6 +1833,7 @@ module wijmo {
     export class Control {
         private static _DATA_KEY = 'wj-Control';    // key used to store control reference in host element
         private static _REFRESH_INTERVAL = 10;      // interval between invalidation and refresh
+        private static _wme: HTMLElement;           // watermark element
         private _updating = 0;                      // update count (no refreshes while > 0)
         private _toInvalidate: number;              // invalidation timeOut
         private _szCtl: wijmo.Size;                 // current control size
@@ -1851,9 +1844,7 @@ module wijmo {
         _orgAtts: NamedNodeMap;                     // host element's original attributes
         private _ehDisabled;                        // bound event handler for mouse/keyboard events
         private _ehResize;                          // bound event handler for window resize
-        private _ehTouchStart;                      // bound event handler for touch start
-        private _ehTouchEnd;                        // bound event handler for touch end/leave/cancel
-        private _touching: boolean;
+        static _touching: boolean;                  // the current event is a touch event
 
         /**
          * Initializes a new instance of a @see:Control and attaches it to a DOM element.
@@ -1906,14 +1897,27 @@ module wijmo {
             host.addEventListener('click', this._ehDisabled, true);
             host.addEventListener('keydown', this._ehDisabled, true);
 
-            // keep track of touch actions
-            if (isTouchDevice()) {
-                this._ehTouchStart = this._handleTouchStart.bind(this);
-                this._ehTouchEnd = this._handleTouchEnd.bind(this);
-                host.addEventListener('touchstart', this._ehTouchStart);
-                host.addEventListener('touchend', this._ehTouchEnd);
-                host.addEventListener('touchcancel', this._ehTouchEnd);
-                host.addEventListener('touchleave', this._ehTouchEnd);
+            // keep track of touch actions at the document level
+            // (no need to add/remove event handlers to every Wijmo control)
+            if (Control._touching == null) {
+                Control._touching = false;
+                if ('ontouchstart' in window || 'onpointerdown' in window) {
+                    var b = document.body,
+                        ts = this._handleTouchStart,
+                        te = this._handleTouchEnd;
+                    if ('ontouchstart' in window) { // Chrome, FireFox, Safari
+                        b.addEventListener('touchstart', ts);
+                        b.addEventListener('touchend', te);
+                        b.addEventListener('touchcancel', te);
+                        b.addEventListener('touchleave', te);
+                    } else if ('onpointerdown' in window) { // IE
+                        b.addEventListener('pointerdown', ts);
+                        b.addEventListener('pointerup', te);
+                        b.addEventListener('pointerout', te);
+                        b.addEventListener('pointercancel', te);
+                        b.addEventListener('pointerleave', te);
+                    }
+                }
             }
 
         }
@@ -1936,7 +1940,7 @@ module wijmo {
             return null;
         }
         /**
-         * Applies the template to a new instance of a control.
+         * Applies the template to a new instance of a control, and returns the root element.
          *
          * This method should be called by constructors of templated controls.
          * It is responsible for binding the template parts to the 
@@ -1960,7 +1964,7 @@ module wijmo {
          * @param namePart Name of the part to be named after the host element. This
          * determines how the control submits data when used in forms.
          */
-        applyTemplate(classNames: string, template: string, parts: Object, namePart?: string) {
+        applyTemplate(classNames: string, template: string, parts: Object, namePart?: string): HTMLElement {
 
             // apply standard classes to host element
             if (classNames) {
@@ -1971,7 +1975,7 @@ module wijmo {
             var tpl = null;
             if (template) {
                 tpl = createElement(template);
-                this.hostElement.appendChild(tpl);
+                tpl = this.hostElement.appendChild(tpl);
             }
 
             // bind control variables to template parts
@@ -2009,6 +2013,8 @@ module wijmo {
                     }
                 }
             }
+
+            return tpl;
         }
         /**
          * Disposes of the control by removing its association with the host element.
@@ -2028,12 +2034,6 @@ module wijmo {
             host.removeEventListener('mousedown', this._ehDisabled);
             host.removeEventListener('click', this._ehDisabled);
             host.removeEventListener('keydown', this._ehDisabled);
-            if (isTouchDevice()) {
-                host.removeEventListener('touchstart', this._ehTouchStart);
-                host.removeEventListener('touchend', this._ehTouchEnd);
-                host.removeEventListener('touchcancel', this._ehTouchEnd);
-                host.removeEventListener('touchleave', this._ehTouchEnd);
-            }
 
             // restore original content
             this._e.outerHTML = this._orgOuter;
@@ -2068,6 +2068,17 @@ module wijmo {
          * Checks whether this control contains the focused element.
          */
         containsFocus(): boolean {
+
+            // scan child controls (they may have popups, TFS 112676)
+            var c = this.hostElement.querySelectorAll('.wj-control');
+            for (var i = 0; i < c.length; i++) {
+                var ctl = Control.getControl(c[i]);
+                if (ctl && ctl != this && ctl.containsFocus()) {
+                    return true;
+                }
+            }
+
+            // check for actual HTML containment
             return contains(this._e, <HTMLElement>document.activeElement);
         }
         /**
@@ -2107,7 +2118,7 @@ module wijmo {
          * the control's visibility or dimensions. For example, splitters, accordions,
          * and tab controls usually change the visibility of its content elements.
          * In this case, failing to notify the controls contained in the element
-         * may cause them to update their layouts and to stop working properly.
+         * may cause them to stop working properly.
          *
          * If this happens, you must handle the appropriate event in the dynamic
          * container and call the @see:Control.invalidateAll method so the contained
@@ -2128,7 +2139,6 @@ module wijmo {
                 }
             }
         }
-
         /**
          * Suspends notifications until the next call to @see:endUpdate.
          */
@@ -2154,7 +2164,7 @@ module wijmo {
          * Gets a value that indicates whether the control is currently handling a touch event.
          */
         get isTouching(): boolean {
-            return this._touching;
+            return Control._touching;
         }
         /**
          * Executes a function within a @see:beginUpdate/@see:endUpdate block.
@@ -2170,6 +2180,24 @@ module wijmo {
                 fn();
             } finally {
                 this.endUpdate();
+            }
+        }
+        /**
+         * Gets or sets whether the control is disabled.
+         *
+         * Disabled controls cannot get mouse or keyboard events.
+         */
+        get disabled(): boolean {
+            return this._e && this._e.getAttribute('disabled') != null;
+        }
+        set disabled(value: boolean) {
+            value = asBoolean(value, true);
+            if (value != this.disabled) {
+                if (value) {
+                    this._e.setAttribute('disabled', 'true');
+                } else {
+                    this._e.removeAttribute('disabled');
+                }
             }
         }
         /**
@@ -2211,7 +2239,7 @@ module wijmo {
         // ** implementation
 
         // invalidates the control when its size changes
-        private _handleResize() {
+        _handleResize() {
             if (this._e.parentElement) {
                 var sz = new Size(this._e.offsetWidth, this._e.offsetHeight);
                 if (!sz.equals(this._szCtl)) {
@@ -2222,19 +2250,22 @@ module wijmo {
         }
 
         // keep track of touch events
-        private _handleTouchStart() {
-            this._touching = true;
+        private _handleTouchStart(e) {
+            if (e.pointerType == null || e.pointerType == 'touch') {
+                Control._touching = true;
+            }
         }
-        private _handleTouchEnd() {
-            var self = this;
-            setTimeout(function () {
-                self._touching = false;
-            }, 50);
+        private _handleTouchEnd(e) {
+            if (e.pointerType == null || e.pointerType == 'touch') {
+                setTimeout(function () {
+                    Control._touching = false;
+                }, 400); // 300ms click event delay on IOS, plus some safety
+            }
         }
 
         // suppress mouse and keyboard events if the control is disabled
         private _handleDisabled(e: any) {
-            if (this.hostElement.hasAttribute('disabled')) {
+            if (this.disabled) {
                 e.preventDefault();
                 e.stopPropagation();
                 e.stopImmediatePropagation();
@@ -2369,7 +2400,7 @@ module wijmo.collections {
      * Describes a sorting criterion.
      */
     export class SortDescription {
-        _bnd: _Binding;
+        _bnd: Binding;
         _asc: boolean;
 
         /**
@@ -2379,7 +2410,7 @@ module wijmo.collections {
          * @param ascending Whether to sort in ascending order.
          */
         constructor(property: string, ascending: boolean) {
-            this._bnd = new _Binding(property);
+            this._bnd = new Binding(property);
             this._asc = ascending;
         }
         /**
@@ -2769,7 +2800,7 @@ module wijmo.collections {
      * </pre>
      */
     export class PropertyGroupDescription extends GroupDescription {
-        _bnd: _Binding;
+        _bnd: Binding;
         _converter: Function;
 
         /**
@@ -2783,7 +2814,7 @@ module wijmo.collections {
          */
         constructor(property: string, converter?: Function) {
             super();
-            this._bnd = new _Binding(property);
+            this._bnd = new Binding(property);
             this._converter = converter;
         }
         /*
@@ -2888,7 +2919,7 @@ module wijmo {
             sum2 = 0,
             min = null,
             max = null,
-            bnd = binding ? new _Binding(binding) : null;
+            bnd = binding ? new Binding(binding) : null;
 
         // calculate aggregate
         for (var i = 0; i < items.length; i++) {
@@ -2897,7 +2928,7 @@ module wijmo {
             var val = items[i];
             if (bnd) {
                 val = bnd.getValue(val);
-                //assert(val != undefined, 'item does not define property "' + binding + '".');
+                //assert(!isUndefined(val), 'item does not define property "' + binding + '".');
             }
 
             // aggregate
@@ -3009,6 +3040,25 @@ module wijmo.collections {
      */
     export class ObservableArray extends ArrayBase implements INotifyCollectionChanged {
         private _updating = 0;
+
+        /**
+         * Initializes a new instance of an @see:ObservableArray.
+         *
+         * @param data Array containing items used to populate the @see:ObservableArray.
+         */
+        constructor(data? : any[]) {
+            super();
+
+            // initialize the array
+            if (data) {
+                data = asArray(data);
+                this._updating++;
+                for (var i = 0; i < data.length; i++) {
+                    this.push(data[i]);
+                }
+                this._updating--;
+            }
+        }
 
         /**
          * Appends an item to the array.
@@ -3132,9 +3182,8 @@ module wijmo.collections {
          */
         clear() {
             if (this.length !== 0) {
-                this.length = 0;
+                this.length = 0; // fastest way to clear an array
                 this._raiseCollectionChanged();
-                //this.splice(0, this.length); // << this is slooooowww
             }
         }
         /**
@@ -3259,9 +3308,10 @@ module wijmo.collections {
         _view: any[];
         _pgView: any[];
         _groups: CollectionViewGroup[];
+        _fullGroups: CollectionViewGroup[];
         _idx = -1;
         _filter: IPredicate;
-        _srtDesc = new ObservableArray();
+        _srtDsc = new ObservableArray();
         _grpDesc = new ObservableArray();
         _newItem = null;
         _edtItem = null;
@@ -3281,6 +3331,7 @@ module wijmo.collections {
         _chgAdded = new ObservableArray();
         _chgRemoved = new ObservableArray();
         _chgEdited = new ObservableArray();
+        _srtCvt: Function;
 
         /**
          * Initializes a new instance of a @see:CollectionView.
@@ -3292,10 +3343,10 @@ module wijmo.collections {
 
             // check that sortDescriptions contains SortDescriptions
             var self = this;
-            self._srtDesc.collectionChanged.addHandler(function () {
-                var arr = self._srtDesc;
+            self._srtDsc.collectionChanged.addHandler(function () {
+                var arr = self._srtDsc;
                 for (var i = 0; i < arr.length; i++) {
-                    var sd = tryCast(arr[i], wijmo.collections.SortDescription);
+                    var sd = tryCast(arr[i], SortDescription);
                     if (!sd) {
                         throw 'sortDescriptions array must contain SortDescription objects.';
                     }
@@ -3309,7 +3360,7 @@ module wijmo.collections {
             self._grpDesc.collectionChanged.addHandler(function () {
                 var arr = self._grpDesc;
                 for (var i = 0; i < arr.length; i++) {
-                    var gd = tryCast(arr[i], wijmo.collections.GroupDescription);
+                    var gd = tryCast(arr[i], GroupDescription);
                     if (!gd) {
                         throw 'groupDescriptions array must contain GroupDescription objects.';
                     }
@@ -3338,6 +3389,37 @@ module wijmo.collections {
         }
         set newItemCreator(value: Function) {
             this._itemCreator = asFunction(value);
+        }
+        /**
+         * Gets or sets a function used to convert values when sorting.
+         *
+         * If provided, the function should take as parameters a 
+         * @see:SortDescription, a data item, and a value to convert,
+         * and should return the converted value.
+         *
+         * This property provides a way to customize sorting. For example,
+         * the @see:FlexGrid control uses it to sort mapped columns by 
+         * display value instead of by raw value.
+         *
+         * For example, the code below causes a @see:CollectionView to
+         * sort the 'country' property, which contains country code integers,
+         * using the corresponding country names:
+         *
+         * <pre>var countries = 'US,Germany,UK,Japan,Italy,Greece'.split(',');
+         * collectionView.sortConverter = function (sd, item, value) {
+         *   if (sd.property == 'countryMapped') {
+         *     value = countries[value]; // convert country id into name
+         *   }
+         *   return value;
+         * }</pre>
+         */
+        get sortConverter(): Function {
+            return this._srtCvt;
+        }
+        set sortConverter(value: Function) {
+            if (value != this._srtCvt) {
+                this._srtCvt = asFunction(value, true);
+            }
         }
 
         // ** IQueryInterface
@@ -3379,31 +3461,31 @@ module wijmo.collections {
          * @see:addNew/@see:commitNew, and @see:remove). 
          * Changes made directly to the data are not tracked.
          */
-        get trackChanges() : boolean {
+        get trackChanges(): boolean {
             return this._trackChanges;
         }
-        set trackChanges(value : boolean) {
+        set trackChanges(value: boolean) {
             this._trackChanges = asBoolean(value);
         }
         /** 
          * Gets an @see:ObservableArray containing the records that were added to
          * the collection since @see:changeTracking was enabled.
          */
-        get itemsAdded(): ObservableArray { 
+        get itemsAdded(): ObservableArray {
             return this._chgAdded;
         }
         /** 
          * Gets an @see:ObservableArray containing the records that were removed from
          * the collection since @see:changeTracking was enabled.
          */
-        get itemsRemoved(): ObservableArray { 
+        get itemsRemoved(): ObservableArray {
             return this._chgRemoved;
         }
         /** 
          * Gets an @see:ObservableArray containing the records that were edited in
          * the collection since @see:changeTracking was enabled.
          */
-        get itemsEdited(): ObservableArray { 
+        get itemsEdited(): ObservableArray {
             return this._chgEdited;
         }
         /**
@@ -3537,7 +3619,7 @@ module wijmo.collections {
          * in the collection are sorted in the view.
          */
         get sortDescriptions(): ObservableArray {
-            return this._srtDesc;
+            return this._srtDsc;
         }
         /**
          * Gets or sets the underlying (unfiltered and unsorted) collection.
@@ -3669,7 +3751,7 @@ module wijmo.collections {
         }
 
         // performs the refresh (without issuing notifications)
-        private _performRefresh() {
+        _performRefresh() {
 
             // benchmark
             //var start = new Date();
@@ -3681,11 +3763,11 @@ module wijmo.collections {
             if (!this._src) {
                 this._view = [];
             } else if (!this._filter || !this.canFilter) {
-                this._view = (this._srtDesc.length > 0 && this.canSort) 
+                this._view = (this._srtDsc.length > 0 && this.canSort)
                     ? this._src.slice(0) // clone source array
                     : this._src; // don't waste time cloning
             } else {
-                this._view = this._pgView = [];
+                this._view = [];
                 for (var i = 0; i < this._src.length; i++) {
                     var item = this._src[i];
                     if (this._filter(item)) {
@@ -3695,16 +3777,26 @@ module wijmo.collections {
             }
 
             // apply sort
-            if (this._srtDesc.length > 0 && this.canSort) {
+            if (this._srtDsc.length > 0 && this.canSort) {
                 this._view.sort(this._compareItems());
             }
 
-            // apply paging
+            // apply grouping
+            this._groups = this.canGroup ? this._createGroups(this._view) : null;
+            this._fullGroups = this._groups;
+            if (this._groups) {
+                this._view = this._mergeGroupItems(this._groups);
+            }
+
+            // apply paging to view
             this._pgIdx = clamp(this._pgIdx, 0, this.pageCount - 1);
             this._pgView = this._getPageView();
 
-            // apply grouping
-            this._groups = this.canGroup ? this._createGroups() : null;
+            // update groups to take paging into account
+            if (this._groups && this.pageCount > 1) {
+                this._groups = this._createGroups(this._pgView);
+                this._mergeGroupItems(this._groups);
+            }
 
             // restore current item
             var index = this._pgView.indexOf(current);
@@ -3723,13 +3815,15 @@ module wijmo.collections {
         }
 
         // comparison function used in array sort
-        private _compareItems() {
-            var sortDesc = this._srtDesc;
+        _compareItems() {
+            var sortDsc = this._srtDsc,
+                sortCvt = this._srtCvt,
+                init = true;
             return function (a, b) {
-                for (var i = 0; i < sortDesc.length; i++) {
+                for (var i = 0; i < sortDsc.length; i++) {
 
                     // get values
-                    var sd = <SortDescription>sortDesc[i],
+                    var sd = <SortDescription>sortDsc[i],
                         v1 = sd._bnd.getValue(a),
                         v2 = sd._bnd.getValue(b);
 
@@ -3741,6 +3835,17 @@ module wijmo.collections {
                     // strings different and the sort consistent, 'aa' between 'AA' and 'bb')
                     if (isString(v1)) v1 = v1.toLowerCase() + v1;
                     if (isString(v2)) v2 = v2.toLowerCase() + v2;
+
+                    // convert values
+                    if (sortCvt) {
+                        v1 = sortCvt(sd, a, v1, init);
+                        v2 = sortCvt(sd, b, v2, false);
+                        init = false;
+                    }
+
+                    // nulls always at the bottom (like excel)
+                    if (v1 != null && v2 == null) return -1;
+                    if (v1 == null && v2 != null) return +1;
 
                     // compare the values (at last!)
                     var cmp = (v1 < v2) ? -1 : (v1 > v2) ? +1 : 0;
@@ -3979,12 +4084,15 @@ module wijmo.collections {
                     return;
                 }
 
-                // restore original item value
+                // check that we can do this (TFS 110168)
                 var index = this._src.indexOf(item);
-                if (this._edtClone) {
-                    this._copy(this._src[index], this._edtClone);
-                    this._edtClone = null;
+                if (index < 0 || !this._edtClone) {
+                    return;
                 }
+
+                // restore original item value
+                this._copy(this._src[index], this._edtClone);
+                this._edtClone = null;
 
                 // notify listeners
                 this._raiseCollectionChanged(NotifyCollectionChangedAction.Change, item, index);
@@ -4004,7 +4112,8 @@ module wijmo.collections {
          * Ends the current edit transaction and saves the pending changes.
          */
         commitEdit() {
-            var item = this._edtItem;
+            var item = this._edtItem,
+                e: NotifyCollectionChangedEventArgs;
             if (item != null) {
 
                 // check if anything really changed
@@ -4019,23 +4128,28 @@ module wijmo.collections {
                 var digest = this._getGroupsDigest(this.groups);
                 this._performRefresh();
 
-                // issue notifications (single item change or full refresh)
-                if (this._pgView.indexOf(item) == index && digest == this._getGroupsDigest(this.groups)) {
-                    this._raiseCollectionChanged(wijmo.collections.NotifyCollectionChangedAction.Change, item, index);
-                } else {
-                    this._raiseCollectionChanged(); // full refresh
-                }
-
-                // handle changes
+                // track changes (before notifying)
                 if (this._trackChanges == true && !sameContent) {
                     var idx = this._chgEdited.indexOf(item);
                     if (idx < 0 && this._chgAdded.indexOf(item) < 0) {
                         this._chgEdited.push(item);
                     } else if (idx > -1) {
-                        this._chgEdited.onCollectionChanged();
-                    } else if (this._chgAdded.indexOf(item) > -1) {
-                        this._chgAdded.onCollectionChanged();
+                        e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Change, item, idx);
+                        this._chgEdited.onCollectionChanged(e);
+                    } else {
+                        idx = this._chgAdded.indexOf(item);
+                        if (idx > -1) {
+                            e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Change, item, idx);
+                            this._chgAdded.onCollectionChanged(e);
+                        }
                     }
+                }
+
+                // notify (single item change or full refresh)
+                if (this._pgView.indexOf(item) == index && digest == this._getGroupsDigest(this.groups)) {
+                    this._raiseCollectionChanged(NotifyCollectionChangedAction.Change, item, index);
+                } else {
+                    this._raiseCollectionChanged(); // full refresh
                 }
             }
         }
@@ -4054,12 +4168,7 @@ module wijmo.collections {
                 var digest = this._getGroupsDigest(this.groups);
                 this._performRefresh();
 
-                // issue notifications (full refresh if the item moved)
-                if (this._pgView.indexOf(item) != index || digest != this._getGroupsDigest(this.groups)) {
-                    this._raiseCollectionChanged(); // full refresh
-                }
-
-                // tracking changes
+                // track changes (before notifying)
                 if (this._trackChanges == true) {
                     var idx = this._chgEdited.indexOf(item);
                     if (idx > -1) {
@@ -4068,6 +4177,13 @@ module wijmo.collections {
                     if (this._chgAdded.indexOf(item) < 0) {
                         this._chgAdded.push(item);
                     }
+                }
+
+                // notify (full refresh if the item moved)
+                if (this._pgView.indexOf(item) == index && digest == this._getGroupsDigest(this.groups)) {
+                    this._raiseCollectionChanged(NotifyCollectionChangedAction.Change, item, index);
+                } else {
+                    this._raiseCollectionChanged(); // full refresh
                 }
             }
         }
@@ -4124,25 +4240,12 @@ module wijmo.collections {
                 var digest = this._getGroupsDigest(this.groups);
                 this._performRefresh();
 
-                // issue notifications (item removed or full refresh) (TFS 85001)
-                var paged = this.pageSize > 0 && this._pgIdx > -1;
-                if (paged || digest != this._getGroupsDigest(this.groups)) {
-                    this._raiseCollectionChanged();
-                } else {
-                    this._raiseCollectionChanged(wijmo.collections.NotifyCollectionChangedAction.Remove, item, index);
-                }
-
-                // raise currentChanged if needed
-                if (this.currentItem !== current) {
-                    this.onCurrentChanged();
-                }
-
-                // tracking changes
+                // track changes (before notifying)
                 if (this._trackChanges == true) {
                     var idx = this._chgAdded.indexOf(item);
                     if (idx > -1) {
                         // item was added, then removed: don't track it
-                        this._chgAdded.removeAt(idx); 
+                        this._chgAdded.removeAt(idx);
                     } else {
                         idx = this._chgEdited.indexOf(item);
                         if (idx > -1) {
@@ -4152,6 +4255,19 @@ module wijmo.collections {
                             this._chgRemoved.push(item);
                         }
                     }
+                }
+
+                // notify (item removed or full refresh) (TFS 85001)
+                var paged = this.pageSize > 0 && this._pgIdx > -1;
+                if (paged || digest != this._getGroupsDigest(this.groups)) {
+                    this._raiseCollectionChanged();
+                } else {
+                    this._raiseCollectionChanged(NotifyCollectionChangedAction.Remove, item, index);
+                }
+
+                // raise currentChanged if needed
+                if (this.currentItem !== current) {
+                    this.onCurrentChanged();
                 }
             }
         }
@@ -4337,6 +4453,37 @@ module wijmo.collections {
             return !e.cancel;
         }
 
+        // gets the full group that corresponds to a paged group view
+        _getFullGroup(g: CollectionViewGroup): CollectionViewGroup {
+
+            // look for the group by level and name
+            // this gets the full (unpaged) and updated group (TFS 109119)
+            var fg = this._getGroupByPath(this._fullGroups, g.level, g._path);
+            if (fg != null) {
+                g = fg;
+            }
+
+            // return the group
+            return g;
+        }
+
+        // gets a group from a collection by path
+        _getGroupByPath(groups: CollectionViewGroup[], level: number, path: string) {
+            for (var i = 0; i < groups.length; i++) {
+                var g = groups[i];
+                if (g.level == level && g._path == path) {
+                    return g;
+                }
+                if (g.level < level && g._path.indexOf(path) == 0) {
+                    g = this._getGroupByPath(g.items, level, path);
+                    if (g != null) {
+                        return g;
+                    }
+                }
+            }
+            return null;
+        }
+
         // gets the list that corresponds to the current page
         _getPageView() {
 
@@ -4352,7 +4499,7 @@ module wijmo.collections {
         }
 
         // creates a grouped view of the current page
-        _createGroups(): CollectionViewGroup[] {
+        _createGroups(items: any[]): CollectionViewGroup[] {
 
             // not grouping? return null
             if (!this._grpDesc || !this._grpDesc.length) {
@@ -4361,14 +4508,15 @@ module wijmo.collections {
 
             // build group tree
             var root: CollectionViewGroup[] = [];
-            for (var i = 0; i < this._pgView.length; i++) {
+            for (var i = 0; i < items.length; i++) {
 
                 // get the item
-                var item = this._pgView[i],
+                var item = items[i],
                     groups = root,
                     levels = this._grpDesc.length;
 
                 // add this item to the tree
+                var path = '';
                 for (var level = 0; level < levels; level++) {
 
                     // get the group name for this level
@@ -4376,6 +4524,10 @@ module wijmo.collections {
                         name = gd.groupNameFromItem(item, level),
                         last = level == levels - 1,
                         group = this._getGroup(gd, groups, name, level, last);
+
+                    // keep group path (all names in the hierarchy)
+                    path += '/' + name;
+                    group._path = path;
 
                     // add data items to last level groups
                     if (last) {
@@ -4386,9 +4538,6 @@ module wijmo.collections {
                     groups = group.groups;
                 }
             }
-
-            // update group items and view
-            this._pgView = this._mergeGroupItems(root);
 
             // done
             return root;
@@ -4450,6 +4599,7 @@ module wijmo.collections {
     export class CollectionViewGroup {
         _gd: GroupDescription;
         _name: string;
+        _path: string;
         _level: number;
         _isBottomLevel: boolean;
         _groups: CollectionViewGroup[];
@@ -4512,10 +4662,13 @@ module wijmo.collections {
          *
          * @param aggType Type of aggregate to calculate.
          * @param binding Property to aggregate on.
+         * @param view CollectionView that owns this group.
          * @return The aggregate value.
          */
-        getAggregate(aggType: Aggregate, binding: string) {
-            return wijmo.getAggregate(aggType, this.items, binding);
+        getAggregate(aggType: Aggregate, binding: string, view?: ICollectionView) {
+            var cv = <CollectionView>tryCast(view, CollectionView),
+                group = cv ? cv._getFullGroup(this): this;
+            return wijmo.getAggregate(aggType, group.items, binding);
         }
     }
 }
@@ -4614,13 +4767,13 @@ module wijmo {
          * targets. If not provided, the bounds of the element are used (as reported by the
          * <b>getBoundingClientRect</b> method).
          */
-        show(element: any, content: string, bounds?: wijmo.Rect) {
+        show(element: any, content: string, bounds?: Rect) {
 
             // get element and tooltip content
             element = getElement(element);
             content = this._getContent(content);
             if (!bounds) {
-                bounds = wijmo.Rect.fromBoundingRect(element.getBoundingClientRect());
+                bounds = Rect.fromBoundingRect(element.getBoundingClientRect());
             }
 
             // create tooltip element if necessary
@@ -4644,25 +4797,17 @@ module wijmo {
 
                 // update tooltip content with customize content, if any
                 this._setContent(e.content);
+                tip.style.minWidth = '';
 
-                // calculate tooltip position
-                var sz = this._getOuterSize(tip),
-                    pt = new wijmo.Point(bounds.left + (bounds.width - sz.width) / 2, bounds.top - sz.height - this._gap);
-                if (pt.y < 0) {
-                    pt.y = bounds.bottom + this._gap;
-                }
-                if (pt.x + sz.width > window.innerWidth) {
-                    pt.x = window.innerWidth - sz.width - this._gap;
-                }
-                if (pt.x < 0) {
-                    pt.x = this._gap;
-                }
+                // apply gap and align to the center of the reference element
+                bounds = new Rect(
+                    bounds.left - (tip.offsetWidth - bounds.width) / 2,
+                    bounds.top - this.gap,
+                    tip.offsetWidth,
+                    bounds.height + 2 * this.gap);
 
                 // show tooltip
-                var style = tip.style;
-                style.left = Math.round(window.pageXOffset + pt.x) + 'px';
-                style.top = Math.round(window.pageYOffset + pt.y) + 'px';
-                style.visibility = '';
+                showPopup(tip, bounds, true);
 
                 // hide when the mouse goes down
                 document.addEventListener('mousedown', this._hideAutoTipBnd);
@@ -4808,14 +4953,6 @@ module wijmo {
                 clearTimeout(this._toHide);
                 this._toHide = null;
             }
-        }
-
-        // get an element's size including margins
-        private _getOuterSize(e: HTMLElement): wijmo.Size {
-            var s = window.getComputedStyle(e),
-                my = parseFloat(s.marginTop) + parseFloat(s.marginBottom),
-                mx = parseFloat(s.marginLeft) + parseFloat(s.marginRight);
-            return new wijmo.Size(e.offsetWidth + mx, e.offsetHeight + my);
         }
 
         // gets content that may be a string or an element id
@@ -5361,7 +5498,144 @@ module wijmo {
                 if (typeof (textOrCallback) == 'function') {
                     textOrCallback(text);
                 }
-            }, 10);
+            }, 100); // Apple needs extra timeOut
+        }
+    }
+}
+
+module wijmo {
+    'use strict';
+
+    /**
+     * Shows an element as a popup.
+     *
+     * The popup element becomes a child of the body element,
+     * and is positioned using a reference that may be a 
+     * @see:MouseEvent, an @see:HTMLElement, or a @see:Rect.
+     *
+     * To hide the popup, either call the @see:hidePopup method
+     * or simply remove the popup element from the document body.
+     *
+     * @param popup Element to show as a popup.
+     * @param ref Reference used to position the popup.
+     * @param above Position popup above the reference if possible.
+     */
+    export function showPopup(popup: HTMLElement, ref: any, above = false) {
+
+        // get parent element
+        // this is usually the body, but if there are any ancestors
+        // with position:fixed, then use that as a reference instead
+        var parent = document.body;
+        if (ref instanceof HTMLElement) {
+            var prel : HTMLElement;
+            for (var e = ref.parentElement; e; e = e.parentElement) {
+                var p = getComputedStyle(e).position;
+                if (p == 'relative' && !prel) {
+                    prel = e;
+                } else if (p == 'fixed') {
+                    parent = prel ? prel : e;
+                    break;
+                }
+            }
+        }
+
+        // make sure popup is a child of the parent element
+        var pp = popup.parentElement;
+        if (pp != parent) {
+            if (pp) {
+                pp.removeChild(popup);
+            }
+            parent.appendChild(popup);
+        }
+
+        // copy style elements from ref element to popup
+        // (since the popup no longer a child of the ref element)
+        if (ref instanceof HTMLElement) {
+            var sr = getComputedStyle(ref);
+            setCss(popup, {
+                color: sr.color,
+                backgroundColor: sr.backgroundColor,
+                fontFamily: sr.fontFamily,
+                fontSize: sr.fontSize,
+                fontWeight: sr.fontWeight,
+                fontStyle: sr.fontStyle
+            });
+        }
+
+        // get popup's size, including margins
+        setCss(popup, {
+            visibility: 'hidden',
+            display: ''
+        });
+        var sp = getComputedStyle(popup),
+            my = parseFloat(sp.marginTop) + parseFloat(sp.marginBottom),
+            mx = parseFloat(sp.marginLeft) + parseFloat(sp.marginRight),
+            sz = new Size(popup.offsetWidth + mx, popup.offsetHeight + my);
+
+        // ref can be a point, a rect, or an element
+        var pos = new Point(),
+            rc = null;
+        if (ref instanceof MouseEvent) {
+            pos.x = ref.clientX - sz.width / 2;
+            pos.y = ref.clientY - sz.height / 2;
+        } else if (ref instanceof HTMLElement) {
+            rc = ref.getBoundingClientRect();
+        } else if (ref.top != null && ref.left != null) {
+            rc = ref;
+        } else {
+            throw 'Invalid ref parameter.';
+        }
+
+        // calculate min width for the popup
+        var minWidth = parseFloat(sp.minWidth);
+
+        // if we have a rect, position popup above or below the rect
+        if (rc) {
+            var spcAbove = rc.top,
+                spcBelow = innerHeight - rc.bottom;
+            pos.x = Math.max(0, Math.min(rc.left, innerWidth - sz.width));
+            if (above) {
+                pos.y = spcAbove > sz.height || spcAbove > spcBelow
+                    ? Math.max(0, rc.top - sz.height)
+                    : rc.bottom;
+            } else {
+                pos.y = spcBelow > sz.height || spcBelow > spcAbove
+                    ? rc.bottom
+                    : Math.max(0, rc.top - sz.height);
+            }
+
+            // make popup at least as wide as the element
+            minWidth = Math.max(minWidth, rc.width);
+        }
+
+        // handle scroll offset
+        var rcp = parent == document.body 
+            ? new Rect(-pageXOffset, -pageYOffset, 0, 0)
+            : parent.getBoundingClientRect();
+
+        // show the popup
+        setCss(popup, {
+            position: 'absolute',
+            left: pos.x - rcp.left,
+            top: pos.y - rcp.top,
+            minWidth: minWidth,
+            display: '',
+            visibility: 'visible',
+            zIndex: 1500 // to work in Bootstrap dialogs (zIndex 1050)
+        });
+    }
+    /**
+     * Hides a popup element previously displayed with the @see:showPopup
+     * method.
+     *
+     * @param popup Popup element to hide.
+     * @param remove Whether to remove the popup from the DOM or just
+     * to hide it.
+     */
+    export function hidePopup(popup: HTMLElement, remove = true) {
+        popup.style.display = 'none';
+        if (remove && popup.parentElement) {
+            popup.parentElement.removeChild(popup);
         }
     }
 }
@@ -5379,6 +5653,7 @@ module wijmo {
         _mskArr: _MaskElement[] = [];
         _firstPos: number;
         _lastPos: number;
+        _backSpace: boolean;
         _full = true;
         _hbInput = this._hInput.bind(this);
         _hbKeyPress = this._hKeyPress.bind(this);
@@ -5459,7 +5734,10 @@ module wijmo {
 
         // validate content after any changes
         _hInput() {
-            this._valueChanged();
+            var self = this;
+            setTimeout(function () { // to work with Safari...
+                self._valueChanged();
+            });
         }
 
         // filter input keys to prevent cursor from moving on invalid chars
@@ -5496,15 +5774,7 @@ module wijmo {
 
         // special handling for backspacing over literals
         _hKeyDown(e: KeyboardEvent) {
-            if (e.keyCode == 8) {
-                var el = this.input,
-                    start = el.selectionStart;
-                setTimeout(function () {
-                    if (el.selectionStart == start) {
-                        el.setSelectionRange(start - 1, start - 1);
-                    }
-                }, 0);
-            }
+            this._backSpace = e.keyCode == 8;
         }
 
         // ** implementation
@@ -5619,9 +5889,23 @@ module wijmo {
         // skip over literals
         _validatePosition(start: number) {
             var msk = this._mskArr;
-            while (start < msk.length && msk[start].literal) {
-                start++;
+
+            // skip left if the last key pressed was a backspace
+            if (this._backSpace) {
+                while (start > 0 && start < msk.length && msk[start - 1].literal) {
+                    start--;
+                }
             }
+
+            // skip right over literals
+            if (start == 0 || !this._backSpace) {
+                while (start < msk.length && msk[start].literal) {
+                    start++;
+                }
+            }
+
+            // move selection and be done
+            this._backSpace = false;
             this.input.setSelectionRange(start, start);
         }
 

@@ -1,6 +1,6 @@
 ﻿var wijmo;
 (function (wijmo) {
-    (function (grid) {
+    (function (_grid) {
         'use strict';
 
         /**
@@ -14,33 +14,199 @@
             * export the FlexGrid to xlsx file
             *
             * @param flex the FlexGrid need be exported to xlsx file
-            * @param includeColumnHeader indicates whether export the column header
+            * @param convertOption the options for exporting.
             */
             ExcelConverter.export = function (flex, convertOption) {
                 if (typeof convertOption === "undefined") { convertOption = { includeColumnHeader: true }; }
                 var file = {
                     worksheets: [],
                     creator: 'Mike Lu',
-                    created: new Date('11/4/2014'),
+                    created: new Date(),
                     lastModifiedBy: 'Mike Lu',
                     modified: new Date(),
                     activeWorksheet: 0
-                }, worksheetData = [], columnSettings = [], workSheet = {
+                }, result, index, grid;
+
+                if (wijmo.isArray(flex)) {
+                    for (index = 0; index < flex.length; index++) {
+                        grid = flex[index];
+
+                        // export the FlexGrid to xlsx.
+                        this._exportFlexGrid(grid, file, convertOption);
+                    }
+                } else {
+                    this._exportFlexGrid(flex, file, convertOption);
+                }
+
+                result = xlsx(file);
+
+                result.base64Array = this._base64DecToArr(result.base64);
+
+                return result;
+            };
+
+            /**
+            * import the xlsx file
+            *
+            * @param file the base64 string converted from xlsx file
+            * @param flex the Flex Grid need bind the data import from xlsx file
+            * @param convertOption the options for importing.
+            * @param moreSheets flexgrid array for importing multiple sheets of the excel file.
+            */
+            ExcelConverter.import = function (file, flex, convertOption, moreSheets) {
+                if (typeof convertOption === "undefined") { convertOption = { includeColumnHeader: true }; }
+                var fileData = this._base64EncArr(new Uint8Array(file)), fileObj = xlsx(fileData), currentIncludeRowHeader = convertOption.includeColumnHeader, sheetCount = 1, sheetIndex = 0, c = 0, r = 0, columns, columnSetting, column, columnHeader, sheetHeaders, sheetHeader, headerForamt, row, currentSheet, columnCount, isGroupHeader, item, nextRowIdx, nextRow, isGroupBelow, groupRow, frozenColumns, frozenRows, formula, flexHostElement;
+
+                flex.columns.clear();
+                flex.rows.clear();
+                flex.frozenColumns = 0;
+                flex.frozenRows = 0;
+
+                if (fileObj.worksheets.length === 0) {
+                    return;
+                }
+
+                if (moreSheets) {
+                    sheetCount = fileObj.worksheets.length;
+                }
+
+                for (; sheetIndex < sheetCount; sheetIndex++) {
+                    r = 0;
+                    columns = [];
+                    currentSheet = fileObj.worksheets[sheetIndex];
+
+                    if (convertOption.includeColumnHeader) {
+                        r = 1;
+                        if (currentSheet.data.length <= 1) {
+                            currentIncludeRowHeader = false;
+                            r = 0;
+                        }
+                        sheetHeaders = currentSheet.data[0];
+                    }
+                    columnCount = this._getColumnCount(currentSheet.data);
+                    isGroupBelow = currentSheet.isGroupBelow;
+
+                    if (sheetIndex > 0) {
+                        flexHostElement = document.createElement('div');
+                        flex = new _grid.FlexGrid(flexHostElement);
+                    }
+
+                    for (c = 0; c < columnCount; c++) {
+                        flex.columns.push(new wijmo.grid.Column());
+                    }
+
+                    for (; r < currentSheet.data.length; r++) {
+                        isGroupHeader = false;
+                        row = currentSheet.data[r];
+
+                        if (row && row[0]) {
+                            nextRowIdx = r + 1;
+                            while (nextRowIdx < currentSheet.data.length) {
+                                nextRow = currentSheet.data[nextRowIdx];
+                                if (nextRow) {
+                                    if ((isNaN(row[0].groupLevel) && !isNaN(nextRow[0].groupLevel)) || (!isNaN(row[0].groupLevel) && row[0].groupLevel < nextRow[0].groupLevel)) {
+                                        isGroupHeader = true;
+                                    }
+                                    break;
+                                } else {
+                                    nextRowIdx++;
+                                }
+                            }
+                        }
+
+                        if (isGroupHeader && isGroupBelow) {
+                            groupRow = new _grid.GroupRow();
+                            groupRow.level = isNaN(row[0].groupLevel) ? 0 : row[0].groupLevel;
+                            flex.rows.push(groupRow);
+                        } else {
+                            flex.rows.push(new _grid.Row());
+                        }
+
+                        for (c = 0; c < columnCount; c++) {
+                            if (!row) {
+                                flex.setCellData(currentIncludeRowHeader ? r - 1 : r, c, '');
+                                this._setColumn(columns, c, undefined);
+                            } else {
+                                item = row[c];
+                                formula = item ? item.formula : undefined;
+                                if (formula && formula[0] !== '=') {
+                                    formula = '=' + formula;
+                                }
+                                flex.setCellData(currentIncludeRowHeader ? r - 1 : r, c, formula && moreSheets ? formula : this._getItemValue(item));
+                                if (!isGroupHeader) {
+                                    this._setColumn(columns, c, item);
+                                }
+                                if (item && !item.visible && columns[c]) {
+                                    columns[c].visible = false;
+                                }
+                            }
+                        }
+
+                        if (row && row[0] && !row[0].rowVisible) {
+                            flex.rows[currentIncludeRowHeader ? r - 1 : r].visible = false;
+                        }
+                    }
+
+                    if (currentSheet.frozenPane) {
+                        frozenColumns = currentSheet.frozenPane.columns;
+                        if (wijmo.isNumber(frozenColumns) && !isNaN(frozenColumns)) {
+                            flex.frozenColumns = frozenColumns;
+                        }
+
+                        frozenRows = currentSheet.frozenPane.rows;
+                        if (wijmo.isNumber(frozenRows) && !isNaN(frozenRows)) {
+                            flex.frozenRows = currentIncludeRowHeader && frozenRows > 0 ? frozenRows - 1 : frozenRows;
+                        }
+                    }
+
+                    for (c = 0; c < flex.columnHeaders.columns.length; c++) {
+                        columnSetting = columns[c];
+                        column = flex.columns[c];
+                        if (currentIncludeRowHeader) {
+                            sheetHeader = sheetHeaders ? sheetHeaders[c] : undefined;
+                            if (sheetHeader && sheetHeader.value) {
+                                headerForamt = this._parseExcelFormat(sheetHeader);
+                                columnHeader = wijmo.Globalize.format(sheetHeader.value, headerForamt);
+                            } else {
+                                columnHeader = this._numAlpha(c);
+                            }
+                        } else {
+                            columnHeader = this._numAlpha(c);
+                        }
+                        column.header = columnHeader;
+                        if (columnSetting) {
+                            if (columnSetting.dataType) {
+                                column.dataType = columnSetting.dataType;
+                            }
+                            column.format = columnSetting.format;
+                            column.visible = columnSetting.visible;
+                        }
+                    }
+                    if (moreSheets && sheetIndex > 0) {
+                        moreSheets.push(flex);
+                    }
+                }
+            };
+
+            // export the flexgrid to excel file
+            ExcelConverter._exportFlexGrid = function (flex, file, convertOption) {
+                var worksheetData = [], columnSettings = [], workSheet = {
+                    name: '',
                     data: [],
                     frozenPane: {}
-                }, groupLevel = 0, worksheetDataHeader, rowHeight, column, row, groupRow, isGroupRow, value, columnSetting, result;
+                }, groupLevel = 0, worksheetDataHeader, rowHeight, column, row, groupRow, isGroupRow, value, columnSetting, ri, ci;
 
                 // add the headers in the worksheet.
                 if (convertOption.includeColumnHeader) {
-                    for (var ri = 0; ri < flex.columnHeaders.rows.length; ri++) {
+                    for (ri = 0; ri < flex.columnHeaders.rows.length; ri++) {
                         worksheetDataHeader = [];
                         rowHeight = flex.columnHeaders.rows[ri].height;
                         if (rowHeight) {
                             rowHeight = rowHeight * 72 / 96;
                         }
-                        for (var ci = 0; ci < flex.columnHeaders.columns.length; ci++) {
+                        for (ci = 0; ci < flex.columnHeaders.columns.length; ci++) {
                             column = flex.columnHeaders.columns[ci];
-                            value = flex.columnHeaders.getCellData(ri, ci, false);
+                            value = flex.columnHeaders.getCellData(ri, ci, true);
 
                             if (ri === 0) {
                                 columnSetting = this._getColumnSetting(column, flex.columnHeaders.columns.defaultSize);
@@ -63,7 +229,7 @@
                         worksheetData.push(worksheetDataHeader);
                     }
                 } else {
-                    for (var ci = 0; ci < flex.columnHeaders.columns.length; ci++) {
+                    for (ci = 0; ci < flex.columnHeaders.columns.length; ci++) {
                         column = flex.columnHeaders.columns[ci];
 
                         columnSetting = this._getColumnSetting(column, flex.columnHeaders.columns.defaultSize);
@@ -73,10 +239,10 @@
 
                 for (ri = 0; ri < flex.cells.rows.length; ri++) {
                     row = flex.rows[ri];
-                    isGroupRow = row instanceof grid.GroupRow;
+                    isGroupRow = row instanceof _grid.GroupRow;
 
                     if (isGroupRow) {
-                        groupRow = wijmo.tryCast(row, grid.GroupRow);
+                        groupRow = wijmo.tryCast(row, _grid.GroupRow);
                         groupLevel = groupRow.level + 1;
                     }
 
@@ -93,135 +259,11 @@
                 };
 
                 file.worksheets.push(workSheet);
-
-                result = xlsx(file);
-
-                result.base64Array = this._base64DecToArr(result.base64);
-
-                return result;
-            };
-
-            /**
-            * import the xlsx file
-            *
-            * @param file the base64 string converted from xlsx file
-            * @param flex the Flex Grid need bind the data import from xlsx file
-            * @param includeColumnHeader indicates whether imported the column header for the FlexGrid
-            * @param callback provides an callback function after finishing importing excel to flex grid.
-            */
-            ExcelConverter.import = function (file, flex, convertOption) {
-                if (typeof convertOption === "undefined") { convertOption = { includeColumnHeader: true }; }
-                var fileData = this._base64EncArr(new Uint8Array(file)), fileObj = xlsx(fileData), currentIncludeRowHeader = convertOption.includeColumnHeader, c = 0, r = 0, columns = [], columnSetting, column, columnHeader, sheetHeaders, sheetHeader, headerForamt, row, currentSheet, columnCount, isGroupHeader, item, nextRowIdx, nextRow, isGroupBelow, groupRow, frozenColumns, frozenRows;
-
-                flex.columns.clear();
-                flex.rows.clear();
-                flex.frozenColumns = 0;
-                flex.frozenRows = 0;
-
-                if (fileObj.worksheets.length === 0) {
-                    return;
-                }
-
-                currentSheet = fileObj.worksheets[0];
-                if (convertOption.includeColumnHeader) {
-                    r = 1;
-                    if (currentSheet.data.length <= 1) {
-                        currentIncludeRowHeader = false;
-                        r = 0;
-                    }
-                    sheetHeaders = currentSheet.data[0];
-                }
-                columnCount = this._getColumnCount(currentSheet.data);
-                isGroupBelow = currentSheet.isGroupBelow;
-
-                for (; c < columnCount; c++) {
-                    flex.columns.push(new wijmo.grid.Column());
-                }
-
-                for (; r < currentSheet.data.length; r++) {
-                    isGroupHeader = false;
-                    row = currentSheet.data[r];
-
-                    if (row && row[0]) {
-                        nextRowIdx = r + 1;
-                        while (nextRowIdx < currentSheet.data.length) {
-                            nextRow = currentSheet.data[nextRowIdx];
-                            if (nextRow) {
-                                if ((isNaN(row[0].groupLevel) && !isNaN(nextRow[0].groupLevel)) || (!isNaN(row[0].groupLevel) && row[0].groupLevel < nextRow[0].groupLevel)) {
-                                    isGroupHeader = true;
-                                }
-                                break;
-                            } else {
-                                nextRowIdx++;
-                            }
-                        }
-                    }
-
-                    if (isGroupHeader && isGroupBelow) {
-                        groupRow = new grid.GroupRow();
-                        groupRow.level = isNaN(row[0].groupLevel) ? 0 : row[0].groupLevel;
-                        flex.rows.push(groupRow);
-                    } else {
-                        flex.rows.push(new grid.Row());
-                    }
-
-                    for (c = 0; c < columnCount; c++) {
-                        if (!row) {
-                            flex.setCellData(currentIncludeRowHeader ? r - 1 : r, c, '');
-                            this._setColumn(columns, c, undefined);
-                        } else {
-                            item = row[c];
-                            flex.setCellData(currentIncludeRowHeader ? r - 1 : r, c, this._getItemValue(item));
-                            if (!isGroupHeader) {
-                                this._setColumn(columns, c, item);
-                            }
-                            if (item && !item.visible && columns[c]) {
-                                columns[c].visible = false;
-                            }
-                        }
-                    }
-
-                    if (row && row[0] && !row[0].rowVisible) {
-                        flex.rows[currentIncludeRowHeader ? r - 1 : r].visible = false;
-                    }
-                }
-
-                if (currentSheet.frozenPane) {
-                    frozenColumns = currentSheet.frozenPane.columns;
-                    if (wijmo.isNumber(frozenColumns) && !isNaN(frozenColumns)) {
-                        flex.frozenColumns = frozenColumns;
-                    }
-
-                    frozenRows = currentSheet.frozenPane.rows;
-                    if (wijmo.isNumber(frozenRows) && !isNaN(frozenRows)) {
-                        flex.frozenRows = currentIncludeRowHeader && frozenRows > 0 ? frozenRows - 1 : frozenRows;
-                    }
-                }
-
-                for (c = 0; c < flex.columnHeaders.columns.length; c++) {
-                    columnSetting = columns[c];
-                    column = flex.columns[c];
-                    if (currentIncludeRowHeader) {
-                        sheetHeader = sheetHeaders ? sheetHeaders[c] : undefined;
-                        if (sheetHeader && sheetHeader.value) {
-                            headerForamt = this._parseExcelFormat(sheetHeader);
-                            columnHeader = wijmo.Globalize.format(sheetHeader.value, headerForamt);
-                        } else {
-                            columnHeader = this._numAlpha(c);
-                        }
-                    } else {
-                        columnHeader = this._numAlpha(c);
-                    }
-                    column.header = columnHeader;
-                    column.dataType = columnSetting.dataType;
-                    column.format = columnSetting.format;
-                    column.visible = columnSetting.visible;
-                }
             };
 
             // Parse the row data of flex grid to a sheet row
             ExcelConverter._parseFlexGridRowToSheetRow = function (flex, row, rowIndex, columnSettings, isGroupRow, groupLevel) {
-                var rowHeight = row.height, worksheetDataItem = [], groupName = undefined, colSpan = 0, groupNameAdded = false, columnSetting, format, val;
+                var rowHeight = row.height, worksheetDataItem = [], columnSetting, format, val, unformattedVal, groupHeader, isFormula;
 
                 if (rowHeight) {
                     rowHeight = rowHeight * 72 / 96;
@@ -229,88 +271,38 @@
 
                 for (var ci = 0; ci < flex.columnHeaders.columns.length; ci++) {
                     columnSetting = columnSettings[ci];
-                    val = flex.getCellData(rowIndex, ci, false);
-                    format = columnSetting.format ? this._parseCellFormat(columnSetting.format) : wijmo.isDate(val) ? this._formatMap['d'] : !wijmo.isNumber(val) || wijmo.isInt(val) ? 'General' : this._formatMap['n'];
+                    val = flex.getCellData(rowIndex, ci, true);
+                    unformattedVal = flex.getCellData(rowIndex, ci, false);
+                    isFormula = val && wijmo.isString(val) && val.length > 1 && val[0] === '=';
+                    format = columnSetting.format ? this._parseCellFormat(columnSetting.format) : wijmo.isDate(unformattedVal) ? this._formatMap['d'] : !wijmo.isNumber(unformattedVal) || wijmo.isInt(unformattedVal) ? 'General' : this._formatMap['n'];
 
-                    if (isGroupRow) {
-                        // Process the group row of the flex grid.
-                        if (row.dataItem) {
-                            if (val) {
-                                // Add the group header in the non-aggregate fields.
-                                if (groupName && !groupNameAdded) {
-                                    worksheetDataItem.push({
-                                        value: row.dataItem ? row.dataItem.groupDescription.propertyName + ': ' + groupName + ' (' + row.dataItem.items.length + ' items)' : groupName,
-                                        colSpan: colSpan,
-                                        bold: true,
-                                        autoWidth: true,
-                                        height: rowHeight,
-                                        visible: true,
-                                        groupLevel: groupLevel - 1,
-                                        indent: groupLevel - 1
-                                    });
-                                    groupNameAdded = true;
-                                }
-                                worksheetDataItem.push({
-                                    value: val,
-                                    formatCode: format,
-                                    bold: true,
-                                    autoWidth: true,
-                                    hAlign: wijmo.isDate(val) && columnSetting.alignment === '' ? 'left' : columnSetting.alignment,
-                                    width: columnSetting.width,
-                                    height: rowHeight,
-                                    visible: columnSetting.visible,
-                                    groupLevel: groupLevel - 1
-                                });
-                            } else {
-                                groupName = groupName || row.dataItem ? row.dataItem.name : val;
-                                colSpan++;
-                                if (ci === flex.columnHeaders.columns.length - 1 && !groupNameAdded) {
-                                    worksheetDataItem.push({
-                                        value: row.dataItem ? row.dataItem.groupDescription.propertyName + ': ' + groupName + ' (' + row.dataItem.items.length + ' items)' : groupName,
-                                        colSpan: colSpan,
-                                        bold: true,
-                                        autoWidth: true,
-                                        height: rowHeight,
-                                        visible: true,
-                                        groupLevel: groupLevel - 1,
-                                        indent: groupLevel - 1
-                                    });
-                                }
-                            }
+                    if (isGroupRow && row['hasChildren'] && ci === flex.columns.firstVisibleIndex) {
+                        // Process the group header of the flex grid.
+                        if (val) {
+                            groupHeader = val;
                         } else {
-                            if (!groupNameAdded) {
-                                worksheetDataItem.push({
-                                    value: val,
-                                    bold: true,
-                                    autoWidth: true,
-                                    height: rowHeight,
-                                    width: columnSetting.width,
-                                    visible: true,
-                                    groupLevel: groupLevel - 1,
-                                    indent: groupLevel - 1
-                                });
-                                groupNameAdded = true;
-                            } else {
-                                worksheetDataItem.push({
-                                    value: val,
-                                    formatCode: format,
-                                    bold: true,
-                                    autoWidth: true,
-                                    hAlign: wijmo.isDate(val) && columnSetting.alignment === '' ? 'left' : columnSetting.alignment,
-                                    width: columnSetting.width,
-                                    height: rowHeight,
-                                    visible: columnSetting.visible,
-                                    groupLevel: groupLevel - 1
-                                });
-                            }
+                            groupHeader = row.dataItem && row.dataItem.groupDescription ? row.dataItem.groupDescription.propertyName + ': ' + row.dataItem.name + ' (' + row.dataItem.items.length + ' items)' : '';
                         }
+                        worksheetDataItem.push({
+                            value: groupHeader,
+                            formula: isFormula ? this._parseExcelFormula(val) : null,
+                            formatCode: format,
+                            bold: true,
+                            autoWidth: true,
+                            width: columnSetting.width,
+                            height: rowHeight,
+                            visible: columnSetting.visible,
+                            groupLevel: groupLevel - 1,
+                            indent: groupLevel - 1
+                        });
                     } else {
                         // Add the cell content
                         worksheetDataItem.push({
-                            value: val,
+                            value: format === 'General' ? val : unformattedVal,
+                            formula: isFormula ? this._parseExcelFormula(val) : null,
                             formatCode: format,
                             autoWidth: true,
-                            hAlign: wijmo.isDate(val) && columnSetting.alignment === '' ? 'left' : columnSetting.alignment,
+                            hAlign: wijmo.isDate(unformattedVal) && columnSetting.alignment === '' ? 'left' : columnSetting.alignment,
                             width: columnSetting.width,
                             height: rowHeight,
                             visible: columnSetting.visible,
@@ -388,6 +380,27 @@
                 }
 
                 return format;
+            };
+
+            // Parse the formula to excel formula.
+            ExcelConverter._parseExcelFormula = function (formula) {
+                var func = formula.substring(1, formula.indexOf('(')), format;
+
+                switch (func) {
+                    case 'ceiling':
+                    case 'floor':
+                        formula = formula.substring(0, formula.lastIndexOf(')')) + ', 1)';
+                        break;
+                    case 'round':
+                        formula = formula.substring(0, formula.lastIndexOf(')')) + ', 0)';
+                        break;
+                    case 'text':
+                        format = formula.substring(formula.lastIndexOf(','), formula.lastIndexOf('\"'));
+                        format = this._parseCellFormat(format.substring(format.lastIndexOf('\"') + 1));
+                        formula = formula.substring(0, formula.lastIndexOf(',') + 1) + '\"' + format + '\")';
+                        break;
+                }
+                return formula;
             };
 
             // Gets the column setting, include width, visible, format and alignment
@@ -525,10 +538,11 @@
             ExcelConverter._alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
             return ExcelConverter;
         })();
-        grid.ExcelConverter = ExcelConverter;
+        _grid.ExcelConverter = ExcelConverter;
     })(wijmo.grid || (wijmo.grid = {}));
     var grid = wijmo.grid;
 })(wijmo || (wijmo = {}));
+
 
 
 

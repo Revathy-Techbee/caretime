@@ -1,6 +1,6 @@
 /*
     *
-    * Wijmo Library 5.20143.32
+    * Wijmo Library 5.20151.48
     * http://wijmo.com/
     *
     * Copyright(c) GrapeCity, Inc.  All rights reserved.
@@ -30,10 +30,9 @@ var wijmo;
     * at least two ranges: the "face" and the "pointer".
     *
     * <ul><li>
-    * The "face" represents the background gauge background. The "min" and "max"
+    * The "face" represents the gauge background. The "min" and "max"
     * properties of the face range correspond to the "min" and "max" properties
-    * of the gauge control, and limit the values that can be displayed by the
-    * gauge.
+    * of the gauge control, and limit the values that the gauge can display.
     * </li><li>
     * The "pointer" is the range that indicates the gauge's current value. The
     * "max" property of the pointer range corresponds to the "value" property
@@ -46,7 +45,7 @@ var wijmo;
     *
     * <ul><li>
     * By default, the extra ranges appear as part of the gauge background.
-    * This way you can show 'zones' within the gauge, like 'good', 'average',
+    * This way you can show 'zones' within the gauge, like 'good,' 'average,'
     * and 'bad' for example.
     * </li><li>
     * If you set the gauge's "showRanges" property to false, the additional
@@ -58,7 +57,7 @@ var wijmo;
         'use strict';
 
         /**
-        * Specifies which values should be displayed as text.
+        * Specifies which values to display as text.
         */
         (function (ShowText) {
             /** Do not show any text in the gauge. */
@@ -83,8 +82,8 @@ var wijmo;
             /**
             * Initializes a new instance of a @see:Gauge control.
             *
-            * @param element The DOM element that will host the control, or a selector for the host element (e.g. '#theCtrl').
-            * @param options JavaScript object containing initialization data for the control.
+            * @param element The DOM element that hosts the control, or a selector for the host element (e.g. '#theCtrl').
+            * @param options The JavaScript object containing initialization data for the control.
             */
             function Gauge(element, options) {
                 _super.call(this, element, null, true);
@@ -187,7 +186,7 @@ var wijmo;
             }
             Object.defineProperty(Gauge.prototype, "value", {
                 /**
-                * Gets or sets the value displayed on the gauge.
+                * Gets or sets the value to display on the gauge.
                 */
                 get: function () {
                     return this._pointer.max;
@@ -229,9 +228,30 @@ var wijmo;
                 configurable: true
             });
 
+            Object.defineProperty(Gauge.prototype, "origin", {
+                /**
+                * Gets or sets the starting point used for painting the range.
+                *
+                * By default, this property is set to null, which causes the value range
+                * to start at the gauge's minimum value, or zero if the minimum is less
+                * than zero.
+                */
+                get: function () {
+                    return this._origin;
+                },
+                set: function (value) {
+                    if (value != this._origin) {
+                        this._origin = wijmo.asNumber(value, true);
+                        this.invalidate();
+                    }
+                },
+                enumerable: true,
+                configurable: true
+            });
+
             Object.defineProperty(Gauge.prototype, "isReadOnly", {
                 /**
-                * Gets or whether the user can edit the value using the mouse and
+                * Gets or sets a value indicating whether the user can edit the value using the mouse and
                 * the keyboard.
                 */
                 get: function () {
@@ -250,7 +270,7 @@ var wijmo;
 
             Object.defineProperty(Gauge.prototype, "step", {
                 /**
-                * Gets or sets the amount to add or subtract to the @see:value property
+                * Gets or sets the amount to add to or subtract from the @see:value property
                 * when the user presses the arrow keys.
                 */
                 get: function () {
@@ -265,7 +285,7 @@ var wijmo;
 
             Object.defineProperty(Gauge.prototype, "format", {
                 /**
-                * Gets or sets the format string used for displaying the gauge values
+                * Gets or sets the format string to use for displaying the gauge values
                 * as text.
                 */
                 get: function () {
@@ -326,7 +346,7 @@ var wijmo;
 
             Object.defineProperty(Gauge.prototype, "showText", {
                 /**
-                * Gets or sets which values should be displayed as text in the gauge.
+                * Gets or sets the @see:ShowText values to display as text in the gauge.
                 */
                 get: function () {
                     return this._showText;
@@ -343,7 +363,7 @@ var wijmo;
 
             Object.defineProperty(Gauge.prototype, "showRanges", {
                 /**
-                * Gets or sets whether the gauge should display the ranges contained in the @see:ranges property.
+                * Gets or sets a value indicating whether the gauge displays the ranges contained in the @see:ranges property.
                 *
                 * If this property is set to false, the ranges contained in the @see:ranges property are not
                 * displayed in the gauge. Instead, they are used to interpolate the color of the @see:pointer
@@ -366,7 +386,7 @@ var wijmo;
 
             Object.defineProperty(Gauge.prototype, "hasShadow", {
                 /**
-                * Gets or sets whether the gauge should display a shadow effect.
+                * Gets or sets a value indicating whether the gauge displays a shadow effect.
                 */
                 get: function () {
                     return this._shadow;
@@ -383,7 +403,7 @@ var wijmo;
 
             Object.defineProperty(Gauge.prototype, "isAnimated", {
                 /**
-                * Gets or sets whether the gauge should animate value changes.
+                * Gets or sets a value indicating whether the gauge animates value changes.
                 */
                 get: function () {
                     return this._animated;
@@ -418,7 +438,7 @@ var wijmo;
             /**
             * Refreshes the control.
             *
-            * @param fullUpdate Whether to update the control layout as well as the content.
+            * @param fullUpdate Indicates whether to update the control layout as well as the content.
             */
             Gauge.prototype.refresh = function (fullUpdate) {
                 if (typeof fullUpdate === "undefined") { fullUpdate = true; }
@@ -490,9 +510,10 @@ var wijmo;
             * });
             * </pre>
             *
-            * @param pt Point to investigate, in window coordinates, or a MoueEvent object, or x coordinate of the point.
-            * @param y Y coordinate of the point (if the first parameter is a number).
-            * @return Value of the gauge at the point, or null if the point on the gauge's face.
+            * @param pt The point to investigate, in window coordinates, or a MoueEvent object,
+            * or the x coordinate of the point.
+            * @param y The Y coordinate of the point (if the first parameter is a number).
+            * @return Value of the gauge at the point, or null if the point is not on the gauge's face.
             */
             Gauge.prototype.hitTest = function (pt, y) {
                 // get point in page coordinates
@@ -625,7 +646,7 @@ var wijmo;
                 if (typeof value === "undefined") { value = rng.max; }
                 // update pointer's min value
                 if (rng == this._pointer) {
-                    rng.min = (this.min < 0 && this.max > 0) ? 0 : this.min;
+                    rng.min = this.origin != null ? this.origin : (this.min < 0 && this.max > 0) ? 0 : this.min;
                 }
 
                 // update the range's element
@@ -1018,7 +1039,7 @@ var wijmo;
         * reference values.
         *
         * If you set the gauge's @see:isReadOnly property to false, then the
-        * user will be able to edit the value by clicking on the gauge.
+        * user can edit the value by clicking on the gauge.
         *
         * @fiddle:7ec2144u
         */
@@ -1027,8 +1048,8 @@ var wijmo;
             /**
             * Initializes a new instance of a @see:RadialGauge control.
             *
-            * @param element The DOM element that will host the control, or a selector for the host element (e.g. '#theCtrl').
-            * @param options JavaScript object containing initialization data for the control.
+            * @param element The DOM element that hosts the control, or a selector for the host element (e.g. '#theCtrl').
+            * @param options The JavaScript object containing initialization data for the control.
             */
             function RadialGauge(element, options) {
                 _super.call(this, element, null);
@@ -1085,7 +1106,7 @@ var wijmo;
 
             Object.defineProperty(RadialGauge.prototype, "autoScale", {
                 /**
-                * Gets or sets whether the gauge should automatically scale to fill the host element.
+                * Gets or sets a value indicating whether the gauge automatically scales to fill the host element.
                 */
                 get: function () {
                     return this._autoScale;
@@ -1104,7 +1125,7 @@ var wijmo;
             /**
             * Refreshes the control.
             *
-            * @param fullUpdate Whether to update the control layout as well as the content.
+            * @param fullUpdate Indicates whether to update the control layout as well as the content.
             */
             RadialGauge.prototype.refresh = function (fullUpdate) {
                 if (typeof fullUpdate === "undefined") { fullUpdate = true; }
@@ -1244,8 +1265,8 @@ var wijmo;
             /**
             * Initializes a new instance of a @see:BulletGraph control.
             *
-            * @param element The DOM element that will host the control, or a selector for the host element (e.g. '#theCtrl').
-            * @param options JavaScript object containing initialization data for the control.
+            * @param element The DOM element that hosts the control, or a selector for the host element (e.g. '#theCtrl').
+            * @param options The JavaScript object containing initialization data for the control.
             */
             function BulletGraph(element, options) {
                 _super.call(this, element, null);
@@ -1373,7 +1394,7 @@ var wijmo;
             /**
             * Initializes a new instance of a @see:Range.
             *
-            * @param name Name of the range.
+            * @param name The name of the range.
             */
             function Range(name) {
                 this._min = 0;
@@ -1444,7 +1465,7 @@ var wijmo;
 
             Object.defineProperty(Range.prototype, "name", {
                 /**
-                * Gets or sets whether the name of this @see:Range.
+                * Gets or sets the name of this @see:Range.
                 */
                 get: function () {
                     return this._name;

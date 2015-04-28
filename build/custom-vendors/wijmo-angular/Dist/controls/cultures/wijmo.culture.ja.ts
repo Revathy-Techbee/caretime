@@ -1,6 +1,6 @@
 /*
     *
-    * Wijmo Library 5.20143.32
+    * Wijmo Library 5.20151.48
     * http://wijmo.com/
     *
     * Copyright(c) GrapeCity, Inc.  All rights reserved.
@@ -51,14 +51,27 @@ module wijmo {
             }
         },
         FlexGrid: {
-            groupHeaderFormat: '{name}: <b>{value} </b>({count} 項目)'
+            groupHeaderFormat: '{name}: <b>{value} </b>({count:n0} 項目)'
         },
         FlexGridFilter: {
+
+            // filter
+            ascending: '\u2191 昇順',
+            descending: '\u2193 降順',
+            apply: '適用',
+            clear: 'リセット',
+            conditions: '条件',
+            values: '値',
+
+            // value filter
+            search: 'フィルタ',
+            selectAll: '全て選択',
+            null: '(ゼロ)',
+
+            // condition filter
             header: '抽出条件の指定',
             and: 'AND',
             or: 'OR',
-            apply: '適用',
-            clear: 'リセット',
             stringOperators: [
                 { name: '(設定しない)', op: null },
                 { name: '指定の値に等しい', op: 0 },

@@ -1,6 +1,6 @@
 /*
     *
-    * Wijmo Library 5.20143.32
+    * Wijmo Library 5.20151.48
     * http://wijmo.com/
     *
     * Copyright(c) GrapeCity, Inc.  All rights reserved.
@@ -45,14 +45,27 @@ module wijmo {
             }
         },
         FlexGrid: {
-            groupHeaderFormat: '{name}: <b>{value} </b>({count} itens)'
+            groupHeaderFormat: '{name}: <b>{value} </b>({count:n0} itens)'
         },
         FlexGridFilter: {
+
+            // filter
+            ascending: '\u2191 Crescente',
+            descending: '\u2193 Decrescente',
+            apply: 'Aplicar',
+            clear: 'Remover',
+            conditions: 'Condições',
+            values: 'Valores',
+
+            // value filter
+            search: 'Filtro',
+            selectAll: 'Selecionar todos',
+            null: '(nulo)',
+
+            // condition filter
             header: 'Mostrar items com valor',
             and: 'E',
             or: 'Ou',
-            apply: 'Aplicar',
-            clear: 'Remover',
             stringOperators: [
                 { name: '(nenhum)', op: null },
                 { name: 'Igual a', op: 0 },

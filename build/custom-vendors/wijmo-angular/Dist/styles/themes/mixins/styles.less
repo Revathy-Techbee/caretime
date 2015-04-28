@@ -33,6 +33,10 @@
 	color: @grid-group-text;
 }
 
+.wj-flexgrid .wj-marker {
+	background: @selected;
+}
+
 /* -- Grid -- */
 
 div[wj-part='root'] {
@@ -63,6 +67,10 @@ div[wj-part='rhcells'] .wj-header {
 	border-bottom: @grid-cell-border solid rgba(0, 0, 0, 0.2);
 }
 
+[dir="rtl"] .wj-cell {
+	border-left: @grid-cell-border solid rgba(0, 0, 0, 0.2);
+}
+
 .wj-cell:not(.wj-header):not(.wj-group):not(.wj-alt):not(.wj-state-selected):not(.wj-state-multi-selected) {
 	/* Default grid cell color */
 	background: @background;
@@ -86,12 +94,12 @@ div[wj-part='rhcells'] .wj-header {
 }
 
 .wj-frozen-row {
-    border-bottom-color: @text;
+	border-bottom-color: @text;
 	border-width: @grid-cell-border;
 }
 
 .wj-frozen-col {
-    border-right-color: @text;
+	border-right-color: @text;
 	border-width: @grid-cell-border;
 }
 

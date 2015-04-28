@@ -1,6 +1,6 @@
 /*
     *
-    * Wijmo Library 5.20143.32
+    * Wijmo Library 5.20151.48
     * http://wijmo.com/
     *
     * Copyright(c) GrapeCity, Inc.  All rights reserved.
@@ -126,7 +126,7 @@ var wijmo;
                             this.CreateProp('selectedValue', 7 /* Any */, 1 /* TwoWay */, null, true, 1000)
                         ], [
                             this.CreateEvent('selectedIndexChanged', true)
-                        ]);
+                        ]).addOptions({ ngModelProperty: 'selectedValue' });
 
                     case wijmo.input && wijmo.input.AutoComplete:
                         return this.getMetaData(wijmo.input.ComboBox).add([
@@ -150,7 +150,7 @@ var wijmo;
                         ], [
                             this.CreateEvent('valueChanged', true),
                             this.CreateEvent('displayMonthChanged', true)
-                        ]);
+                        ]).addOptions({ ngModelProperty: 'value' });
 
                     case wijmo.input && wijmo.input.ColorPicker:
                         return new MetaDataBase([
@@ -160,7 +160,7 @@ var wijmo;
                             this.CreateProp('value', 3 /* String */, 1 /* TwoWay */)
                         ], [
                             this.CreateEvent('valueChanged', true)
-                        ]);
+                        ]).addOptions({ ngModelProperty: 'value' });
 
                     case wijmo.input && wijmo.input.ListBox:
                         return new MetaDataBase([
@@ -169,20 +169,23 @@ var wijmo;
                             this.CreateProp('selectedValuePath', 3 /* String */),
                             this.CreateProp('itemFormatter', 5 /* Function */),
                             this.CreateProp('displayMemberPath', 3 /* String */),
+                            this.CreateProp('checkedMemberPath', 3 /* String */),
                             this.CreateProp('itemsSource', 7 /* Any */),
                             this.CreateProp('selectedIndex', 1 /* Number */, 1 /* TwoWay */),
                             this.CreateProp('selectedItem', 7 /* Any */, 1 /* TwoWay */),
                             this.CreateProp('selectedValue', 7 /* Any */, 1 /* TwoWay */)
                         ], [
                             this.CreateEvent('itemsChanged', true),
+                            this.CreateEvent('itemChecked', false),
                             this.CreateEvent('selectedIndexChanged', true)
-                        ]);
+                        ]).addOptions({ ngModelProperty: 'selectedValue' });
 
                     case wijmo.input && wijmo.input.Menu:
                         return this.getMetaData(wijmo.input.ComboBox).add([
                             this.CreateProp('header', 3 /* String */),
                             this.CreateProp('commandParameterPath', 3 /* String */),
                             this.CreateProp('commandPath', 3 /* String */),
+                            this.CreateProp('isButton', 0 /* Boolean */),
                             this.CreateProp('value', 7 /* Any */, 1 /* TwoWay */, null, false, 1000)
                         ], [
                             this.CreateEvent('itemClicked')
@@ -205,7 +208,7 @@ var wijmo;
                             this.CreateProp('value', 2 /* Date */, 1 /* TwoWay */, null, true, 1000)
                         ], [
                             this.CreateEvent('valueChanged', true)
-                        ]);
+                        ]).addOptions({ ngModelProperty: 'value' });
 
                     case wijmo.input && wijmo.input.InputNumber:
                         return new MetaDataBase([
@@ -222,7 +225,7 @@ var wijmo;
                         ], [
                             this.CreateEvent('valueChanged', true),
                             this.CreateEvent('textChanged', true)
-                        ]);
+                        ]).addOptions({ ngModelProperty: 'value' });
 
                     case wijmo.input && wijmo.input.InputMask:
                         return new MetaDataBase([
@@ -232,7 +235,7 @@ var wijmo;
                             this.CreateProp('value', 3 /* String */, 1 /* TwoWay */)
                         ], [
                             this.CreateEvent('valueChanged', true)
-                        ]);
+                        ]).addOptions({ ngModelProperty: 'value' });
 
                     case wijmo.input && wijmo.input.InputTime:
                         return this.getMetaData(wijmo.input.ComboBox).add([
@@ -244,7 +247,7 @@ var wijmo;
                             this.CreateProp('value', 2 /* Date */, 1 /* TwoWay */, null, true, 1000)
                         ], [
                             this.CreateEvent('valueChanged', true)
-                        ]);
+                        ]).addOptions({ ngModelProperty: 'value' });
 
                     case wijmo.input && wijmo.input.InputColor:
                         return this.getMetaData(wijmo.input.DropDown).add([
@@ -253,7 +256,7 @@ var wijmo;
                             this.CreateProp('value', 3 /* String */, 1 /* TwoWay */)
                         ], [
                             this.CreateEvent('valueChanged', true)
-                        ]);
+                        ]).addOptions({ ngModelProperty: 'value' });
 
                     case 'CollectionViewNavigator':
                         return new MetaDataBase([
@@ -288,7 +291,9 @@ var wijmo;
                             this.CreateProp('itemsSource', 7 /* Any */),
                             this.CreateProp('autoClipboard', 0 /* Boolean */),
                             this.CreateProp('frozenRows', 1 /* Number */),
-                            this.CreateProp('frozenColumns', 1 /* Number */)
+                            this.CreateProp('frozenColumns', 1 /* Number */),
+                            this.CreateProp('deferResizing', 0 /* Boolean */),
+                            this.CreateProp('sortRowIndex', 1 /* Number */)
                         ], [
                             this.CreateEvent('beginningEdit'),
                             this.CreateEvent('cellEditEnded'),
@@ -333,6 +338,7 @@ var wijmo;
                             this.CreateProp('dataMap', 7 /* Any */),
                             this.CreateProp('dataType', 4 /* Enum */, 0 /* OneWay */, wijmo.DataType),
                             this.CreateProp('binding', 3 /* String */),
+                            this.CreateProp('sortMemberPath', 3 /* String */),
                             this.CreateProp('format', 3 /* String */),
                             this.CreateProp('header', 3 /* String */),
                             this.CreateProp('width', 1 /* Number */),
@@ -356,6 +362,12 @@ var wijmo;
                             this.CreateProp('showDropDown', 0 /* Boolean */)
                         ], [], [], 'columns', true);
 
+                    case 'FlexGridCellTemplate':
+                        return new MetaDataBase([
+                            this.CreateProp('cellType', 3 /* String */, 0 /* OneWay */, null, false),
+                            this.CreateProp('cellOverflow', 3 /* String */, 0 /* OneWay */)
+                        ], [], [], undefined, undefined, undefined, 'owner');
+
                     case wijmo.grid && wijmo.grid.filter && wijmo.grid.filter.FlexGridFilter:
                         return new MetaDataBase([
                             this.CreateProp('showFilterIcons', 0 /* Boolean */),
@@ -363,6 +375,14 @@ var wijmo;
                         ], [
                             this.CreateEvent('filterApplied')
                         ], [], undefined, undefined, undefined, '');
+
+                    case wijmo.grid && wijmo.grid.grouppanel && wijmo.grid.grouppanel.GroupPanel:
+                        return new MetaDataBase([
+                            this.CreateProp('hideGroupedColumns', 0 /* Boolean */),
+                            this.CreateProp('maxGroups', 1 /* Number */),
+                            this.CreateProp('placeholder', 3 /* String */),
+                            this.CreateProp('grid', 7 /* Any */)
+                        ]);
 
                     case wijmo.chart && wijmo.chart.FlexChartBase:
                         return new MetaDataBase([
@@ -442,6 +462,22 @@ var wijmo;
                             this.CreateProp('position', 4 /* Enum */, 0 /* OneWay */, wijmo.chart.Position)
                         ], [], [], 'legend', false, false);
 
+                    case wijmo.chart && wijmo.chart.DataLabelBase:
+                        return new MetaDataBase([
+                            this.CreateProp('content', 7 /* Any */, 0 /* OneWay */),
+                            this.CreateProp('border', 0 /* Boolean */)
+                        ], [], [], 'dataLabel', false, false);
+
+                    case wijmo.chart && wijmo.chart.DataLabel:
+                        return this.getMetaData(wijmo.chart.DataLabelBase).add([
+                            this.CreateProp('position', 4 /* Enum */, 0 /* OneWay */, wijmo.chart.LabelPosition)
+                        ]);
+
+                    case wijmo.chart && wijmo.chart.PieDataLabel:
+                        return this.getMetaData(wijmo.chart.DataLabelBase).add([
+                            this.CreateProp('position', 4 /* Enum */, 0 /* OneWay */, wijmo.chart.PieLabelPosition)
+                        ]);
+
                     case wijmo.chart && wijmo.chart.Series:
                         return new MetaDataBase([
                             this.CreateProp('binding', 3 /* String */),
@@ -460,11 +496,39 @@ var wijmo;
                             this.CreateComplexProp('axisY', false, true)
                         ], 'series', true);
 
+                    case wijmo.chart && wijmo.chart.LineMarker:
+                        return new MetaDataBase([
+                            this.CreateProp('isVisible', 0 /* Boolean */),
+                            this.CreateProp('seriesIndex', 1 /* Number */),
+                            this.CreateProp('horizontalPosition', 1 /* Number */),
+                            this.CreateProp('content', 5 /* Function */),
+                            this.CreateProp('verticalPosition', 1 /* Number */),
+                            this.CreateProp('alignment', 4 /* Enum */, 0 /* OneWay */, wijmo.chart.LineMarkerAlignment),
+                            this.CreateProp('lines', 4 /* Enum */, 0 /* OneWay */, wijmo.chart.LineMarkerLines),
+                            this.CreateProp('interaction', 4 /* Enum */, 0 /* OneWay */, wijmo.chart.LineMarkerInteraction),
+                            this.CreateProp('dragLines', 0 /* Boolean */),
+                            this.CreateProp('dragThreshold', 1 /* Number */),
+                            this.CreateProp('dragContent', 0 /* Boolean */)
+                        ], [
+                            this.CreateEvent('positionChanged')
+                        ], [], undefined, undefined, undefined, '');
+
+                    case wijmo.chart && wijmo.chart.interaction && wijmo.chart.interaction.RangeSelector:
+                        return new MetaDataBase([
+                            this.CreateProp('isVisible', 0 /* Boolean */),
+                            this.CreateProp('min', 1 /* Number */),
+                            this.CreateProp('max', 1 /* Number */),
+                            this.CreateProp('orientation', 4 /* Enum */, 0 /* OneWay */, wijmo.chart.interaction.Orientation)
+                        ], [
+                            this.CreateEvent('rangeChanged')
+                        ], [], undefined, undefined, undefined, '');
+
                     case wijmo.gauge && wijmo.gauge.Gauge:
                         return new MetaDataBase([
                             this.CreateProp('value', 1 /* Number */, 1 /* TwoWay */),
                             this.CreateProp('min', 1 /* Number */),
                             this.CreateProp('max', 1 /* Number */),
+                            this.CreateProp('origin', 1 /* Number */),
                             this.CreateProp('isReadOnly', 0 /* Boolean */),
                             this.CreateProp('step', 1 /* Number */),
                             this.CreateProp('format', 3 /* String */),
@@ -479,7 +543,7 @@ var wijmo;
                             this.CreateComplexProp('ranges', true),
                             this.CreateComplexProp('pointer', false, false),
                             this.CreateComplexProp('face', false, false)
-                        ]);
+                        ]).addOptions({ ngModelProperty: 'value' });
 
                     case wijmo.gauge && wijmo.gauge.LinearGauge:
                         return this.getMetaData(wijmo.gauge.Gauge).add([
@@ -517,6 +581,13 @@ var wijmo;
             // getClassName(wijmo.input.ComboBox) returns 'ComboBox'.
             ControlMetaFactory.getClassName = function (classRef) {
                 return (classRef.toString().match(/function (.+?)\(/) || [, ''])[1];
+            };
+
+            // Returns a camel case representation of the dash delimited name.
+            ControlMetaFactory.toCamelCase = function (s) {
+                return s.toLowerCase().replace(/-(.)/g, function (match, group1) {
+                    return group1.toUpperCase();
+                });
             };
 
             ControlMetaFactory.findInArr = function (arr, propName, value) {
@@ -695,7 +766,10 @@ var wijmo;
 
         // Stores a control metadata as arrays of property, event and complex property descriptors.
         var MetaDataBase = (function () {
-            function MetaDataBase(props, events, complexProps, parentProperty, isParentPropertyArray, ownsObject, parentReferenceProperty) {
+            function MetaDataBase(props, events, complexProps, parentProperty, isParentPropertyArray, ownsObject, parentReferenceProperty, ngModelProperty) {
+                this._props = [];
+                this._events = [];
+                this._complexProps = [];
                 this.props = props;
                 this.events = events;
                 this.complexProps = complexProps;
@@ -703,6 +777,7 @@ var wijmo;
                 this.isParentPropertyArray = isParentPropertyArray;
                 this.ownsObject = ownsObject;
                 this.parentReferenceProperty = parentReferenceProperty;
+                this.ngModelProperty = ngModelProperty;
             }
             Object.defineProperty(MetaDataBase.prototype, "props", {
                 get: function () {
@@ -739,18 +814,46 @@ var wijmo;
 
             // Adds the specified arrays to the end of corresponding arrays of this object, and overwrite the simple properties
             // if specified. Returns 'this'.
-            MetaDataBase.prototype.add = function (props, events, complexProps, parentProperty, isParentPropertyArray, ownsObject) {
-                this._props = this._props.concat(props || []);
-                this._events = this._events.concat(events || []);
-                this._complexProps = this._complexProps.concat(complexProps || []);
-                if (parentProperty !== undefined) {
-                    this.parentProperty = parentProperty;
-                }
-                if (isParentPropertyArray !== undefined) {
-                    this.isParentPropertyArray = isParentPropertyArray;
-                }
-                if (ownsObject !== undefined) {
-                    this.ownsObject = ownsObject;
+            MetaDataBase.prototype.add = function (props, events, complexProps, parentProperty, isParentPropertyArray, ownsObject, parentReferenceProperty, ngModelProperty) {
+                return this.addOptions({
+                    props: props,
+                    events: events,
+                    complexProps: complexProps,
+                    parentProperty: parentProperty,
+                    isParentPropertyArray: isParentPropertyArray,
+                    ownsObject: ownsObject,
+                    parentReferenceProperty: parentReferenceProperty,
+                    ngModelProperty: ngModelProperty
+                });
+                //this._props = this._props.concat(props || []);
+                //this._events = this._events.concat(events || []);
+                //this._complexProps = this._complexProps.concat(complexProps || []);
+                //if (parentProperty !== undefined) {
+                //    this.parentProperty = parentProperty;
+                //}
+                //if (isParentPropertyArray !== undefined) {
+                //    this.isParentPropertyArray = isParentPropertyArray;
+                //}
+                //if (ownsObject !== undefined) {
+                //    this.ownsObject = ownsObject;
+                //}
+                //if (parentReferenceProperty !== undefined) {
+                //    this.parentReferenceProperty = parentReferenceProperty;
+                //}
+                //if (ngModelProperty !== undefined) {
+                //    this.ngModelProperty = ngModelProperty;
+                //}
+                //return this;
+            };
+
+            MetaDataBase.prototype.addOptions = function (options) {
+                for (var prop in options) {
+                    var thisValue = this[prop], optionsValue = options[prop];
+                    if (thisValue instanceof Array) {
+                        this[prop] = thisValue.concat(optionsValue || []);
+                    } else if (optionsValue !== undefined) {
+                        this[prop] = optionsValue;
+                    }
                 }
                 return this;
             };
@@ -2591,6 +2694,53 @@ var wijmo;
             return wjFlexGridFilter;
         })(knockout.WjBinding);
         knockout.wjFlexGridFilter = wjFlexGridFilter;
+
+        /**
+        * KnockoutJS binding for the @see:FlexGrid @see:GroupPanel control.
+        *
+        * The <b>wjGroupPanel</b> binding should be connected to the <b>FlexGrid</b> control using the <b>grid</b> property.
+        * For example:
+        *
+        * <pre>&lt;p&gt;Here is a FlexGrid control with GroupPanel:&lt;/p&gt;
+        * &nbsp;
+        * &lt;div data-bind="wjGroupPanel: { grid: flex(), placeholder: 'Drag columns here to create groups.' }"&gt;&lt;/div&gt;
+        * &nbsp;
+        * &lt;div data-bind="wjFlexGrid: { control: flex, itemsSource: data }"&gt;
+        *     &lt;div data-bind="wjFlexGridColumn: {
+        *         header: 'Country',
+        *         binding: 'country',
+        *         width: '*' }"&gt;
+        *     &lt;/div&gt;
+        *     &lt;div data-bind="wjFlexGridColumn: {
+        *         header: 'Date',
+        *         binding: 'date' }"&gt;
+        *     &lt;/div&gt;
+        *     &lt;div data-bind="wjFlexGridColumn: {
+        *         header: 'Revenue',
+        *         binding: 'amount',
+        *         format: 'n0' }"&gt;
+        *     &lt;/div&gt;
+        *     &lt;div data-bind="wjFlexGridColumn: {
+        *         header: 'Active',
+        *         binding: 'active' }"&gt;
+        *     &lt;/div&gt;
+        * &lt;/div&gt;</pre>
+        *
+        * The <b>wjGroupPanel</b> binding supports all read-write properties and events of
+        * the @see:GroupPanel class.
+        *
+        */
+        var wjGroupPanel = (function (_super) {
+            __extends(wjGroupPanel, _super);
+            function wjGroupPanel() {
+                _super.apply(this, arguments);
+            }
+            wjGroupPanel.prototype._getControlConstructor = function () {
+                return wijmo.grid.grouppanel.GroupPanel;
+            };
+            return wjGroupPanel;
+        })(knockout.WjBinding);
+        knockout.wjGroupPanel = wjGroupPanel;
     })(wijmo.knockout || (wijmo.knockout = {}));
     var knockout = wijmo.knockout;
 })(wijmo || (wijmo = {}));
@@ -2600,6 +2750,7 @@ var wijmo;
 (ko.bindingHandlers).wjFlexGrid = new wijmo.knockout.wjFlexGrid();
 (ko.bindingHandlers).wjFlexGridColumn = new wijmo.knockout.wjFlexGridColumn();
 (ko.bindingHandlers).wjFlexGridFilter = new wijmo.knockout.wjFlexGridFilter();
+(ko.bindingHandlers).wjGroupPanel = new wijmo.knockout.wjGroupPanel();
 //# sourceMappingURL=wijmo.knockout.grid.js.map
 
 var __extends = this.__extends || function (d, b) {
@@ -3073,7 +3224,7 @@ var wijmo;
                 if (!(node.nodeType == 1 && this._isWjTag(node.tagName))) {
                     return this._delegate(node);
                 }
-                var camelTag = this._toCamelCase(node.tagName), wjBinding = ko.bindingHandlers[camelTag];
+                var camelTag = knockout.MetaFactory.toCamelCase(node.tagName), wjBinding = ko.bindingHandlers[camelTag];
                 if (!wjBinding) {
                     return this._delegate(node);
                 }
@@ -3085,7 +3236,7 @@ var wijmo;
                         dataBindAttr = attr;
                         continue;
                     }
-                    var camelAttr = this._toCamelCase(attr.name);
+                    var camelAttr = knockout.MetaFactory.toCamelCase(attr.name);
                     if (this._isWjProp(camelAttr, wjBinding._metaData)) {
                         if (wjBindDef) {
                             wjBindDef += ',';
@@ -3122,12 +3273,6 @@ var wijmo;
 
             WjTagsPreprocessor.prototype._isWjProp = function (name, metaData) {
                 return WjTagsPreprocessor._specialProps[name] || wijmo.knockout.MetaFactory.findProp(name, metaData.props) || wijmo.knockout.MetaFactory.findEvent(name, metaData.events);
-            };
-
-            WjTagsPreprocessor.prototype._toCamelCase = function (s) {
-                return s.toLowerCase().replace(/-(.)/g, function (match, group1) {
-                    return group1.toUpperCase();
-                });
             };
             WjTagsPreprocessor._specialProps = WjTagsPreprocessor._getSpecialProps();
 

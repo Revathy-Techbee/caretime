@@ -1,6 +1,6 @@
 /*
     *
-    * Wijmo Library 5.20143.32
+    * Wijmo Library 5.20151.48
     * http://wijmo.com/
     *
     * Copyright(c) GrapeCity, Inc.  All rights reserved.
@@ -12,7 +12,7 @@
     */
 // initialize groupHeaderFormat
 wijmo.culture.FlexGrid = {
-    groupHeaderFormat: '{name}: <b>{value} </b>({count} items)'
+    groupHeaderFormat: '{name}: <b>{value} </b>({count:n0} items)'
 };
 
 /**
@@ -70,21 +70,19 @@ module wijmo.grid {
         private _gpTL: GridPanel;
 
         // private stuff
-        private static _maxCssHeight: number;
         private _maxOffsetY: number;
         private _heightBrowser: number;
         private _szClient = new wijmo.Size(0, 0);
-        private _ptScrl = new Point(0, 0);
         private _offsetY: number;
         private _rcBounds: Rect;
         private _lastCount: number;
+        //private _rafScrl: number;
+        /*private*/ _ptScrl = new Point(0, 0); // accessible to GridPanel
         /*private*/ _rtl = false; // accessible to cell factory
-        /*private*/ private _isChrome: boolean;
-        /*private*/ _isIE: boolean;
 
         // selection/key/mouse handlers
         private _keyHdl: _KeyboardHandler;
-        private _mouseHdl: _MouseHandler;
+        /*private*/_mouseHdl: _MouseHandler; // acessible to key handler
         /*private*/_edtHdl: _EditHandler; // acessible to key handler
         /*private*/_selHdl: _SelectionHandler; // acessible to key handler
         private _addHdl: _AddNewHandler;
@@ -115,6 +113,9 @@ module wijmo.grid {
         private _items: any; // any[] or ICollectionView
         private _cv: wijmo.collections.ICollectionView;
         private _childItemsPath: string;
+        private _sortRowIndex: number;
+        private _deferResizing = false;
+        private _bndSortConverter;
 
         /**
          * Gets or sets the template used to instantiate @see:FlexGrid controls.
@@ -123,13 +124,13 @@ module wijmo.grid {
             '<div wj-part="root" style="position:absolute;width:100%;height:100%;max-height:inherit;overflow:auto;-webkit-overflow-scrolling:touch">' + // cell container
                 '<div wj-part="cells" style ="position:relative"></div>' + // cells
             '</div>' +
-            '<div wj-part="tl" style="position:absolute;overflow:hidden;z-index:100">' + // top-left container
+            '<div wj-part="tl" style="position:absolute;overflow:hidden">' + // top-left container
                 '<div wj-part="tlcells" class="wj-topleft" style="position:relative"></div>' + // top-left cells
             '</div>' +
-            '<div wj-part="ch" style="position:absolute;overflow:hidden;z-index:100">' + // col header container
+            '<div wj-part="ch" style="position:absolute;overflow:hidden">' + // col header container
                 '<div wj-part="chcells" class="wj-colheaders" style="position:relative"></div>' + // col header cells
             '</div>' +
-            '<div wj-part="rh" style="position:absolute;overflow:hidden;z-index:100">' + // row header container
+            '<div wj-part="rh" style="position:absolute;overflow:hidden">' + // row header container
                 '<div wj-part="rhcells" class="wj-rowheaders" style="position:relative"></div>' + // row header cells
             '</div>' +
             '<div wj-part="sz" style="position:relative;visibility:hidden;"></div>' + // auto sizing
@@ -145,14 +146,14 @@ module wijmo.grid {
             super(element, null, true);
             var e = element,
                 self = this,
-                cs = getComputedStyle(this.hostElement),
+                host = this.hostElement,
+                cs = getComputedStyle(host.parentElement ? host : document.body),
                 defRowHei = parseInt(cs.fontSize) * 2;
 
-            // REVIEW: IE/Chrome/FireFox handle RTL differently.
-            // Chrome reverses direction, FF uses negative values, IE does the right thing (nothing)
-            // http://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
-            this._isChrome = !!window['chrome'];
-            this._isIE = !!document.documentMode;
+            // make 100% sure we have a default font height!
+            if (defRowHei <= 0) {
+                defRowHei = 28;
+            }
 
             this.deferUpdate(function () {
 
@@ -179,6 +180,7 @@ module wijmo.grid {
                 self._selHdl = new _SelectionHandler(self);
                 self._addHdl = new _AddNewHandler(self);
                 self._mrgMgr = new MergeManager(self);
+                self._bndSortConverter = self._sortConverter.bind(self);
 
                 // apply options after grid is fully initialized
                 self.initialize(options);
@@ -186,23 +188,38 @@ module wijmo.grid {
 
             // update content when user scrolls the control
             this._root.addEventListener('scroll', function () {
-                var root = self._root,
-                    top = root.scrollTop,
-                    left = root.scrollLeft;
 
-                // IE/Chrome/FF handle scrollLeft differently under RTL:
-                // Chrome reverses direction, FF uses negative values, IE does the right thing (nothing)
-                if (self._rtl && self._isChrome) {
-                    left = (root.scrollWidth - root.clientWidth) - left;
+                // finish editing when scrolling
+                // (or edits will be lost when the grid refreshes)
+                self.finishEditing();
+
+                // update grid's scrollPosition to match element's
+                if (self._updateScrollPosition()) {
+
+                    // update the content
+                    self._updateContent(true);
+
+                    // update the content using requestAnimationFrame (not great)
+                    //if (window.requestAnimationFrame) {
+                    //    if (self._rafScrl) {
+                    //        cancelAnimationFrame(self._rafScrl);
+                    //    }
+                    //    self._rafScrl = requestAnimationFrame(function() {
+                    //        self._updateContent(true);
+                    //        self._rafScrl = null;
+                    //    });
+                    //} else { // IE9 doesn't have requestAnimationFrame...
+                    //    self._updateContent(true);
+                    //}
                 }
-                self._ptScrl = new Point(-Math.abs(left), -top);
-
-                // update grid
-                self._updateContent(true);
-
-                // raise scrollPositionChanged
-                self.onScrollPositionChanged();
             });
+        }
+
+        // reset rcBounds when window is resized
+        // (even if the control size didn't change, because it may have moved: TFS 112961)
+        _handleResize() {
+            super._handleResize();
+            this._rcBounds = null;
         }
 
         //--------------------------------------------------------------------------
@@ -268,13 +285,14 @@ module wijmo.grid {
 
             // populate array with proxy columns
             // save only primitive value and non-default settings
+            // don't save 'size', we are already saving 'width'
             for (var i = 0; i < this.columns.length; i++) {
                 var col = this.columns[i],
                     proxyCol = {};
                 for (var j = 0; j < props.length; j++) {
                     var prop = props[j],
                         value = col[prop];
-                    if (value != defs[prop] && isPrimitive(value)) {
+                    if (value != defs[prop] && isPrimitive(value) && prop != 'size') {
                         proxyCol[prop] = value;
                     }
                 }
@@ -305,7 +323,17 @@ module wijmo.grid {
             }
         }
         /**
-         * Gets or sets whether users are allowed to resize rows and/or columns with the mouse.
+         * Gets or sets whether users may resize rows and/or columns 
+         * with the mouse.
+         *
+         * If resizing is enabled, users can resize columns by dragging
+         * the right edge of column header cells, or rows by dragging the
+         * bottom edge of row header cells.
+         *
+         * Users may also double-click the edge of the header cells to 
+         * automatically resize rows and columns to fit their content.
+         * The autosize behavior can be customized using the @see:autoSizeMode
+         * property.
          */
         get allowResizing(): AllowResizing {
             return this._allowResizing;
@@ -314,7 +342,30 @@ module wijmo.grid {
             this._allowResizing = asEnum(value, AllowResizing);
         }
         /**
-         * Gets or sets which cells should be taken into account when auto-sizing a row or column.
+         * Gets or sets whether row and column resizing should be deferred until
+         * the user releases the mouse button.
+         *
+         * By default, @see:deferResizing is set to false, causing rows and columns
+         * to be resized as the user drags the mouse. Setting this property to true
+         * causes the grid to show a resizing marker and to resize the row or column
+         * only when the user releases the mouse button.
+         */
+        get deferResizing() : boolean {
+            return this._deferResizing;
+        }
+        set deferResizing(value: boolean) {
+            this._deferResizing = asBoolean(value);
+        }
+        /**
+         * Gets or sets which cells should be taken into account when auto-sizing a
+         * row or column.
+         *
+         * This property controls what happens when users double-click the edge of
+         * a column header.
+         *
+         * By default, the grid will automatically set the column width based on the
+         * content of the header and data cells in the column. This property allows 
+         * you to change that to include only the headers or only the data.
          */
         get autoSizeMode(): AutoSizeMode {
             return this._autoSizeMode;
@@ -416,7 +467,7 @@ module wijmo.grid {
          * </ul>
          *
          * The default value for this property is 
-         * '{name}: &lt;b&gt;{value}&lt;/b&gt;({count} items)',
+         * '{name}: &lt;b&gt;{value}&lt;/b&gt;({count:n0} items)',
          * which creates group headers similar to 
          * 'Country: <b>UK</b> (12 items)' or 'Country: <b>Japan</b> (8 items)'.
          */
@@ -452,6 +503,10 @@ module wijmo.grid {
 
                 // unbind current collection view
                 if (this._cv) {
+                    var cv = tryCast(this._cv, wijmo.collections.CollectionView);
+                    if (cv && cv.sortConverter == this._bndSortConverter) {
+                        cv.sortConverter = null;
+                    }
                     this._cv.currentChanged.removeHandler(this._cvCurrentChanged, this);
                     this._cv.collectionChanged.removeHandler(this._cvCollectionChanged, this);
                     this._cv = null;
@@ -466,6 +521,10 @@ module wijmo.grid {
                 if (this._cv != null) {
                     this._cv.currentChanged.addHandler(this._cvCurrentChanged, this);
                     this._cv.collectionChanged.addHandler(this._cvCollectionChanged, this);
+                    var cv = tryCast(this._cv, wijmo.collections.CollectionView);
+                    if (cv && cv.sortConverter == null) {
+                        cv.sortConverter = this._bndSortConverter;
+                    }
                 }
 
                 // bind grid
@@ -554,6 +613,22 @@ module wijmo.grid {
             this.columns.frozen = value;
         }
         /**
+         * Gets or sets the index of row in the column header panel that
+         * shows and changes the current sort.
+         *
+         * This property is set to null by default, causing the last row
+         * in the @see:columnHeaders panel to act as the sort row.
+         */
+        get sortRowIndex(): number {
+            return this._sortRowIndex;
+        }
+        set sortRowIndex(value: number) {
+            if (value != this._sortRowIndex) {
+                this._sortRowIndex = asNumber(value, true);
+                this.invalidate();
+            }
+        }
+        /**
          * Gets or sets a @see:Point that represents the value of the grid's scrollbars.
          */
         get scrollPosition(): Point {
@@ -566,16 +641,24 @@ module wijmo.grid {
             // IE/Chrome/FF handle scrollLeft differently under RTL:
             // Chrome reverses direction, FF uses negative values, IE does the right thing (nothing)
             if (this._rtl) {
-                left = (this._isChrome) 
-                    ? (root.scrollWidth - root.clientWidth) + pt.x
-                    : this._isIE ? -pt.x: pt.x;
+                switch(FlexGrid._getRtlMode()) {
+                    case 'rev':
+                        left = (root.scrollWidth - root.clientWidth) + pt.x;
+                        break;
+                    case 'neg':
+                        left = pt.x;
+                        break;
+                    default:
+                        left = -pt.x;
+                        break;
+                }
             }
-            if (root.scrollLeft != left) {
+            //if (root.scrollLeft != left) {
                 root.scrollLeft = left;
-            }
-            if (root.scrollTop != -pt.y) {
+            //}
+            //if (root.scrollTop != -pt.y) {
                 root.scrollTop = -pt.y;
-            }
+            //}
         }
         /**
          * Gets the client size of the control (control size minus headers minus scrollbars).
@@ -647,12 +730,12 @@ module wijmo.grid {
          *   // customize color and backgroundColor attributes for this cell
          *   ...
          * }
+         * </pre>
          *
          * If you have a scenario where multiple clients may want to customize the
          * grid rendering (for example when creating directives or re-usable libraries),
          * consider using the @see:formatItem event instead. The event allows multiple
          * clients to attach their own handlers.
-         * </pre>
          */
         get itemFormatter(): Function {
             return this._itemFormatter;
@@ -720,17 +803,14 @@ module wijmo.grid {
          * });
          * </pre>
          *
-         * @param pt Point to investigate, in window coordinates, or a MoueEvent object, or x coordinate of the point.
-         * @param y Y coordinate of the point (if the first parameter is a number).
-         * @return HitTestInfo object with information about the point.
+         * @param pt @see:Point to investigate, in page coordinates, or a MouseEvent object, or x coordinate of the point.
+         * @param y Y coordinate of the point in page coordinates (if the first parameter is a number).
+         * @return A @see:HitTestInfo object with information about the point.
          */
         hitTest(pt: any, y?: number): HitTestInfo {
             if (isNumber(pt) && isNumber(y)) { // accept hitTest(x, y) as well
                 pt = new Point(pt, y);
-            } else if (pt instanceof MouseEvent) {
-                pt = new Point(pt.pageX, pt.pageY);
             }
-            asType(pt, Point);
             return new HitTestInfo(this, pt);
         }
         /**
@@ -810,9 +890,23 @@ module wijmo.grid {
 
                     // assign cell
                     if (!this.columns[col].isReadOnly && !this.rows[row].isReadOnly) {
-                        this.cells.setCellData(row, col, cells[j]);
-                        rngPaste.row2 = Math.max(rngPaste.row2, row);
-                        rngPaste.col2 = Math.max(rngPaste.col2, col);
+
+                        // raise edit events so user can cancel the assignment
+                        var e = new CellRangeEventArgs(this.cells, new CellRange(row, col));
+                        if (this.onBeginningEdit(e)) {
+
+                            // make the assignment
+                            if (this.cells.setCellData(row, col, cells[j])) {
+
+                                // raise post-edit events
+                                this.onCellEditEnding(e);
+                                this.onCellEditEnded(e);
+
+                                // update paste range
+                                rngPaste.row2 = Math.max(rngPaste.row2, row);
+                                rngPaste.col2 = Math.max(rngPaste.col2, col);
+                            }
+                        }
                     }
                 }
             }
@@ -826,6 +920,7 @@ module wijmo.grid {
             // select pasted range
             this.select(rngPaste);
         }
+
         // expand clip string to get Excel-like behavior
         _expandClipString(text: string, rng: CellRange): string {
 
@@ -878,10 +973,16 @@ module wijmo.grid {
             // close any open drop-downs
             this.finishEditing();
 
-            // perform the update
+            // on full updates, get missing column types based on bindings and
+            // update scroll position in case the control just became visible
+            // and IE wrongly reset the element's scroll position to the origin
+            // http://wijmo.com/topic/flexgrid-refresh-issue-when-hidden/
             if (fullUpdate) {
                 this._updateColumnTypes();
+                this._updateScrollPosition(); 
             }
+
+            // perform the update
             this.refreshCells(fullUpdate);
         }
         /**
@@ -917,77 +1018,60 @@ module wijmo.grid {
          * not currently in view. If the grid contains a large amount of data (say 50,000 rows), 
          * then not all rows will be measured since that could potentially take a long time.
          *
-         * @param firstColumn Index of the first column to resize.
-         * @param lastColumn Index of the last column to resize.
+         * @param firstColumn Index of the first column to resize (defaults to the first column).
+         * @param lastColumn Index of the last column to resize (defaults to the last column).
          * @param header Whether the column indices refer to regular or header columns.
          * @param extra Extra spacing, in pixels.
          */
         autoSizeColumns(firstColumn?: number, lastColumn?: number, header = false, extra = 4) {
-            firstColumn = firstColumn == null ? 0 : asInt(firstColumn);
-            lastColumn = lastColumn == null ? this.columns.length - 1 : asInt(firstColumn);
-            asBoolean(header);
-            asNumber(extra);
             var self = this,
                 max = 0,
                 pHdr = header ? this.topLeftCells : this.columnHeaders,
                 pCells = header ? this.rowHeaders : this.cells,
                 rowRange = this.viewRange,
                 text: string, lastText: string;
+            firstColumn = firstColumn == null ? 0 : asInt(firstColumn);
+            lastColumn = lastColumn == null ? pCells.columns.length - 1 : asInt(firstColumn);
+            asBoolean(header);
+            asNumber(extra);
 
-            // check bounds
-            if (!this.rows.length || !this.columns.length) {
-                return;
-            }
-            if (lastColumn > this.columns.length - 1) {
-                lastColumn = pCells.columns.length - 1;
-            }
-
-            // choose row range
-            // (measure viewrange by default, everything if we have only a few items)
+            // choose row range to measure
+            // (viewrange by default, everything if we have only a few items)
             rowRange.row = Math.max(0, rowRange.row - 1000);
             rowRange.row2 = Math.min(rowRange.row2 + 1000, this.rows.length - 1);
 
             this.deferUpdate(function () {
 
                 // create element to measure content
-                var eMeasure = createElement('<span style="visibility:hidden">');
+                var eMeasure = document.createElement('div');
+                eMeasure.style.visibility = 'hidden';
                 self.hostElement.appendChild(eMeasure);
 
                 // measure cells in the range
-                for (var c = firstColumn; c <= lastColumn; c++) {
+                for (var c = firstColumn; c <= lastColumn && c > -1 && c < pCells.columns.length; c++) {
                     max = 0;
 
                     // headers
                     if (self.autoSizeMode & AutoSizeMode.Headers) {
                         for (var r = 0; r < pHdr.rows.length; r++) {
                             if (pHdr.rows[r].isVisible) {
-                                self.cellFactory.updateCell(pHdr, r, c, eMeasure);
-                                if (self.itemFormatter) {
-                                    self.itemFormatter(pHdr, r, c, eMeasure);
-                                }
-                                eMeasure.style.width = null;
-                                max = Math.max(max, eMeasure.offsetWidth);
+                                var w = self._getDesiredWidth(pHdr, r, c, eMeasure);
+                                max = Math.max(max, w);
                             }
                         }
                     }
 
                     // cells
                     if (self.autoSizeMode & AutoSizeMode.Cells) {
-                        self.cellFactory.updateCell(pCells, 0, c, eMeasure);
-                        eMeasure.style.width = null;
                         lastText = null;
-                        for (var r = rowRange.row; r <= rowRange.row2; r++) {
+                        for (var r = rowRange.row; r <= rowRange.row2 && r > -1 && r < pCells.rows.length; r++) {
                             if (pCells.rows[r].isVisible) {
 
                                 if (!header && c == pCells.columns.firstVisibleIndex && pCells.rows.maxGroupLevel > -1) {
 
-                                    // special handling for outline column
-                                    self.cellFactory.updateCell(pCells, r, c, eMeasure);
-                                    if (self.itemFormatter) {
-                                        self.itemFormatter(pHdr, r, c, eMeasure);
-                                    }
-                                    eMeasure.style.width = null;
-                                    max = Math.max(max, eMeasure.offsetWidth);
+                                    // ignore last text for outline cells
+                                    var w = self._getDesiredWidth(pCells, r, c, eMeasure);
+                                    max = Math.max(max, w);
 
                                 } else {
 
@@ -995,11 +1079,8 @@ module wijmo.grid {
                                     text = pCells.getCellData(r, c, true);
                                     if (text != lastText) {
                                         lastText = text;
-                                        eMeasure.textContent = text;
-                                        if (self.itemFormatter) {
-                                            self.itemFormatter(pHdr, r, c, eMeasure);
-                                        }
-                                        max = Math.max(max, eMeasure.offsetWidth);
+                                        var w = self._getDesiredWidth(pCells, r, c, eMeasure);
+                                        max = Math.max(max, w);
                                     }
                                 }
                             }
@@ -1033,60 +1114,42 @@ module wijmo.grid {
          * @param extra Extra spacing, in pixels.
          */
         autoSizeRows(firstRow?: number, lastRow?: number, header = false, extra = 0) {
-            firstRow = firstRow == null ? 0 : asInt(firstRow);
-            lastRow = lastRow == null ? this.rows.length - 1 : asInt(lastRow);
-            asBoolean(header);
-            asNumber(extra);
             var self = this,
                 max = 0,
                 pHdr = header ? this.topLeftCells : this.rowHeaders,
                 pCells = header ? this.columnHeaders : this.cells;
-
-            // check bounds
-            if (!this.rows.length || !this.columns.length) {
-                return;
-            }
+            header = asBoolean(header);
+            extra = asNumber(extra);
+            firstRow = firstRow == null ? 0 : asInt(firstRow);
+            lastRow = lastRow == null ? pCells.rows.length - 1 : asInt(lastRow);
 
             this.deferUpdate(function () {
 
                 // create element to measure content
-                var eMeasure = createElement('<span style="visibility:hidden">');
+                var eMeasure = document.createElement('div');
+                eMeasure.style.visibility = 'hidden';
                 self.hostElement.appendChild(eMeasure);
 
                 // measure cells in the range
-                for (var r = firstRow; r <= lastRow; r++) {
+                for (var r = firstRow; r <= lastRow && r > -1 && r < pCells.rows.length; r++) {
                     max = 0;
 
                     // headers
                     if (self.autoSizeMode & AutoSizeMode.Headers) {
-                        self.cellFactory.updateCell(pHdr, r, 0, eMeasure);
-                        eMeasure.style.height = null;
                         for (var c = 0; c < pHdr.columns.length; c++) {
-                            var wid = pHdr.columns[c].renderSize;
-                            if (wid > 0) {
-                                eMeasure.style.width = wid + 'px';
-                                eMeasure.textContent = pHdr.getCellData(r, c, true);
-                                if (self.itemFormatter) {
-                                    self.itemFormatter(pHdr, r, c, eMeasure);
-                                }
-                                max = Math.max(max, eMeasure.offsetHeight);
+                            if (pHdr.columns[c].renderSize > 0) {
+                                var h = self._getDesiredHeight(pHdr, r, c, eMeasure);
+                                max = Math.max(max, h);
                             }
                         }
                     }
 
                     // cells
                     if (self.autoSizeMode & AutoSizeMode.Cells) {
-                        self.cellFactory.updateCell(pCells, r, 0, eMeasure);
-                        eMeasure.style.height = null;
                         for (var c = 0; c < pCells.columns.length; c++) {
-                            var wid = pCells.columns[c].renderSize;
-                            if (wid > 0) {
-                                eMeasure.style.width = wid + 'px';
-                                eMeasure.textContent = pCells.getCellData(r, c, true);
-                                if (self.itemFormatter) {
-                                    self.itemFormatter(pCells, r, c, eMeasure);
-                                }
-                                max = Math.max(max, eMeasure.offsetHeight);
+                            if (pCells.columns[c].renderSize > 0) {
+                                var h = self._getDesiredHeight(pCells, r, c, eMeasure);
+                                max = Math.max(max, h);
                             }
                         }
                     }
@@ -1117,12 +1180,15 @@ module wijmo.grid {
          * @param level Maximum group level to show.
          */
         collapseGroupsToLevel(level: number) {
+
             // finish editing first (this may change the collection)
-            if (true) { // TODO: FinishEditing()) {
-                var self = this;
-                self.deferUpdate(function () {
-                    for (var r = 0; r < self.rows.length; r++) {
-                        var gr = tryCast(self.rows[r], GroupRow);
+            if (this.finishEditing()) {
+
+                // set collapsed state for all rows in the grid
+                var rows = this.rows;
+                rows.deferUpdate(function () {
+                    for (var r = 0; r < rows.length; r++) {
+                        var gr = tryCast(rows[r], GroupRow);
                         if (gr) {
                             gr.isCollapsed = gr.level >= level;
                         }
@@ -1182,6 +1248,13 @@ module wijmo.grid {
          * @return True if the grid scrolled.
          */
         scrollIntoView(r: number, c: number): boolean {
+
+            // make sure we have our dimensions set
+            if (this._maxOffsetY == null) {
+                this._updateLayout();
+            }
+
+            // and go to work
             var sp = this.scrollPosition,
                 wid = this._szClient.width,
                 hei = this._szClient.height,
@@ -1191,7 +1264,7 @@ module wijmo.grid {
             r = asInt(r);
             if (r > -1 && r < this._rows.length && r >= this._rows.frozen) {
                 var row = <Row>this._rows[r],
-                    pct = row.pos / (this.cells.height - hei),
+                    pct = Math.round(row.pos / (this.cells.height - hei) * 100) / 100,
                     offsetY = Math.round(this._maxOffsetY * pct),
                     rpos = row.pos - offsetY;
                 if (row.pos + row.renderSize > -sp.y + hei) {
@@ -1625,15 +1698,14 @@ module wijmo.grid {
          * do not contain the letter 'a'. The code demonstrates how you can obtain
          * the old and new values before the edits are applied.
          *
-         * <pre>
-         * function cellEditEnding (sender, e) {
+         * <pre>function cellEditEnding (sender, e) {
          *   // get old and new values
          *   var flex = sender,
          *   oldVal = flex.getCellData(e.row, e.col),
          *   newVal = flex.activeEditor.value;
          *   // cancel edits if newVal doesn't contain 'a'
          *   e.cancel = newVal.indexOf('a') &lt; 0;
-         * }
+         * }</pre>
          *
          * @param e @see:CellRangeEventArgs that contains the event data.
          * @return True if the event was not canceled.
@@ -1776,10 +1848,18 @@ module wijmo.grid {
         /**
          * Occurs when an element representing a cell has been created.
          *
-         * This event can be used to format cells for display.
+         * This event can be used to format cells for display. It is similar 
+         * in purpose to the @see:itemFormatter property, but has the advantage 
+         * of allowing multiple independent handlers.
          *
-         * It is similar in purpose to the @see:itemFormatter property, 
-         * but has the advantage of allowing multiple independent handlers.
+         * For example, this code removes the 'wj-wrap' class from cells in 
+         * group rows:
+         *
+         * <pre>flex.formatItem.addHandler(function (s, e) {
+         *   if (flex.rows[e.row] instanceof wijmo.grid.GroupRow) {
+         *     wijmo.removeClass(e.cell, 'wj-wrap');
+         *   }
+         * });</pre>
          */
         formatItem = new Event();
         /**
@@ -1794,6 +1874,74 @@ module wijmo.grid {
 
         //--------------------------------------------------------------------------
         //#region ** implementation
+
+        // measures the desired width of a cell
+        _getDesiredWidth(p: GridPanel, r: number, c: number, e: HTMLElement) {
+            var rng = this.getMergedRange(p, r, c);
+            this.cellFactory.updateCell(p, r, c, e, rng);
+            e.style.width = '';
+            var w = e.offsetWidth;
+            return rng && rng.columnSpan > 1
+                ? w / rng.columnSpan
+                : w;
+        }
+
+        // measures the desired height of a cell
+        _getDesiredHeight(p: GridPanel, r: number, c: number, e: HTMLElement) {
+            var rng = this.getMergedRange(p, r, c);
+            this.cellFactory.updateCell(p, r, c, e, rng);
+            e.style.height = '';
+            var h = e.offsetHeight;
+            return rng && rng.rowSpan > 1
+                ? h / rng.rowSpan
+                : h;
+        }
+
+        // gets the index of the sort row, with special handling for nulls
+        _getSortRowIndex(): number {
+            return this._sortRowIndex != null
+                ? this._sortRowIndex
+                : this.columnHeaders.rows.length - 1;
+        }
+
+        // sort converter used to sort mapped columns by display value
+        _mappedColumns = null;
+        private _sortConverter(sd: wijmo.collections.SortDescription, item: any, value: any, init: boolean) {
+
+            // initialize mapped column object
+            if (init) {
+                this._mappedColumns = null;
+                for (var i = 0; i < this.columns.length; i++) {
+                    var col = this.columns[i];
+                    if (col.dataMap) {
+                        if (this._mappedColumns == null) {
+                            this._mappedColumns = {};
+                        }
+                        this._mappedColumns[col.binding] = col.dataMap;
+                    }
+                }
+
+                // priority to column that was clicked
+                // (in case multiple columns map the same property)
+                if (this._mouseHdl._htDown && this._mouseHdl._htDown.col > -1) {
+                    var col = this.columns[this._mouseHdl._htDown.col];
+                    if (col.dataMap) {
+                        this._mappedColumns[col.binding] = col.dataMap;
+                    }
+                }
+            }
+
+            // convert value if we have a map
+            if (this._mappedColumns) {
+                var map = <DataMap>this._mappedColumns[sd.property];
+                if (map) {
+                    value = map.getDisplayValue(value);
+                }
+            }
+
+            // return the value to use for sorting
+            return value;
+        }
 
         // binds the grid to the current data source.
         _bindGrid(full: boolean) {
@@ -1815,7 +1963,7 @@ module wijmo.grid {
                             selItems.push(row.dataItem);
                         }
                     }
-                };
+                }
 
                 // update rows
                 self.rows.deferUpdate(function () {
@@ -1843,7 +1991,7 @@ module wijmo.grid {
                 // failed to restore listbox selection by object, update by index
                 if (self.selectionMode == SelectionMode.ListBox && cnt == 0) {
                     sel = self.selection;
-                    for (var i = sel.topRow; i <= sel.bottomRow && i > -1; i++) {
+                    for (var i = sel.topRow; i <= sel.bottomRow && i > -1 && i < self.rows.length; i++) {
                         self.rows[i].isSelected = true;
                     }
                 }
@@ -2007,6 +2155,11 @@ module wijmo.grid {
                 tlw = (this._hdrVis & HeadersVisibility.Row) ? this._hdrCols.getTotalSize() : 0,
                 tlh = (this._hdrVis & HeadersVisibility.Column) ? this._hdrRows.getTotalSize() : 0;
 
+            // make sure scrollbars are functional even if we have no rows (TFS 110441)
+            if (heightReal < 1) {
+                heightReal = 1;
+            }
+
             // keep track of relevant variables
             this._rtl = getComputedStyle(this.hostElement).direction == 'rtl';
             this._heightBrowser = Math.min(heightReal, FlexGrid._getMaxSupportedCssHeight());
@@ -2026,9 +2179,9 @@ module wijmo.grid {
             }
 
             // update autosizer element
-            var s = this._eSz.style,
-                sbW = this._root.offsetWidth - this._root.clientWidth,
-                sbH = this._root.offsetHeight - this._root.clientHeight;
+            var rc = this._root.getBoundingClientRect(),
+                sbW = rc.width - this._root.clientWidth,
+                sbH = rc.height - this._root.clientHeight;
             setCss(this._eSz, {
                 width: tlw + sbW + this._gpCells.width,
                 height: tlh + sbH + this._heightBrowser
@@ -2048,6 +2201,15 @@ module wijmo.grid {
             // refresh content
             this._updateContent(false);
 
+            // update autosizer after refreshing content
+            rc = this._root.getBoundingClientRect(),
+            sbW = rc.width - this._root.clientWidth,
+            sbH = rc.height - this._root.clientHeight;
+            setCss(this._eSz, {
+                width: tlw + sbW + this._gpCells.width,
+                height: tlh + sbH + this._heightBrowser
+            });
+
             // update client size after refreshing content
             this._szClient = new Size(this._root.clientWidth - tlw, this._root.clientHeight - tlh);
 
@@ -2066,29 +2228,71 @@ module wijmo.grid {
             // REVIEW: add onLayoutUpdated()?
         }
 
+        // updates the scrollPosition property based on the element's scroll position
+        // note that IE/Chrome/FF handle scrollLeft differently under RTL:
+        // - Chrome reverses direction,
+        // - FF uses negative values, 
+        // - IE does the right thing (nothing)
+        private _updateScrollPosition() : boolean {
+            var root = this._root,
+                top = root.scrollTop,
+                left = root.scrollLeft;
+            if (this._rtl && FlexGrid._getRtlMode() == 'rev') {
+                left = (root.scrollWidth - root.clientWidth) - left;
+            }
+            var pt = new Point(-Math.abs(left), -top);
+
+            // raise scrollPositionChanged
+            if (!this._ptScrl.equals(pt)) {
+                this._ptScrl= pt;
+                this.onScrollPositionChanged();
+                return true;
+            }
+
+            // no change
+            return false;
+        }
+
         // updates the cell elements within this grid.
         private _updateContent(recycle: boolean, cells?: CellRange[]) {
+            var self = this,
+                focus = this.containsFocus(),
+                pct = 1;
 
             // calculate offset to work around IE limitations
-            var pct = 1;
             if (this._heightBrowser > this._szClient.height) {
-                pct = (-this._ptScrl.y) / (this._heightBrowser - this._szClient.height);
+                pct = Math.round((-this._ptScrl.y) / (this._heightBrowser - this._szClient.height) * 100) / 100;
             }
             this._offsetY = Math.round(this._maxOffsetY * pct);
-            //log('offsetY: {0}, spY: {1}, pct: {2}', this._offsetY, this._ptScrl.y, pct);
 
+            // update cells
             if (cells) { // update specific cells (sel change)
                 this._gpCells._updateContent(recycle, this._offsetY, cells);
-            } else { // update all panels
+            } else { 
+
+                // update cells first
                 this._gpCells._updateContent(recycle, this._offsetY);
-                this._gpCHdr._updateContent(recycle, 0);
-                this._gpRHdr._updateContent(recycle, this._offsetY);
-                this._gpTL._updateContent(recycle, 0);
+
+                // update visible headers
+                if (this._hdrVis & HeadersVisibility.Column) {
+                    this._gpCHdr._updateContent(recycle, 0);
+                }
+                if (this._hdrVis & HeadersVisibility.Row) {
+                    this._gpRHdr._updateContent(recycle, this._offsetY);
+                }
+
+                // update top/left
+                if (this._hdrVis) {
+                    this._gpTL._updateContent(recycle, 0);
+                }
             }
 
-            // make sure hit-test works
-            // REVIEW: is this really necessary?
-            this._rcBounds = null;
+            // restore focus
+            setTimeout(function () { // to work with Android (see HeaderFilters demo)
+                if (focus && !self.containsFocus()) {
+                    self.focus();
+                }
+            }, 10);
 
             // REVIEW: add onViewUpdated()?
         }
@@ -2235,32 +2439,14 @@ module wijmo.grid {
             }
         }
 
-        // get max supported element height (adapted from SlickGrid)
-        // IE limits it to about 1.5M, FF to 6M, Chrome to 30M
-        private static _getMaxSupportedCssHeight() {
-            if (!FlexGrid._maxCssHeight) {
-                var maxHeight = 1000000,
-                    testUpTo = 6000000 * 1000,
-                    div = createElement('<span style="visibility:hidden">');
-                document.body.appendChild(div);
-                for (var test = maxHeight; test <= testUpTo; test += 500000) {
-                    div.style.height = test + 'px';
-                    if (parseFloat(div.style.height) != test) {
-                        break;
-                    }
-                    maxHeight = test;
-                }
-                document.body.removeChild(div);
-                FlexGrid._maxCssHeight = maxHeight;
-            }
-            return FlexGrid._maxCssHeight;
-        }
-
         // gets a list of the properties defined by a class and its ancestors
         // that have getters, setters, and whose names don't start with '_'.
         private static _getSerializableProperties(obj: any) {
             var arr = [];
-            for (obj = obj.prototype; obj !== null; obj = obj.__proto__) {
+
+            // travel up class hierarchy saving public properties that can be get/set.
+            // NOTE: use getPrototypeOf instead of __proto__ for IE9 compatibility.
+            for (obj = obj.prototype; obj; obj = Object.getPrototypeOf(obj)) {
                 var names = Object.getOwnPropertyNames(obj);
                 for (var i = 0; i < names.length; i++) {
                     var name = names[i],
@@ -2270,6 +2456,8 @@ module wijmo.grid {
                     }
                 }
             }
+
+            // done
             return arr;
         }
 
@@ -2293,6 +2481,54 @@ module wijmo.grid {
                 if (e.getAttribute && e.getAttribute(att) != null) return true;
             }
             return false;
+        }
+
+        // get max supported element height (adapted from SlickGrid)
+        // IE limits it to about 1.5M, FF to 6M, Chrome to 30M
+        private static _maxCssHeight: number;
+        private static _getMaxSupportedCssHeight() : number {
+            if (!FlexGrid._maxCssHeight) {
+                var maxHeight = 1e6,
+                    testUpTo = 60e6,
+                    div = document.createElement('div');
+                div.style.visibility = 'hidden';
+                document.body.appendChild(div);
+                for (var test = maxHeight; test <= testUpTo; test += 500000) {
+                    div.style.height = test + 'px';
+                    if (div.offsetHeight != test) {
+                        break;
+                    }
+                    maxHeight = test;
+                }
+                document.body.removeChild(div);
+                FlexGrid._maxCssHeight = maxHeight;
+            }
+            return FlexGrid._maxCssHeight;
+        }
+
+        // IE/Chrome/Safari/FireFox handle RTL differently; this function
+        // returns a value that indicates the RTL mode:
+        // 'rev': reverse direction so origin is +max, end is zero (Chrome/Safari)
+        // 'neg': switches signs, so origin is -max, end is zero (Firefox)
+        // 'std': standard, origin is zero, end is +max (IE)
+        static _rtlMode: string;
+        private static _getRtlMode() : string {
+            if (!FlexGrid._rtlMode) {
+                var el = wijmo.createElement(
+                    '<div dir="rtl" style="visibility:hidden;width:100px;height:100px;overflow:auto">' +
+                        '<div style="width:2000px;height:2000px"></div>' +
+                    '</div>');
+
+                document.body.appendChild(el);
+                var sl = el.scrollLeft;
+                el.scrollLeft = -1000;
+                var sln = el.scrollLeft;
+                document.body.removeChild(el);
+
+                FlexGrid._rtlMode = sln < 0 ? 'neg' : sl > 0 ? 'rev' : 'std';
+                //console.log('rtlMode: ' + FlexGrid._rtlMode);
+            }
+            return FlexGrid._rtlMode;
         }
 
         //#endregion
@@ -2378,7 +2614,7 @@ module wijmo.grid {
      * Identifies the type of cell in a @see:GridPanel.
      */
     export enum CellType {
-        /** Unknown/invalid cell type. */
+        /** Unknown or invalid cell type. */
         None,
         /** Regular data cell. */
         Cell,
@@ -2400,17 +2636,17 @@ module wijmo.grid {
         private _e: HTMLElement;
         private _rows: RowCollection;
         private _cols: ColumnCollection;
-        private _rng: CellRange;
+        private _rng: CellRange; // buffered view range
         private _offsetY = 0;
 
         /**
          * Initializes a new instance of a @see:GridPanel.
          *
-         * @param grid @see:FlexGrid that owns this panel.
-         * @param cellType Type of cell in this panel.
-         * @param rows rows displayed in this panel.
-         * @param cols columns displayed in this panel.
-         * @param element HTMLElement that will host the cells in the control.
+         * @param grid The @see:FlexGrid object that owns the panel.
+         * @param cellType The type of cell in the panel.
+         * @param rows The rows displayed in the panel.
+         * @param cols The columns displayed in the panel.
+         * @param element The HTMLElement that hosts the cells in the control.
          */
         constructor(grid: FlexGrid, cellType: CellType, rows: RowCollection, cols: ColumnCollection, element: HTMLElement) {
             this._g = asType(grid, FlexGrid);
@@ -2421,13 +2657,13 @@ module wijmo.grid {
             this._rng = new CellRange();
         }
         /**
-         * Gets the grid that owns this panel.
+         * Gets the grid that owns the panel.
          */
         get grid(): FlexGrid {
             return this._g;
         }
         /**
-         * Gets the type of cell contained in this panel.
+         * Gets the type of cell contained in the panel.
          */
         get cellType(): CellType {
             return this._ct;
@@ -2439,7 +2675,7 @@ module wijmo.grid {
             return this._getViewRange(false);
         }
         /**
-         * Gets the total width of the content in this panel.
+         * Gets the total width of the content in the panel.
          */
         get width(): number {
             return this._cols.getTotalSize();
@@ -2463,19 +2699,20 @@ module wijmo.grid {
             return this._cols;
         }
         /**
-         * Gets the value stored in a cell in this panel.
+         * Gets the value stored in a cell in the panel.
          *
-         * @param r Row index of the cell.
-         * @param c Column index of the cell.
-         * @param formatted Whether to format the value for display.
+         * @param r The row index of the cell.
+         * @param c The column index of the cell.
+         * @param formatted A value indicating whether to format the value for display.
          */
         getCellData(r: number, c: number, formatted: boolean): any {
             var col = <Column>this._cols[c],
                 row = <Row>this._rows[r],
                 value = null;
 
-            // get bound value from data item
-            if (row.dataItem && col.binding) {
+            // get bound value from data item using binding
+            if (col.binding && row.dataItem && 
+                !(row.dataItem instanceof wijmo.collections.CollectionViewGroup)) { // TFS 108841
                 value = col._binding.getValue(row.dataItem);
             } else if (row._ubv) { // get unbound value
                 value = row._ubv[col._hash];
@@ -2493,36 +2730,32 @@ module wijmo.grid {
                         if (col.aggregate != Aggregate.None && row instanceof GroupRow) {
                             var group = <wijmo.collections.CollectionViewGroup>tryCast(row.dataItem, wijmo.collections.CollectionViewGroup);
                             if (group) {
-                                value = group.getAggregate(col.aggregate, col.binding);
+                                value = group.getAggregate(col.aggregate, col.binding, this._g.collectionView);
                             }
                         }
                         break;
                 }
             }
 
-            // format value if requested
+            // format value if requested, never return null
             if (formatted) {
                 if (this.cellType == CellType.Cell && col.dataMap) {
                     value = col.dataMap.getDisplayValue(value);
-                } else {
-                    value = Globalize.format(value, col.format);
                 }
-                if (value == null) {
-                    value = '';
-                }
+                value = value != null ? Globalize.format(value, col.format) : '';
             }
 
             // done
             return value;
         }
         /**
-         * Sets the content of a cell in this panel.
+         * Sets the content of a cell in the panel.
          *
-         * @param r Index of the row that contains the cell.
-         * @param c Index, name, or binding of the column that contains the cell.
-         * @param value Value to store in the cell.
-         * @param coerce Whether to change the value automatically to match the column's data type.
-         * @return True if the value was stored successfully, false otherwise (failed cast).
+         * @param r The index of the row that contains the cell.
+         * @param c The index, name, or binding of the column that contains the cell.
+         * @param value The value to store in the cell.
+         * @param coerce A value indicating whether to change the value automatically to match the column's data type.
+         * @return Returns true if the value is stored successfully, false otherwise (failed cast).
          */
         setCellData(r: number, c: any, value: any, coerce = true): boolean {
             var row = <Row>this._rows[asNumber(r, false, true)],
@@ -2544,8 +2777,10 @@ module wijmo.grid {
 
                 // honor dataMap
                 if (col.dataMap && value != null) {
-                    value = col.dataMap.getKeyValue(value);
-                    if (value == null) return false; // not in map
+                    if (col.required || (value != '' && value != null)) { // TFS 107058
+                        value = col.dataMap.getKeyValue(value);
+                        if (value == null) return false; // not in map
+                    }
                 }
 
                 // get target type
@@ -2592,12 +2827,12 @@ module wijmo.grid {
          *
          * The returned value is a @see:Rect object which contains the
          * position and dimensions of the cell in viewport coordinates.
-         * The viewport coordinates are the same used by the 
-         * <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element.getBoundingClientRect">getBoundingClientRect</a>
-         * method.
+         * The viewport coordinates are the same as those used by the 
+         * <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element.getBoundingClientRect"
+         * target="_blank">getBoundingClientRect</a> method.
          *
-         * @param r Index of the row that contains the cell.
-         * @param c Index of the column that contains the cell.
+         * @param r The index of the row that contains the cell.
+         * @param c The index of the column that contains the cell.
          */
         getCellBoundingRect(r: number, c: number): Rect {
 
@@ -2606,16 +2841,29 @@ module wijmo.grid {
                 col = this.columns[c],
                 rc = new Rect(col.pos, row.pos, col.renderSize, row.renderSize);
 
+            // ajust for rtl
+            if (this._g._rtl) {
+                rc.left = this.width - rc.left - rc.width;
+            }
+
             // adjust for panel position
             var rcp = this.hostElement.getBoundingClientRect();
             rc.left += rcp.left;
             rc.top += rcp.top;
 
+            // account for frozen rows/columns (TFS 105593)
+            if (r < this.rows.frozen) {
+                rc.top -= this._g.scrollPosition.y;
+            }
+            if (c < this.columns.frozen) {
+                rc.left -= this._g.scrollPosition.x;
+            }
+
             // done
             return rc;
         }
         /**
-         * Gets the host element for this panel.
+         * Gets the host element for the panel.
          */
         get hostElement(): HTMLElement {
             return this._e;
@@ -2624,32 +2872,30 @@ module wijmo.grid {
         // ** implementation
 
         /* -- do not document, this is internal --
-         * Gets the Y offset for cells in this panel.
+         * Gets the Y offset for cells in the panel.
          */
         _getOffsetY(): number {
             return this._offsetY;
         }
 
         /* -- do not document, this is internal --
-         * Update the content in this panel.
-         * @param recycle Whether to recycle existing elements.
+         * Updates the cell elements in the panel.
+         * @param recycle Whether to recycle existing elements or start from scratch.
          * @param offsetY Scroll position to use when updating the panel.
-         * @param cells List of @see:CellRange objects that specifies which cells must be updated.
+         * @param cells List of @see:CellRange objects that specify cells that changed state.
          */
         _updateContent(recycle: boolean, offsetY: number, cells?: CellRange[]) {
             var r: number, c: number,
                 ctr: number,
                 cell: HTMLElement,
                 g = this._g,
-                s = this._e.style,
                 rows = this._rows,
-                cols = this._cols,
-                sp = g.scrollPosition,
-                focus = g.containsFocus(),
-                touch = isTouchDevice();
+                cols = this._cols;
 
             // scroll headers into position
             if (this._ct == CellType.ColumnHeader || this._ct == CellType.RowHeader) {
+                var sp = g._ptScrl,
+                    s = this._e.style;
                 if (this.cellType == CellType.ColumnHeader) {
                     if (g._rtl) {
                         s.right = sp.x + 'px';
@@ -2668,56 +2914,121 @@ module wijmo.grid {
             }
 
             // calculate view range and cell (buffered) range
-            // PERF: disable buffering in IE for better performance
-            var rng = this._getViewRange(touch && !g._isIE);
-            //console.log('touch: ' + touch + ' rng: (' + cr.row + ',' + cr.col + ')-(' + cr.row2 + ',' + cr.col2 + ')');
+            // add buffer while handling touch gestures to improve inertial scrolling
+            var rng = this._getViewRange(g.isTouching);
 
-            // done if recycling, no specific cells to refresh, and old view range contains the new
-            // this happens a lot while scrolling by small amounts (< 1 cell)
+            // done if recycling, no specific cells to refresh, and old range contains new
+            // happens a lot while scrolling by small amounts (< 1 cell)
             if (recycle && !cells && this._rng.contains(rng) && !rows.frozen && !cols.frozen) {
                 return;
+            }
+
+            // if not recycling or if the range changed, ignore 'cells' refresh list
+            if (!recycle || !rng.equals(this._rng)) {
+                cells = null;
             }
 
             // clear content if not recycling
             if (!recycle) {
                 this._e.textContent = '';
-                cells = null;
             }
 
-            // if the range changed, can't recycle cells
-            if (!rng.equals(this._rng)) {
-                cells = null;
+            // reorder cells to optimize scrolling
+            if (recycle && this._ct == CellType.Cell && !rows.frozen && !cols.frozen) {
+                this._reorderCells(rng, this._rng);
             }
 
             // save new range
             this._rng = rng;
 
             // go create/update the cells
-            //console.log('rendering grid');
+            // (render frozen cells last so we don't need z-index!)
             ctr = 0;
-            for (r = 0; r < this.rows.frozen && r < this.rows.length; r++) {
-                ctr = this._renderRow(r, rng, cells, ctr);
+            for (r = rng.topRow; r <= rng.bottomRow && r > -1; r++) { // not frozen
+                ctr = this._renderRow(r, rng, false, cells, ctr);
             }
-            for (r = rng.topRow; r <= rng.bottomRow && r > -1; r++) {
-                ctr = this._renderRow(r, rng, cells, ctr);
+            for (r = rng.topRow; r <= rng.bottomRow && r > -1; r++) { // frozen col
+                ctr = this._renderRow(r, rng, true, cells, ctr);
+            }
+            for (r = 0; r < rows.frozen && r < rows.length; r++) { // frozen row
+                ctr = this._renderRow(r, rng, false, cells, ctr);
+            }
+            for (r = 0; r < rows.frozen && r < rows.length; r++) { // frozen row/col
+                ctr = this._renderRow(r, rng, true, cells, ctr);
             }
 
-            // hide extra cells
+            // remove unused children
+            //var cnt = this._e.childElementCount - ctr;
+            //for (var i = 0; i < cnt; i++) {
+            //    this._e.removeChild(this._e.lastElementChild);
+            //}
+
+            // show the cells we are using, hide the others
             var cnt = this._e.childElementCount;
-            for (var i = ctr; i < cnt; i++) {
+            for (var i = 0; i < cnt; i++) {
                 cell = <HTMLElement>this._e.childNodes[i];
-                cell.style.display = 'none';
+                if (i < ctr) {
+                    cell.style.display = '';
+                } else {
+                    cell.style.display = 'none';
+                    if (cell.firstElementChild) {
+                        cell.textContent = '';
+                    }
+                }
+            }
+        }
+
+        // reorder cells within the panel to optimize scrolling performance
+        _reorderCells(newRange: CellRange, oldRange: CellRange) {
+
+            // calculate range delta, watch out for bad ranges
+            var dr = newRange.row > -1 && oldRange.row > -1
+                ? newRange.row - oldRange.row
+                : 0;
+
+            // scrolling down by up to 5 lines
+            if (dr > 0 && dr <= 5) {
+                var row = this._g.rows[newRange.row],
+                    newTop = row.pos,
+                    frag = document.createDocumentFragment();
+                for (;;) {
+                    var cell = <HTMLElement>this._e.firstChild;
+                    if (!cell) break;
+                    var top = parseInt(cell.style.top);
+                    if (top >= newTop) break;
+                    this._e.removeChild(cell);
+                    frag.appendChild(cell);
+                }
+                this._e.appendChild(frag);
             }
 
-            // restore focus
-            if (focus && !g.containsFocus()) {
-                g.focus();
+            // scrolling up by up to 5 lines
+            if (dr < 0 && dr >= -5) {
+                var row = this._g.rows[newRange.row2],
+                    newBot = row.pos + row.renderSize,
+                    frag = document.createDocumentFragment();
+                for (;;) {
+                    var cell = <HTMLElement>this._e.lastChild;
+                    if (!cell) break;
+                    var bot = parseInt(cell.style.top) + parseInt(cell.style.height);
+                    if (bot <= newBot) break;
+                    this._e.removeChild(cell);
+                    if (frag.firstChild) {
+                        frag.insertBefore(cell, frag.firstChild);
+                    } else { 
+                        frag.appendChild(cell);
+                    }
+                }
+                if (this._e.firstChild) {
+                    this._e.insertBefore(frag, this._e.firstChild);
+                } else {
+                    this._e.appendChild(frag);
+                }
             }
         }
 
         // renders a row
-        _renderRow(r: number, rng: CellRange, cells: CellRange[], ctr: number) : number {
-            //console.log('  rendering row ' + r);
+        _renderRow(r: number, rng: CellRange, frozen: boolean, cells: CellRange[], ctr: number) : number {
 
             // skip hidden rows
             if ((<Row>this.rows[r]).renderSize <= 0) {
@@ -2725,11 +3036,14 @@ module wijmo.grid {
             }
 
             // render each cell in the row
-            for (var c = 0; c < this.columns.frozen && c < this.columns.length; c++) {
-                ctr = this._renderCell(r, c, rng, cells, ctr);
-            }
-            for (var c = <number>rng.leftCol; c <= rng.rightCol && c > -1; c++) {
-                ctr = this._renderCell(r, c, rng, cells, ctr);
+            if (frozen) {
+                for (var c = 0; c < this.columns.frozen && c < this.columns.length; c++) {
+                    ctr = this._renderCell(r, c, rng, cells, ctr);
+                }
+            } else {
+                for (var c = <number>rng.leftCol; c <= rng.rightCol && c > -1; c++) {
+                    ctr = this._renderCell(r, c, rng, cells, ctr);
+                }
             }
 
             // return updated counter
@@ -2738,7 +3052,6 @@ module wijmo.grid {
 
         // renders a cell
         _renderCell(r: number, c: number, rng: CellRange, cells: CellRange[], ctr: number) : number {
-            //console.log('    rendering col ' + c);
 
             // skip hidden columns
             if ((<Column>this.columns[c]).renderSize <= 0) {
@@ -2758,36 +3071,41 @@ module wijmo.grid {
             var cell = <HTMLElement>this._e.childNodes[ctr++];
 
             // skip if the new cell is not on the refresh list
-            if (cells) {
+            if (cell && cells) {
                 var contains = false;
                 for (var i = 0; i < cells.length && !contains; i++) {
                     contains = mr ? cells[i].intersects(mr) : cells[i].contains(r, c);
                 }
-                if (!contains) {
-                    return ctr;
-                }
 
                 // the cell is on the refresh list, so update the selected state and continue
-                // this avoids re-creating templated cells and so the click event works as usual
-                if (cell) {
+                // this avoids re-creating templated cells and makes the click event work as usual
+                if (contains) {
                     var selState = this._g.getSelectedState(r, c),
                         isGroup = this.rows[r] instanceof GroupRow;
                     toggleClass(cell, 'wj-state-selected', selState == SelectedState.Cursor);
                     toggleClass(cell, 'wj-state-multi-selected', selState == SelectedState.Selected);
                     toggleClass(cell, 'wj-group', selState == SelectedState.None && isGroup);
-                    return ctr;
                 }
+
+                // we're done here...
+                return ctr;
             }
 
-            // create cell if necessary
+            // create or recyle cell
             if (!cell) {
                 cell = document.createElement('div');
                 this._e.appendChild(cell);
             } else {
-                cell.style.display = '';
+
+                // clear cells that have child elements before re-using them
+                // this is a workaround for a bug in IE that affects templates
+                // strangely, setting the cell's innerHTML to '' doesn't help...
+                if (cell.firstElementChild) {
+                    cell.textContent = '';
+                }
             }
 
-            // update the cell attributes
+            // set/update cell content/style
             this._g.cellFactory.updateCell(this, r, c, cell, mr);
 
             // return updated counter
@@ -2798,7 +3116,7 @@ module wijmo.grid {
         // optionally adding a buffer for inertial scrolling
         _getViewRange(buffer: boolean): CellRange {
             var g = this._g,
-                sp = g.scrollPosition,
+                sp = g._ptScrl,
                 rows = this._rows,
                 cols = this._cols,
                 rng = new CellRange(0, 0, rows.length - 1, cols.length - 1);
@@ -2817,10 +3135,10 @@ module wijmo.grid {
                     buffer = false;
                 }
 
-                // add off-screen row buffer (current + one above + one below)
+                // add off-screen row buffer (current + 1/2 above + 1/2 below)
                 if (buffer) {
-                    y -= h;
-                    h *= 3;
+                    y -= h / 2;
+                    h *= 2;
                 }
                 rng.row = Math.min(rows.length - 1, Math.max(rows.frozen, rows.getItemAt(y)));
                 rng.row2 = rows.getItemAt(y + h);
@@ -2838,10 +3156,10 @@ module wijmo.grid {
                     buffer = false;
                 }
 
-                // add off-screen column buffer (current + one above + one below)
+                // add off-screen column buffer (current + 1/2 above + 1/2 below)
                 if (buffer) {
-                    x -= w;
-                    w *= 3;
+                    x -= w / 2;
+                    w *= 2;
                 }
                 rng.col = Math.min(cols.length - 1, Math.max(cols.frozen, cols.getItemAt(x)));
                 rng.col2 = cols.getItemAt(x + w);
@@ -2868,39 +3186,41 @@ module wijmo.grid {
     'use strict';
 
     /**
-     * Creates HTML elements that represents cells within a @see:FlexGrid control.
+     * Creates HTML elements that represent cells within a @see:FlexGrid control.
      */
     export class CellFactory {
         static _WJA_COLLAPSE = 'wj-collapse';
         static _WJA_DROPDOWN = 'wj-dropdown';
+        static _ddIcon: HTMLElement;
 
         /**
          * Creates or updates a cell in the grid.
          *
-         * @param panel Part of the grid that owns this cell.
-         * @param r Index of this cell's row.
-         * @param c Index of this cell's column.
-         * @param cell Element that represents the cell.
-         * @param rng @see:CellRange that contains the cell's merged range, or null if the cell is not merged.
+         * @param panel The part of the grid that owns the cell.
+         * @param r The index of the row containing the cell.
+         * @param c The index of the column containing the cell.
+         * @param cell The element that represents the cell.
+         * @param rng The @see:CellRange object that contains the cell's 
+         * merged range, or null if the cell is not merged.
          */
         public updateCell(panel: GridPanel, r: number, c: number, cell: HTMLElement, rng?: CellRange) {
             var g = panel.grid,
                 ct = panel.cellType,
-                s = cell.style,
                 rows = panel.rows,
                 cols = panel.columns,
                 row = rows[r],
                 col = cols[c],
+                r2 = r,
                 gr = <GroupRow>tryCast(row, GroupRow),
                 nr = tryCast(row, _NewRowTemplate),
                 content = panel.getCellData(r, c, true),
                 cellWidth = col.renderWidth,
                 cellHeight = row.renderHeight,
                 cl = 'wj-cell',
-                r2 = r;
+                css: any = {};
 
             // adjust for merged ranges
-            if (rng) {
+            if (rng && !rng.isSingleCell) {
                 r = rng.row;
                 c = rng.col;
                 r2 = rng.bottomRow;
@@ -2917,21 +3237,21 @@ module wijmo.grid {
             var cpos = col.pos,
                 rpos = row.pos;
             if (r < rows.frozen) {
-                rpos -= g.scrollPosition.y;
+                rpos -= g._ptScrl.y;
             }
             if (c < cols.frozen) {
-                cpos -= g.scrollPosition.x;
+                cpos -= g._ptScrl.x;
             }
 
             // size and position
             if (g._rtl) {
-                s.right = cpos + 'px';
+                css.right = cpos + 'px';
             } else {
-                s.left = cpos + 'px';
+                css.left = cpos + 'px';
             }
-            s.top = (rpos - panel._getOffsetY()) + 'px';
-            s.width = cellWidth + 'px';
-            s.height = cellHeight + 'px';
+            css.top = (rpos - panel._getOffsetY()) + 'px';
+            css.width = cellWidth + 'px';
+            css.height = cellHeight + 'px';
 
             // background and borders for regular cells and headers
             if (ct == CellType.Cell) {
@@ -2987,12 +3307,6 @@ module wijmo.grid {
                 cl += ' wj-wrap';
             }
 
-            // bring frozen cells up
-            s.zIndex = 
-                r < rows.frozen && c < cols.frozen ? '2' :
-                r < rows.frozen || c < cols.frozen ? '1' :
-                '';
-
             // mark frozen areas
             if (r == rows.frozen - 1) {
                 cl += ' wj-frozen-row';
@@ -3001,24 +3315,22 @@ module wijmo.grid {
                 cl += ' wj-frozen-col';
             }
 
-            // apply class specifier to cell
-            cell.className = cl;
-
             // alignment
-            s.textAlign = col.getAlignment();
+            css.textAlign = col.getAlignment();
             // TODO: vertical alignment?
 
             // padding
             if (ct == CellType.Cell) {
-                s.paddingLeft = s.paddingRight = '';
+                css.paddingLeft = css.paddingRight = '';
                 if (g.rows.maxGroupLevel > -1 && c == g.columns.firstVisibleIndex) {
+                    cell.style.paddingLeft = cell.style.paddingRight = '';
                     var level = gr ? Math.max(0, gr.level) : (g.rows.maxGroupLevel + 1),
                         padding = parseInt(getComputedStyle(cell).paddingLeft), // REVIEW: optimize?
                         indent = g.treeIndent * level + padding + 'px';
                     if (g._rtl) {
-                        s.paddingRight = indent;
+                        css.paddingRight = indent;
                     } else {
-                        s.paddingLeft = indent;
+                        css.paddingLeft = indent;
                     }
                 }
             }
@@ -3032,9 +3344,12 @@ module wijmo.grid {
                     content = this._getGroupHeader(gr);
                 }
                 cell.innerHTML = this._getTreeIcon(gr) + ' ' + content;
-                s.textAlign = '';
+                css.textAlign = '';
 
-            } else if (ct == CellType.ColumnHeader && col.currentSort && g.showSort && r2 == g.columnHeaders.rows.length - 1) {
+            } else if (ct == CellType.ColumnHeader && col.currentSort && g.showSort && r2 == g._getSortRowIndex()) {
+
+                // add sort class names to allow easier customization
+                cl += ' wj-sort-' + (col.currentSort == '+' ? 'asc' : 'desc');
 
                 // column header with sort sign
                 cell.innerHTML = escapeHtml(content) + '&nbsp;' + this._getSortIcon(col);
@@ -3051,7 +3366,7 @@ module wijmo.grid {
                 }
                 cell.textContent = content;
 
-            } else if (ct == CellType.Cell && col.dataType == DataType.Boolean) {
+            } else if (ct == CellType.Cell && col.dataType == DataType.Boolean && !gr) {
 
                 // re-use/create checkbox
                 // (re-using allows selecting and checking/unchecking with a single click)
@@ -3062,8 +3377,9 @@ module wijmo.grid {
                 }
 
                 // initialize/update checkbox value
+                content = panel.getCellData(r, c, false);
                 chk.checked = content == true ? true : false;
-                chk.indeterminate = panel.getCellData(r, c, false) == null;
+                chk.indeterminate = content == null;
 
                 // disable checkbox if it is not editable (so user can't click it)
                 chk.disabled = !g._edtHdl._allowEditing(r, c);
@@ -3090,8 +3406,8 @@ module wijmo.grid {
                 // initialize editor
                 var edt = <HTMLInputElement>cell.children[0];
                 edt.value = content;
-                edt.style.textAlign = s.textAlign;
-                s.padding = '0px'; // no padding on cell div (the editor has it)
+                edt.style.textAlign = cell.style.textAlign;
+                css.padding = '0px'; // no padding on cell div (the editor has it)
 
                 // apply mask, if any
                 if (col.mask) {
@@ -3107,7 +3423,14 @@ module wijmo.grid {
                 if (ct == CellType.Cell && (row.isContentHtml || col.isContentHtml)) {
                     cell.innerHTML = content;
                 } else {
-                    cell.textContent = content;
+                    var fc = cell.firstChild;
+                    if (cell.childNodes.length == 1 && fc.nodeType == 3) {
+                        if (fc.nodeValue != content) {
+                            fc.nodeValue = content; // update text directly in the text node
+                        }
+                    } else if (fc || content) {
+                        cell.textContent = content; // something else, set the textContent
+                    }
                 }
             }
 
@@ -3130,20 +3453,29 @@ module wijmo.grid {
             // c) is editable
             if (ct == CellType.Cell && wijmo.input &&
                 col.dataMap && col.showDropDown !== false && g._edtHdl._allowEditing(r, c)) {
-                var dd = wijmo.createElement('<div ' + CellFactory._WJA_DROPDOWN + '><span class="wj-glyph-down"></span></div>');
-                wijmo.setCss(dd, {
-                    position: 'absolute',
-                    top: 0,
-                    padding: 3,
-                    opacity: 0.25
-                });
+
+                // create icon once
+                if (!CellFactory._ddIcon) {
+                    var ddstyle = 'position:absolute;top:0px;padding:3px 6px;opacity:.25;right:0px';
+                    CellFactory._ddIcon = wijmo.createElement('<div style="' + ddstyle + '" ' + CellFactory._WJA_DROPDOWN + '><span class="wj-glyph-down"></span></div>');
+                }
+
+                // clone icon and add clone to cell
+                var dd = <HTMLElement>CellFactory._ddIcon.cloneNode(true);
                 if (g._rtl) {
                     dd.style.left = '0px';
-                } else {
-                    dd.style.right = '0px';
+                    dd.style.right = '';
                 }
                 cell.appendChild(dd);
             }
+
+            // apply class specifier to cell
+            if (cell.className != cl) {
+                cell.className = cl;
+            }
+
+            // apply style to cell
+            setCss(cell, css);
 
             // customize the cell
             if (g.itemFormatter) {
@@ -3168,15 +3500,21 @@ module wijmo.grid {
                 group = <wijmo.collections.CollectionViewGroup>tryCast(gr.dataItem, wijmo.collections.CollectionViewGroup);
             if (group && fmt) {
 
-                // get group name from column header if possible
+                // get group info
                 var propName = group.groupDescription['propertyName'],
                     value = group.name,
                     col = grid.columns.getColumn(propName);
-                if (col && col.header) {
-                    propName = col.header;
-                }
-                if (col && col.dataMap) {
-                    value = col.dataMap.getDisplayValue(value);
+
+                // customize with column info if possible
+                if (col) {
+                    if (col.header) {
+                        propName = col.header;
+                    }
+                    if (col.dataMap) {
+                        value = col.dataMap.getDisplayValue(value);
+                    } else if (col.format) {
+                        value = Globalize.format(value, col.format);
+                    }
                 }
 
                 // build header text
@@ -3230,10 +3568,10 @@ module wijmo.grid {
         /**
          * Initializes a new instance of a @see:CellRange.
          *
-         * @param r Index of the first row in this range.
-         * @param c Index of the first column in this range.
-         * @param r2 Index of the last row in this range.
-         * @param c2 Index of the first column in this range.
+         * @param r The index of the first row in the range.
+         * @param c The index of the first column in the range.
+         * @param r2 The index of the last row in the range.
+         * @param c2 The index of the first column in the range.
          */
         constructor(r: number = -1, c: number = -1, r2: number = r, c2: number = c) {
             this._row = asInt(r);
@@ -3243,7 +3581,7 @@ module wijmo.grid {
         }
 
         /**
-         * Gets or sets the index of the first row in this range.
+         * Gets or sets the index of the first row in the range.
          */
         get row(): number {
             return this._row;
@@ -3252,7 +3590,7 @@ module wijmo.grid {
             this._row = asInt(value);
         }
         /**
-         * Gets or sets the index of the first column in this range.
+         * Gets or sets the index of the first column in the range.
          */
         get col(): number {
             return this._col;
@@ -3261,7 +3599,7 @@ module wijmo.grid {
             this._col = asInt(value);
         }
         /**
-         * Gets or sets the index of the second row in this range.
+         * Gets or sets the index of the second row in the range.
          */
         get row2(): number {
             return this._row2;
@@ -3270,7 +3608,7 @@ module wijmo.grid {
             this._row2 = asInt(value);
         }
         /**
-         * Gets or sets the index of the second column in this range.
+         * Gets or sets the index of the second column in the range.
          */
         get col2(): number {
             return this._col2;
@@ -3279,64 +3617,66 @@ module wijmo.grid {
             this._col2 = asInt(value);
         }
         /**
-         * Creates a copy of this range.
+         * Creates a copy of the range.
          */
         clone(): CellRange {
             return new CellRange(this._row, this._col, this._row2, this._col2);
         }
         /**
-         * Gets the number of rows in this range.
+         * Gets the number of rows in the range.
          */
         get rowSpan(): number {
             return Math.abs(this._row2 - this._row) + 1;
         }
         /**
-         * Gets the number of columns in this range.
+         * Gets the number of columns in the range.
          */
         get columnSpan(): number {
             return Math.abs(this._col2 - this._col) + 1;
         }
         /**
-         * Gets the index of the top row in this range.
+         * Gets the index of the top row in the range.
          */
         get topRow(): number {
             return Math.min(this._row, this._row2);
         }
         /**
-         * Gets the index of the bottom row in this range.
+         * Gets the index of the bottom row in the range.
          */
         get bottomRow(): number {
             return Math.max(this._row, this._row2);
         }
         /**
-         * Gets the index of the leftmost column in this range.
+         * Gets the index of the leftmost column in the range.
          */
         get leftCol(): number {
             return Math.min(this._col, this._col2);
         }
         /**
-         * Gets the index of the rightmost column in this range.
+         * Gets the index of the rightmost column in the range.
          */
         get rightCol(): number {
             return Math.max(this._col, this._col2);
         }
         /**
-         * Checks whether this range contains valid row and column indices (> -1).
+         * Checks whether the range contains valid row and column indices 
+         * (row and column values are zero or greater).
          */
         get isValid(): boolean {
             return this._row > -1 && this._col > -1 && this._row2 > -1 && this._col2 > -1;
         }
         /**
-         * Checks whether this range corresponds to a single cell (row == row2 && col == col2).
+         * Checks whether this range corresponds to a single cell (beginning and ending rows have 
+         * the same index, and beginning and ending columns have the same index).
          */
         get isSingleCell(): boolean {
             return this._row == this._row2 && this._col == this._col2;
         }
         /**
-         * Checks whether this range contains another range or a specific cell.
+         * Checks whether the range contains another range or a specific cell.
          *
-         * @param r CellRange or row index.
-         * @param c column index (required if the r parameter is not a CellRange).
+         * @param r The CellRange object or row index to find.
+         * @param c The column index (required if the r parameter is not a CellRange object).
          */
         contains(r: any, c?: number): boolean {
 
@@ -3357,27 +3697,27 @@ module wijmo.grid {
             throw 'contains expects a CellRange or row/column indices.';
         }
         /**
-         * Checks whether this range contains a given row.
+         * Checks whether the range contains a given row.
          *
-         * @param r Index of the row to check.
+         * @param r The index of the row to find.
          */
         containsRow(r: number): boolean {
             asInt(r);
             return r >= this.topRow && r <= this.bottomRow;
         }
         /**
-         * Checks whether this range contains a given column.
+         * Checks whether the range contains a given column.
          *
-         * @param c Index of the column to check.
+         * @param c The index of the column to find.
          */
         containsColumn(c: number): boolean {
             asInt(c);
             return c >= this.leftCol && c <= this.rightCol;
         }
         /**
-         * Checks whether this range intersects another range.
+         * Checks whether the range intersects another range.
          *
-         * @param rng CellRange to check.
+         * @param rng The CellRange object to check.
          */
         intersects(rng: CellRange): boolean {
             if (this.rightCol < rng.leftCol || this.leftCol > rng.rightCol ||
@@ -3387,10 +3727,10 @@ module wijmo.grid {
             return true;
         }
         /**
-         * Gets the render size of this range.
+         * Gets the rendered size of this range.
          *
-         * @param panel @see:GridPanel that contains the range.
-         * @return A @see:Size that represents the sum of row heights and column widths in the range.
+         * @param panel The @see:GridPanel object that contains the range.
+         * @return A @see:Size object that represents the sum of row heights and column widths in the range.
          */
         getRenderSize(panel: GridPanel): Size {
             var sz = new Size(0, 0);
@@ -3403,8 +3743,8 @@ module wijmo.grid {
             return sz;
         }
         /**
-         * Checks whether this range equals another range.
-         * @param rng CellRange to compare to this range.
+         * Checks whether the range equals another range.
+         * @param rng The CellRange object to compare to this range.
          */
         equals(rng: CellRange): boolean {
             return (rng instanceof CellRange) &&
@@ -3420,29 +3760,29 @@ module wijmo.grid {
      * Flags that specify the state of a grid row or column.
      */
     export enum RowColFlags {
-        /** Row/Column is visible. */
+        /** The row or column is visible. */
         Visible = 1,
-        /** Row/Column can be resized. */
+        /** The row or column can be resized. */
         AllowResizing = 2,
-        /** Row/Column can be dragged to a new position with the mouse. */
+        /** The row or column can be dragged to a new position with the mouse. */
         AllowDragging = 4,
-        /** Row/Column can contain merged cells. */
+        /** The row or column can contain merged cells. */
         AllowMerging = 8,
-        /** Column can be sorted by clicking its header with the mouse. */
+        /** The column can be sorted by clicking its header with the mouse. */
         AllowSorting = 16,
-        /** Column was generated automatically. */
+        /** The column was generated automatically. */
         AutoGenerated = 32,
-        /** Group row is collapsed. */
+        /** The group row is collapsed. */
         Collapsed = 64,
-        /** Row has a parent group in collapsed state. */
+        /** The row has a parent group that is collapsed. */
         ParentCollapsed = 128,
-        /** Row/Column is selected. */
+        /** The row or column is selected. */
         Selected = 256,
-        /** Row/Column is read-only (cannot be edited). */
+        /** The row or column is read-only (cannot be edited). */
         ReadOnly = 512,
-        /** Cells in this row/column contain HTML text. */
+        /** Cells in this row or column contain HTML text. */
         HtmlContent = 1024,
-        /** Cells in this row/column may contain wrapped text. */
+        /** Cells in this row or column may contain wrapped text. */
         WordWrap = 2048,
         /** Default settings for new rows. */
         RowDefault = Visible | AllowResizing,
@@ -3451,7 +3791,7 @@ module wijmo.grid {
     }
 
     /**
-     * Abstract class that serves as a base for the @see:Row and @see:Column classes.
+     * An abstract class that serves as a base for the @see:Row and @see:Column classes.
      */
     export class RowCol {
         _sz: number; // null or < 0 means use default
@@ -3464,7 +3804,7 @@ module wijmo.grid {
         _idx = -1;
 
         /**
-         * Gets or sets whether this row or column is visible.
+         * Gets or sets a value indicating whether the row or column is visible.
          */
         get visible(): boolean {
             return this._getFlag(RowColFlags.Visible);
@@ -3473,27 +3813,30 @@ module wijmo.grid {
             this._setFlag(RowColFlags.Visible, value);
         }
         /**
-         * Gets or sets whether this row or column is visible and not collapsed.
+         * Gets a value indicating whether the row or column is visible and not collapsed.
+         *
+         * This property is read-only. To change the visibility of a
+         * row or column, use the @see:visible property instead.
          */
         get isVisible(): boolean {
             return this._getFlag(RowColFlags.Visible) && !this._getFlag(RowColFlags.ParentCollapsed);
         }
         /**
-         * Gets the position of this row or column.
+         * Gets the position of the row or column.
          */
         get pos(): number {
             if (this._list) this._list._update();
             return this._pos;
         }
         /**
-         * Gets the index of this row or column in the parent collection.
+         * Gets the index of the row or column in the parent collection.
          */
         get index(): number {
             if (this._list) this._list._update();
             return this._idx;
         }
         /**
-         * Gets or sets the size of this row or column.
+         * Gets or sets the size of the row or column.
          * Setting this property to null or negative values causes the element to use the 
          * parent collection's default size.
          */
@@ -3507,8 +3850,8 @@ module wijmo.grid {
             }
         }
         /**
-         * Gets the render size of this row or column.
-         * This property accounts for visibility, default size, and min/max sizes.
+         * Gets the render size of the row or column.
+         * This property accounts for visibility, default size, and min and max sizes.
          */
         get renderSize(): number {
             if (!this.isVisible) {
@@ -3542,7 +3885,7 @@ module wijmo.grid {
             return Math.round(sz);
         }
         /**
-         * Gets or sets a whether the user can resize this row or column with the mouse.
+         * Gets or sets a value indicating whether the user can resize the row or column with the mouse.
          */
         get allowResizing(): boolean {
             return this._getFlag(RowColFlags.AllowResizing);
@@ -3551,7 +3894,7 @@ module wijmo.grid {
             this._setFlag(RowColFlags.AllowResizing, value);
         }
         /**
-         * Gets or sets whether the user can move this row or column to a new position with the mouse.
+         * Gets or sets a value indicating whether the user can move the row or column to a new position with the mouse.
          */
         get allowDragging(): boolean {
             return this._getFlag(RowColFlags.AllowDragging);
@@ -3560,7 +3903,7 @@ module wijmo.grid {
             this._setFlag(RowColFlags.AllowDragging, value);
         }
         /**
-         * Gets or sets whether cells in this row or column can be merged.
+         * Gets or sets a value indicating whether cells in the row or column can be merged.
          */
         get allowMerging(): boolean {
             return this._getFlag(RowColFlags.AllowMerging);
@@ -3569,7 +3912,7 @@ module wijmo.grid {
             this._setFlag(RowColFlags.AllowMerging, value);
         }
         /**
-         * Gets or sets whether this row or column is selected.
+         * Gets or sets a value indicating whether the row or column is selected.
          */
         get isSelected(): boolean {
             return this._getFlag(RowColFlags.Selected);
@@ -3578,7 +3921,7 @@ module wijmo.grid {
             this._setFlag(RowColFlags.Selected, value);
         }
         /**
-         * Gets or sets whether cells in this row or column can be edited.
+         * Gets or sets a value indicating whether cells in the row or column can be edited.
          */
         get isReadOnly(): boolean {
             return this._getFlag(RowColFlags.ReadOnly);
@@ -3587,7 +3930,7 @@ module wijmo.grid {
             this._setFlag(RowColFlags.ReadOnly, value);
         }
         /**
-         * Gets or sets whether cells in this row or column contain HTML content rather than plain text.
+         * Gets or sets a value indicating whether cells in the row or column contain HTML content rather than plain text.
          */
         get isContentHtml(): boolean {
             return this._getFlag(RowColFlags.HtmlContent);
@@ -3601,7 +3944,7 @@ module wijmo.grid {
             }
         }
         /**
-         * Gets or sets whether cells in this row or column should wrap their content.
+         * Gets or sets a value indicating whether cells in the row or column wrap their content.
          */
         get wordWrap(): boolean {
             return this._getFlag(RowColFlags.WordWrap);
@@ -3610,8 +3953,8 @@ module wijmo.grid {
             this._setFlag(RowColFlags.WordWrap, value);
         }
         /**
-         * Gets or sets a CSS class name to be used when rendering 
-         * non-header cells in this row or column.
+         * Gets or sets a CSS class name to use when rendering 
+         * non-header cells in the row or column.
          */
         get cssClass(): string {
             return this._cssClass;
@@ -3625,7 +3968,7 @@ module wijmo.grid {
             }
         }
         /**
-         * Gets the FlexGrid that owns this row or column.
+         * Gets the FlexGrid that owns the row or column.
          */
         get grid(): FlexGrid {
             return this._list? (<RowColCollection>this._list)._g: null;
@@ -3645,11 +3988,13 @@ module wijmo.grid {
             return (this._f & flag) != 0;
         }
 
-        // Sets the value of a flag.
-        _setFlag(flag: RowColFlags, value: boolean): boolean {
+        // Sets the value of a flag, with optional notification.
+        _setFlag(flag: RowColFlags, value: boolean, quiet?: boolean): boolean {
             if (value != this._getFlag(flag)) {
                 this._f = value ? (this._f | flag) : (this._f & ~flag);
-                this.onPropertyChanged();
+                if (!quiet) {
+                    this.onPropertyChanged();
+                }
                 return true;
             }
             return false;
@@ -3673,7 +4018,8 @@ module wijmo.grid {
         private _required: boolean;
         private _showDropDown: boolean;
 
-        /*private*/ _binding: _Binding;
+        /*private*/ _binding: Binding;
+        /*private*/ _bindingSort: Binding;
         /*private*/ _szStar: string;
         /*private*/ _hash: string; // unique column id
 
@@ -3692,7 +4038,7 @@ module wijmo.grid {
             }
         }
         /**
-         * Gets or sets the name of this column.
+         * Gets or sets the name of the column.
          *
          * The column name can be used to retrieve the column using the @see:getColumn method.
          */
@@ -3703,7 +4049,7 @@ module wijmo.grid {
             this._name = value;
         }
         /**
-         * Gets or sets the type of value stored in this column.
+         * Gets or sets the type of value stored in the column.
          *
          * Values are coerced into the proper type when editing the grid.
          */
@@ -3719,7 +4065,7 @@ module wijmo.grid {
             }
         }
         /**
-         * Gets or sets whether values in this column are required.
+         * Gets or sets whether values in the column are required.
          *
          * By default, this property is set to null, which means values 
          * are required, but string columns may contain empty strings.
@@ -3736,7 +4082,7 @@ module wijmo.grid {
             this._required = asBoolean(value, true);
         }
         /**
-         * Gets or sets whether the grid should add drop-down buttons to the
+         * Gets or sets a value indicating whether the grid adds drop-down buttons to the
          * cells in this column.
          *
          * The drop-down buttons are shown only if the column has a @see:dataMap
@@ -3766,7 +4112,7 @@ module wijmo.grid {
          *
          * Use this property to change the default setting if the default does not work well
          * for the current culture, device, or application. In these cases, try setting the 
-         * property to "number" or simply "text".
+         * property to "number" or simply "text."
          */
         get inputType(): string {
             return this._inpType;
@@ -3775,12 +4121,12 @@ module wijmo.grid {
             this._inpType = asString(value, true);
         }
         /**
-         * Gets or sets a mask to be used while editing values in this column.
+         * Gets or sets a mask to use while editing values in this column.
          *
          * The mask format is the same used by the @see:wijmo.input.InputMask
          * control.
          *
-         * If specified, the mask should be compatible with the value of
+         * If specified, the mask must be compatible with the value of
          * the @see:format property. For example, the mask '99/99/9999' can 
          * be used for entering dates formatted as 'MM/dd/yyyy'.
          */
@@ -3791,7 +4137,7 @@ module wijmo.grid {
             this._mask = asString(value, true);
         }
         /**
-         * Gets or sets the name of the property this column is bound to.
+         * Gets or sets the name of the property the column is bound to.
          */
         get binding(): string {
             return this._binding ? this._binding.path : null;
@@ -3799,7 +4145,7 @@ module wijmo.grid {
         set binding(value: string) {
             if (value != this.binding) {
                 var path = asString(value);
-                this._binding = path ? new _Binding(path) : null;
+                this._binding = path ? new Binding(path) : null;
                 if (!this._type && this.grid && this._binding) {
                     var cv = this.grid.collectionView;
                     if (cv && cv.sourceCollection && cv.sourceCollection.length) {
@@ -3811,10 +4157,29 @@ module wijmo.grid {
             }
         }
         /**
-         * Gets or sets the width of this column.
+         * Gets or sets the name of the property to use when sorting this column.
          *
-         * Column widths may be positive numbers (column width in pixels), 
-         * null or negative numbers (use the collection's default column width), or
+         * Use this property in cases where you want the sorting to be performed
+         * based on values other than the ones speficied by the @see:binding property.
+         *
+         * Setting this property is null causes the grid to use the value of the
+         * @see:binding property to sort the column.
+         */
+        get sortMemberPath(): string {
+            return this._bindingSort ? this._bindingSort.path : null;
+        }
+        set sortMemberPath(value: string) {
+            if (value != this.sortMemberPath) {
+                var path = asString(value);
+                this._bindingSort = path ? new Binding(path) : null;
+                this.onPropertyChanged();
+            }
+        }
+        /**
+         * Gets or sets the width of the column.
+         *
+         * Column widths may be positive numbers (sets the column width in pixels), 
+         * null or negative numbers (uses the collection's default column width), or
          * strings in the format '{number}*' (star sizing).
          *
          * The star-sizing option performs a XAML-style dynamic sizing where column 
@@ -3845,19 +4210,8 @@ module wijmo.grid {
                 this.size = asNumber(value, true);
             }
         }
-
-        // parses a string in the format '<number>*' and returns the number (or null if the parsing fails).
-        static _parseStarSize(value: any) {
-            if (isString(value) && value.length > 0 && value[value.length - 1] == '*') {
-                var sz = value.length == 1 ? 1 : value.substr(0, value.length - 1) * 1;
-                if (sz > 0 && !isNaN(sz)) {
-                    return sz;
-                }
-            }
-            return null;
-        }
         /**
-         * Gets or sets the minimum width of this column.
+         * Gets or sets the minimum width of the column.
          */
         get minWidth(): number {
             return this._szMin;
@@ -3869,7 +4223,7 @@ module wijmo.grid {
             }
         }
         /**
-         * Gets or sets the maximum width of this column.
+         * Gets or sets the maximum width of the column.
          */
         get maxWidth(): number {
             return this._szMax;
@@ -3881,22 +4235,22 @@ module wijmo.grid {
             }
         }
         /**
-         * Gets the render width of this column.
+         * Gets the render width of the column.
          *
-         * The value returned takes into account the column's visibility, default size, and min/max sizes.
+         * The value returned takes into account the column's visibility, default size, and min and max sizes.
          */
         get renderWidth(): number {
             return this.renderSize;
         }
         /**
-         * Gets or sets the horizontal alignment of items in this column.
+         * Gets or sets the horizontal alignment of items in the column.
          *
          * The default value for this property is null, which causes the grid to select
-         * the alignment automatically based on column's @see:dataType (numbers are
-         * right-aligned, boolean values are centered, other types are left-aligned).
+         * the alignment automatically based on the column's @see:dataType (numbers are
+         * right-aligned, Boolean values are centered, and other types are left-aligned).
          *
          * If you want to override the default alignment, set this property
-         * to 'left', 'right', or 'center'.
+         * to 'left,' 'right,' or 'center,'
          */
         get align(): string {
             return this._align;
@@ -3910,7 +4264,7 @@ module wijmo.grid {
         /**
          * Gets the actual column alignment. 
          *
-         * Returns the value of the @see:align property if that is not null, or
+         * Returns the value of the @see:align property if it is not null, or
          * selects the alignment based on the column's @see:dataType.
          */
         getAlignment(): string {
@@ -3944,10 +4298,10 @@ module wijmo.grid {
         }
         /**
          * Gets or sets the @see:DataMap used to convert raw values into display
-         * values for this column.
+         * values for the column.
          *
          * Columns with an associated @see:dataMap show drop-down buttons that
-         * can be used for quick editing. If you don't want to show the drop-down 
+         * can be used for quick editing. If you do not want to show the drop-down 
          * buttons, set the column's @see:showDropDown property to false.
          *
          * Cell drop-downs require the wijmo.input module to be loaded.
@@ -3980,7 +4334,7 @@ module wijmo.grid {
         }
         /**
          * Gets or sets the format string used to convert raw values into display 
-         * values for this column (see @see:wijmo.Globalize).
+         * values for the column (see @see:wijmo.Globalize).
          */
         get format(): string {
             return this._fmt;
@@ -3992,7 +4346,7 @@ module wijmo.grid {
             }
         }
         /**
-         * Gets or sets whether the user can sort this column by clicking its header.
+         * Gets or sets a value indicating whether the user can sort the column by clicking its header.
          */
         get allowSorting(): boolean {
             return this._getFlag(RowColFlags.AllowSorting);
@@ -4001,7 +4355,7 @@ module wijmo.grid {
             this._setFlag(RowColFlags.AllowSorting, value);
         }
         /**
-         * Gets a string that describes the current sorting applied to this column.
+         * Gets a string that describes the current sorting applied to the column.
          * Possible values are '+' for ascending order, '-' for descending order, or 
          * null for unsorted columns.
          */
@@ -4009,7 +4363,7 @@ module wijmo.grid {
             if (this.grid && this.grid.collectionView && this.grid.collectionView.canSort) {
                 var sds = this.grid.collectionView.sortDescriptions;
                 for (var i = 0; i < sds.length; i++) {
-                    if (sds[i].property == this.binding) {
+                    if (sds[i].property == this._getBindingSort()) {
                         return sds[i].ascending ? '+' : '-';
                     }
                 }
@@ -4018,7 +4372,7 @@ module wijmo.grid {
         }
         /**
          * Gets or sets the @see:Aggregate to display in the group header rows 
-         * for this column.
+         * for the column.
          */
         get aggregate(): Aggregate {
             return this._agg != null ? this._agg : Aggregate.None;
@@ -4028,6 +4382,24 @@ module wijmo.grid {
                 this._agg = asEnum(value, Aggregate);
                 this.onPropertyChanged();
             }
+        }
+
+        // gets the binding used for sorting (sortMemberPath if specified, binding ow)
+        private _getBindingSort() : string {
+            return this.sortMemberPath ? this.sortMemberPath :
+                this.binding ? this.binding :
+                null;
+        }
+
+        // parses a string in the format '<number>*' and returns the number (or null if the parsing fails).
+        static _parseStarSize(value: any) {
+            if (isString(value) && value.length > 0 && value[value.length - 1] == '*') {
+                var sz = value.length == 1 ? 1 : value.substr(0, value.length - 1) * 1;
+                if (sz > 0 && !isNaN(sz)) {
+                    return sz;
+                }
+            }
+            return null;
         }
     }
 
@@ -4041,7 +4413,7 @@ module wijmo.grid {
         /**
          * Initializes a new instance of a @see:Row.
          *
-         * @param dataItem Data item that this row is bound to.
+         * @param dataItem The data item that this row is bound to.
          */
         constructor(dataItem?: any) {
             super();
@@ -4049,7 +4421,7 @@ module wijmo.grid {
             this._data = dataItem;
         }
         /**
-         * Gets or sets the item in the data collection that this item is bound to.
+         * Gets or sets the item in the data collection that the item is bound to.
          */
         get dataItem(): any {
             return this._data;
@@ -4058,7 +4430,7 @@ module wijmo.grid {
             this._data = value;
         }
         /**
-         * Gets or sets the height of this row.
+         * Gets or sets the height of the row.
          * Setting this property to null or negative values causes the element to use the 
          * parent collection's default size.
          */
@@ -4069,9 +4441,9 @@ module wijmo.grid {
             this.size = value;
         }
         /**
-         * Gets the render height of this row.
+         * Gets the render height of the row.
          *
-         * The value returned takes into account the row's visibility, default size, and min/max sizes.
+         * The value returned takes into account the row's visibility, default size, and min and max sizes.
          */
         get renderHeight(): number {
             return this.renderSize;
@@ -4092,7 +4464,7 @@ module wijmo.grid {
             this.isReadOnly = true; // group rows are read-only by default
         }
         /**
-         * Gets or sets the hierarchical level of the group associated with this GroupRow.
+         * Gets or sets the hierarchical level of the group associated with the GroupRow.
          */
         get level(): number {
             return this._level;
@@ -4105,7 +4477,7 @@ module wijmo.grid {
             }
         }
         /**
-         * Gets a value that indicates whether this group row has child rows.
+         * Gets a value that indicates whether the group row has child rows.
          */
         get hasChildren(): boolean {
             var rNext = null,
@@ -4127,7 +4499,7 @@ module wijmo.grid {
             return true;
         }
         /**
-         * Gets or sets a value that indicates whether this GroupRow is collapsed 
+         * Gets or sets a value that indicates whether the GroupRow is collapsed 
          * (child rows are hidden) or expanded (child rows are visible).
          */
         get isCollapsed(): boolean {
@@ -4177,12 +4549,11 @@ module wijmo.grid {
 
             // fire GroupCollapsedChanged
             g.onGroupCollapsedChanged(e);
-            //rows.onCollectionChanged();
         }
 
         /**
-         * Gets a CellRange object that contains all the rows in the group represented 
-         * by this GroupRow and all columns in the grid.
+         * Gets a CellRange object that contains all of the rows in the group represented 
+         * by the GroupRow and all of the columns in the grid.
          */
         getCellRange(): CellRange {
             var rows = this._list,
@@ -4205,7 +4576,7 @@ module wijmo.grid {
     export class RowColCollection extends wijmo.collections.ObservableArray {
         _g: FlexGrid;
         _frozen = 0;
-        _szDef = 25;
+        _szDef = 28;
         _szTot = 0;
         _dirty = false;
         _szMin: number;
@@ -4214,8 +4585,8 @@ module wijmo.grid {
         /**
          * Initializes a new instance of a @see:_RowColCollection.
          *
-         * @param grid @see:FlexGrid that owns this collection.
-         * @param defaultSize Default size of the elements in this collection.
+         * @param grid The @see:FlexGrid that owns the collection.
+         * @param defaultSize The default size of the elements in the collection.
          */
         constructor(grid: FlexGrid, defaultSize: number) {
             super();
@@ -4223,7 +4594,7 @@ module wijmo.grid {
             this._szDef = asNumber(defaultSize, false, true);
         }
         /**
-         * Gets or sets the default size of elements in this collection.
+         * Gets or sets the default size of elements in the collection.
          */
         get defaultSize(): number {
             return this._szDef;
@@ -4238,9 +4609,9 @@ module wijmo.grid {
         /**
          * Gets or sets the number of frozen rows or columns in the collection.
          *
-         * Frozen rows and columns do not scroll and remain at the top/left of
+         * Frozen rows and columns do not scroll, and instead remain at the top or left of
          * the grid, next to the fixed cells. Unlike fixed cells, however, frozen
-         * calls may be selected and edited like regular cells.
+         * cells may be selected and edited like regular cells.
          */
         get frozen(): number {
             return this._frozen;
@@ -4255,14 +4626,13 @@ module wijmo.grid {
         /**
          * Checks whether a row or column is frozen.
          *
-         * @param index Index of the row or column to check.
+         * @param index The index of the row or column to check.
          */
         isFrozen(index: number): boolean {
             return index < this.frozen;
         }
-
         /**
-         * Gets or sets the minimum size of elements in this collection.
+         * Gets or sets the minimum size of elements in the collection.
          */
         get minSize(): number {
             return this._szMin;
@@ -4275,7 +4645,7 @@ module wijmo.grid {
             }
         }
         /**
-         * Gets or sets the maximum size of elements in this collection.
+         * Gets or sets the maximum size of elements in the collection.
          */
         get maxSize(): number {
             return this._szMax;
@@ -4288,7 +4658,7 @@ module wijmo.grid {
             }
         }
         /**
-         * Gets the total size of the elements in this collection.
+         * Gets the total size of the elements in the collection.
          */
         getTotalSize(): number {
             this._update();
@@ -4374,9 +4744,9 @@ module wijmo.grid {
         /**
          * Checks whether an element can be moved from one position to another.
          *
-         * @param src Index of the element to move.
-         * @param dst Position where the element should be moved to (-1 to append).
-         * @return True if the move is valid, false otherwise.
+         * @param src The index of the element to move.
+         * @param dst The position to which to move the element, or specify -1 to append the element.
+         * @return Returns true if the move is valid, false otherwise.
          */
         canMoveElement(src: number, dst: number): boolean {
 
@@ -4400,6 +4770,11 @@ module wijmo.grid {
                 }
             }
 
+            // can't move anything past the new row template (TFS 109012)
+            if (this[dst] instanceof _NewRowTemplate) {
+                return false;
+            }
+
             // all seems OK
             return true;
         }
@@ -4420,29 +4795,52 @@ module wijmo.grid {
          * Keeps track of dirty state and invalidate grid on changes.
          */
         onCollectionChanged(e = wijmo.collections.NotifyCollectionChangedEventArgs.reset) {
-            if (e.action == wijmo.collections.NotifyCollectionChangedAction.Add) {
-                e.item._list = this;
-            }
             this._dirty = true;
             this._g.invalidate();
             super.onCollectionChanged(e);
         }
         /**
-         * Overridden to clear list reference from child elements.
+         * Appends an item to the array.
+         *
+         * @param item Item to add to the array.
+         * @return The new length of the array.
          */
-        clear() {
-            for (var i = 0; i < this.length; i++) {
-                this[i]._list = null;
+        push(item: any): number {
+            item._list = this;
+            return super.push(item);
+        }
+        /**
+         * Removes or adds items to the array.
+         *
+         * @param index Position where items are added or removed.
+         * @param count Number of items to remove from the array.
+         * @param item Item to add to the array.
+         * @return An array containing the removed elements.
+         */
+        splice(index: number, count: number, item?: any): any[]{
+            if (item) {
+                item._list = this;
             }
-            super.clear();
+            return super.splice(index, count, item);
+        }
+        /**
+         * Suspends notifications until the next call to @see:endUpdate.
+         */
+        beginUpdate() {
+
+            // make sure we're up-to-date before suspending the updates
+            this._update();
+
+            // OK, now it's OK to suspend things
+            super.beginUpdate();
         }
 
         // updates the index, size and position of the elements in the array.
         _update(): boolean {
 
-            // update only if we're dirty *and* if the grid is not in an update block.
+            // update only if we're dirty *and* if the collection is not in an update block.
             // this is important for performance, especially when expanding/collapsing nodes.
-            if (this._dirty && !this._g.isUpdating) {
+            if (this._dirty && !this.isUpdating) {
                 this._dirty = false;
                 var
                     pos = 0,
@@ -4473,8 +4871,8 @@ module wijmo.grid {
          * The method searches the column by name. If a column with the given name 
          * is not found, it searches by binding. The searches are case-sensitive.
          *
-         * @param name Name or binding to look for.
-         * @return The column with the specified name/binding, or null if not found.
+         * @param name The name or binding to find.
+         * @return The column with the specified name or binding, or null if not found.
          */
         getColumn(name: string): Column {
             var index = this.indexOf(name);
@@ -4486,8 +4884,8 @@ module wijmo.grid {
          * The method searches the column by name. If a column with the given name 
          * is not found, it searches by binding. The searches are case-sensitive.
          *
-         * @param name Name or binding to look for.
-         * @return The index of column with the specified name/binding, or -1 if not found.
+         * @param name The name or binding to find.
+         * @return The index of column with the specified name or binding, or -1 if not found.
          */
         indexOf(name: any): number {
 
@@ -4616,7 +5014,7 @@ module wijmo.grid {
     'use strict';
 
     /**
-     * Contains information about a part of a @see:FlexGrid control at 
+     * Contains information about the part of a @see:FlexGrid control that exists at 
      * a specified page coordinate.
      */
     export class HitTestInfo {
@@ -4626,13 +5024,14 @@ module wijmo.grid {
         _row = -1;
         _col = -1;
         _edge = 0; // left, top, right, bottom: 1, 2, 4, 8
-        _EDGESIZE = 5; // distance to cell border
-
+        static _EDGESIZE = 5; // distance to cell border
+        static _BADANDROID: boolean;
+        
         /**
-         * Initializes a new instance of a @see:HitTestInfo.
+         * Initializes a new instance of a @see:HitTestInfo object.
          *
-         * @param grid @see:FlexGrid control or @see:GridPanel to investigate.
-         * @param pt @see:Point in page coordinates to investigate.
+         * @param grid The @see:FlexGrid control or @see:GridPanel to investigate.
+         * @param pt The @see:Point object in page coordinates to investigate.
          */
         constructor(grid: any, pt: any) {
 
@@ -4646,7 +5045,11 @@ module wijmo.grid {
                 throw 'First parameter should be a FlexGrid or GridPanel.';
             }
             if (isNumber(pt.pageX) && isNumber(pt.pageY)) {
-                pt = new wijmo.Point(pt.pageX, pt.pageY);
+                pt = new Point(pt.pageX, pt.pageY);
+                if (this._isBadAndroid()) { // ugh...
+                    pt.x -= window.pageXOffset;
+                    pt.y -= window.pageYOffset;
+                }
             } else if (!(pt instanceof wijmo.Point)) {
                 throw 'Second parameter should be a MouseEvent or wijmo.Point.';
             }
@@ -4714,20 +5117,21 @@ module wijmo.grid {
 
                 // get edges
                 this._edge = 0;
+                var sz = HitTestInfo._EDGESIZE;
                 if (this._col > -1) {
                     var col = cols[this._col];
-                    if (pt.x - col.pos - pt.x <= this._EDGESIZE) this._edge |= 1; // left
-                    if (col.pos + col.renderSize - pt.x <= this._EDGESIZE) this._edge |= 4; // right
+                    if (pt.x - col.pos - pt.x <= sz) this._edge |= 1; // left
+                    if (col.pos + col.renderSize - pt.x <= sz) this._edge |= 4; // right
                 }
                 if (this._row > -1) {
                     var row = rows[this._row];
-                    if (pt.y - row.pos - pt.y <= this._EDGESIZE) this._edge |= 2; // top
-                    if (row.pos + row.renderSize - pt.y <= this._EDGESIZE) this._edge |= 8; // bottom
+                    if (pt.y - row.pos - pt.y <= sz) this._edge |= 2; // top
+                    if (row.pos + row.renderSize - pt.y <= sz) this._edge |= 8; // bottom
                 }
             }
         }
         /**
-         * Gets the point in control coordinates that this HitTestInfo refers to.
+         * Gets the point in control coordinates that the HitTestInfo refers to.
          */
         get point(): Point {
             return this._pt;
@@ -4763,28 +5167,43 @@ module wijmo.grid {
             return new CellRange(this._row, this._col);
         }
         /**
-         * Gets whether the mouse is near the left edge of the cell.
+         * Gets a value indicating whether the mouse is near the left edge of the cell.
          */
         get edgeLeft(): boolean {
             return (this._edge & 1) != 0;
         }
         /**
-         * Gets whether the mouse is near the top edge of the cell.
+         * Gets a value indicating whether the mouse is near the top edge of the cell.
          */
         get edgeTop(): boolean {
             return (this._edge & 2) != 0;
         }
         /**
-         * Gets whether the mouse is near the right edge of the cell.
+         * Gets a value indicating whether the mouse is near the right edge of the cell.
          */
         get edgeRight(): boolean {
             return (this._edge & 4) != 0;
         }
         /**
-         * Gets whether the mouse is near the bottom edge of the cell.
+         * Gets a value indicating whether the mouse is near the bottom edge of the cell.
          */
         get edgeBottom(): boolean {
             return (this._edge & 8) != 0;
+        }
+
+        // checks whether this is a bad version of Android (ughhhh!!!!)
+        // e.pageX/Y started reporting wrong values in build 38.0.2125.102...
+        // http://stackoverflow.com/questions/26368863/did-android-chrome-pagey-value-change-with-the-latest-chrome-update
+        // https://code.google.com/p/chromium/issues/detail?id=423802
+        _isBadAndroid(): boolean {
+            if (HitTestInfo._BADANDROID == null) {
+                HitTestInfo._BADANDROID = false;
+                var match = navigator.appVersion.match(/Chrome\/(.*?) /);
+                if (match && match[1].indexOf('38.0.2125.') == 0) {
+                    HitTestInfo._BADANDROID = match[1].split('.')[3] >= '102';
+                }
+            }
+            return HitTestInfo._BADANDROID;
         }
     }
 }
@@ -4824,9 +5243,9 @@ module wijmo.grid {
         _g: FlexGrid;
 
         /**
-         * Initializes a new instance of a @see:MergeManager.
+         * Initializes a new instance of a @see:MergeManager object.
          *
-         * @param grid @see:FlexGrid that owns this @see:MergeManager.
+         * @param grid The @see:FlexGrid object that owns this @see:MergeManager.
          */
         constructor(grid: FlexGrid) {
             this._g = grid;
@@ -4836,9 +5255,9 @@ module wijmo.grid {
          * Gets a @see:CellRange that specifies the merged extent of a cell
          * in a @see:GridPanel.
          *
-         * @param panel @see:GridPanel that contains the range.
-         * @param r Index of the row that contains the cell.
-         * @param c Index of the column that contains the cell.
+         * @param panel The @see:GridPanel that contains the range.
+         * @param r The index of the row that contains the cell.
+         * @param c The index of the column that contains the cell.
          * @return A @see:CellRange that specifies the merged range, or null if the cell is not merged.
          */
         getMergedRange(panel: GridPanel, r: number, c: number): CellRange {
@@ -4858,15 +5277,28 @@ module wijmo.grid {
             // merge cells in group rows
             if (row instanceof GroupRow && row.dataItem instanceof wijmo.collections.CollectionViewGroup) {
                 rng = new CellRange(r, c);
+
+                // expand left and right preserving aggregates
                 if (col.aggregate == Aggregate.None) {
-                    while (rng.col > 0 && cols[rng.col - 1].aggregate == Aggregate.None && rng.col != cols.frozen) {
+                    while (rng.col > 0 &&
+                        cols[rng.col - 1].aggregate == Aggregate.None &&
+                        rng.col != cols.frozen) {
                         rng.col--;
                     }
-                    while (rng.col2 < cols.length - 1 && cols[rng.col2 + 1].aggregate == Aggregate.None && rng.col2 + 1 != cols.frozen) {
+                    while (rng.col2 < cols.length - 1 &&
+                        cols[rng.col2 + 1].aggregate == Aggregate.None &&
+                        rng.col2 + 1 != cols.frozen) {
                         rng.col2++;
                     }
-                    return rng;
                 }
+
+                // don't start range with invisible columns
+                while (rng.col < c && !cols[rng.col].visible) {
+                    rng.col++;
+                }
+
+                // return merged range
+                return rng.isSingleCell ? null : rng; 
             }
 
             // honor grid's allowMerging setting
@@ -4933,6 +5365,11 @@ module wijmo.grid {
                     rng.row2 = br;
                 }
 
+                // don't start range with invisible rows
+                while (rng.row < r && !rows[rng.row].visible) {
+                    rng.row++;
+                }
+
                 // done
                 if (!rng.isSingleCell) {
                     return rng;
@@ -4974,6 +5411,11 @@ module wijmo.grid {
                     rng.col2 = cr;
                 }
 
+                // don't start range with invisible columns
+                while (rng.col < c && !cols[rng.col].visible) {
+                    rng.col++;
+                }
+
                 // done
                 if (!rng.isSingleCell) {
                     return rng;
@@ -4996,9 +5438,9 @@ module wijmo.grid {
      * you may want to display a customer name instead of his ID, or a color name 
      * instead of its RGB value.
      * 
-     * For example, the code below creates binds a grid to a collection of products,
-     * then assigns a @see:DataMap to the grid's 'CategoryID' column so the grid will
-     * display the category names rather than the raw IDs.
+     * The code below binds a grid to a collection of products,
+     * then assigns a @see:DataMap to the grid's 'CategoryID' column so that the grid 
+     * displays the category names rather than the raw IDs.
      * 
      * <pre>
      * // bind grid to products
@@ -5017,9 +5459,9 @@ module wijmo.grid {
         /**
          * Initializes a new instance of a @see:DataMap.
          *
-         * @param itemsSource Array or or @see:ICollectionView that contains the map items.
-         * @param selectedValuePath Name of the property that contains the keys (data values).
-         * @param displayMemberPath Name of the property to use as the visual representation of the items.
+         * @param itemsSource An array or @see:ICollectionView that contains the items to map.
+         * @param selectedValuePath The name of the property that contains the keys (data values).
+         * @param displayMemberPath The name of the property to use as the visual representation of the items.
          */
         constructor(itemsSource: any, selectedValuePath: string, displayMemberPath: string) {
 
@@ -5043,19 +5485,19 @@ module wijmo.grid {
             this._cv.collectionChanged.addHandler(this.onMapChanged, this);
         }
         /**
-         * Gets the @see:ICollectionView that contains the map data.
+         * Gets the @see:ICollectionView object that contains the map data.
          */
         get collectionView(): wijmo.collections.ICollectionView {
             return this._cv;
         }
         /**
-         * Gets the name of the property to use as a key for the item (data values).
+         * Gets the name of the property to use as a key for the item (data value).
          */
         get selectedValuePath(): string {
             return this._keyPath;
         }
         /**
-         * Gets the name of the property to use as the visual representation of the items.
+         * Gets the name of the property to use as the visual representation of the item.
          */
         get displayMemberPath(): string {
             return this._displayPath;
@@ -5063,7 +5505,7 @@ module wijmo.grid {
         /**
          * Gets the key that corresponds to a given display value.
          *
-         * @param displayValue Display value of the item to retrieve.
+         * @param displayValue The display value of the item to retrieve.
          */
         getKeyValue(displayValue: string): any {
             var index = this._indexOf(displayValue, this._displayPath, false);
@@ -5072,14 +5514,14 @@ module wijmo.grid {
         /**
          * Gets the display value that corresponds to a given key.
          *
-         * @param key Key of the item to retrieve.
+         * @param key The key of the item to retrieve.
          */
         getDisplayValue(key: any): any {
             var index = this._indexOf(key, this._keyPath, true);
             return index > -1 ? this._cv.sourceCollection[index][this._displayPath]: key;
         }
         /**
-         * Gets an array with all possible display values on this map.
+         * Gets an array with all of the display values on the map.
          */
         getDisplayValues(): string[]{
             var values = [];
@@ -5087,6 +5529,19 @@ module wijmo.grid {
                 var items = this._cv.sourceCollection;
                 for (var i = 0; i < items.length; i++) {
                     values.push(items[i][this._displayPath]);
+                }
+            }
+            return values;
+        }
+        /**
+         * Gets an array with all of the keys on the map.
+         */
+        getKeyValues(): string[] {
+            var values = [];
+            if (this._cv && this._keyPath) {
+                var items = this._cv.sourceCollection;
+                for (var i = 0; i < items.length; i++) {
+                    values.push(items[i][this._keyPath]);
                 }
             }
             return values;
@@ -5212,7 +5667,10 @@ module wijmo.grid {
                 if (value == SelectionMode.ListBox || this._mode == SelectionMode.ListBox) {
                     var rows = this._g.rows;
                     for (var i = 0; i < rows.length; i++) {
-                        (<Row>rows[i]).isSelected = (value == SelectionMode.ListBox) ? this._sel.containsRow(i) : false;
+                        (<Row>rows[i])._setFlag(
+                            RowColFlags.Selected,
+                            (value == SelectionMode.ListBox) ? this._sel.containsRow(i) : false,
+                            false);
                     }
                 }
 
@@ -5318,8 +5776,12 @@ module wijmo.grid {
                 case SelectionMode.ListBox:
                     var rows = g.rows;
                     for (var i = 0; i < rows.length; i++) {
-                        (<Row>rows[i]).isSelected = newSel.containsRow(i);
+                        (<Row>rows[i])._setFlag(
+                            RowColFlags.Selected,
+                            newSel.containsRow(i),
+                            false);
                     }
+                    g.invalidate();
                     break;
             }
 
@@ -5344,12 +5806,19 @@ module wijmo.grid {
             // update selection
             this._sel = newSel;
 
-            // update selection state
-            g.refreshCells(false, true, [this._adjustSelection(oldSel), this._adjustSelection(newSel)]);
-
             // show the new selection
+            var vr = g.viewRange;
             if (show) {
                 g.scrollIntoView(newSel.row, newSel.col);
+            }
+
+            // if the viewRange didn't change, we didn't refresh;
+            // so do it now in order to update the selection state
+            if (vr.equals(g.viewRange)) {
+                g.refreshCells(false, true, [
+                    this._adjustSelection(oldSel),
+                    this._adjustSelection(newSel)
+                ]);
             }
 
             // update collectionView cursor
@@ -5496,12 +5965,13 @@ module wijmo.grid {
         }
 
         // handles the key down event (selection)
-        private _keyDown(e) {
+        private _keyDown(e: KeyboardEvent) {
             var g = this._g,
                 sel = g.selection,
-                ctrl = e.ctrlKey,
+                ctrl = e.ctrlKey || e.metaKey,
                 shift = e.shiftKey,
                 handled = true;
+
             if (g.isRangeValid(sel) && !e.defaultPrevented) {
 
                 // pre-process handle keys while editor is active
@@ -5518,7 +5988,7 @@ module wijmo.grid {
                 if (g.autoClipboard) {
 
                     // copy: ctrl+c or ctrl+Insert
-                    if (e.ctrlKey && (e.keyCode == 67 || e.keyCode == 45)) {
+                    if (ctrl && (e.keyCode == 67 || e.keyCode == 45)) {
                         var args = new CellRangeEventArgs(g.cells, sel);
                         if (g.onCopying(args)) {
                             var text = g.getClipString();
@@ -5529,7 +5999,7 @@ module wijmo.grid {
                     }
 
                     // paste: ctrl+v or shift+Insert
-                    if ((e.ctrlKey && e.keyCode == 86) || (e.shiftKey && e.keyCode == 45)) {
+                    if ((ctrl && e.keyCode == 86) || (shift && e.keyCode == 45)) {
                         if (!g.isReadOnly) {
                             var args = new CellRangeEventArgs(g.cells, sel);
                             if (g.onPasting(args)) {
@@ -5584,10 +6054,10 @@ module wijmo.grid {
                         this._moveSel(SelMove.NextPage, SelMove.None, shift);
                         break;
                     case Key.Home:
-                        this._moveSel(SelMove.None, SelMove.Home, shift);
+                        this._moveSel(ctrl ? SelMove.Home : SelMove.None, SelMove.Home, shift);
                         break;
                     case Key.End:
-                        this._moveSel(SelMove.None, SelMove.End, shift);
+                        this._moveSel(ctrl ? SelMove.End : SelMove.None, SelMove.End, shift);
                         break;
                     case Key.Tab:
                         this._moveSel(SelMove.None, shift ? SelMove.PrevCell : SelMove.NextCell, shift);
@@ -5607,6 +6077,7 @@ module wijmo.grid {
                                 ecv.cancelNew();
                             }
                         }
+                        g._mouseHdl.resetMouseState();
                         break;
                     case Key.Delete:
                         handled = this._deleteSel();
@@ -5833,6 +6304,8 @@ module wijmo.grid {
         _szStart: number;
         _szArgs: CellRangeEventArgs;
         _dragSource: any;
+        _dvMarker: HTMLElement;
+        _rngTarget: CellRange;
 
         /**
          * Initializes a new instance of a @see:_MouseHandler.
@@ -5850,9 +6323,11 @@ module wijmo.grid {
             // this simulates a mouse capture (nice idea from ngGrid).
             // note: use 'document' and not 'window'; that doesn't work on Android.
             e.addEventListener('mousedown', function (e: MouseEvent) {
-                document.addEventListener('mousemove', mouseMove);
-                document.addEventListener('mouseup', mouseUp);
-                self._mouseDown(e);
+                if (e.button == 0) { // TFS 114623: start actions on left button only
+                    document.addEventListener('mousemove', mouseMove);
+                    document.addEventListener('mouseup', mouseUp);
+                    self._mouseDown(e);
+                }
             });
             var mouseMove = function (e: MouseEvent) {
                 self._mouseMove(e);
@@ -5872,8 +6347,12 @@ module wijmo.grid {
             // row and column dragging
             e.addEventListener('dragstart', this._dragStart.bind(this));
             e.addEventListener('dragover', this._dragOver.bind(this));
+            e.addEventListener('dragleave', this._dragOver.bind(this));
             e.addEventListener('drop', this._drop.bind(this));
             e.addEventListener('dragend', this._dragEnd.bind(this));
+
+            // create target indicator element
+            this._dvMarker = createElement('<div class="wj-marker">&nbsp;</div>');
         }
 
         /**
@@ -5885,6 +6364,7 @@ module wijmo.grid {
             if (this._dragSource) {
                 this._dragSource.style.opacity = 1;
             }
+            this._showDragMarker(null);
 
             this._htDown = null;
             this._lbSelRows = null;
@@ -5913,8 +6393,8 @@ module wijmo.grid {
             this._htDown = ht;
             this._eMouse = e;
 
-            // get focus
-            if (!g.containsFocus()) {
+            // unless the target has the focus, give it to the grid (TFS 81949, 102177)
+            if (e.target != document.activeElement) {
                 g.focus();
             }
 
@@ -5992,9 +6472,16 @@ module wijmo.grid {
         // handles the mouse up event
         private _mouseUp(e: MouseEvent) {
 
-            // finish resizing, sort
-            if (this._szArgs) {
-                this._finishResizing();
+            // select all cells, finish resizing, sorting
+            var htd = this._htDown;
+            if (htd && htd.cellType == CellType.TopLeft && htd.row == 0 && htd.col == 0) {
+                var g = this._g,
+                    ht = g.hitTest(e);
+                if (ht.cellType == CellType.TopLeft && ht.row == 0 && ht.col == 0) {
+                    g.select(new CellRange(0, 0, g.rows.length - 1, g.columns.length - 1));
+                }
+            } else if (this._szArgs) {
+                this._finishResizing(e);
             } else {
                 this._handleSort(e);
             }
@@ -6072,13 +6559,6 @@ module wijmo.grid {
                     }
                 }
             }
-
-            // enter edit mode
-            // REVIEW: this is not required, the firt click will select and the
-            // second will cause the cell to enter edit mode automatically.
-            //if (ht.cellType == CellType.Cell && !g.activeEditor) {
-            //    g.startEditing(true, ht.row, ht.col);
-            //}
         }
 
         // offer to resize rows/columns
@@ -6110,9 +6590,9 @@ module wijmo.grid {
 
                 // keep track of element to resize and original size
                 if (this._szRowCol instanceof Column) {
-                    cursor = 'e-resize';
+                    cursor = 'col-resize';
                 } else if (this._szRowCol instanceof Row) {
-                    cursor = 's-resize';
+                    cursor = 'row-resize';
                 }
                 this._szStart = this._szRowCol ? this._szRowCol.renderSize : 0;
 
@@ -6132,12 +6612,15 @@ module wijmo.grid {
                 this._handleSelection(ht, extend);
 
                 // keep calling this if the user keeps the mouse outside the control without moving it
-                ht = new HitTestInfo(g, e);
-                if (ht.cellType != CellType.Cell && ht.cellType != CellType.RowHeader) {
-                    var self = this;
-                    setTimeout(function () {
-                        self._mouseSelect(self._eMouse, extend);
-                    }, 0);
+                // but don't do this in IE, it can keep scrolling forever... TFS 110374
+                if (document.documentMode == null) {
+                    ht = new HitTestInfo(g, e);
+                    if (ht.cellType != CellType.Cell && ht.cellType != CellType.RowHeader) {
+                        var self = this;
+                        setTimeout(function () {
+                            self._mouseSelect(self._eMouse, extend);
+                        }, 200);
+                    }
                 }
             }
         }
@@ -6156,7 +6639,11 @@ module wijmo.grid {
                         this._szArgs = new CellRangeEventArgs(this._htDown.gridPanel, new CellRange(-1, this._szRowCol.index));
                     }
                     this._g.onResizingColumn(this._szArgs);
-                    (<Column>this._szRowCol).width = sz;
+                    if (this._g.deferResizing) {
+                        this._showResizeMarker(sz);
+                    } else {
+                        (<Column>this._szRowCol).width = Math.round(sz);
+                    }
                 }
             }
 
@@ -6168,7 +6655,11 @@ module wijmo.grid {
                         this._szArgs = new CellRangeEventArgs(this._htDown.gridPanel, new CellRange(this._szRowCol.index, -1));
                     }
                     this._g.onResizingRow(this._szArgs);
-                    (<Row>this._szRowCol).height = sz;
+                    if (this._g.deferResizing) {
+                        this._showResizeMarker(sz);
+                    } else {
+                        (<Row>this._szRowCol).height = Math.round(sz);
+                    }
                 }
             }
         }
@@ -6233,6 +6724,9 @@ module wijmo.grid {
             if (valid) {
                 e.dataTransfer.dropEffect = 'move';
                 e.preventDefault();
+                this._showDragMarker(ht);
+            } else {
+                this._showDragMarker(null);
             }
         }
         private _drop(e: DragEvent) {
@@ -6256,19 +6750,123 @@ module wijmo.grid {
             this.resetMouseState();
         }
 
+        // updates the marker to show the new size of the row/col being resized
+        private _showResizeMarker(sz: number) {
+            var g = this._g;
+
+            // add marker element to panel
+            var t = this._dvMarker;
+            if (!t.parentElement) {
+                g.cells.hostElement.appendChild(t);
+            }
+
+            // update marker position
+            var css: any;
+            if (this._szRowCol instanceof Column) {
+                css = {
+                    left: this._szRowCol.pos + sz,
+                    top: 0,
+                    right: '',
+                    bottom: 0,
+                    width: 2,
+                    height: ''
+                }
+                if (g._rtl) {
+                    css.left = t.parentElement.clientWidth - css.left - css.width;
+                }
+            } else { 
+                css = {
+                    left: 0,
+                    top: this._szRowCol.pos + sz,
+                    right: 0,
+                    bottom: '',
+                    width: '',
+                    height: 2
+                }
+            }
+
+            // apply new position
+            setCss(t, css);
+        }
+
+        // updates the marker to show the position where the row/col will be inserted
+        private _showDragMarker(ht: HitTestInfo) {
+            var g = this._g;
+
+            // remove target indicator if no HitTestInfo
+            var t = this._dvMarker;
+            if (!ht) {
+                if (t.parentElement) {
+                    t.parentElement.removeChild(t);
+                }
+                this._rngTarget = null;
+                return;
+            }
+
+            // avoid work/flicker
+            if (ht.cellRange.equals(this._rngTarget)) {
+                return;
+            }
+            this._rngTarget = ht.cellRange;
+
+            // add marker element to panel
+            if (!t.parentElement) {
+                ht.gridPanel.hostElement.appendChild(t);
+            }
+
+            // update marker position
+            var css: any = { 
+                left: 0,
+                top: 0,
+                width: 6,
+                height: 6
+            };
+            switch (ht.cellType) {
+                case CellType.ColumnHeader:
+                    css.height = ht.gridPanel.height;
+                    var col = g.columns[ht.col];
+                    css.left = col.pos - css.width / 2;
+                    if (ht.col > this._htDown.col) {
+                        css.left += col.renderWidth;
+                    }
+                    if (g._rtl) {
+                        css.left = t.parentElement.clientWidth - css.left - css.width;
+                    }
+                    break;
+                case CellType.RowHeader:
+                    css.width = ht.gridPanel.width;
+                    var row = g.rows[ht.row];
+                    css.top = row.pos - css.height / 2;
+                    if (ht.row > this._htDown.row) {
+                        css.top += row.renderHeight;
+                    }
+                    break;
+            }
+
+            // update marker
+            setCss(t, css);
+        }
+
         // raises the ResizedRow/Column events and 
         // applies the new size to the selection if the control key is pressed
-        private _finishResizing() {
+        private _finishResizing(e: MouseEvent) {
             var g = this._g,
                 sel = g.selection,
                 ctrl = this._eMouse.ctrlKey,
                 args = this._szArgs,
-                rc: number;
+                rc: number,
+                sz;
 
             // finish row sizing
             if (args && args.row > -1) {
-                g.onResizedRow(args);
+
+                // apply new size, fire event
                 rc = args.row;
+                sz = Math.max(1, this._szStart + (e.pageY - this._htDown.point.y));
+                g.rows[rc].height = Math.round(sz);
+                g.onResizedRow(args);
+
+                // apply new size to selection if the control key is pressed
                 if (ctrl && this._htDown.cellType != CellType.TopLeft && sel.containsRow(rc)) {
                     for (var r = sel.topRow; r <= sel.bottomRow; r++) {
                         if (g.rows[r].allowResizing && r != rc) {
@@ -6285,8 +6883,14 @@ module wijmo.grid {
 
             // finish column sizing
             if (args && args.col > -1) {
-                g.onResizedColumn(args);
+
+                // apply new size, fire event
                 rc = args.col;
+                sz = Math.max(1, this._szStart + (e.pageX - this._htDown.point.x) * (this._g._rtl ? -1 : 1));
+                g.columns[rc].width = Math.round(sz);
+                g.onResizedColumn(args);
+
+                // apply new size to selection if the control key is pressed
                 if (ctrl && this._htDown.cellType != CellType.TopLeft && sel.containsColumn(rc)) {
                     for (var c = sel.leftCol; c <= sel.rightCol; c++) {
                         if (g.columns[c].allowResizing && c != rc) {
@@ -6377,8 +6981,8 @@ module wijmo.grid {
                 var rng = g.getMergedRange(g.columnHeaders, ht.row, ht.col),
                     row = rng ? rng.bottomRow : ht.row;
                 
-                // if the click was on the last row, sort
-                if (row == g.columnHeaders.rows.length - 1) {
+                // if the click was on the sort row, sort
+                if (row == g._getSortRowIndex()) {
                     var col = g.columns[ht.col],
                         currSort = col.currentSort,
                         asc = currSort != '+';
@@ -6396,7 +7000,7 @@ module wijmo.grid {
                             if (e.ctrlKey) {
                                 sds.clear();
                             } else {
-                                sds.splice(0, sds.length, new wijmo.collections.SortDescription(col.binding, asc));
+                                sds.splice(0, sds.length, new wijmo.collections.SortDescription(col._getBindingSort(), asc));
                             }
 
                             // raise sorted column
@@ -6447,8 +7051,10 @@ module wijmo.grid {
             });
 
             // commit row edits when losing focus
-            grid.hostElement.addEventListener('focusout', function () {
+            // use blur+capture to emulate focusout (not supported in FireFox)
+            grid.hostElement.addEventListener('blur', function () {
                 setTimeout(function () {
+
                     //---------------------------------------------------------------------------------------------
                     // REVIEW: Ionic/Android transfers the focus to the body so
                     // the keyboard disappears no matter what...
@@ -6462,17 +7068,13 @@ module wijmo.grid {
                     // end of Ionic/Android workaround
                     //---------------------------------------------------------------------------------------------
 
-                    // if the grid lost focus, commit row edits
-                    if (!grid.containsFocus() && !grid._edtHdl._lbx) { // TFS 100250
+                    // if the grid lost focus, commit row edits (TFS 114960)
+                    var hasFocus = grid.containsFocus() || (self._lbx && self._lbx.containsFocus());
+                    if (!hasFocus) {
                         self._commitRowEdits();
                     }
-                }, 0);
-            });
-
-            // finish editing when scrolling (or edits will be lost when the grid refreshes)
-            grid.scrollPositionChanged.addHandler(function () {
-                self.finishEditing();
-            });
+                }, 0); // TFS 100250, 112599 (timeOut used to be 200)
+            }, true);
 
             // commit edits when clicking non-cells (e.g. sort, drag, resize)
             // start editing when clicking on checkboxes
@@ -6489,7 +7091,7 @@ module wijmo.grid {
                         self._commitRowEdits();
                     }
 
-                } else {
+                } else if (ht.cellType != CellType.None) {
 
                     // start editing when clicking on checkboxes that are not the active editor
                     var edt = <HTMLInputElement>tryCast(e.target, HTMLInputElement);
@@ -6498,6 +7100,7 @@ module wijmo.grid {
 
                             // we're handling this (required in Chrome)
                             e.preventDefault();
+                            e.stopPropagation();
 
                             // start editing the item that was clicked
                             self.startEditing(false, ht.row, ht.col);
@@ -6541,17 +7144,6 @@ module wijmo.grid {
                     }
                 }
             });
-
-            // remove cell drop-down when scrolling the window
-            // or using the wheel on any element other than the drop-down itself
-            window.addEventListener('scroll', function (e) {
-                self._removeListBox();
-            });
-            document.body.addEventListener('wheel', function (e) {
-                if (self._lbx && !contains(self._lbx.hostElement, e.target)) {
-                    self._removeListBox();
-                }
-            });
         }
         /**
          * Starts editing a given cell.
@@ -6559,9 +7151,10 @@ module wijmo.grid {
          * @param fullEdit Whether to stay in edit mode when the user presses the cursor keys. Defaults to false.
          * @param r Index of the row to be edited. Defaults to the currently selected row.
          * @param c Index of the column to be edited. Defaults to the currently selected column.
+         * @param focus Whether to give the editor the focus. Defaults to true.
          * @return True if the edit operation started successfully.
          */
-        startEditing(fullEdit = true, r?: number, c?: number): boolean {
+        startEditing(fullEdit = true, r?: number, c?: number, focus?: boolean): boolean {
 
             // default row/col to current selection
             var g = this._g;
@@ -6572,6 +7165,11 @@ module wijmo.grid {
             }
             if (c == null) {
                 c = g.selection.col;
+            }
+
+            // default focus to true
+            if (focus == null) {
+                focus = true;
             }
 
             // check that the cell is editable
@@ -6585,8 +7183,16 @@ module wijmo.grid {
                 rng = new CellRange(r, c);
             }
 
+            // get item to be edited
+            var item = g.rows[r].dataItem;
+
             // make sure cell is selected
             g.select(rng, true);
+
+            // check that we still have the same item after moving the selection (TFS 110143)
+            if (!g.rows[r] || item != g.rows[r].dataItem) {
+                return false;
+            }
 
             // no work if we are already editing this cell
             if (rng.equals(this._rng)) {
@@ -6602,7 +7208,7 @@ module wijmo.grid {
             // start editing item
             var ecv = tryCast(g.collectionView, 'IEditableCollectionView');
             if (ecv) {
-                var item = g.rows[r].dataItem;
+                item = g.rows[r].dataItem;
                 ecv.editItem(item);
             }
 
@@ -6621,14 +7227,15 @@ module wijmo.grid {
             if (edt) {
                 if (edt.type == 'checkbox') {
                     this._fullEdit = false; // no full edit on checkboxes...
-                } else {
+                } else if (focus) {
                     edt.setSelectionRange(0, edt.value.length);
                 }
                 g.onPrepareCellForEdit(e);
 
                 // give the editor the focus in case it doesn't have it
+                // NOTE: this happens on Android, it's strange...
                 edt = this._edt;
-                if (edt) {
+                if (edt && focus) {
                     edt.focus();
                 }
             }
@@ -6643,6 +7250,9 @@ module wijmo.grid {
          * @return True if the edit operation finished successfully.
          */
         finishEditing(cancel = false): boolean {
+
+            // remember if we have the focus
+            var focus = this._g.containsFocus();
 
             // always get rid of drop-down
             this._removeListBox();
@@ -6665,8 +7275,8 @@ module wijmo.grid {
             // apply edits
             if (!e.cancel) {
                 var value: any = edt.type == 'checkbox' ? edt.checked : edt.value;
-                for (var r = rng.topRow; r <= rng.bottomRow; r++) {
-                    for (var c = rng.leftCol; c <= rng.rightCol; c++) {
+                for (var r = rng.topRow; r <= rng.bottomRow && r < g.rows.length; r++) {
+                    for (var c = rng.leftCol; c <= rng.rightCol && c < g.columns.length; c++) {
                         g.cells.setCellData(r, c, value, true);
                     }
                 }
@@ -6677,6 +7287,11 @@ module wijmo.grid {
             this._rng = null;
             this._list = null;
             g.refresh(false);
+
+            // restore focus // TFS 107464
+            if (focus && !this._g.containsFocus()) {
+                this._g.focus();
+            }
 
             // edit ended
             g.onCellEditEnded(e);
@@ -6775,7 +7390,8 @@ module wijmo.grid {
 
             // auto-complete based on datamap
             var edt = this._edt;
-            if (edt && edt.type != 'checkbox' && this._list && this._list.length > 0 && e.charCode >= 32) {
+            if (edt && edt.type != 'checkbox' && e.target == edt &&
+                this._list && this._list.length > 0 && e.charCode >= 32) {
 
                 // get text up to selection start
                 var start = edt.selectionStart;
@@ -6799,6 +7415,7 @@ module wijmo.grid {
                         // found the match, update text and selection
                         edt.value = this._list[i];
                         edt.setSelectionRange(start, this._list[i].length);
+                        edt.dispatchEvent(this._evtInput);
 
                         // eat the key and be done
                         e.preventDefault();
@@ -6810,52 +7427,48 @@ module wijmo.grid {
 
         // shows the drop-down element for a cell (if it is not already visible)
         _toggleDropDown(ht: HitTestInfo) {
+            var self = this,
+                g = this._g;
 
             // close select element if any;
             // if this is the same cell, we're done
             if (this._lbx) {
                 this._removeListBox();
-                if (this._g.selection.contains(ht.cellRange)) {
-                    if (this._g.activeEditor) {
-                        this._g.activeEditor.focus();
-                    } else {
-                        this._g.focus();
+                if (g.selection.contains(ht.cellRange)) {
+                    if (g.activeEditor) {
+                        g.activeEditor.focus();
+                    } else if (!g.containsFocus()) {
+                        g.focus();
                     }
                     return;
                 }
             }
 
+            // if this was a touch, give focus to ListBox to hide soft keyboard
+            var lbxFocus = g.isTouching;
+
             // start editing so we can position the select element
-            if (!wijmo.input || !this.startEditing(true, ht.row, ht.col)) {
+            if (!wijmo.input || !this.startEditing(true, ht.row, ht.col, !lbxFocus)) {
                 return;
             }
 
-            // create the select element and add it to the document
+            // create and initialize the ListBox
             this._lbx = this._createListBox();
-
-            // give ListBox the focus
             this._lbx.showSelection();
-            this._lbx.focus();
+            if (lbxFocus) {
+                this._lbx.focus();
+            }
 
             // attach event handlers
-            var self = this,
-                g = this._g;
             this._lbx.selectedIndexChanged.addHandler(function () {
                 var edt = g.activeEditor;
                 if (edt) {
                     edt.value = self._lbx.selectedValue;
                     edt.setSelectionRange(0, edt.value.length);
                     edt.dispatchEvent(self._evtInput);
+                    self.finishEditing(); // TFS 105498
                 }
                 self._removeListBox();
-            });
-            this._lbx.hostElement.addEventListener('mousedown', function (e) {
-                e.stopPropagation(); // only the select should handle this
-            });
-            this._lbx.hostElement.addEventListener('blur', function (e) {
-                if (self._lbx && !self._lbx.containsFocus()) {
-                    self._removeListBox();
-                }
             });
         }
 
@@ -6863,41 +7476,21 @@ module wijmo.grid {
         private _createListBox(): wijmo.input.ListBox {
             var g = this._g,
                 rng = this._rng,
-                val = g.activeEditor ? g.activeEditor.value : g.getCellData(rng.row, rng.col, true),
                 row = g.rows[rng.row],
                 col = g.columns[rng.col],
-                options = col.dataMap.getDisplayValues(),
                 div = document.createElement('div'),
                 lbx = new wijmo.input.ListBox(div);
 
             // configure listbox
-            lbx.itemsSource = options;
-            lbx.selectedValue = val;
+            addClass(div, 'wj-dropdown-panel');
             lbx.maxHeight = row.renderHeight * 4;
+            lbx.itemsSource = col.dataMap.getDisplayValues();
+            lbx.selectedValue = g.activeEditor
+                ? g.activeEditor.value
+                : g.getCellData(rng.row, rng.col, true);
 
-            // find host for the listbox 
-            // start with the grid's host element but look for ancestors with fixed position
-            // (so this works in Bootstrap modals)
-            var host = g.hostElement;
-            for (var fx = host; fx; fx = fx.parentElement) {
-                if (getComputedStyle(fx).position == 'fixed') {
-                    host = fx;
-                    break;
-                }
-            }
-            host.appendChild(div);
-
-            // position listbox
-            var rc = g.activeEditor.getBoundingClientRect();
-            setCss(div, {
-                position: 'fixed',
-                zIndex: 100,
-                minWidth: rc.width + 17,
-                left: rc.left,
-                top: rc.top < window.innerHeight / 2 // cell above or below half window?
-                    ? Math.round(rc.top + row.renderHeight) // show list below
-                    : Math.round(rc.top - div.offsetHeight) // show list above
-            });
+            // show the popup
+            showPopup(div, g.getCellBoundingRect(rng.row, rng.col));
 
             // done
             return lbx;

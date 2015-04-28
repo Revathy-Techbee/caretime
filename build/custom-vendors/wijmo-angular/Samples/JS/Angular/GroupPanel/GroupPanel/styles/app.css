@@ -1,0 +1,7 @@
+﻿/* sample styles */
+.wj-flexgrid {
+    height: 300px;
+}
+.wj-flexgrid .wj-group {
+    background-color: white;
+}

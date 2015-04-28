@@ -23,6 +23,9 @@
 // 9.  Fix issue exporting empty sheet 'dimension ref' property incorrect.
 // 10. Add frozen rows and columns supporting for exporting/importing.
 //     We add frozenPane property that includes rows and columns sub properties in each worksheet.
+// 11. Add 'ca' attribute for the cellFormula element for exporting.
+// 12. Add formula supporting for importing.
+// 13. escapeXML for the formula of the cell.
 //
 //----------------------------------------------------------
 
@@ -33,7 +36,7 @@ if ((typeof JSZip === 'undefined' || !JSZip) && typeof require === 'function') {
 function xlsx(file) { 
 	'use strict'; // v2.3.2
 
-	var result, zip = new JSZip(), zipTime, processTime, s, content, f, i, j, k, l, t, w, sharedStrings, styles, index, data, val, style, borders, border, borderIndex, fonts, font, fontIndex,
+	var result, zip = new JSZip(), zipTime, processTime, s, content, f, i, j, k, l, t, w, sharedStrings, styles, index, data, val, formula /* GrapeCity: Add formula variable.*/, style, borders, border, borderIndex, fonts, font, fontIndex,
 		docProps, xl, xlWorksheets, worksheet, contentTypes = [[], []], props = [], xlRels = [], worksheets = [], id, columns, cols, colWidth, cell, row, merges, merged, rowStr, rowHeightSetting, groupLevelSetting, firstCell, rowVisible, hiddenColumns, idx, colIndex, groupLevel, frozenPane, frozenRows, frozenCols, 
 		numFmts = ['General', '0', '0.00', '#,##0', '#,##0.00', , , '$#,##0.00_);($#,##0.00)' /* GrapeCity: Add built-in accounting format.*/, , '0%', '0.00%', '0.00E+00', '# ?/?', '# ??/??', 'm/d/yyyy' /* GrapeCity: Modify the built-in date format.*/, 'd-mmm-yy', 'd-mmm', 'mmm-yy', 'h:mm AM/PM', 'h:mm:ss AM/PM',
 			'h:mm', 'h:mm:ss', 'm/d/yy h:mm',,,,,,,,,,,,,,, '#,##0 ;(#,##0)', '#,##0 ;[Red](#,##0)', '#,##0.00;(#,##0.00)', '#,##0.00;[Red](#,##0.00)',,,,, 'mm:ss', '[h]:mm:ss', 'mmss.0', '##0.0E+0', '@'],
@@ -193,6 +196,10 @@ function xlsx(file) {
 					f = styles[+getAttr(cell, 's')] || { type: 'General', formatCode: 'General' };
 					t = getAttr(cell, 't') || f.type;
 					val = cell.substring(cell.indexOf('<v>') + 3, cell.indexOf('</v>'));
+					// GrapeCity Begin: Add formula processing. 
+					formula = cell.match(/\<f.*>.+(?=\<\/f>)/);
+					formula = formula ? formula[0].replace(/(\<f.*>)(.+)/, "$2") : '';
+					// GrapeCity End
 					// GrapeCity Begin: Fix issue that couldn't read the excel cell content processed by the string processing function.
 					if (t !== 'str') { val = val ? +val : ''; } // turn non-zero into number when the type of the cell is not 'str'
 					// GrapeCity End
@@ -202,7 +209,7 @@ function xlsx(file) {
 						case 'b': val = val === 1; break;
 						case 'date': val = convertDate(val); break;
 					}
-					row[colIndex] = { value: val, formatCode: f.formatCode, visible: hiddenColumns.indexOf(colIndex) === -1 /* Add visible property for the cell */ };
+					row[colIndex] = { value: val, formula: formula /* GrapeCity: Add formula property.*/, formatCode: f.formatCode, visible: hiddenColumns.indexOf(colIndex) === -1 /* Add visible property for the cell */ };
 				}
 				// GrapeCity Begin: Add rowVisisble and groupLevel of the row in the first cell of the row.
 				if (row[0]) {
@@ -365,7 +372,8 @@ function xlsx(file) {
 					}
 					s += '<c r="' + numAlpha(j) + (i + 1) + '"' + (style ? ' s="' + style + '"' : '') + (t ? ' t="' + t + '"' : '');
 					if (val != null) {
-						s += '>' + (cell.formula ? '<f>' + cell.formula + '</f>' : '') + '<v>' + val + '</v></c>';
+						// add 'ca' attribute for the cellFormula element.
+						s += '>' + (cell.formula ? '<f ca="1">' + escapeXML(cell.formula) /* GrapeCity: escapeXML for the formula of cell.*/ + '</f>' : '') + '<v>' + val + '</v></c>';
 					} else {
 						s += '/>';
 					}

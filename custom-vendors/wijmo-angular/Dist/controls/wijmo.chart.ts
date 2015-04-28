@@ -1,6 +1,6 @@
 /*
     *
-    * Wijmo Library 5.20143.32
+    * Wijmo Library 5.20151.48
     * http://wijmo.com/
     *
     * Copyright(c) GrapeCity, Inc.  All rights reserved.
@@ -297,19 +297,19 @@ module wijmo.chart {
         /**
          * Raises the @see:rendered event.
          *
-         * @param engine The @see:IRenderEngine object used to render the chart.
+         * @param e The @see:RenderEventArgs object used to render the chart.
          */
-        onRendered(engine: IRenderEngine) {
-            this.rendered.raise(this, new RenderEventArgs(engine));
+        onRendered(e: RenderEventArgs) {
+            this.rendered.raise(this, e);
         }
 
         /**
          * Raises the @see:rendering event.
          *
-         * @param engine The @see:IRenderEngine object used to render the chart.
+         * @param e The @see:RenderEventArgs object used to render the chart.
          */
-        onRendering(engine: IRenderEngine) {
-            this.rendering.raise(this, new RenderEventArgs(engine));
+        onRendering(e: RenderEventArgs) {
+            this.rendering.raise(this, e);
         }
 
 
@@ -435,18 +435,22 @@ module wijmo.chart {
                 engine.fontSize = fontSize;
                 engine.fontFamily = fontFamily;
 
-                tsz = engine.measureString(title, lblClass, groupClass);
+                tsz = engine.measureString(title, lblClass, groupClass, style);
                 rect.height -= tsz.height;
+
+                if (!fg) {
+                    fg = FlexChart._FG;
+                }
 
                 engine.textFill = fg;
                 if (isFooter) {
 
                     if (halign == 'left') {
-                        FlexChart._renderText(engine, title, new Point(rect.left, rect.bottom), 0, 0, lblClass, groupClass);
+                        FlexChart._renderText(engine, title, new Point(rect.left, rect.bottom), 0, 0, lblClass, groupClass, style);
                     } else if (halign == 'right') {
-                        FlexChart._renderText(engine, title, new Point(rect.left + rect.width, rect.bottom), 2, 0, lblClass, groupClass);
+                        FlexChart._renderText(engine, title, new Point(rect.left + rect.width, rect.bottom), 2, 0, lblClass, groupClass, style);
                     } else { // default center
-                        FlexChart._renderText(engine, title, new Point(rect.left + 0.5 * rect.width, rect.bottom), 1, 0, lblClass, groupClass);
+                        FlexChart._renderText(engine, title, new Point(rect.left + 0.5 * rect.width, rect.bottom), 1, 0, lblClass, groupClass, style);
                     }
 
                     this._rectFooter = new Rect(rect.left, rect.bottom, rect.width, tsz.height);
@@ -455,11 +459,11 @@ module wijmo.chart {
 
                     rect.top += tsz.height;
                     if (halign == 'left') {
-                        FlexChart._renderText(engine, title, new Point(rect.left, 0), 0, 0, lblClass, groupClass);
+                        FlexChart._renderText(engine, title, new Point(rect.left, 0), 0, 0, lblClass, groupClass, style);
                     } else if (halign == 'right') {
-                        FlexChart._renderText(engine, title, new Point(rect.left + rect.width, 0), 2, 0, lblClass, groupClass);
+                        FlexChart._renderText(engine, title, new Point(rect.left + rect.width, 0), 2, 0, lblClass, groupClass, style);
                     } else { // default center
-                        FlexChart._renderText(engine, title, new Point(rect.left + 0.5 * rect.width, 0), 1, 0, lblClass, groupClass);
+                        FlexChart._renderText(engine, title, new Point(rect.left + 0.5 * rect.width, 0), 1, 0, lblClass, groupClass, style);
                     }
                 }
 
@@ -688,7 +692,8 @@ module wijmo.chart {
                 } else {
                     var items = this._find(<SVGElement>child, names);
                     if (items.length > 0) {
-                        found.push(items);
+                        for(var j = 0; j < items.length; j++)
+                            found.push(items[j]);
                     }
                 }
             }
@@ -744,6 +749,9 @@ module wijmo.chart {
             if (key == 'name') {
                 return ht.name;
             }
+
+            if (ht.item && ht.item[key])
+                return fmt ? Globalize.format(ht.item[key], fmt) : ht.item[key];
 
             return '';
         }
@@ -820,23 +828,21 @@ module wijmo.chart {
             var self = this;
 
             // tooltips
-            if (!isTouchDevice()) {
+            // if (!isTouchDevice()) {
                 this.hostElement.addEventListener('mousemove', function (evt) {
                     var tip = self._tooltip;
                     var tc = tip.content;
-                    if (tc) {
+                    if (tc && !self.isTouching) {
                         var ht = self.hitTest(evt);
                         if (ht.distance <= tip.threshold) {
                             var content = self._getLabelContent(ht, self.tooltip.content);
-                            // tip.show(self.hostElement, content, new wijmo.Rect(evt.clientX, evt.clientY, 5, 5));
                             self._showToolTip(content, new wijmo.Rect(evt.clientX, evt.clientY, 5, 5));
                         } else {
-                            // tip.hide();
                             self._hideToolTip();
                         }
                     }
                 });
-            }
+            //}
 
             // selection
             this.hostElement.addEventListener('click', function (evt) {
@@ -858,17 +864,15 @@ module wijmo.chart {
                     }
                 }
 
-                if (showToolTip && isTouchDevice()) {
+                if (showToolTip && self.isTouching /*isTouchDevice()*/) {
                     var tip = self._tooltip;
                     var tc = tip.content;
                     if (tc) {
                         var ht = self.hitTest(evt);
                         if (ht.distance <= tip.threshold) {
                             var content = self._getLabelContent(ht, self.tooltip.content);
-                            // tip.show(self.hostElement, content, new wijmo.Rect(evt.clientX, evt.clientY, 5, 5));
                             self._showToolTip(content, new wijmo.Rect(evt.clientX, evt.clientY, 5, 5));
                         } else {
-                            // tip.hide();
                             self._hideToolTip();
                         }
                     }
@@ -1058,22 +1062,27 @@ module wijmo.chart {
                 }
             } else if (FlexChart._contains(this._rectChart, cpt)) {
                 var len = this._areas.length;
-                var pt1 = cpt.clone();
-                if (this._rotationAngle != 0) {
-                    var dx = -this._center.x + pt1.x;
-                    var dy = -this._center.y + pt1.y;
-                    var r = Math.sqrt(dx * dx + dy * dy);
-                    var a = Math.atan2(dy, dx) - this._rotationAngle * Math.PI / 180;
-                    pt1.x = this._center.x + r * Math.cos(a);
-                    pt1.y = this._center.y + r * Math.sin(a);
-                }
 
                 for (var i = 0; i < len; i++) {
+                var pt1 = cpt.clone();
+                if (this._rotationAngle != 0) {
+                        var cx = this._center.x,
+                            cy = this._center.y;
+                        var dx = -cx + pt1.x;
+                        var dy = -cy + pt1.y;
+                    var r = Math.sqrt(dx * dx + dy * dy);
+                    var a = Math.atan2(dy, dx) - this._rotationAngle * Math.PI / 180;
+
+                        if (i == this._selectedIndex) {
+                            r -= this._radius * this.selectedItemOffset;
+                        }
+
+                        pt1.x = cx + r * Math.cos(a);
+                        pt1.y = cy + r * Math.sin(a);
+                }
+
                     var area = <_IHitArea>this._areas[i];
-                    if (i == this._selectedIndex) {
-                        pt1.x -= this._selectedOffset.x;
-                        pt1.y -= this._selectedOffset.y;
-                    }
+
                     if (area.contains(pt1)) {
                         hti._pointIndex = area.tag;
                         hti._dist = 0;
@@ -1118,7 +1127,7 @@ module wijmo.chart {
                         }
 
                         if (!isNaN(val) && isFinite(val)) {
-                            this._sum += val;
+                            this._sum += Math.abs( val);
                             this._values.push(val);
                         }
                         else {
@@ -1231,7 +1240,7 @@ module wijmo.chart {
                 //engine.drawRect(prect.left, prect.top, prect.width, prect.height);
                 ///engine.endGroup();
 
-                this.onRendering(engine);
+                this.onRendering( new RenderEventArgs(engine));
 
                 this._pieGroup = engine.startGroup(null, null, true); // all series
 
@@ -1277,7 +1286,7 @@ module wijmo.chart {
                     this._renderLabels(engine);
                 }
 
-                this.onRendered(engine);
+                this.onRendered(new RenderEventArgs(engine));
             }
 
             engine.endRender();
@@ -1323,7 +1332,7 @@ module wijmo.chart {
                     engine.fill = this._getColorLight(i);
                     engine.stroke = this._getColor(i);
 
-                    var val = this._values[i];
+                    var val = Math.abs( this._values[i]);
                     var sweep = Math.abs(val - sum) < 1E-10 ? 2*Math.PI : 2 * Math.PI * val / sum;
                     var pel = engine.startGroup();
 
@@ -1428,17 +1437,21 @@ module wijmo.chart {
 
                     a *= Math.PI / 180;
                     var dx = 0,
-                        dy = 0;
-                    if (i == this._selectedIndex) {
-                        var off = this.selectedItemOffset;
+                        dy = 0,
+                        off = 0;
+                    if (i == this._selectedIndex && this.selectedItemOffset>0) {
+                        off = this.selectedItemOffset;
+                    } else {
+                        off = this.offset;
+                    }
                         if (off > 0) {
                             dx = Math.cos(a) * off * this._radius;
                             dy = Math.sin(a) * off * this._radius;
                         }
-                    }
 
-                    var pt = new Point(seg.center.x + dx + r * Math.cos(a),
-                        seg.center.y + dy + r * Math.sin(a));
+                    var pt = new Point(this._center.x + dx + r * Math.cos(a),
+                        this._center.y + dy + r * Math.sin(a));
+
                     if (lbl.border && pos != PieLabelPosition.Center) {
                         if (ha == 0)
                             pt.x += marg;
@@ -1601,7 +1614,7 @@ module wijmo.chart {
         }
 
         private _highlight(selected: boolean, pointIndex: number, animate:boolean=false) {
-            if (this.selectionMode == SelectionMode.Point && pointIndex!==undefined && pointIndex!==null) {
+            if (this.selectionMode == SelectionMode.Point && pointIndex!==undefined && pointIndex!==null && pointIndex>=0) {
                 var gs = this._pels[pointIndex];
                 // var hs = $(gs);
 
@@ -1855,55 +1868,8 @@ module wijmo.chart {
 }
 
 
-/**
- * Defines the @see:FlexChart control and its associated classes.
- *
- * The example below creates a @see:FlexChart control and binds it to a data array.
- * The chart has three series, each corresponding to a property in the objects 
- * contained in the source array. The last series in the example uses the 
- * <a href="http://wijmo.com/5/docs/topic/wijmo.chart.ChartType.Enum.html" 
- * target="_blank">chartType property</a> to override the default chart type used 
- * by the other series.
- *
- * @fiddle:6GB66
- */
 module wijmo.chart {
     'use strict';
-
-    /**
-     * Specifies the chart type.
-     */
-    export enum ChartType {
-        /** Column charts show vertical bars and allow you to compare values of items across categories. */
-        Column,
-        /** Bar charts show horizontal bars. */
-        Bar,
-        /** Scatter charts use X and Y coordinates to show patterns within the data. */
-        Scatter,
-        /** Line charts show trends over a period of time or across categories. */
-        Line,
-        /** Line and symbol charts are line charts with a symbol on each data point. */
-        LineSymbols,
-        /** Area charts are line charts with the area below the line filled with color. */
-        Area,
-        /** Bubble charts are Scatter charts with a 
-         * third data value that determines the size of the symbol. */
-        Bubble,
-        /** Candlestick charts present items with high, low, open, and close values.
-         * The size of the wick line is determined by the High and Low values, while the size of the bar is 
-         * determined by the Open and Close values. The bar is displayed using different colors, depending on 
-         * whether the close value is higher or lower than the open value. */
-        Candlestick,
-        /** High-low-open-close charts display the same information as a candlestick chart, except that opening 
-         * values are displayed using lines to the left, while lines to the right indicate closing values.  */
-        HighLowOpenClose,
-        /** Spline charts are line charts that plot curves rather than angled lines through the data points. */
-        Spline,
-        /** Spline and symbol charts are spline charts with symbols on each data point. */
-        SplineSymbols,
-        /** Spline area charts are spline charts with the area below the line filled with color. */
-        SplineArea
-    }
 
     /**
      * Specifies whether and how to stack the chart's data values.
@@ -1932,21 +1898,10 @@ module wijmo.chart {
     };
 
     /**
-     * The @see:FlexChart control provides a powerful and flexible way to visualize
-     * data.
+     * The core charting control for @see:FlexChart.
      *
-     * You can use the @see:FlexChart control to create charts that display data in
-     * several formats, including bar, line, symbol, bubble, and others.
-     *
-     * To use the @see:FlexChart control, set the @see:itemsSource property to an 
-     * array containing the data, then add one or more @see:Series objects
-     * to the @see:series property.
-     *
-     * Use the @see:chartType property to define the @see:ChartType used for all series. 
-     * You may override the chart type for each series by setting the @see:chartType 
-     * property on each @see:Series object.
      */
-    export class FlexChart extends FlexChartBase {
+    export class FlexChartCore extends FlexChartBase {
         static _CSS_AXIS_X = 'wj-axis-x';
         static _CSS_AXIS_Y = 'wj-axis-y';
 
@@ -1968,13 +1923,14 @@ module wijmo.chart {
         static _CSS_SELECTION = 'wj-state-selected';
         static _CSS_PLOT_AREA = 'wj-plot-area';
 
+        static _FG = '#666';
+
         // property storage
         private _series = new wijmo.collections.ObservableArray();
         private _axes = new AxisCollection();
         private _axisX = new Axis(Position.Bottom);
         private _axisY = new Axis(Position.Left);
-        private _chartType = ChartType.Column;
-        private _selection: Series;
+        private _selection: SeriesBase;
         private _interpolateNulls = false;
         private _legendToggle = false;
         private _symbolSize = 10;
@@ -1987,17 +1943,18 @@ module wijmo.chart {
         private __areaPlotter = null;
         private __bubblePlotter = null;
         private __financePlotter = null;
+        private _plotters = [];
 
         private _bindingX: string;
         private _rotated = false;
-        private _stacking = Stacking.None;
+        _stacking = Stacking.None;
         private _lbl: DataLabel;
 
         _xlabels: string[] = [];
         _xvals: number[] = [];
         _xDataType: DataType;
 
-        private _hitTester: HitTester = new HitTester();
+        private _hitTester: _HitTester;
 
         private _keywords: _KeyWords;
 
@@ -2020,13 +1977,13 @@ module wijmo.chart {
                 // check that chartSeries array contains Series objects
                 var arr = self._series;
                 for (var i = 0; i < arr.length; i++) {
-                    var cs = tryCast(arr[i], wijmo.chart.Series);
+                    var cs = <SeriesBase>tryCast(arr[i], wijmo.chart.SeriesBase);
                     if (!cs) {
-                        throw 'chartSeries array must contain Series objects.';
+                        throw 'chartSeries array must contain SeriesBase objects.';
                     }
                     cs._chart = self;
                     if (cs.axisX) {
-                        cs.axiX._chart = self;
+                        cs.axisX._chart = self;
                     }
                     if (cs.axisY) {
                         cs.axisY._chart = self;
@@ -2038,6 +1995,7 @@ module wijmo.chart {
             });
 
             this._currentRenderEngine = new _SvgRenderEngine(this.hostElement);
+            this._hitTester = new _HitTester(this);
             this._legend = new Legend(this);
             this._tooltip = new ChartTooltip();
             this._tooltip.showDelay = 0;
@@ -2079,39 +2037,35 @@ module wijmo.chart {
 
             this._keywords = new _KeyWords();
 
-            if (isTouchDevice()) {
-                this.hostElement.addEventListener('click', function (evt) {
-                    var tip = self._tooltip;
-                    var tc = tip.content;
-                    if (tc) {
-                        var ht = self.hitTest(evt);
-                        if (ht.distance <= tip.threshold) {
-                            var content = self._getLabelContent(ht, self._tooltip.content);
-                            //tip.show(self.hostElement, content, new wijmo.Rect(evt.clientX, evt.clientY, 5, 5));
-                            self._showToolTip(content, new wijmo.Rect(evt.clientX, evt.clientY, 5, 5));
-                        } else {
-                            //tip.hide();
-                            self._hideToolTip();
-                        }
+            //if (isTouchDevice()) {
+            this.hostElement.addEventListener('click', function (evt) {
+                var tip = self._tooltip;
+                var tc = tip.content;
+                if (tc && self.isTouching) {
+                    var ht = self.hitTest(evt);
+                    if (ht.distance <= tip.threshold) {
+                        var content = self._getLabelContent(ht, self._tooltip.content);
+                        self._showToolTip(content, new wijmo.Rect(evt.clientX, evt.clientY, 5, 5));
+                    } else {
+                        self._hideToolTip();
                     }
-                });
-            } else {
-                this.hostElement.addEventListener('mousemove', function (evt) {
-                    var tip = self._tooltip;
-                    var tc = tip.content;
-                    if (tc) {
-                        var ht = self.hitTest(evt);
-                        if (ht.distance <= tip.threshold) {
-                            var content = self._getLabelContent(ht, self._tooltip.content);
-                            //tip.show(self.hostElement, content, new wijmo.Rect(evt.clientX, evt.clientY, 5, 5));
-                            self._showToolTip(content, new wijmo.Rect(evt.clientX, evt.clientY, 5, 5));
-                        } else {
-                            //tip.hide();
-                            self._hideToolTip();
-                        }
+                }
+            });
+            //} else {
+            this.hostElement.addEventListener('mousemove', function (evt) {
+                var tip = self._tooltip;
+                var tc = tip.content;
+                if (tc && !self.isTouching) {
+                    var ht = self.hitTest(evt);
+                    if (ht.distance <= tip.threshold) {
+                        var content = self._getLabelContent(ht, self._tooltip.content);
+                        self._showToolTip(content, new wijmo.Rect(evt.clientX, evt.clientY, 5, 5));
+                    } else {
+                        self._hideToolTip();
                     }
-                });
-            }
+                }
+            });
+            //}
 
             this.hostElement.addEventListener('click', function (evt) {
                 if (self.selectionMode != SelectionMode.None) {
@@ -2172,19 +2126,6 @@ module wijmo.chart {
         }
 
         /**
-         * Gets or sets the type of chart to create.
-         */
-        get chartType(): ChartType {
-            return this._chartType;
-        }
-        set chartType(value: ChartType) {
-            if (value != this._chartType) {
-                this._chartType = asEnum(value, ChartType);
-                this.invalidate();
-            }
-        }
-
-        /**
          * Gets the main X axis.
          */
         get axisX(): Axis {
@@ -2208,19 +2149,6 @@ module wijmo.chart {
             if (value != this._bindingX) {
                 this._bindingX = asString(value, true);
                 this._bindChart();
-            }
-        }
-
-        /**
-         * Gets or sets whether and how series objects are stacked.
-         */
-        get stacking(): Stacking {
-            return this._stacking;
-        }
-        set stacking(value: Stacking) {
-            if (value != this._stacking) {
-                this._stacking = asEnum(value, Stacking);
-                this.invalidate();
             }
         }
 
@@ -2363,12 +2291,12 @@ module wijmo.chart {
         /**
          * Gets or sets the selected chart series.
          */
-        get selection(): Series {
+        get selection(): SeriesBase {
             return this._selection;
         }
-        set selection(value: Series) {
+        set selection(value: SeriesBase) {
             if (value != this._selection) {
-                this._selection = value;
+                this._selection = asType(value, SeriesBase, true);
                 this.invalidate();
             }
         }
@@ -2432,25 +2360,46 @@ module wijmo.chart {
             } else if (FlexChart._contains(this._rectChart, cpt)) {
                 var hr = this._hitTester.hitTest(cpt);
 
-                if (hr && hr.area) {
-                    hti._pointIndex = hr.area.tag.pointIndex;
-                    si = hr.area.tag.seriesIndex;
-                    if (si !== null && si >= 0 && si < this.series.length)
-                        hti._series = this.series[si];
-
-                    hti._dist = hr.distance;
-
-                    if (FlexChart._contains(this._plotRect, cpt)) {
-                        hti._chartElement = ChartElement.PlotArea;
-                    } else if (FlexChart._contains(this.axisX._axrect, cpt)) {
-                        hti._chartElement = ChartElement.AxisX;
-                    } else if (FlexChart._contains(this.axisY._axrect, cpt)) {
-                        hti._chartElement = ChartElement.AxisY;
-                    } else {
-                        hti._chartElement = ChartElement.ChartArea;
+                // custom series hit test
+                var ht: HitTestInfo = null;
+                var htsi = null;
+                for (var i = this.series.length - 1; i >= 0; i--) {
+                    if (this.series[i].hitTest !== Series.prototype.hitTest) {
+                        var hts = this.series[i].hitTest(pt);
+                        if (hts) {
+                            if (!ht || hts.distance < ht.distance) {
+                                ht = hts;
+                                htsi = i;
+                            }
+                            if (hts.distance === 0) {
+                                break;
+                            }
+                        }
                     }
                 }
-                else if (FlexChart._contains(this._plotRect, cpt)) {
+
+                if (hr && hr.area) {
+                    if (ht && ht.distance < hr.distance) {
+                        hti = ht;
+                    } else if (ht && ht.distance == hr.distance && htsi > hr.area.tag.seriesIndex) {
+                        hti = ht;
+                    } else {
+                        hti._pointIndex = hr.area.tag.pointIndex;
+                        si = hr.area.tag.seriesIndex;
+                        if (si !== null && si >= 0 && si < this.series.length)
+                            hti._series = this.series[si];
+
+                        hti._dist = hr.distance;
+                    }
+                } else if (ht) {
+                    hti = ht;
+                }
+
+                if (FlexChart._contains(this.axisX._axrect, cpt)) {
+                    hti._chartElement = ChartElement.AxisX;
+                } else if (FlexChart._contains(this.axisY._axrect, cpt)) {
+                    hti._chartElement = ChartElement.AxisY;
+                } else if (FlexChart._contains(this._plotRect, cpt)) {
                     hti._chartElement = ChartElement.PlotArea;
                 } else if (FlexChart._contains(this._rectChart, cpt)) {
                     hti._chartElement = ChartElement.ChartArea;
@@ -2487,11 +2436,11 @@ module wijmo.chart {
         }
 
         /**
-         * Converts a @see:Point from data coordinates to page coordinates.
+         * Converts a @see:Point from data coordinates to control coordinates.
          *
          * @param pt @see:Point in data coordinates, or X coordinate of a point in data coordinates.
          * @param y Y coordinate of the point (if the first parameter is a number).
-         * @return The @see:Point in page coordinates.
+         * @return The @see:Point in control coordinates.
          */
         dataToPoint(pt: any, y?: number): Point {
             if (isNumber(pt) && isNumber(y)) { // accept (x, y) as well
@@ -2501,9 +2450,6 @@ module wijmo.chart {
             var cpt = pt.clone();
             cpt.x = this.axisX.convert(cpt.x);
             cpt.y = this.axisY.convert(cpt.y);
-            // var offset = $(this.hostElement).offset();
-            // cpt.x -= offset.left;
-            // cpt.y -= offset.top;
 
             return cpt;
         }
@@ -2516,13 +2462,17 @@ module wijmo.chart {
             if (key == 'series') {
                 var arr = asArray(value);
                 for (var i = 0; i < arr.length; i++) {
-                    var s = new Series();
+                    var s = this._createSeries();
                     wijmo.copy(s, arr[i]);
                     this.series.push(s);
                 }
                 return true;
             }
             return false;
+        }
+
+        _createSeries(): SeriesBase {
+            return new Series();
         }
 
         _clearCachedValues() {
@@ -2690,10 +2640,14 @@ module wijmo.chart {
         }
 
         private _isRotated(): boolean {
-            return this._chartType == ChartType.Bar ? !this._rotated : this._rotated;
+            return this._getChartType() == ChartType.Bar ? !this._rotated : this._rotated;
         }
 
         _plotrectId: string;
+
+        _getChartType(): ChartType {
+            return null;
+        }
 
         _render(engine: IRenderEngine) {
             var el = this.hostElement;
@@ -2828,7 +2782,7 @@ module wijmo.chart {
                     plotter.seriesCount++;
                 }
 
-                this.onRendering(engine);
+                this.onRendering(new RenderEventArgs(engine));
 
                 for (var i = 0; i < axes.length; i++) {
                     var ax: Axis = axes[i];
@@ -2866,25 +2820,36 @@ module wijmo.chart {
                     if (vis == SeriesVisibility.Visible || vis == SeriesVisibility.Plot) {
                         var group = groups[axisY._uniqueId];
                         if (group) {
-                            plotter.plotSeries(engine, axisX, axisY, series, this, group.index, group.count);
+                            if (series.rendering.hasHandlers) {
+                                series.onRendering(engine);
+                            } else {
+                                plotter.plotSeries(engine, axisX, axisY, series, this, group.index, group.count);
+                            }
                             group.index++;
                         } else {
-                            plotter.plotSeries(engine, axisX, axisY, series, this, plotter.seriesIndex, plotter.seriesCount);
-                            plotter.seriesIndex++;
+                            if (series.rendering.hasHandlers) {
+                                series.onRendering(engine);
+                            } else {
+
+                                plotter.plotSeries(engine, axisX, axisY, series, this, plotter.seriesIndex, plotter.seriesCount);
+                                plotter.seriesIndex++;
+                            }
                         }
                     }
                     engine.endGroup();
                 }
                 engine.endGroup();
 
-                if (this.dataLabel.content && this.dataLabel.position!= LabelPosition.None) {
+                if (this.dataLabel.content && this.dataLabel.position != LabelPosition.None) {
                     this._renderLabels(engine);
                 }
 
                 if (lsz) {
                     this._legendHost = engine.startGroup(FlexChart._CSS_LEGEND);
                     this._rectLegend = new Rect(lpos.x, lpos.y, lsz.width, lsz.height);
+                    engine.textFill = FlexChart._FG;
                     this.legend._render(engine, lpos);
+                    engine.textFill = null;
                     engine.endGroup();
                 } else {
                     this._legendHost = null;
@@ -2892,7 +2857,7 @@ module wijmo.chart {
                 }
 
                 this._highlightCurrent();
-                this.onRendered(engine);
+                this.onRendered(new RenderEventArgs(engine));
             }
 
             engine.endRender();
@@ -2917,21 +2882,25 @@ module wijmo.chart {
                 if (smap) {
                     var len = smap.length;
                     for (var j = 0; j < len; j++) {
-                        var dp = <DataPoint>asType( smap[j].tag, DataPoint, true);
+                        var dp = <_DataPoint>asType(smap[j].tag, _DataPoint, true);
                         if (dp) {
                             var ht = new HitTestInfo(this, pt);
                             ht._series = ser;
                             ht._pointIndex = dp.pointIndex;
                             var s = this._getLabelContent(ht, lbl.content);
-                            
+
                             var pt = this.dataToPoint(new Point(dp.dataX, dp.dataY));
                             var map = smap[j];
-                            if (map instanceof RectArea) {
-                                var ra = <RectArea>map;
+                            if (map instanceof _RectArea) {
+                                var ra = <_RectArea>map;
                                 if (this._isRotated())
                                     pt.y = ra.rect.top + 0.5 * ra.rect.height;
                                 else
                                     pt.x = ra.rect.left + 0.5 * ra.rect.width;
+                            }
+
+                            if (!this._plotRect.contains(pt)) {
+                                continue;
                             }
 
                             var lrct: Rect;
@@ -2989,15 +2958,16 @@ module wijmo.chart {
         }
 
         private _clearPlotters() {
-            this._areaPlotter.clear();
-            this._barPlotter.clear();
-            this._linePlotter.clear();
+            var len = this._plotters.length;
+            for (var i = 0; i < len; i++)
+                this._plotters[i].clear();
         }
 
-        private _initPlotter(plotter: _IPlotter) {
+        _initPlotter(plotter: _IPlotter) {
             plotter.chart = this;
             plotter.dataInfo = this._dataInfo;
             plotter.hitTester = this._hitTester;
+            this._plotters.push(plotter);
         }
 
         private get _barPlotter() {
@@ -3040,12 +3010,13 @@ module wijmo.chart {
             return this.__financePlotter;
         }
 
-        private _getPlotter(series: Series): _IPlotter {
-            var chartType = this.chartType;
+        _getPlotter(series: SeriesBase): _IPlotter {
+            var chartType = this._getChartType();
             var isSeries = false;
-            if (series && series.chartType) {
-                if (series.chartType != chartType) {
-                    chartType = series.chartType;
+            if (series){
+                var stype = series._getChartType();
+                if (stype !== undefined && stype != chartType) {
+                    chartType = stype;
                     isSeries = true;
                 }
             }
@@ -3110,7 +3081,6 @@ module wijmo.chart {
                     break;
                 default:
                     throw 'Invalid chart type.';
-
             }
 
             plotter.rotated = this._rotated;
@@ -3324,7 +3294,7 @@ module wijmo.chart {
 
         // tooltips
 
-        private _getLabelContent(ht: HitTestInfo, content:any): string {
+        private _getLabelContent(ht: HitTestInfo, content: any): string {
             //var tc = this._tooltip.content;
             if (isString(content)) {
                 return this._keywords.replace(content, ht);
@@ -3338,7 +3308,7 @@ module wijmo.chart {
 
         //---------------------------------------------------------------------
         // selection
-        private _select(newSelection: Series, pointIndex: number) {
+        private _select(newSelection: SeriesBase, pointIndex: number) {
             if (this._selection) {
                 this._highlight(this._selection, false, this._selectionIndex);
             }
@@ -3388,21 +3358,15 @@ module wijmo.chart {
             }
         }
 
-        private _highlight(series: Series, selected: boolean, pointIndex: number) {
+        private _highlight(series: SeriesBase, selected: boolean, pointIndex: number) {
 
             // check that the selection is a Series object (or null)
-            series = asType(series, Series, true);
+            series = asType(series, SeriesBase, true);
 
             // select the series or the point
             if (this.selectionMode == SelectionMode.Series) {
                 var index = this.series.indexOf(series);
                 var gs = series.hostElement;
-
-                if (selected) {
-                    gs.parentNode.appendChild(gs);
-                } else {
-                    gs.parentNode.insertBefore(gs, gs.parentNode.childNodes.item(index));
-                }
 
                 // jQuery
                 // var hs = $(gs);
@@ -3412,8 +3376,14 @@ module wijmo.chart {
                 // this._highlightItems(hs.find('polygon'), FlexChart._CSS_SELECTION, selected);
                 // this._highlightItems(hs.find('line'), FlexChart._CSS_SELECTION, selected);
 
-                this._highlightItems(this._find(gs, ['rect', 'ellipse', 'polyline', 'polygon', 'line']),
-                    FlexChart._CSS_SELECTION, selected);
+                if (selected) {
+                    gs.parentNode.appendChild(gs);
+                } else {
+                    gs.parentNode.insertBefore(gs, gs.parentNode.childNodes.item(index));
+                }
+
+                var found = this._find(gs, ['rect', 'ellipse', 'polyline', 'polygon', 'line']);
+                this._highlightItems(found, FlexChart._CSS_SELECTION, selected);
 
                 if (series.legendElement) {
                     // jQuery
@@ -3453,12 +3423,16 @@ module wijmo.chart {
                     gs.parentNode.appendChild(gs);
                     var pel = series.getPlotElement(pointIndex);
                     if (pel) {
-                        this._highlightItems([pel], FlexChart._CSS_SELECTION, selected);
-                        this._highlightItems(this._find(pel, ['line', 'rect']), FlexChart._CSS_SELECTION, selected);
+                        if (pel.nodeName != 'g') {
+                            this._highlightItems([pel], FlexChart._CSS_SELECTION, selected);
+                        }
+                        var found = this._find(pel, ['line', 'rect', 'ellipse']);
+                        this._highlightItems(found, FlexChart._CSS_SELECTION, selected);
                     }
                 } else {
                     gs.parentNode.insertBefore(gs, gs.parentNode.childNodes.item(index));
-                    this._highlightItems(this._find(gs, ['rect', 'ellipse', 'line']), FlexChart._CSS_SELECTION, selected);
+                    var found = this._find(gs, ['rect', 'ellipse', 'line']);
+                    this._highlightItems(found, FlexChart._CSS_SELECTION, selected);
                 }
 
             }
@@ -3539,8 +3513,8 @@ module wijmo.chart {
             return new Date(val * FlexChart._msPerDay + FlexChart._epoch);
         }
 
-        static _renderText(engine: IRenderEngine, text: string, pos: Point, halign, valign, className?: string, groupName?: string, test?:any) : Rect {
-            var sz = engine.measureString(text, className, groupName);
+        static _renderText(engine: IRenderEngine, text: string, pos: Point, halign, valign, className?: string, groupName?: string, style?: any, test?: any): Rect {
+            var sz = engine.measureString(text, className, groupName, style);
             var x = pos.x;
             var y = pos.y;
 
@@ -3565,24 +3539,24 @@ module wijmo.chart {
                     break;
             }
 
-            var rect = new Rect(x, y-sz.height, sz.width, sz.height);
+            var rect = new Rect(x, y - sz.height, sz.width, sz.height);
             if (test) {
                 if (test(rect)) {
-            engine.drawString(text, new Point(x, y), className);
+                    engine.drawString(text, new Point(x, y), className, style);
                     return rect;
                 }
                 else
                     return null;
             }
             else {
-                engine.drawString(text, new Point(x, y), className);
+                engine.drawString(text, new Point(x, y), className, style);
                 return rect;
             }
         }
 
         static _renderRotatedText(engine: IRenderEngine, text: string, pos: Point, halign, valign,
-            center: Point, angle: number, className: string) {
-            var sz = engine.measureString(text, className);
+            center: Point, angle: number, className: string, style?: any) {
+            var sz = engine.measureString(text, className, style);
             var x = pos.x;
             var y = pos.y;
 
@@ -3603,7 +3577,7 @@ module wijmo.chart {
                     break;
             }
 
-            engine.drawStringRotated(text, new Point(x, y), center, angle, className);
+            engine.drawStringRotated(text, new Point(x, y), center, angle, className, style);
         }
         //
     }
@@ -3611,7 +3585,7 @@ module wijmo.chart {
     /**
      * Analyzes chart data.
      */
-    class _DataInfo {
+    export class _DataInfo {
         private minY: number;
         private maxY: number;
         private minX: number;
@@ -3666,7 +3640,7 @@ module wijmo.chart {
 
                     if (i > 0) {
                         var dx = Math.abs(xval - xvals[i - 1]);
-                        if (!isNaN(dx) && (dx < this.dx || this.dx == 0 )) {
+                        if (!isNaN(dx) && (dx < this.dx || this.dx == 0)) {
                             this.dx = dx;
                         }
                     }
@@ -3675,8 +3649,27 @@ module wijmo.chart {
 
             for (var i = 0; i < seriesList.length; i++) {
                 var series = <Series>seriesList[i];
+                var custom = series.chartType !== undefined;
                 var vis = series.visibility;
                 if (vis == SeriesVisibility.Hidden || vis == SeriesVisibility.Legend) {
+                    continue;
+                }
+
+                var dr = series.getDataRect();
+                if (dr) {
+                    if (isNaN(this.minX) || this.minX > dr.left) {
+                        this.minX = dr.left;
+                    }
+                    if (isNaN(this.maxX) || this.maxX < dr.right) {
+                        this.maxX = dr.right;
+                    }
+
+                    if (isNaN(this.minY) || this.minY > dr.top) {
+                        this.minY = dr.top;
+                    }
+                    if (isNaN(this.maxY) || this.maxY < dr.bottom) {
+                        this.maxY = dr.bottom;
+                    }
                     continue;
                 }
 
@@ -3749,27 +3742,28 @@ module wijmo.chart {
                             if (isNaN(this.maxY) || this.maxY < val) {
                                 this.maxY = val;
                             }
-                            if (val > 0) {
-                                if (isNaN(stackPos[xval])) {
-                                    stackPos[xval] = val;
+                            if (!custom) {
+                                if (val > 0) {
+                                    if (isNaN(stackPos[xval])) {
+                                        stackPos[xval] = val;
+                                    } else {
+                                        stackPos[xval] += val;
+                                    }
+                                    if (isNaN(this.minYp) || this.minYp > val) {
+                                        this.minYp = val;
+                                    }
                                 } else {
-                                    stackPos[xval] += val;
+                                    if (isNaN(stackNeg[xval])) {
+                                        stackNeg[xval] = val;
+                                    } else {
+                                        stackNeg[xval] += val;
+                                    }
                                 }
-                                if (isNaN(this.minYp) || this.minYp > val) {
-                                    this.minYp = val;
-                                }
-                            } else {
-                                if (isNaN(stackNeg[xval])) {
-                                    stackNeg[xval] = val;
+                                if (isNaN(stackAbs[xval])) {
+                                    stackAbs[xval] = Math.abs(val);
                                 } else {
-                                    stackNeg[xval] += val;
+                                    stackAbs[xval] += Math.abs(val);
                                 }
-                            }
-
-                            if (isNaN(stackAbs[xval])) {
-                                stackAbs[xval] = Math.abs(val);
-                            } else {
-                                stackAbs[xval] += Math.abs(val);
                             }
                         }
                     }
@@ -3808,12 +3802,12 @@ module wijmo.chart {
 
             if (logx) {
                 if (isRotated)
-                    this.minY = isNaN(this.minYp)? 1 : this.minYp;
+                    this.minY = isNaN(this.minYp) ? 1 : this.minYp;
                 else
-                    this.minX = isNaN(this.minXp)? 1 : this.minXp;
+                    this.minX = isNaN(this.minXp) ? 1 : this.minXp;
             }
             if (logy) {
-                if(isRotated)
+                if (isRotated)
                     this.minX = isNaN(this.minXp) ? 1 : this.minXp;
                 else
                     this.minY = isNaN(this.minYp) ? 1 : this.minYp;
@@ -3879,1576 +3873,6 @@ module wijmo.chart {
     }
 
     /**
-     * Plots data series.
-     */
-    interface _IPlotter {
-        chart: FlexChart;
-        dataInfo: _DataInfo;
-        hitTester: HitTester;
-        seriesIndex: number;
-        seriesCount: number;
-        clipping: boolean;
-
-        stacking: Stacking;
-        rotated: boolean;
-        adjustLimits(dataInfo: _DataInfo, plotRect: Rect): Rect;
-        plotSeries(engine: IRenderEngine, ax: _IAxis, ay: _IAxis, series: _ISeries, palette: _IPalette, iser: number, nser: number);
-    }
-
-    /**
-     * Base class for chart plotters of all types (bar, line, area).
-     */
-    class _BasePlotter {
-        _DEFAULT_WIDTH = 2;
-        _DEFAULT_SYM_SIZE = 10;
-
-        clipping = true;
-        chart: FlexChart;
-        hitTester: HitTester;
-        dataInfo: _DataInfo;
-        seriesIndex: number;
-        seriesCount: number;
-
-        clear() {
-            this.seriesCount = 0;
-            this.seriesIndex = 0;
-        }
-
-        getNumOption(name: string, parent?: string): number {
-            var options = this.chart.options;
-            if (parent) {
-                options = options ? options[parent] : null;
-            }
-            if (options && options[name]) {
-                return asNumber(options[name], true);
-            }
-            return undefined;
-        }
-
-        cloneStyle(style: any, ignore: string[]): any {
-            if (!style) {
-                return style;
-            }
-            var newStyle = {};
-
-            for (var key in style) {
-                if (ignore && ignore.indexOf(key) >= 0) {
-                    continue;
-                }
-                newStyle[key] = style[key];
-            }
-
-            return newStyle;
-        }
-
-        isValid(datax: number, datay: number, ax: _IAxis, ay: _IAxis): boolean {
-            return _DataInfo.isValid(datax) && _DataInfo.isValid(datay) &&
-                FlexChart._contains(this.chart._plotRect, new Point(datax, datay))
-        }
-    }
-
-    /**
-     * Bar/column chart plotter.
-     */
-    class _BarPlotter extends _BasePlotter implements _IPlotter {
-        origin = 0;
-        width = 0.7;
-        //isColumn = false;
-
-        private stackPosMap = {}; //{ [key: number]: number } = {};
-        private stackNegMap = {};// { [key: number]: number } = {};
-
-        stacking = Stacking.None;
-        rotated: boolean;
-
-        adjustLimits(dataInfo: _DataInfo, plotRect: Rect): Rect {
-            this.dataInfo = dataInfo;
-
-            var xmin = dataInfo.getMinX();
-            var ymin = dataInfo.getMinY();
-            var xmax = dataInfo.getMaxX();
-            var ymax = dataInfo.getMaxY();
-
-            var dx = dataInfo.getDeltaX();
-            if (dx <= 0) {
-                dx = 1;
-            }
-
-            if (this.rotated) {
-                if (!this.chart.axisY.logBase) {
-                if (this.origin > ymax) {
-                    ymax = this.origin;
-                } else if (this.origin < ymin) {
-                    ymin = this.origin;
-                }
-                }
-                return new Rect(ymin, xmin - 0.5*dx, ymax - ymin, xmax - xmin + dx);
-            } else {
-                if (!this.chart.axisY.logBase) {
-                if (this.origin > ymax) {
-                    ymax = this.origin;
-                } else if (this.origin < ymin) {
-                    ymin = this.origin;
-                }
-                }
-                return new Rect(xmin - 0.5*dx, ymin, xmax - xmin + dx, ymax - ymin);
-            }
-        }
-
-        plotSeries(engine: IRenderEngine, ax: _IAxis, ay: _IAxis, series: _ISeries, palette: _IPalette, iser: number, nser: number) {
-            var si = this.chart.series.indexOf(series);
-            var ser = <Series>series;
-            var options = this.chart.options;
-            var cw = this.width;
-            var wpx = 0;
-
-            if (options && options.groupWidth) {
-                var gw = options.groupWidth;
-                if (isNumber(gw)) {
-                    // px
-                    var gwn = asNumber(gw);
-                    if (isFinite(gwn) && gwn > 0) {
-                        wpx = gwn; cw = 1;
-                    }
-                } else if (isString(gw)) {
-                    var gws = asString(gw);
-
-                    // %
-                    if (gws && gws.indexOf('%') >= 0) {
-                        gws = gws.replace('%', '');
-                        var gwn = parseFloat(gws);
-                        if (isFinite(gwn)) {
-                            if (gwn < 0) {
-                                gwn = 0;
-                            } else if (gwn > 100) {
-                                gwn = 100;
-                            }
-                            wpx = 0; cw = gwn / 100;
-                        }
-                    } else {
-                        // px
-                        var gwn = parseFloat(gws);
-                        if (isFinite(gwn) && gwn > 0) {
-                            wpx = gwn; cw = 1;
-                        }
-                    }
-                }
-            }
-
-            //var cw = this.getNumOption("clusterWidth");
-            //if (cw == undefined || cw <= 0 || cw > 1) {
-            //    cw = this.width;
-            //}
-
-            var w = cw / nser;
-
-            var axid = ser._getAxisY()._uniqueId;
-
-            if (iser == 0) {
-                this.stackNegMap[axid] = {};
-                this.stackPosMap[axid] = {};
-            }
-            var stackNeg = this.stackNegMap[axid];
-            var stackPos = this.stackPosMap[axid];
-
-            var yvals = series.getValues(0);
-            var xvals = series.getValues(1);
-
-            if (!yvals) {
-                return;
-            }
-
-            if (!xvals) {
-                xvals = this.dataInfo.getXVals();
-            }
-
-            if (xvals) {
-                // find mininmal distance between point and use it as column width
-                var delta = this.dataInfo.getDeltaX();
-                if (delta > 0) {
-                    cw *= delta;
-                    w *= delta;
-                }
-            }
-
-            // set series fill and stroke from style
-            var style = series.style,
-                fill = null,
-                stroke = null;
-            if (style) {
-                if (style.fill) {
-                    fill = style.fill;
-                }
-                if (style.stroke) {
-                    stroke = style.stroke;
-                }
-            }
-
-            // get colors not provided from palette
-            if (!fill) {
-                fill = palette._getColorLight(si);
-            }
-            if (!stroke) {
-                stroke = palette._getColor(si);
-            }
-
-            // apply fill and stroke
-            engine.fill = fill;
-            engine.stroke = stroke;
-
-            var len = yvals.length;
-            if (xvals != null) {
-                len = Math.min(len, xvals.length);
-            }
-            var origin = this.origin;
-
-            //var symClass = FlexChart._CSS_SERIES_ITEM;
-            var itemIndex = 0;
-
-            if (!this.rotated) {
-                if (origin < ay.actualMin) {
-                    origin = ay.actualMin;
-                } else if (origin > ay.actualMax) {
-                    origin = ay.actualMax;
-                }
-
-                var originScreen = ay.convert(origin);
-
-                for (var i = 0; i < len; i++) {
-                    var datax = xvals ? xvals[i] : i;
-                    var datay = yvals[i];
-
-                    if (_DataInfo.isValid(datax) && _DataInfo.isValid(datay)) {
-
-                        if (this.stacking != Stacking.None && !ser._isCustomAxisY()) {
-                            var x0 = ax.convert(datax - 0.5 * cw);
-                            var x1 = ax.convert(datax + 0.5 * cw);
-                            var y0: number, y1: number;
-
-                            if (this.stacking == Stacking.Stacked100pc) {
-                                var sumabs = this.dataInfo.getStackedAbsSum(datax);
-                                datay = datay / sumabs;
-                            }
-
-                            var sum = 0;
-                            if (datay > 0) {
-                                sum = isNaN(stackPos[datax]) ? 0 : stackPos[datax];
-                                y0 = ay.convert(sum);
-                                y1 = ay.convert(sum + datay);
-                                stackPos[datax] = sum + datay;
-                            } else {
-                                sum = isNaN(stackNeg[datax]) ? 0 : stackNeg[datax];
-                                y0 = ay.convert(sum);
-                                y1 = ay.convert(sum + datay);
-                                stackNeg[datax] = sum + datay;
-                            }
-
-                            var rect = new Rect(Math.min(x0, x1), Math.min(y0, y1), Math.abs(x1 - x0), Math.abs(y1 - y0));
-                            if (wpx > 0) {
-                                var ratio = 1 - wpx / rect.width;
-                                if (ratio < 0) {
-                                    ratio = 0;
-                                }
-                                var xc = rect.left + 0.5 * rect.width;
-                                rect.left += (xc - rect.left) * ratio;
-                                rect.width = Math.min(wpx, rect.width);
-                            }
-
-                            var area = new RectArea(rect);
-
-                            //engine.drawRect(rect.left, rect.top, rect.width, rect.height, null, series.symbolStyle);
-                            this.drawSymbol(engine, rect, series, i, new Point(rect.left + 0.5 * rect.width, y1));
-                            series._setPointIndex(i, itemIndex);
-                            itemIndex++;
-
-                            area.tag = new DataPoint(si, i, datax, sum + datay);
-                            this.hitTester.add(area, si);
-                        } else {
-                            var x0 = ax.convert(datax - 0.5 * cw + iser * w),
-                                x1 = ax.convert(datax - 0.5 * cw + (iser + 1) * w),
-                                y = ay.convert(datay),
-                                rect = new Rect(Math.min(x0, x1), Math.min(y, originScreen), Math.abs(x1 - x0), Math.abs(originScreen - y));
-
-                            if (wpx > 0) {
-                                var sw = wpx / nser;
-                                var ratio = 1 - sw / rect.width;
-                                if (ratio < 0) {
-                                    ratio = 0;
-                                }
-                                var xc = ax.convert(datax);
-                                rect.left += (xc - rect.left) * ratio;
-                                rect.width = Math.min(sw, rect.width);
-                            }
-
-                            var area = new RectArea(rect);
-
-                            //engine.drawRect(rect.left, rect.top, rect.width, rect.height, null, series.symbolStyle);
-                            this.drawSymbol(engine, rect, series, i, new Point(rect.left + 0.5 * rect.width, y));
-                            series._setPointIndex(i, itemIndex);
-                            itemIndex++;
-
-                            area.tag = new DataPoint(si, i, datax, datay);
-                            this.hitTester.add(area, si);
-                        }
-                    }
-                }
-            } else {
-                if (origin < ax.actualMin) {
-                    origin = ax.actualMin;
-                } else if (origin > ax.actualMax) {
-                    origin = ax.actualMax;
-                }
-
-                var originScreen = ax.convert(origin);
-
-                for (var i = 0; i < len; i++) {
-                    var datax = xvals ? xvals[i] : i,
-                        datay = yvals[i];
-
-                    if (_DataInfo.isValid(datax) && _DataInfo.isValid(datay)) {
-                        if (this.stacking != Stacking.None) {
-                            var y0 = ay.convert(datax - 0.5 * cw);
-                            var y1 = ay.convert(datax + 0.5 * cw);
-                            var x0: number, x1: number;
-
-                            if (this.stacking == Stacking.Stacked100pc) {
-                                var sumabs = this.dataInfo.getStackedAbsSum(datax);
-                                datay = datay / sumabs;
-                            }
-
-                            var sum = 0;
-                            if (datay > 0) {
-                                sum = isNaN(stackPos[datax]) ? 0 : stackPos[datax];
-                                x0 = ax.convert(sum);
-                                x1 = ax.convert(sum + datay);
-                                stackPos[datax] = sum + datay;
-                            } else {
-                                sum = isNaN(stackNeg[datax]) ? 0 : stackNeg[datax];
-                                x0 = ax.convert(sum);
-                                x1 = ax.convert(sum + datay);
-                                stackNeg[datax] = sum + datay;
-                            }
-
-                            var rect = new Rect(Math.min(x0, x1), Math.min(y0, y1), Math.abs(x1 - x0), Math.abs(y1 - y0));
-                            if (wpx > 0) {
-                                var ratio = 1 - wpx / rect.height;
-                                if (ratio < 0) {
-                                    ratio = 0;
-                                }
-                                var yc = rect.top + 0.5 * rect.height;
-                                rect.top += (yc - rect.top) * ratio;
-                                rect.height = Math.min(wpx, rect.height);
-                            }
-
-                            var area = new RectArea(rect);
-                            //engine.drawRect(rect.left, rect.top, rect.width, rect.height, null, series.symbolStyle);
-                            this.drawSymbol(engine, rect, series, i, new Point(x1, rect.top + 0.5 * rect.height));
-                            series._setPointIndex(i, itemIndex);
-                            itemIndex++;
-
-                            area.tag = new DataPoint(si, i, sum + datay, datax);
-                            this.hitTester.add(area, si);
-                        }
-                        else {
-                            var y0 = ay.convert(datax - 0.5 * cw + iser * w),
-                                y1 = ay.convert(datax - 0.5 * cw + (iser + 1) * w),
-                                x = ax.convert(datay),
-                                rect = new Rect(Math.min(x, originScreen), Math.min(y0, y1), Math.abs(originScreen - x), Math.abs(y1 - y0));
-
-                            if (wpx > 0) {
-                                var sw = wpx / nser;
-                                var ratio = 1 - sw / rect.height;
-                                if (ratio < 0) {
-                                    ratio = 0;
-                                }
-                                var yc = ay.convert(datax);
-                                rect.top += (yc - rect.top) * ratio;
-                                rect.height = Math.min(sw, rect.height);
-                            }
-
-                            var area = new RectArea(rect);
-                            //engine.drawRect(rect.left, rect.top, rect.width, rect.height, null, series.symbolStyle);
-                            this.drawSymbol(engine, rect, series, i, new Point(x, rect.top + 0.5 * rect.height));
-                            series._setPointIndex(i, itemIndex);
-                            itemIndex++;
-
-                            area.tag = new DataPoint(si, i, datay, datax);
-                            this.hitTester.add(area, si);
-                        }
-                    }
-                }
-            }
-        }
-
-        private drawSymbol(engine: IRenderEngine, rect: Rect, series: _ISeries, pointIndex: number, point: Point) {
-            if (this.chart.itemFormatter) {
-                engine.startGroup();
-                var hti = new HitTestInfo(this.chart, point);
-                hti._chartElement = ChartElement.SeriesSymbol;
-                hti._pointIndex = pointIndex;
-                hti._series = <Series>series;
-
-                this.chart.itemFormatter(engine, hti, () => {
-                    this.drawDefaultSymbol(engine, rect, series);
-                });
-                engine.endGroup();
-            }
-            else {
-                this.drawDefaultSymbol(engine, rect, series);
-            }
-        }
-
-        private drawDefaultSymbol(engine: IRenderEngine, rect: Rect, series: _ISeries) {
-            engine.drawRect(rect.left, rect.top, rect.width, rect.height, null, series.symbolStyle/* ,'plotRect'*/);
-        }
-    }
-
-
-    /**
-     * Line/scatter chart plotter.
-     */
-    class _LinePlotter extends _BasePlotter implements _IPlotter {
-        hasSymbols: boolean = false;
-        hasLines: boolean = true;
-        isSpline: boolean = false;
-        rotated: boolean;
-        stacking = Stacking.None;
-
-        private stackPos: { [key: number]: number } = {};
-        private stackNeg: { [key: number]: number } = {};
-
-        constructor() {
-            super();
-            this.clipping = false;
-        }
-
-        adjustLimits(dataInfo: _DataInfo, plotRect: Rect): Rect {
-            this.dataInfo = dataInfo;
-            var xmin = dataInfo.getMinX();
-            var ymin = dataInfo.getMinY();
-            var xmax = dataInfo.getMaxX();
-            var ymax = dataInfo.getMaxY();
-
-            if (this.isSpline && !this.chart.axisY.logBase) {
-                var dy = 0.1 * (ymax - ymin);
-                ymin -= dy;
-                ymax += dy;
-            }
-
-            return this.rotated
-                ? new Rect(ymin, xmin, ymax - ymin, xmax - xmin)
-                : new Rect(xmin, ymin, xmax - xmin, ymax - ymin);
-        }
-
-        plotSeries(engine: IRenderEngine, ax: _IAxis, ay: _IAxis, series: _ISeries, palette: _IPalette, iser: number, nser: number) {
-            var ser: Series = asType(series, Series);
-            var si = this.chart.series.indexOf(series);
-            if (iser == 0) {
-                this.stackNeg = {};
-                this.stackPos = {};
-            }
-
-            var ys = series.getValues(0);
-            var xs = series.getValues(1);
-            if (!ys) {
-                return;
-            }
-            if (!xs) {
-                xs = this.dataInfo.getXVals();
-            }
-
-            var style = this.cloneStyle(series.style, ['fill']);
-            var len = ys.length;
-            var hasXs = true;
-            if (!xs) {
-                hasXs = false;
-                xs = new Array<number>(len);
-            } else {
-                len = Math.min(len, xs.length);
-            }
-
-            var swidth = this._DEFAULT_WIDTH;
-            var fill = null;
-            var stroke = null;
-            var symSize = ser._getSymbolSize();
-
-            if (fill === null) {
-                fill = palette._getColorLight(si);
-            }
-            if (stroke === null) {
-                stroke = palette._getColor(si);
-            }
-
-            engine.stroke = stroke;
-            engine.strokeWidth = swidth;
-            engine.fill = fill;
-
-            var xvals = new Array<number>();
-            var yvals = new Array<number>();
-
-            var rotated = this.rotated;
-            var stacked = this.stacking != Stacking.None && !ser._isCustomAxisY();
-            var stacked100 = this.stacking == Stacking.Stacked100pc && !ser._isCustomAxisY();
-
-            var interpolateNulls = this.chart.interpolateNulls;
-            var hasNulls = false;
-
-            //var symClass = FlexChart._CSS_SERIES_ITEM;
-
-            for (var i = 0; i < len; i++) {
-                var datax = hasXs ? xs[i] : i;
-                var datay = ys[i];
-
-                if (_DataInfo.isValid(datax) && _DataInfo.isValid(datay)) {
-
-                    if (stacked) {
-                        if (stacked100) {
-                            var sumabs = this.dataInfo.getStackedAbsSum(datax);
-                            datay = datay / sumabs;
-                        }
-
-                        if (datay >= 0) {
-                            var sum = isNaN(this.stackPos[datax]) ? 0 : this.stackPos[datax];
-                            datay = this.stackPos[datax] = sum + datay;
-                        }
-                        else {
-                            var sum = isNaN(this.stackNeg[datax]) ? 0 : this.stackNeg[datax];
-                            datay = this.stackNeg[datax] = sum + datay;
-                        }
-                    }
-
-                    var dpt: DataPoint;
-
-                    if (rotated) {
-                        dpt = new DataPoint(si, i, datay, datax);
-                        var x = ax.convert(datay);
-                        datay = ay.convert(datax);
-                        datax = x;
-                    } else {
-                        dpt = new DataPoint(si, i, datax, datay);
-                        datax = ax.convert(datax);
-                        datay = ay.convert(datay);
-                    }
-                    if (!isNaN(datax) && !isNaN(datay)) {
-                    xvals.push(datax);
-                    yvals.push(datay);
-
-                    //if (this.hasSymbols) {
-                    //    this.drawSymbol(engine, datax, datay, symSize, symSize, symClass + i.toString());
-                    //}
-
-                    var area = new CircleArea(new Point(datax, datay), 0.5 * symSize);
-                    area.tag = dpt;
-                    this.hitTester.add(area, si);
-                } else {
-                    hasNulls = true;
-                    if (interpolateNulls !== true) {
-                        xvals.push(undefined);
-                        yvals.push(undefined);
-                    }
-                }
-                } else {
-                    hasNulls = true;
-                    if (interpolateNulls !== true) {
-                        xvals.push(undefined);
-                        yvals.push(undefined);
-                    }
-                }
-            }
-
-            var itemIndex = 0;
-
-            if (this.hasLines) {
-                engine.fill = null;
-
-                if (hasNulls && interpolateNulls !== true) {
-                    var dx = [];
-                    var dy = [];
-
-                    for (var i = 0; i < len; i++) {
-                        if (xvals[i] === undefined) {
-                            if (dx.length > 1) {
-                                this._drawLines(engine, dx, dy, null, style, this.chart._plotrectId);
-                                this.hitTester.add(new LinesArea(dx, dy), si);
-                                itemIndex++;
-                            }
-                            dx = [];
-                            dy = [];
-                        }
-                        else {
-                            dx.push(xvals[i]);
-                            dy.push(yvals[i]);
-                        }
-                    }
-                    if (dx.length > 1) {
-                        this._drawLines(engine, dx, dy, null, style, this.chart._plotrectId);
-                        this.hitTester.add(new LinesArea(dx, dy), si);
-                        itemIndex++;
-                    }
-                } else {
-                    this._drawLines(engine, xvals, yvals, null, style, this.chart._plotrectId);
-                    this.hitTester.add(new LinesArea(xvals, yvals), si);
-                    itemIndex++;
-                }
-            }
-
-            if ((this.hasSymbols || this.chart.itemFormatter) && symSize > 0) {
-                engine.fill = fill;
-                for (var i = 0; i < len; i++) {
-                    var datax = xvals[i];
-                    var datay = yvals[i];
-                    //if (DataInfo.isValid(datax) && DataInfo.isValid(datay)) {
-                    if (this.isValid(datax, datay, ax, ay)) {
-                        this._drawSymbol(engine, datax, datay, symSize, ser, i);
-                        series._setPointIndex(i, itemIndex);
-                        itemIndex++;
-                    }
-                }
-            }
-        }
-
-        _drawLines(engine: IRenderEngine, xs: number[], ys: number[], className?: string, style?: any, clipPath?: string) {
-            if (this.isSpline) {
-                engine.drawSplines(xs, ys, className, style, clipPath);
-            } else {
-                engine.drawLines(xs, ys, className, style, clipPath);
-            }
-        }
-
-        _drawSymbol(engine: IRenderEngine, x: number, y: number, sz: number, series: Series, pointIndex: number) {
-            if (this.chart.itemFormatter) {
-                engine.startGroup();
-                var hti = new HitTestInfo(this.chart, new Point(x, y));
-                hti._chartElement = ChartElement.SeriesSymbol;
-                hti._pointIndex = pointIndex;
-                hti._series = series;
-
-                this.chart.itemFormatter(engine, hti, () => {
-                    if (this.hasSymbols) {
-                        this._drawDefaultSymbol(engine, x, y, sz, series.symbolMarker, series.symbolStyle);
-                    }
-                });
-                engine.endGroup();
-            } else {
-                this._drawDefaultSymbol(engine, x, y, sz, series.symbolMarker, series.symbolStyle);
-            }
-        }
-
-        _drawDefaultSymbol(engine: IRenderEngine, x: number, y: number, sz: number, marker: Marker, style?: any) {
-            if (marker == Marker.Dot) {
-                engine.drawEllipse(x, y, 0.5 * sz, 0.5 * sz, null, style);
-            } else if (marker == Marker.Box) {
-                engine.drawRect(x - 0.5 * sz, y - 0.5 * sz, sz, sz, null, style);
-            }
-        }
-    }
-
-    /**
-     * Area chart plotter.
-     */
-    class _AreaPlotter extends _BasePlotter implements _IPlotter {
-        stacking = Stacking.None;
-        isSpline = false;
-        rotated: boolean;
-
-        private stackPos: { [key: number]: number } = {};
-        private stackNeg: { [key: number]: number } = {};
-
-        constructor() {
-            super();
-            //this.clipping = false;
-        }
-
-        adjustLimits(dataInfo: _DataInfo, plotRect: Rect): Rect {
-            this.dataInfo = dataInfo;
-            var xmin = dataInfo.getMinX();
-            var ymin = dataInfo.getMinY();
-            var xmax = dataInfo.getMaxX();
-            var ymax = dataInfo.getMaxY();
-
-            if (this.isSpline) {
-                var dy = 0.1 * (ymax - ymin);
-                if(!this.chart.axisY.logBase)
-                ymin -= dy;
-                ymax += dy;
-            }
-
-            if (this.rotated) {
-                return new Rect(ymin, xmin, ymax - ymin, xmax - xmin);
-            }
-            else {
-                return new Rect(xmin, ymin, xmax - xmin, ymax - ymin);
-            }
-        }
-
-        plotSeries(engine: IRenderEngine, ax: _IAxis, ay: _IAxis, series: _ISeries, palette: _IPalette, iser: number, nser: number) {
-            var si = this.chart.series.indexOf(series);
-            var ser = <Series>series;
-            if (iser == 0) {
-                this.stackNeg = {};
-                this.stackPos = {};
-            }
-
-            var ys = series.getValues(0);
-            var xs = series.getValues(1);
-
-            if (!ys) {
-                return;
-            }
-
-            var len = ys.length;
-
-            if (!xs)
-                xs = this.dataInfo.getXVals();
-
-            var hasXs = true;
-            if (!xs) {
-                hasXs = false
-                xs = new Array<number>(len);
-            }
-            else if (xs.length < len) {
-                len = xs.length;
-            }
-
-            var xvals = new Array<number>();
-            var yvals = new Array<number>();
-
-            var xvals0 = new Array<number>();
-            var yvals0 = new Array<number>();
-
-            var stacked = this.stacking != Stacking.None && !ser._isCustomAxisY();
-            var stacked100 = this.stacking == Stacking.Stacked100pc && !ser._isCustomAxisY();
-            var rotated = this.rotated;
-
-            var hasNulls = false;
-            var interpolateNulls = this.chart.interpolateNulls;
-
-            var xmax: number = null;
-            var xmin: number = null;
-
-            var prect = this.chart._plotRect;
-
-            for (var i = 0; i < len; i++) {
-                var datax = hasXs ? xs[i] : i;
-                var datay = ys[i];
-                if (xmax === null || datax > xmax) {
-                    xmax = datax;
-                }
-                if (xmin === null || datax < xmin) {
-                    xmin = datax;
-                }
-                if (_DataInfo.isValid(datax) && _DataInfo.isValid(datay)) {
-                    var x = rotated ? ay.convert(datax) : ax.convert(datax);
-                    if (stacked) {
-                        if (stacked100) {
-                            var sumabs = this.dataInfo.getStackedAbsSum(datax);
-                            datay = datay / sumabs;
-                        }
-
-                        var sum = 0;
-
-                        if (datay >= 0) {
-                            sum = isNaN(this.stackPos[datax]) ? 0 : this.stackPos[datax];
-                            datay = this.stackPos[datax] = sum + datay;
-                        }
-                        else {
-                            sum = isNaN(this.stackNeg[datax]) ? 0 : this.stackNeg[datax];
-                            datay = this.stackNeg[datax] = sum + datay;
-                        }
-
-                        if (rotated) {
-                            if (sum < ax.actualMin) {
-                                sum = ax.actualMin;
-                            }
-                            xvals0.push(ax.convert(sum));
-                            yvals0.push(x);
-                        } else {
-                            xvals0.push(x);
-                            if (sum < ay.actualMin) {
-                                sum = ay.actualMin;
-                            }
-                            yvals0.push(ay.convert(sum));
-                        }
-                    }
-                    if (rotated) {
-                        var y = ax.convert(datay);
-                        if (!isNaN(x) && !isNaN(y)) {
-                        xvals.push(y);
-                        yvals.push(x);
-                        if (FlexChart._contains(prect, new Point(y, x))) {
-                            var area = new CircleArea(new Point(y, x), this._DEFAULT_SYM_SIZE);
-                            area.tag = new DataPoint(si, i, datay, datax);
-                            this.hitTester.add(area, si);
-                        }
-                    }
-                    else {
-                            hasNulls = true;
-                            if (!stacked && interpolateNulls !== true) {
-                                xvals.push(undefined);
-                                yvals.push(undefined);
-                            }
-                        }
-                    }
-                    else {
-                        var y = ay.convert(datay);
-
-                        if (!isNaN(x) && !isNaN(y)) {
-                        xvals.push(x);
-                        yvals.push(y);
-                        if (FlexChart._contains(prect, new Point(x, y))) {
-                            var area = new CircleArea(new Point(x, y), this._DEFAULT_SYM_SIZE);
-                            area.tag = new DataPoint(si, i, datax, datay);
-                            this.hitTester.add(area, si);
-                        }
-                    }
-                        else {
-                            hasNulls = true;
-                            if (!stacked && interpolateNulls !== true) {
-                                xvals.push(undefined);
-                                yvals.push(undefined);
-                            }
-                        }
-                    }
-                }
-                else {
-                    hasNulls = true;
-                    if (!stacked && interpolateNulls !== true) {
-                        xvals.push(undefined);
-                        yvals.push(undefined);
-                    }
-                }
-            }
-
-            var swidth = this._DEFAULT_WIDTH;
-            var fill = palette._getColorLight(si);
-            var stroke = palette._getColor(si);
-
-            var lstyle = this.cloneStyle(series.style, ['fill']);
-            var pstyle = this.cloneStyle(series.style, ['stroke']);
-
-            if (!stacked && interpolateNulls !== true && hasNulls) {
-                var dx = [];
-                var dy = [];
-
-                for (var i = 0; i < len; i++) {
-                    if (xvals[i] === undefined) {
-                        if (dx.length > 1) {
-                            if (this.isSpline) {
-                                var s = this._convertToSpline(dx,dy);
-                                dx = s.xs; dy = s.ys;
-                            }
-
-                            engine.stroke = stroke;
-                            engine.strokeWidth = swidth;
-                            engine.fill = 'none';
-                            engine.drawLines(dx, dy, null, lstyle);
-                            this.hitTester.add(new LinesArea(dx, dy), si);
-
-                            if (rotated) {
-                                dx.push(ax.convert(ax.actualMin), ax.convert(ax.actualMin));
-                                dy.push(ay.convert(ay.actualMax), ay.convert(ay.actualMin));
-                            }
-                            else {
-                                dx.push(dx[dx.length - 1], dx[0]);
-                                dy.push(ay.convert(ay.actualMin), ay.convert(ay.actualMin));
-                            }
-                            engine.fill = fill;
-                            engine.stroke = 'none';
-                            engine.drawPolygon(dx, dy, null, pstyle);
-                        }
-                        dx = [];
-                        dy = [];
-                    }
-                    else {
-                        dx.push(xvals[i]);
-                        dy.push(yvals[i]);
-                    }
-                }
-                if (dx.length > 1) {
-                    if (this.isSpline) {
-                        var s = this._convertToSpline(dx, dy);
-                        dx = s.xs; dy = s.ys;
-                    }
-
-                    engine.stroke = stroke;
-                    engine.strokeWidth = swidth;
-                    engine.fill = 'none';
-                    engine.drawLines(dx, dy, null, lstyle);
-                    this.hitTester.add(new LinesArea(dx, dy), si);
-
-                    if (rotated) {
-                        dx.push(ax.convert(ax.actualMin), ax.convert(ax.actualMin));
-                        dy.push(ay.convert(ay.actualMax), ay.convert(ay.actualMin));
-                    }
-                    else {
-                        dx.push(dx[dx.length - 1], dx[0]);
-                        dy.push(ay.convert(ay.actualMin), ay.convert(ay.actualMin));
-                    }
-                    engine.fill = fill;
-                    engine.stroke = 'none';
-                    engine.drawPolygon(dx, dy, null, pstyle);
-                }
-            }
-            else {
-                //
-                if (this.isSpline) {
-                    var s = this._convertToSpline(xvals, yvals);
-                    xvals = s.xs; yvals = s.ys;
-                }
-                //
-
-                if (stacked) {
-                    if (this.isSpline) {
-                        var s0 = this._convertToSpline(xvals0, yvals0);
-                        xvals0 = s0.xs; yvals0 = s0.ys;
-                    }
-
-                    xvals = xvals.concat(xvals0.reverse());
-                    yvals = yvals.concat(yvals0.reverse());
-                }
-                else {
-                    if (rotated) {
-                        xvals.push(ax.convert(ax.actualMin), ax.convert(ax.actualMin));
-                        yvals.push(ay.convert(xmax), ay.convert(xmin));
-                    }
-                    else {
-                        xvals.push(ax.convert(xmax), ax.convert(xmin));
-                        yvals.push(ay.convert(ay.actualMin), ay.convert(ay.actualMin));
-                    }
-                }
-
-                engine.fill = fill;
-                engine.stroke = 'none';
-                engine.drawPolygon(xvals, yvals, null, pstyle);
-
-                if (stacked) {
-                    xvals = xvals.slice(0, xvals.length - xvals0.length);
-                    yvals = yvals.slice(0, yvals.length - yvals0.length);
-                } else {
-                    xvals = xvals.slice(0, xvals.length - 2);
-                    yvals = yvals.slice(0, yvals.length - 2);
-                }
-
-                engine.stroke = stroke;
-                engine.strokeWidth = swidth;
-                engine.fill = 'none';
-                engine.drawLines(xvals, yvals, null, lstyle);
-                this.hitTester.add(new LinesArea(xvals, yvals), si);
-            }
-
-            this._drawSymbols(engine, series, si);
-        }
-
-        _convertToSpline(x: number[], y: number[]) {
-            if (x && y) {
-                var spline = new _Spline(x, y);
-                var s = spline.calculate();
-                return { xs: s.xs, ys: s.ys };
-            } else {
-                return { xs: x, ys: y };
-            }
-        }
-
-        _drawSymbols(engine: IRenderEngine, series: _ISeries, seriesIndex: number) {
-            if (this.chart.itemFormatter != null) {
-                var areas = this.hitTester._map[seriesIndex];
-                for (var i = 0; i < areas.length; i++) {
-                    var area: CircleArea = tryCast(areas[i], CircleArea);
-                    if (area) {
-                        var dpt = <DataPoint>area.tag;
-                        engine.startGroup();
-                        var hti = new HitTestInfo(this.chart, area.center);
-                        hti._chartElement = ChartElement.SeriesSymbol;
-                        hti._pointIndex = dpt.pointIndex;
-                        hti._series = <Series>series;
-                        this.chart.itemFormatter(engine, hti, () => {
-                        });
-                        engine.endGroup();
-                    }
-                }
-            }
-        }
-    }
-
-    class _BubblePlotter extends _LinePlotter {
-        private _MIN_SIZE = 5;
-        private _MAX_SIZE = 30;
-
-        private _minSize: number;
-        private _maxSize: number;
-        private _minValue: number;
-        private _maxValue: number;
-
-        constructor() {
-            super();
-            this.hasLines = false;
-            this.hasSymbols = true;
-            this.clipping = true;
-        }
-
-        adjustLimits(dataInfo: _DataInfo, plotRect: Rect): Rect {
-            var minSize = this.getNumOption('minSize', 'bubble');
-            this._minSize = minSize ? minSize : this._MIN_SIZE;
-            var maxSize = this.getNumOption('maxSize', 'bubble');
-            this._maxSize = maxSize ? maxSize : this._MAX_SIZE;
-
-            var series = this.chart.series;
-            var len = series.length;
-
-            var min: number = NaN;
-            var max: number = NaN;
-            for (var i = 0; i < len; i++) {
-                var ser = <Series>series[i];
-                var vals = ser._getBindingValues(1);
-                if (vals) {
-                    var vlen = vals.length;
-                    for (var j = 0; j < vlen; j++) {
-                        if (_DataInfo.isValid(vals[j])) {
-                            if (isNaN(min) || vals[j] < min) {
-                                min = vals[j];
-                            }
-                            if (isNaN(max) || vals[j] > max) {
-                                max = vals[j];
-                            }
-                        }
-                    }
-                }
-            }
-            this._minValue = min;
-            this._maxValue = max;
-
-            var rect = super.adjustLimits(dataInfo, plotRect);
-
-            var w = plotRect.width - this._maxSize;
-            var kw = w / rect.width;
-            rect.left -= this._maxSize * 0.5 / kw;
-            rect.width += this._maxSize / kw;
-
-            var h = plotRect.height - this._maxSize;
-            var kh = h / rect.height;
-            rect.top -= this._maxSize * 0.5 / kh;
-            rect.height += this._maxSize / kh;
-
-            return rect;
-        }
-
-        _drawSymbol(engine: IRenderEngine, x: number, y: number, sz: number, series: Series, pointIndex: number) {
-            var item = series._getItem(pointIndex);
-            if (item) {
-                var szBinding = series._getBinding(1);
-                if (szBinding) {
-                    var sz = <number>item[szBinding];
-                    if (_DataInfo.isValid(sz)) {
-                        var k = this._minValue == this._maxValue ? 1 :
-                            Math.sqrt((sz - this._minValue) / (this._maxValue - this._minValue));
-                        sz = this._minSize + (this._maxSize - this._minSize) * k;
-
-                        if (this.chart.itemFormatter) {
-                            var hti = new HitTestInfo(this.chart, new Point(x, y));
-                            hti._chartElement = ChartElement.SeriesSymbol;
-                            hti._pointIndex = pointIndex;
-                            hti._series = series;
-
-                            engine.startGroup();
-                            this.chart.itemFormatter(engine, hti, () => {
-                                this._drawDefaultSymbol(engine, x, y, sz, series.symbolMarker, series.symbolStyle);
-                            });
-                            engine.endGroup();
-                        } else {
-                            this._drawDefaultSymbol(engine, x, y, sz, series.symbolMarker, series.symbolStyle);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    class _FinancePlotter extends _BasePlotter {
-        isCandle: boolean = true;
-
-        adjustLimits(dataInfo: _DataInfo, plotRect: Rect): Rect {
-            this.dataInfo = dataInfo;
-            var xmin = dataInfo.getMinX();
-            var ymin = dataInfo.getMinY();
-            var xmax = dataInfo.getMaxX();
-            var ymax = dataInfo.getMaxY();
-
-            var series = this.chart.series;
-            var len = series.length;
-
-            for (var i = 0; i < len; i++) {
-                var ser = <Series>series[i];
-                if (ser._isCustomAxisY()) {
-                    continue;
-                }
-
-                var bndLow = ser._getBinding(1),
-                    bndOpen = ser._getBinding(2),
-                    bndClose = ser._getBinding(3);
-
-                var slen = ser._getLength();
-                if (slen) {
-                    for (var j = 0; j < slen; j++) {
-                        var item = ser._getItem(j);
-                        if (item) {
-                            var yvals = [bndLow ? item[bndLow] : null,
-                                bndOpen ? item[bndOpen] : null,
-                                bndClose ? item[bndClose] : null];
-
-                            yvals.forEach((yval) => {
-                                if (_DataInfo.isValid(yval) && yval !== null) {
-                                    if (isNaN(ymin) || yval < ymin) {
-                                        ymin = yval;
-                                    }
-                                    if (isNaN(ymax) || yval > ymax) {
-                                        ymax = yval;
-                                    }
-                                }
-                            });
-                        }
-                    }
-                }
-            }
-
-            return new Rect(xmin, ymin, xmax - xmin, ymax - ymin);
-        }
-
-        plotSeries(engine: IRenderEngine, ax: _IAxis, ay: _IAxis, series: _ISeries, palette: _IPalette, iser: number, nser: number) {
-            var ser: Series = asType(series, Series);
-            var si = this.chart.series.indexOf(series);
-
-            var highs = series.getValues(0);
-            var xs = series.getValues(1);
-
-            if (!highs) {
-                return;
-            }
-
-            if (!xs) {
-                xs = this.dataInfo.getXVals();
-            }
-
-            var style = this.cloneStyle(series.style, null);// ['fill']);
-            var len = highs.length;
-            var hasXs = true;
-            if (!xs) {
-                hasXs = false;
-                xs = new Array<number>(len);
-            } else {
-                len = Math.min(len, xs.length);
-            }
-
-            var swidth = this._DEFAULT_WIDTH;
-            var fill = null;
-            var stroke = null;
-            var symSize = ser._getSymbolSize();
-            var symStyle = series.symbolStyle;
-
-            if (symStyle) {
-                fill = symStyle.fill;
-                stroke = symStyle.stroke;
-            }
-
-            if (style) {
-                if (fill === null) {
-                    fill = style.fill;
-                }
-                if (stroke === null) {
-                    stroke = style.stroke;
-                }
-            }
-
-            if (fill === null) {
-                fill = palette._getColorLight(si);
-            }
-            if (stroke === null) {
-                stroke = palette._getColor(si);
-            }
-
-            engine.stroke = stroke;
-            engine.strokeWidth = swidth;
-            engine.fill = fill;
-
-            var bndLow = ser._getBinding(1);
-            var bndOpen = ser._getBinding(2);
-            var bndClose = ser._getBinding(3);
-
-            var xmin = ax.actualMin,
-                xmax = ax.actualMax;
-
-            var itemIndex = 0;
-            for (var i = 0; i < len; i++) {
-                var item = ser._getItem(i);
-                if (item) {
-                    var x = hasXs ? xs[i] : i;
-
-                    if (_DataInfo.isValid(x) && xmin <= x && x <= xmax) {
-                        var hi = highs[i];
-                        var lo = bndLow ? item[bndLow] : null;
-                        var open = bndOpen ? item[bndOpen] : null;
-                        var close = bndClose ? item[bndClose] : null;
-
-                        engine.startGroup();
-
-                        var currentFill = open < close ? 'transparent' : fill;
-
-                        if (this.chart.itemFormatter) {
-                            var hti = new HitTestInfo(this.chart, new Point(ax.convert(x), ay.convert(hi)));
-                            hti._chartElement = ChartElement.SeriesSymbol;
-                            hti._pointIndex = i;
-                            hti._series = ser;
-
-                            this.chart.itemFormatter(engine, hti, () => {
-                                this._drawSymbol(engine, ax, ay, si, i, currentFill, symSize, x, hi, lo, open, close);
-                            });
-                        } else {
-                            this._drawSymbol(engine, ax, ay, si, i, currentFill, symSize, x, hi, lo, open, close);
-                        }
-                        engine.endGroup();
-
-                        series._setPointIndex(i, itemIndex);
-                        itemIndex++;
-                    }
-                }
-            }
-        }
-
-        _drawSymbol(engine: IRenderEngine, ax: _IAxis, ay: _IAxis, si: number, pi: number, fill: any, w: number, x: number, hi: number, lo: number, open: number, close: number) {
-            var dpt = new DataPoint(si, pi, x, hi);
-            var area: RectArea;
-            x = ax.convert(x);
-            if (this.isCandle) {
-                var y0 = null,
-                    y1 = null;
-                if (_DataInfo.isValid(open) && _DataInfo.isValid(close)) {
-                    engine.fill = fill;
-                    open = ay.convert(open);
-                    close = ay.convert(close);
-                    y0 = Math.min(open, close);
-                    y1 = y0 + Math.abs(open - close);
-                    engine.drawRect(x - 0.5 * w, y0, w, y1 - y0);
-                    area = new RectArea(new Rect(x - 0.5 * w, y0, w, y1 - y0));
-                    area.tag = dpt;
-                    this.hitTester.add(area, si);
-                }
-                if (_DataInfo.isValid(hi)) {
-                    hi = ay.convert(hi);
-                    if (y0 !== null) {
-                        engine.drawLine(x, y0, x, hi);
-                    }
-                }
-                if (_DataInfo.isValid(lo)) {
-                    lo = ay.convert(lo);
-                    if (y1 !== null) {
-                        engine.drawLine(x, y1, x, lo);
-                    }
-                }
-            } else {
-                if (_DataInfo.isValid(hi) && _DataInfo.isValid(lo)) {
-                    hi = ay.convert(hi);
-                    lo = ay.convert(lo);
-                    engine.drawLine(x, lo, x, hi);
-                    area = new RectArea(new Rect(x - 0.5 * w, Math.min(hi, lo), w, Math.abs(hi - lo)));
-                    area.tag = dpt;
-                    this.hitTester.add(area, si);
-                }
-                if (_DataInfo.isValid(open)) {
-                    open = ay.convert(open);
-                    engine.drawLine(x - 0.5 * w, open, x, open);
-                }
-                if (_DataInfo.isValid(close)) {
-                    close = ay.convert(close);
-                    engine.drawLine(x, close, x + 0.5 * w, close);
-                }
-            }
-        }
-    }
-
-
-    class DataPoint {
-        private _seriesIndex: number;
-        private _pointIndex: number;
-        private _dataX: number;
-        private _dataY: number;
-
-        constructor(seriesIndex: number, pointIndex: number, dataX: number, dataY: number) {
-            this._seriesIndex = seriesIndex;
-            this._pointIndex = pointIndex;
-            this._dataX = dataX;
-            this._dataY = dataY;
-        }
-
-        get seriesIndex(): number {
-            return this._seriesIndex;
-        }
-
-        get pointIndex(): number {
-            return this._pointIndex;
-        }
-
-        get dataX(): number {
-            return this._dataX;
-        }
-
-        get dataY(): number {
-            return this._dataY;
-        }
-    }
-
-    enum MeasureOption {
-        X,
-        Y,
-        XY
-    }
-
-    class RectArea implements _IHitArea {
-        private _rect: Rect;
-
-        constructor(rect: Rect) {
-            this._rect = rect;
-        }
-
-        get rect(): Rect {
-            return this._rect;
-        }
-
-        tag: any;
-
-        contains(pt: Point): boolean {
-            var rect = this._rect;
-            return pt.x >= rect.left && pt.x <= rect.right && pt.y >= rect.top && pt.y <= rect.bottom;
-        }
-
-        pointDistance(pt1: Point, pt2: Point, option: MeasureOption): number {
-            var dx = pt2.x - pt1.x;
-            var dy = pt2.y - pt1.y;
-            if (option == MeasureOption.X) {
-                return Math.abs(dx);
-            } else if (option == MeasureOption.Y) {
-                return Math.abs(dy);
-            }
-
-            return Math.sqrt(dx * dx + dy * dy);
-        }
-
-        distance(pt: Point): number {
-            var option = MeasureOption.XY;
-            if (pt.x === null) {
-                option = MeasureOption.Y;
-            } else if (pt.y === null) {
-                option = MeasureOption.X;
-            }
-
-            var rect = this._rect;
-            if (pt.x < rect.left) { // Region I, VIII, or VII
-                if (pt.y < rect.top) { // I
-                    return this.pointDistance(pt, new Point(rect.left, rect.top), option);
-                }
-                else if (pt.y > rect.bottom) { // VII
-                    return this.pointDistance(pt, new Point(rect.left, rect.bottom), option);
-                }
-                else { // VIII
-
-                    if (option == MeasureOption.Y) {
-                        return 0;
-                    }
-                    return rect.left - pt.x;
-                }
-            }
-            else if (pt.x > rect.right) { // Region III, IV, or V
-                if (pt.y < rect.top) { // III
-                    return this.pointDistance(pt, new Point(rect.right, rect.top), option);
-                }
-                else if (pt.y > rect.bottom) { // V
-                    return this.pointDistance(pt, new Point(rect.right, rect.bottom), option);
-                }
-                else { // IV
-                    if (option == MeasureOption.Y) {
-                        return 0;
-                    }
-
-                    return pt.x - rect.right;
-                }
-            }
-            else { // Region II, IX, or VI
-                if (option == MeasureOption.X) {
-                    return 0;
-                }
-
-                if (pt.y < rect.top) { // II
-                    return rect.top - pt.y;
-                }
-                else if (pt.y > rect.bottom) { // VI
-                    return pt.y - rect.bottom;
-                }
-                else { // IX
-                    return 0;
-                }
-            }
-        }
-    }
-
-    class CircleArea implements _IHitArea {
-        private _center: Point;
-        private _rad: number;
-        private _rad2: number;
-
-        tag: any;
-
-        constructor(center: Point, radius: number) {
-            this._center = center;
-            this._rad = radius;
-            this._rad2 = radius * radius;
-        }
-
-        get center(): Point {
-            return this._center;
-        }
-
-        contains(pt: Point): boolean {
-            var dx = this._center.x - pt.x;
-            var dy = this._center.y - pt.y;
-            return dx * dx + dy * dy <= this._rad2;
-        }
-
-        distance(pt: Point): number {
-            //var dx = pt.x !== null ? this._center.x - pt.x : 0;
-            //var dy = pt.y !== null ? this._center.y - pt.y : 0;
-            var dx = !isNaN(pt.x) ? this._center.x - pt.x : 0;
-            var dy = !isNaN(pt.y) ? this._center.y - pt.y : 0;
-
-            var d2 = dx * dx + dy * dy;
-
-            if (d2 <= this._rad2)
-                return 0;
-            else
-                return Math.sqrt(d2) - this._rad;
-        }
-    }
-
-    class LinesArea implements _IHitArea {
-        private _x = [];
-        private _y = [];
-
-        tag: any;
-
-        constructor(x: any, y: any) {
-            this._x = x;
-            this._y = y;
-        }
-
-        contains(pt: Point): boolean {
-            return false;
-        }
-
-        distance(pt: Point): number {
-            var dmin = NaN;
-            for (var i = 0; i < this._x.length - 1; i++) {
-                var d = FlexChart._dist(pt, new Point(this._x[i], this._y[i]), new Point(this._x[i + 1], this._y[i + 1]));
-                if (isNaN(dmin) || d < dmin) {
-                    dmin = d;
-                }
-            }
-
-            return dmin;
-        }
-    }
-
-    class HitResult {
-        area: _IHitArea;
-        distance: number;
-    }
-
-    class HitTester {
-        _map: { [key: number]: Array<_IHitArea> } = {};
-        //private _areas = new Array<IHitArea>();
-
-        add(area: _IHitArea, seriesIndex: number) {
-            if (!this._map[seriesIndex]) {
-                this._map[seriesIndex] = new Array<_IHitArea>();
-            }
-            if (!area.tag) {
-                area.tag = new DataPoint(seriesIndex, NaN, NaN, NaN);
-            }
-            this._map[seriesIndex].push(area);
-        }
-
-        clear() {
-            this._map = {};
-        }
-
-        hitTest(pt: Point, testLines= false): HitResult {
-            var closest = null;
-            var dist = Number.MAX_VALUE;
-
-            for (var key in this._map) {
-                var areas = this._map[key];
-                if (areas) {
-                    var len = areas.length;
-
-                    for (var i = len - 1; i >= 0; i--) {
-                        var area = areas[i];
-                        if (tryCast(area, LinesArea) && !testLines) {
-                            continue;
-                        }
-
-                        var d = area.distance(pt);
-                        if (d < dist) {
-                            dist = d;
-                            closest = area;
-                            if (dist == 0)
-                                break;
-                        }
-                    }
-
-                    if (dist == 0)
-                        break;
-                }
-            }
-
-            if (closest) {
-                var hr = new HitResult();
-                hr.area = closest;
-                hr.distance = dist;
-                return hr;
-            }
-
-            return null;
-        }
-
-        hitTestSeries(pt: Point, seriesIndex): HitResult {
-            var closest = null;
-            var dist = Number.MAX_VALUE;
-
-            var areas = this._map[seriesIndex];
-            if (areas) {
-                var len = areas.length;
-
-                for (var i = len - 1; i >= 0; i--) {
-                    var area = areas[i];
-
-                    var d = area.distance(pt);
-                    if (d < dist) {
-                        dist = d;
-                        closest = area;
-                        if (dist == 0)
-                            break;
-                    }
-                }
-            }
-
-            if (closest) {
-                var hr = new HitResult();
-                hr.area = closest;
-                hr.distance = dist;
-                return hr;
-            }
-
-            return null;
-        }
-    }
-
-    /**
      * Extends the @see:Tooltip class to provide chart tooltips.
      */
     export class ChartTooltip extends Tooltip {
@@ -5486,6 +3910,116 @@ module wijmo.chart {
             }
         }
     }
+} 
+/**
+ * Defines the @see:FlexChart control and its associated classes.
+ *
+ * The example below creates a @see:FlexChart control and binds it to a data array.
+ * The chart has three series, each corresponding to a property in the objects 
+ * contained in the source array. The last series in the example uses the 
+ * <a href="http://wijmo.com/5/docs/topic/wijmo.chart.ChartType.Enum.html" 
+ * target="_blank">chartType property</a> to override the default chart type used 
+ * by the other series.
+ *
+ * @fiddle:6GB66
+ */
+module wijmo.chart {
+    'use strict';
+
+    /**
+     * Specifies the chart type.
+     */
+    export enum ChartType {
+        /** Column charts show vertical bars and allow you to compare values of items across categories. */
+        Column,
+        /** Bar charts show horizontal bars. */
+        Bar,
+        /** Scatter charts use X and Y coordinates to show patterns within the data. */
+        Scatter,
+        /** Line charts show trends over a period of time or across categories. */
+        Line,
+        /** Line and symbol charts are line charts with a symbol on each data point. */
+        LineSymbols,
+        /** Area charts are line charts with the area below the line filled with color. */
+        Area,
+        /** Bubble charts are Scatter charts with a 
+         * third data value that determines the size of the symbol. */
+        Bubble,
+        /** Candlestick charts present items with high, low, open, and close values.
+         * The size of the wick line is determined by the High and Low values, while the size of the bar is 
+         * determined by the Open and Close values. The bar is displayed using different colors, depending on 
+         * whether the close value is higher or lower than the open value. */
+        Candlestick,
+        /** High-low-open-close charts display the same information as a candlestick chart, except that opening 
+         * values are displayed using lines to the left, while lines to the right indicate closing values.  */
+        HighLowOpenClose,
+        /** Spline charts are line charts that plot curves rather than angled lines through the data points. */
+        Spline,
+        /** Spline and symbol charts are spline charts with symbols on each data point. */
+        SplineSymbols,
+        /** Spline area charts are spline charts with the area below the line filled with color. */
+        SplineArea
+    }
+
+    /**
+     * The @see:FlexChart control provides a powerful and flexible way to visualize
+     * data.
+     *
+     * You can use the @see:FlexChart control to create charts that display data in
+     * several formats, including bar, line, symbol, bubble, and others.
+     *
+     * To use the @see:FlexChart control, set the @see:itemsSource property to an 
+     * array containing the data, then add one or more @see:Series objects
+     * to the @see:series property.
+     *
+     * Use the @see:chartType property to define the @see:ChartType used for all series. 
+     * You may override the chart type for each series by setting the @see:chartType 
+     * property on each @see:Series object.
+    */
+    export class FlexChart extends FlexChartCore {
+
+        private _chartType = ChartType.Column;
+
+        /**
+         * Initializes a new instance of the @see:FlexChart control.
+         *
+         * @param element The DOM element that will host the control, or a selector for the host element (e.g. '#theCtrl').
+         * @param options A JavaScript object containing initialization data for the control.
+         */
+        constructor(element: any, options?) {
+            super(element, options);
+        }
+
+        _getChartType(): ChartType {
+            return this._chartType;
+        }
+
+        /**
+         * Gets or sets the type of chart to create.
+         */
+        get chartType(): ChartType {
+            return this._chartType;
+        }
+        set chartType(value: ChartType) {
+            if (value != this._chartType) {
+                this._chartType = asEnum(value, ChartType);
+                this.invalidate();
+            }
+        }
+
+        /**
+         * Gets or sets whether and how series objects are stacked.
+         */
+        get stacking(): Stacking {
+            return this._stacking;
+        }
+        set stacking(value: Stacking) {
+            if (value != this._stacking) {
+                this._stacking = asEnum(value, Stacking);
+                this.invalidate();
+            }
+        }
+    }
 }
 module wijmo.chart {
     'use strict';
@@ -5517,15 +4051,15 @@ module wijmo.chart {
     }
 
     /**
-     * Specifies how to handle overlapped labels.
+     * Specifies how to handle overlapping labels.
      */
     export enum OverlappingLabels {
         /**
-         * The overlapped labels are hidden.
+         * Hide overlapping labels.
          */
         Auto,
         /**
-         * Show all labels, including overlapped.
+         * Show all labels, including overlapping ones.
          */
         Show
     }
@@ -5565,7 +4099,7 @@ module wijmo.chart {
         private _TICK_LABEL_DISTANCE = 4;
 
         // property storage
-        _chart: FlexChart;
+        _chart: FlexChartCore;
         private _type: any;
         private _min: any;
         private _max: any;
@@ -5590,7 +4124,7 @@ module wijmo.chart {
         private _plotrect: Rect;
         private _szTitle: Size;
         private _isTimeAxis: boolean = false;
-        private _fgColor = 'black';
+        // private _fgColor = 'black';
         private _lbls: string[];
         private _values: number[];
         private _rects: Rect[];
@@ -5860,7 +4394,7 @@ module wijmo.chart {
         }
 
         /**
-         * Gets or sets the value at which the axis crosses perpendicular axis.
+         * Gets or sets the value at which the axis crosses the perpendicular axis.
          **/
         get origin(): number {
             return this._origin;
@@ -5873,7 +4407,7 @@ module wijmo.chart {
         }
 
         /**
-         * Gets or sets a value indicating how to handle overlapped axis labels.
+         * Gets or sets a value indicating how to handle overlapping axis labels.
          */
         get overlappingLabels(): OverlappingLabels {
             return this._overlap;
@@ -5888,7 +4422,7 @@ module wijmo.chart {
         /**
          * Gets or sets the items source for axis labels.
          * 
-         * The names of properties are specified by @see:wijmo.chart.Axis.binding.
+         * The names of properties are specified by the @see:wijmo.chart.Axis.binding.
          *
          * For example:
          *
@@ -5922,10 +4456,11 @@ module wijmo.chart {
         }
 
         /**
-         * Gets or sets the comma-separated property names for @see:wijmo.chart.Axis.itemsSource.
+         * Gets or sets the comma-separated property names for the @see:wijmo.chart.Axis.itemsSource
+         * property to use in axis labels.
          *
-         * The first name specifies value on axis, the second represents corresponding axis label.
-         * The default value is 'value,text'.
+         * The first name specifies the value on the axis, the second represents the corresponding
+         * axis label. The default value is 'value,text.'
          */
         get binding(): string {
             return this._binding;
@@ -5940,15 +4475,22 @@ module wijmo.chart {
         /**
          * Gets or sets the itemFormatter function for axis labels.
          * 
-         * If specified, the function should take 2 parameters:
-         * render engine @see:wijmo.chart.IRenderEngine
-         * and current label with the following properties: 
-         * 'value' - value on axis,
-         * 'text' - text of label,
-         * 'pos' - position on axis in control coordinates,
-         * 'cls' - css class.
+         * If specified, the function takes two parameters:
+         * <ul>
+         * <li><b>render engine</b>: The @see:wijmo.chart.IRenderEngine object to use 
+         * in formatting the labels.</li>
+         * <li><b>current label</b>: A string value with the following properties: 
+         *   <ul>
+         *     <li><b>value</b>: The value of the axis label to format.</li>
+         *     <li><b>text</b>: The text to use in the label.</li>
+         *     <li><b>pos</b>: The position in control coordinates at which to 
+         *       render the label.</li>
+         *     <li><b>cls</b>: The CSS class to apply to the label.</li>
+         *   </ul></li>
+         * </ul>
          *
-         * The function should return the label parameter with modified properties.
+         * The function returns the label parameters for labels on which to 
+         * modify properties.
          * 
          * For example:
          * <pre>
@@ -5973,7 +4515,7 @@ module wijmo.chart {
         /**
          * Gets or sets the logarithmic base of the axis.
          *
-         * If the base is not specified the axis has normal scale.
+         * If the base is not specified the axis uses the normal scale.
          */
         get logBase(): number {
             return this._logBase;
@@ -5986,7 +4528,7 @@ module wijmo.chart {
         }
 
         /**
-         * Occurs when axis range changed.
+         * Occurs when the axis range changes.
          */
         rangeChanged = new Event();
 
@@ -6107,7 +4649,7 @@ module wijmo.chart {
                 oldmax = this._actualMax;
 
             this._isTimeAxis = (dataType == DataType.Date);
-            var ctype = this._chart.chartType;
+            var ctype = this._chart._getChartType();
             if (labels && labels.length>0 && !this._isTimeAxis && ctype != ChartType.Column && ctype != ChartType.Bar
             //&& ctype != ChartType.Bubble
                 ) {
@@ -6223,7 +4765,7 @@ module wijmo.chart {
             var isVert = this.axisType == AxisType.Y;
             var isNear = this._position != Position.Top && this._position != Position.Right;
 
-            var fg = this._fgColor;
+            var fg = FlexChart._FG;
             var fontSize = null;
 
             var range = this._actualMax - this._actualMin;
@@ -6456,7 +4998,7 @@ module wijmo.chart {
 
             if (!isCategory && (this.minorGrid || this.minorTickMarks!= TickMark.None) ) {
                 if (!this.logBase)
-                    this._renderMinors(engine, vals, isVert, isNear);
+                    this._createMinors(engine, vals, isVert, isNear);
                 else {
                     if (this.minorUnit > 0) {
                         var mvals = [];
@@ -6550,7 +5092,7 @@ module wijmo.chart {
                 var th = this._TICK_HEIGHT;
                 var tth = this._TICK_WIDTH;
                 var tover = this._TICK_OVERLAP;
-                var tstroke = this._fgColor;
+                var tstroke = FlexChart._FG;
 
                 var tickMarks = this.minorTickMarks;
                 var hasTicks = true;
@@ -6574,7 +5116,7 @@ module wijmo.chart {
                 var prect = this._plotrect;
 
                 var gth = this._GRIDLINE_WIDTH;
-                var gstroke = this._fgColor;
+                var gstroke = FlexChart._FG;
 
                 // css
                 var glineClass = FlexChart._CSS_GRIDLINE_MINOR;
@@ -6652,7 +5194,7 @@ module wijmo.chart {
             if (text) {
                 var rects = this._rects;
                 var hide = this.overlappingLabels == OverlappingLabels.Auto;
-                var rect = FlexChart._renderText(engine, text, pos, ha, va, className, null, function (rect) {
+                var rect = FlexChart._renderText(engine, text, pos, ha, va, className, null, null, function (rect) {
                     if (hide) {
                         var len = rects.length;
                         for (var i = 0; i < len; i++) {
@@ -7611,7 +6153,7 @@ module wijmo.chart {
         symbolStyle: any;
         getValues: (dim: number) => number[];
         getDataType: (dim: number) => DataType;
-        chartType: ChartType;
+        //chartType: ChartType;
 
         drawLegendItem(engine: IRenderEngine, rect:Rect);
         measureLegendItem(engine: IRenderEngine):Size;
@@ -7635,15 +6177,15 @@ module wijmo.chart {
          *
          * @param series Specifies the @see:Series object affected by this event.
          */
-        constructor(series: Series) {
+        constructor(series: SeriesBase) {
             super();
-            this._series = asType(series, Series);
+            this._series = asType(series, SeriesBase);
         }
 
         /**
          * Gets the @see:Series object affected by this event.
          */
-        get series(): Series {
+        get series(): SeriesBase {
             return this._series;
         }
     }
@@ -7651,31 +6193,27 @@ module wijmo.chart {
     /**
      * Represents a series of data points to display in the chart.
      *
-     * The @see:Series class supports all basic chart types. You may define
-     * additional chart types by creating classes that derive from the @see:Series 
-     * class and override the @see:renderSeries method.
      */
-    export class Series implements _ISeries {
+    export class SeriesBase implements _ISeries {
         static _LEGEND_ITEM_WIDTH = 10;
         static _LEGEND_ITEM_HEIGHT = 10;
         static _LEGEND_ITEM_MARGIN = 4;
         private static _DEFAULT_SYM_SIZE = 10;
 
         // property storage
-        private _chart: FlexChart;
+        _chart: FlexChartCore;
         private _name: string;
         private _binding: string;
         private _showValues: boolean;
         private _symbolStyle: any;
         private _symbolSize: number;
         private _style: any;
-        //private _useSecondaryAxis: boolean;
 
         private _cv: wijmo.collections.ICollectionView;
         private _itemsSource: any;
         private _values: number[];
         private _valueDataType: DataType;
-        private _chartType: ChartType;
+        _chartType: ChartType;
         private _symbolMarker: Marker = Marker.Dot;
 
         private _bindingX: string;
@@ -7756,20 +6294,6 @@ module wijmo.chart {
         }
 
         /**
-         * Gets or sets the chart type for a specific series, overriding the chart type 
-         * set on the overall chart. 
-         */
-        get chartType(): ChartType {
-            return this._chartType;
-        }
-        set chartType(value: ChartType){
-            if (value != this._chartType) {
-                this._chartType = asEnum(value, ChartType, true);
-                this._invalidate();
-            }
-        }
-
-        /**
          * Gets or sets the name of the property that contains Y values for the series.
          */
         get binding(): string {
@@ -7778,7 +6302,7 @@ module wijmo.chart {
         set binding(value: string) {
             if (value != this._binding) {
                 this._binding = asString(value, true);
-                this._values = null;
+                this._clearValues();
                 this._invalidate();
             }
         }
@@ -7792,7 +6316,7 @@ module wijmo.chart {
         set bindingX(value: string) {
             if (value != this._bindingX) {
                 this._bindingX = asString(value, true);
-                this._values = null;
+                this._clearValues();
                 this._invalidate();
             }
         }
@@ -7836,7 +6360,7 @@ module wijmo.chart {
                     this._cv.collectionChanged.addHandler(this._cvCollectionChanged, this);
                 }
 
-                this._values = null;
+                this._clearValues();
                 this._itemsSource = value;
                 this._invalidate();
             }
@@ -7852,7 +6376,7 @@ module wijmo.chart {
         /**
          * Gets the @see:FlexChart object that owns this series.
          */
-         get chart(): FlexChart {
+         get chart(): FlexChartCore {
             return this._chart;
         }
 
@@ -7895,6 +6419,20 @@ module wijmo.chart {
                     this._chart.onSeriesVisibilityChanged(new SeriesEventArgs(this));
                 }
             }
+        }
+
+        /**
+         * Occurs when series is rendering.
+         */
+        rendering = new Event();
+
+        /**
+         * Raises the @see:rendering event.
+         *
+         * @param engine The @see:IRenderEngine object used to render the series.
+         */
+        onRendering(engine: IRenderEngine) {
+            this.rendering.raise(this, new RenderEventArgs(engine));
         }
 
         /**
@@ -8048,7 +6586,7 @@ module wijmo.chart {
         drawLegendItem(engine: IRenderEngine, rect: Rect) {
             var chartType = this._chartType;
             if (chartType == null) {
-                chartType = this._chart.chartType;
+                chartType = this._chart._getChartType();
             }
             //var style = this.style;
 
@@ -8159,10 +6697,24 @@ module wijmo.chart {
         }
 
         /**
-         * Clears any cashed data values.
+         * Returns series bounding rectangle in data coordinates.
+         *
+         * If getDataRect() returns null the limits are calculated automatically based on data values. 
+         */
+        getDataRect(): Rect {
+            return null;
+        }
+
+        _getChartType(): ChartType {
+            return this._chartType;
+        }
+
+        /**
+         * Clears any cached data values.
          */
         _clearValues() {
             this._values = null;
+            this._xvalues = null;
         }
 
         _getBinding(index: number): string {
@@ -8191,12 +6743,24 @@ module wijmo.chart {
 
         _getItem(pointIndex: number): any {
             var item = null;
+            var items = null;
             if (this.itemsSource != null) {
-                item = this.itemsSource[pointIndex];
+                if (this._cv != null)
+                    items = this._cv.items;
+                else 
+                    items = this.itemsSource;
             }
             else if (this._chart.itemsSource != null) {
-                item = this._chart.itemsSource[pointIndex];
+                if (this._chart.collectionView != null) {
+                    items = this._chart.collectionView.items;
+                } else {
+                    items = this._chart.itemsSource;
             }
+            }
+            if (items != null) {
+                item = items[pointIndex];
+            }
+
             return item;
         }
 
@@ -8292,18 +6856,29 @@ module wijmo.chart {
             }
         }
 
+        _getAxisX(): Axis {
+            var ax: Axis = null;
+            if (this.axisX) {
+                ax = this.axisX;
+            } else if (this.chart) {
+                ax = this.chart.axisX;
+            }
+            return ax;
+        }
+
         _getAxisY(): Axis {
-            if (this._axisY) {
-                return this._axisY;
-            } else if (this._chart) {
-                return this.chart.axisY;
+            var ay: Axis = null;
+            if (this.axisY) {
+                ay = this.axisY;
+            } else if (this.chart) {
+                ay = this.chart.axisY;
             } 
-            return null;
+            return ay;
         }
 
 
         private _cvCollectionChanged(sender, e) {
-            this._values = null;
+            this._clearValues();
             this._invalidate();
         }
 
@@ -8346,7 +6921,7 @@ module wijmo.chart {
             return darr;  
         }
 
-        private _invalidate() {
+        _invalidate() {
             if (this._chart) {
                 this._chart.invalidate();
             }
@@ -8362,10 +6937,63 @@ module wijmo.chart {
 
             return null;
         }
-    }
 
-    //export class XYSeries extends Series {
-    //}
+        _getSymbolFill(seriesIndex?: number): string {
+            var fill: string = null;
+            if (this.symbolStyle) {
+                fill = this.symbolStyle.fill;
+            }
+            if (!fill && this.style) {
+                fill = this.style.fill;
+            }
+            if (!fill && this.chart) {
+                fill = this.chart._getColorLight(seriesIndex);
+            }
+            return fill;
+        }
+
+        _getSymbolStroke(seriesIndex?: number): string {
+            var stroke: string = null;
+            if (this.symbolStyle) {
+                stroke = this.symbolStyle.stroke;
+            }
+            if (!stroke && this.style) {
+                stroke = this.style.stroke;
+            }
+            if (!stroke && this.chart) {
+                stroke = this.chart._getColor(seriesIndex);
+            }
+            return stroke;
+        }
+    }
+} 
+module wijmo.chart {
+    'use strict';
+
+    /**
+     * Represents a series of data points to display in the chart.
+     *
+     * The @see:Series class supports all basic chart types. You may define
+     * a different chart type on each @see:Series object that you add to the 
+     * @see:FlexChart series collection, and it overrides the @see:chartType 
+     * property set on the chart that is the default for all @see:Series objects
+     * in its collection.
+     */
+    export class Series extends SeriesBase {
+        /**
+         * Gets or sets the chart type for a specific series, overriding the chart type 
+         * set on the overall chart. 
+         */
+        get chartType(): ChartType {
+            return this._chartType;
+        }
+        set chartType(value: ChartType) {
+            if (value != this._chartType) {
+                this._chartType = asEnum(value, ChartType, true);
+                this._invalidate();
+            }
+        }
+    }
 } 
 module wijmo.chart
 {
@@ -8437,10 +7065,12 @@ module wijmo.chart
         drawDonutSegment(cx: number, cy: number, radius: number, innerRadius: number, startAngle: number, sweepAngle: number,
             className?: string, style?: any, clipPath?: string);
         
-        drawString(s: string, pt: Point, className?:string);
-        drawStringRotated(label: string, pt: Point, center: Point, angle: number, className?:string);
+        drawString(s: string, pt: Point, className?: string, style?: any);
+        drawStringRotated(label: string, pt: Point, center: Point, angle: number, className?: string, style?: any);
         
-        measureString(s: string, className?: string, groupName?: string): Size;
+        drawImage(imageHref:string, x: number, y: number, w: number, h: number);
+
+        measureString(s: string, className?: string, groupName?: string, style?: any): Size;
 
         startGroup(className?: string, clipPath?: string, createTransform?:boolean);
         endGroup();
@@ -8458,6 +7088,7 @@ module wijmo.chart {
      */
     export class _SvgRenderEngine implements IRenderEngine {
         private static svgNS = 'http://www.w3.org/2000/svg';
+        private static xlinkNS = 'http://www.w3.org/1999/xlink';
 
         private _element: HTMLElement;
         private _svg: Element;
@@ -8856,11 +7487,13 @@ module wijmo.chart {
             this._appendChild(path);
         }
 
-        drawString(s: string, pt: Point, className?: string) {
+        drawString(s: string, pt: Point, className?: string, style?: any) {
             var text = this._createText(pt, s);
             if (className) {
                 text.setAttribute('class', className);
             }
+
+            this._applyStyle(text, style);
 
             this._appendChild(text);
 
@@ -8868,11 +7501,12 @@ module wijmo.chart {
             text.setAttribute( 'y', (pt.y - (bb.y + bb.height - pt.y)).toFixed(1));
         }
 
-        drawStringRotated(s: string, pt: Point, center: Point, angle: number, className?: string) {
+        drawStringRotated(s: string, pt: Point, center: Point, angle: number, className?: string, style?: any) {
             var text = this._createText(pt, s);
             if (className) {
                 text.setAttribute('class', className);
             }
+            this._applyStyle(text, style);
 
             var g = document.createElementNS(_SvgRenderEngine.svgNS, 'g');
             g.setAttribute('transform', 'rotate(' + angle.toFixed(1) + ',' + center.x.toFixed(1) + ',' + center.y.toFixed(1) + ')');
@@ -8886,7 +7520,7 @@ module wijmo.chart {
             text.setAttribute( 'y', (pt.y - (bb.y + bb.height - pt.y)).toFixed(1));
         }
 
-        measureString(s: string, className?: string, groupName?: string): Size {
+        measureString(s: string, className?: string, groupName?: string, style?: any): Size {
             var sz = new Size(0, 0);
 
             if (this._fontSize) {
@@ -8902,6 +7536,8 @@ module wijmo.chart {
                 this._textGroup.setAttribute('class', groupName);
             }
 
+            this._applyStyle(this._text, style);
+
             this._setText(this._text, s);
 
             var rect = this._text.getBBox();
@@ -8911,6 +7547,13 @@ module wijmo.chart {
             this._text.removeAttribute('font-size');
             this._text.removeAttribute('font-family');
             this._text.removeAttribute('class');
+
+            if (style) {
+                for (var key in style) {
+                    this._text.removeAttribute(this._deCase(key));
+                }
+            }
+
             this._textGroup.removeAttribute('class');
             this._text.textContent = null;
             return sz;
@@ -8941,6 +7584,18 @@ module wijmo.chart {
                     this._group = parent;
                 }
             }
+        }
+
+        drawImage(imageHref: string, x: number, y: number, w: number, h: number) {
+            var img = <SVGGElement>document.createElementNS(_SvgRenderEngine.svgNS, 'image');
+
+            img.setAttributeNS(_SvgRenderEngine.xlinkNS, 'href', imageHref);  
+            img.setAttribute('x', x.toFixed(1));
+            img.setAttribute('y', y.toFixed(1));
+            img.setAttribute('width', w.toFixed(1));
+            img.setAttribute('height', h.toFixed(1));
+
+            this._appendChild(img);
         }
 
         private _appendChild(element: Element) {
@@ -9072,7 +7727,7 @@ module wijmo.chart {
 
             var isVertical = pos == Position.Right || pos == Position.Left;
 
-            if (this._chart instanceof wijmo.chart.FlexChart) {
+            if (this._chart instanceof wijmo.chart.FlexChartCore) {
                 this._sz = this._getDesiredSizeSeriesChart(engine, isVertical);
             } else if (this._chart instanceof wijmo.chart.FlexPie) {
                 this._sz = this._getDesiredSizePieChart(engine, isVertical);
@@ -9086,12 +7741,12 @@ module wijmo.chart {
         private _getDesiredSizeSeriesChart(engine: IRenderEngine, isVertical:boolean): Size {
             // measure all series
             var sz = new Size();
-            var arr = (<FlexChart>this._chart).series;
+            var arr = (<FlexChartCore>this._chart).series;
             var len = arr.length;
             for (var i = 0; i < len; i++) {
 
                 // get the series
-                var series = tryCast(arr[i], wijmo.chart.Series);
+                var series = tryCast(arr[i], wijmo.chart.SeriesBase);
 
                 // skip hidden series and series with no names
                 var vis = series.visibility;
@@ -9118,14 +7773,17 @@ module wijmo.chart {
         }
 
         private _renderSeriesChart(engine: IRenderEngine, pos: Point, isVertical:boolean) {
-            var arr = (<FlexChart>this._chart).series;
+            var arr = (<FlexChartCore>this._chart).series;
             var len = arr.length;
 
             // draw legend items
             for (var i = 0; i < len; i++) {
 
                 // get the series
-                var series = tryCast(arr[i], wijmo.chart.Series);
+                var series = tryCast(arr[i], wijmo.chart.SeriesBase);
+                if (!series) {
+                    continue;
+                }
 
                 // skip hidden series and series with no names
                 var vis = series.visibility;
@@ -9214,7 +7872,7 @@ module wijmo.chart {
             engine.stroke = null;
             engine.drawRect(pos.x, pos.y, this._sz.width, this._sz.height);
 
-            if (this._chart instanceof wijmo.chart.FlexChart) {
+            if (this._chart instanceof wijmo.chart.FlexChartCore) {
                 this._renderSeriesChart(engine, pos, isVertical);
             } else if (this._chart instanceof wijmo.chart.FlexPie) {
                 this._renderPieChart(engine, pos, isVertical);
@@ -9226,7 +7884,7 @@ module wijmo.chart {
         _hitTest(pt: Point): number {
             var areas = this._areas;
             for (var i = 0; i < areas.length; i++) {
-                if (FlexChart._contains(areas[i], pt))
+                if (FlexChartCore._contains(areas[i], pt))
                     return i;
             }
 
@@ -9273,7 +7931,7 @@ module wijmo.chart
         private _chart: FlexChartBase;
         private _pt: Point;
 
-        _series: Series;
+        _series: SeriesBase;
         _pointIndex: number = null;
         _chartElement: ChartElement = ChartElement.None;
         _dist: number;
@@ -9305,7 +7963,7 @@ module wijmo.chart
         /**
          * Gets the chart series at the specified coordinates.
          */
-        get series(): Series {
+        get series(): SeriesBase {
             return this._series;
         }
 
@@ -9334,16 +7992,25 @@ module wijmo.chart
          * Gets the data object that corresponds to the closest data point.
          */
         get item(): any {
-            if (this._item === undefined)
+            if (this._item == null)
             {
-                this._item = null;
-                if (this.series !== null && this.pointIndex!==null)
+                //this._item = null;
+
+                if (this.pointIndex !== null)
                 {
-                    if (this.series.itemsSource != null) {
-                        this._item = this.series.itemsSource[this.pointIndex];
-                    }
-                    else if (this._chart.itemsSource != null) {
-                        this._item = this._chart.itemsSource[this.pointIndex];
+                    if (this.series != null) {
+                    this._item = this.series._getItem(this.pointIndex);
+                    } else if (this._chart instanceof FlexPie) {
+                        var pchart = <FlexPie>this._chart;
+                        var items = null;
+                        if (pchart._cv != null) {
+                            items = pchart._cv.items;
+                        } else {
+                            items = pchart.itemsSource;
+                        }
+                        if (items && this.pointIndex < items.length) {
+                            this._item = items[this.pointIndex];
+                        }
                     }
                 }
             }
@@ -9484,6 +8151,7 @@ module wijmo.chart
      *   <li>modern</li>
      *   <li>organic</li>
      *   <li>slate</li>
+     * </ul>
      */
     export class Palettes {
         static standard = ['#88bde6', '#fbb258', '#90cd97', '#f6aac9', '#bfa554', '#bc99c7', '#eddd46', '#f07e6e', '#8c8c8c'];
@@ -9636,44 +8304,91 @@ module wijmo.chart
     'use strict';
 
     /**
-     * Specifies the position of data label on the chart.
+     * Specifies the position of data labels on the chart.
      */
     export enum LabelPosition {
-        /** No data labels. */
+        /** No data labels appear. */
         None = 0,
-        /** The label appears to the left of the data point. */
+        /** The labels appear to the left of the data points. */
         Left = 1,
-        /** The item appears above the data point. */
+        /** The labels appear above the data points. */
         Top = 2,
-        /** The item appears to the right of the data point */
+        /** The labels appear to the right of the data points. */
         Right = 3,
-        /** The item appears below the data point. */
+        /** The labels appear below the data points. */
         Bottom = 4,
-        /** The item appears centered at the data point. */
+        /** The labels appear centered on the data points. */
         Center = 5
     };
 
     /**
-     * Specifies the position of data label on the pie chart.
+     * Specifies the position of data labels on the pie chart.
      */
     export enum PieLabelPosition {
         /** No data labels. */
         None = 0,
         /** The label appears inside the pie slice. */
         Inside = 1,
-        /** The item appears at the center of pie slice. */
+        /** The item appears at the center of the pie slice. */
         Center = 2,
         /** The item appears outside the pie slice. */
         Outside = 3
     };
 
+    /**
+    * Base abstract class for the @see:DataLabel and @see:PieDataLabel classes.
+    */
     export class DataLabelBase {
         private _content: any;
         _chart: FlexChartBase;
         private _bdr: boolean;
 
         /**
-         * Gets or sets the content of data label.
+         * Gets or sets the content of data labels.
+         * 
+         * The content can be specified as a string or as a function that
+         * takes a @see:HitTestInfo object as a parameter. 
+         *
+         * When the label content is a string, it can contain any of the following
+         * parameters:
+         *
+         * <ul>
+         *  <li><b>seriesName</b>: The name of the series that contains the data point (FlexChart only).</li>
+         *  <li><b>pointIndex</b>: The index of the data point.</li>
+         *  <li><b>value</b>: The <b>value</b> of the data point.</li>
+         *  <li><b>x</b>: The <b>x</b>-value of the data point (FlexChart only).</li>
+         *  <li><b>y</b>: The <b>y</b>-value of the data point (FlexChart only).</li>
+         *  <li><b>name</b>: The <b>name</b> of the data point.</li>
+         * </ul>
+         * 
+         * The parameter must be enclosed in curly brackets, for example 'x={x}, y={y}'.
+         *
+         * In the following example, we show the y value of the data point in the labels.
+         *
+         * <pre> 
+         *  // Create a chart and show y data in labels positioned above the data point.
+         *  var chart = new wijmo.chart.FlexChart('#theChart');          
+         *  chart.initialize({
+         *      itemsSource: data,
+         *      bindingX: 'country',
+         *      series: [
+         *          { name: 'Sales', binding: 'sales' },
+         *          { name: 'Expenses', binding: 'expenses' },
+         *          { name: 'Downloads', binding: 'downloads' }],                            
+         *  });
+         *  chart.dataLabel.position = "Top";
+         *  chart.dataLabel.content = "{y}";
+         * </pre>
+         *
+         * The next example shows how to set data label content using a function.
+         *
+         * <pre> 
+         *  // Set data label content 
+         *  chart.dataLabel.content = function (ht) {
+         *    return ht.name + ":" + ht.value.toFixed();
+         *  }
+         * </pre>
+         *
          */
         get content(): any {
             return this._content;
@@ -9685,7 +8400,7 @@ module wijmo.chart
             }
         }
         /**
-         * Gets or sets a value indicating whether the data label has border.
+         * Gets or sets a value indicating whether data labels have borders.
          */
         get border(): boolean {
             return this._bdr;
@@ -9706,13 +8421,13 @@ module wijmo.chart
 
 
     /**
-     * Point data label of FlexChart.
+     * The point data label for FlexChart.
      */
     export class DataLabel extends DataLabelBase {
         private _pos = LabelPosition.Top;
 
         /**
-         * Gets or sets the position of data label.
+         * Gets or sets the position of data labels.
          */
         get position(): LabelPosition {
             return this._pos;
@@ -9726,13 +8441,13 @@ module wijmo.chart
     } 
 
     /**
-     * Point data label of FlexPie.
+     * The point data label for FlexPie.
      */
     export class PieDataLabel extends DataLabelBase {
         private _pos = PieLabelPosition.None;
 
         /**
-         * Gets or sets the position of data label.
+         * Gets or sets the position of the data labels.
          */
         get position(): PieLabelPosition {
             return this._pos;
@@ -9747,3 +8462,2626 @@ module wijmo.chart
 }
 
 
+module wijmo.chart {
+    'use strict';
+
+    class LineMarkers {
+        private _markers;
+        private _bindMoveMarker;
+
+        constructor() {
+            this._markers = [];
+            this._bindMoveMarker = this._moveMarker.bind(this);
+        }
+
+        attach(marker: LineMarker) {
+            var hostEle = marker.chart.hostElement,
+                markers = this._markers,
+                len, arr;
+            if ('markerIndex' in hostEle.dataset) {
+                markers[hostEle.dataset['markerIndex']].push(marker);
+            } else {
+                len = markers.length,
+                arr = [marker];
+                markers.push(arr);
+                hostEle.dataset['markerIndex'] = len;
+                this._bindMoveEvent(hostEle);
+            }
+        }
+
+        detach(marker: LineMarker) {
+            var hostEle = marker.chart.hostElement,
+                markers = this._markers,
+                idx, arr: LineMarker[];
+
+            if ('markerIndex' in hostEle.dataset) {
+                arr = <LineMarker[]>markers[hostEle.dataset['markerIndex']];
+                idx = arr.indexOf(marker);
+                if (idx > -1) {
+                    arr.splice(idx, 1);
+                }
+                if (arr.length === 0) {
+                    idx = markers.indexOf(arr);
+                    if (idx > -1) {
+                        markers[idx] = undefined;
+                    }
+                    this._unbindMoveEvent(hostEle);
+                }
+            }
+        }
+
+        _moveMarker = function (e) {
+            var dom = e.currentTarget,
+                markers = this._markers,
+                arr;
+
+            if ('markerIndex' in dom.dataset) {
+                arr = markers[dom.dataset['markerIndex']];
+                arr.forEach(function (marker) {
+                    marker._moveMarker(e);
+                });
+            }
+        }
+
+        _unbindMoveEvent(ele: Element) {
+            var _moveMarker = this._bindMoveMarker;
+
+            ele.removeEventListener('mousemove', _moveMarker);
+            if ('ontouchstart' in window) {
+                ele.removeEventListener('touchmove', _moveMarker);
+            }
+        }
+
+        _bindMoveEvent(ele: Element) {
+            var _moveMarker = this._bindMoveMarker;
+
+            ele.addEventListener('mousemove', _moveMarker);
+            if ('ontouchstart' in window) {
+                ele.addEventListener('touchmove', _moveMarker);
+            }
+        }
+    }
+
+    var lineMarkers = new LineMarkers();
+
+    /**
+     * Specifies the line type for the LineMarker.
+     */
+    export enum LineMarkerLines {
+        /** Show no lines. */
+        None,
+        /** Show a vertical line. */
+        Vertical,
+        /** Show a horizontal line. */
+        Horizontal,
+        /** Show both vertical and horizontal lines. */
+        Both
+    }
+
+    // TODO: Implement drag interaction.
+    // Drag 
+    /**
+     * Specifies how the LineMarker interacts with the user.
+     */
+    export enum LineMarkerInteraction {
+        /** No interaction, the user specifies the position by clicking. */
+        None,
+        /** The LineMarker moves with the pointer. */
+        Move,
+        /** The LineMarker moves when the user drags the line. */
+        Drag
+    }
+
+    //Binary
+    //Right 0 -> 0, Left 1 -> 1, Bottom 4 -> 100, Top 6 -> 110
+    /**
+     * Specifies the alignment of the LineMarker.
+     */
+    export enum LineMarkerAlignment {
+        /** 
+         * The LineMarker alignment adjusts automatically so that it stays inside the 
+         * boundaries of the plot area. */
+        Auto = 2,
+        /** The LineMarker aligns to the right of the pointer. */
+        Right = 0,
+        /** The LineMarker aligns to the left of the pointer. */
+        Left = 1,
+        /** The LineMarker aligns to the bottom of the pointer. */
+        Bottom = 4,
+        /** The LineMarker aligns to the top of the pointer. */
+        Top = 6
+    }
+
+    /**
+     * Represents an extension of the LineMarker for the FlexChart.
+     *
+     * The LineMarker consists of a text area with content reflecting data point 
+     * values, and an optional vertical or horizontal line (or both for a cross-hair 
+     * effect) positioned over the plot area. It can be static (interaction = None), 
+     * follow the mouse or touch position (interaction = Move), or move when the user
+     * drags the line (interaction = Drag).
+     * For example:
+     * <pre>
+     *   // create an interactive marker with a horizontal line and y-value
+     *   var lm = new wijmo.chart.LineMarker($scope.ctx.chart, {
+     *       lines: wijmo.chart.LineMarkerLines.Horizontal,
+     *       interaction: wijmo.chart.LineMarkerInteraction.Move,
+     *       alignment : wijmo.chart.LineMarkerAlignment.Top
+     *   });
+     *   lm.content = function (ht) {
+     *       // show y-value
+     *       return lm.y.toFixed(2);
+     *   }
+     * </pre>
+     */
+    export class LineMarker {
+
+        static _CSS_MARKER = 'wj-chart-linemarker';
+        static _CSS_MARKER_HLINE = 'wj-chart-linemarker-hline';
+        static _CSS_MARKER_VLINE = 'wj-chart-linemarker-vline';
+        static _CSS_MARKER_CONTENT = 'wj-chart-linemarker-content';
+        static _CSS_MARKER_CONTAINER = 'wj-chart-linemarker-container';
+        static _CSS_LINE_DRAGGABLE = 'wj-chart-linemarker-draggable';
+
+        private _chart: FlexChart;
+        private _plot: SVGGElement;
+        private _marker: HTMLElement;
+        private _markerContainer: HTMLElement;
+        private _markerContent: HTMLElement;
+        private _dragEle: HTMLElement;
+        private _hLine: HTMLElement;
+        private _vLine: HTMLElement;
+        private _plotRect: Rect;
+        private _targetPoint: Point;
+        private _wrapperMoveMarker;
+        private _capturedEle: HTMLElement;
+        private _wrapperMousedown = null;
+        private _wrapperMouseup = null;
+        private _contentDragStartPoint: Point;
+        private _mouseDownCrossPoint: Point;
+
+        // object model
+        private _isVisible: boolean;
+        private _horizontalPosition: number;
+        private _verticalPosition: number;
+        private _alignment: LineMarkerAlignment;
+        private _content: Function;
+        private _seriesIndex: number;
+        private _lines: LineMarkerLines;
+        private _interaction: LineMarkerInteraction;
+        private _dragThreshold: number;
+        private _dragContent: boolean;
+        private _dragLines: boolean;
+
+        /**
+         * Initializes a new instance of a @see:LineMarker object.
+         * 
+         * @param chart The chart on which the LineMarker appears.
+         * @param options A JavaScript object containing initialization data for the control.  
+         */
+        constructor(chart: FlexChart, options?) {
+            var self = this;
+
+            self._chart = chart;
+            chart.rendered.addHandler(self._initialize, self);
+            self._resetDefaultValue();
+            wijmo.copy(this, options);
+            self._initialize();
+        }
+
+        //--------------------------------------------------------------------------
+        //** object model
+
+        /**
+         * Gets the @see:FlexChart object that owns the LineMarker.
+         */
+        get chart(): FlexChart {
+            return this._chart;
+        }
+
+        /**
+         * Gets or sets the visibility of the LineMarker.
+         */
+        get isVisible(): boolean {
+            return this._isVisible;
+        }
+        set isVisible(value: boolean) {
+            var self = this;
+
+            if (value === self._isVisible) {
+                return;
+            }
+            self._isVisible = asBoolean(value);
+            if (!self._marker) {
+                return;
+            }
+            self._toggleVisibility();
+        }
+
+        /**
+         * Gets or sets the index of the series in the chart in which the LineMarker appears.
+         * This takes effect when the @see:interaction property is set to 
+         * wijmo.chart.LineMarkerInteraction.Move or wijmo.chart.LineMarkerInteraction.Drag.
+         */
+        get seriesIndex(): number {
+            return this._seriesIndex;
+        }
+        set seriesIndex(value: number) {
+            var self = this;
+
+            if (value === self._seriesIndex) {
+                return;
+            }
+            self._seriesIndex = asNumber(value, true);
+        }
+
+        /**
+         * Gets or sets the horizontal position of the LineMarker relative to the plot area. 
+         * 
+         * Its value range is (0, 1).
+         * If the value is null or undefined and @see:interaction is set to wijmo.chart.LineMarkerInteraction.Move  
+         * or wijmo.chart.LineMarkerInteraction.Drag, the horizontal position of the marker is calculated automatically based on the pointer's position.
+         */
+        get horizontalPosition(): number {
+            return this._horizontalPosition;
+        }
+        set horizontalPosition(value: number) {
+            var self = this;
+
+            if (value === self._horizontalPosition) {
+                return;
+            }
+            self._horizontalPosition = asNumber(value, true);
+            if (self._horizontalPosition < 0 || self._horizontalPosition > 1) {
+                throw 'horizontalPosition\'s value should be in (0, 1).';
+            }
+            if (!self._marker) {
+                return;
+            }
+            self._updateMarkerPosition();
+        }
+
+        /**
+         * Gets the current x-value as chart data coordinates.
+         */
+        get x(): number {
+            var self = this,
+                len = self._targetPoint.x - self._plotRect.left,
+                axis = self._chart.axisX;
+
+            return axis.convertBack(len);
+        }
+
+        /**
+         * Gets the current y-value as chart data coordinates.
+         */
+        get y(): number {
+            var self = this,
+                len = self._targetPoint.y - self._plotRect.top,
+                axis = self._chart.axisY;
+
+            return axis.convertBack(len);
+        }
+
+        /**
+         * Gets or sets the content function that allows you to customize the text content of the LineMarker.
+         */
+        get content(): Function {
+            return this._content;
+        }
+        set content(value: Function) {
+            if (value === this._content) {
+                return;
+            }
+            this._content = asFunction(value);
+            this._updateMarkerPosition();
+        }
+
+        /**
+         * Gets or sets the vertical position of the LineMarker relative to the plot area. 
+         * 
+         * Its value range is (0, 1).
+         * If the value is null or undefined and @see:interaction is set to wijmo.chart.LineMarkerInteraction.Move 
+         * or wijmo.chart.LineMarkerInteraction.Drag, the vertical position of the LineMarker is calculated automatically based on the pointer's position.
+         */
+        get verticalPosition(): number {
+            return this._verticalPosition;
+        }
+        set verticalPosition(value: number) {
+            var self = this;
+
+            if (value === self._verticalPosition) {
+                return;
+            }
+            self._verticalPosition = asNumber(value, true);
+            if (self._verticalPosition < 0 || self._verticalPosition > 1) {
+                throw 'verticalPosition\'s value should be in (0, 1).';
+            }
+            if (!self._marker) {
+                return;
+            }
+            self._updateMarkerPosition();
+        }
+
+        /**
+         * Gets or sets the alignment of the LineMarker content.
+         * 
+         * By default, the LineMarker shows to the right, at the bottom of the target point.
+         * Use '|' to combine alignment values.
+         * 
+         * <pre>
+         * // set the alignment to the left.
+         * marker.alignment = wijmo.chart.LineMarkerAlignment.Left;
+         * // set the alignment to the left top.
+         * marker.alignment = wijmo.chart.LineMarkerAlignment.Left | wijmo.chart.LineMarkerAlignment.Top;
+         * </pre>
+         */
+        get alignment(): LineMarkerAlignment {
+            return this._alignment;
+        }
+        set alignment(value: LineMarkerAlignment) {
+            var self = this;
+
+            if (value === self._alignment) {
+                return;
+            }
+            self._alignment = value;
+            if (!self._marker) {
+                return;
+            }
+            self._updatePositionByAlignment();
+        }
+
+        /**
+         * Gets or sets the visibility of the LineMarker lines.
+         */
+        get lines(): LineMarkerLines {
+            return this._lines;
+        }
+        set lines(value: LineMarkerLines) {
+            var self = this;
+            if (value === self._lines) {
+                return;
+            }
+            self._lines = asEnum(value, LineMarkerLines);
+            if (!self._marker) {
+                return;
+            }
+            self._resetLinesVisibility();
+        }
+
+        /**
+         * Gets or sets the interaction mode of the LineMarker.
+         */
+        get interaction(): LineMarkerInteraction {
+            return this._interaction;
+        }
+        set interaction(value: LineMarkerInteraction) {
+            var self = this;
+            if (value === self._interaction) {
+                return;
+            }
+            if (self._marker) {
+                self._detach();
+            }
+            self._interaction = asEnum(value, LineMarkerInteraction);
+            if (self._marker) {
+                self._attach();
+            }
+            self._toggleElesDraggableClass(self._interaction === LineMarkerInteraction.Drag);
+        }
+
+        /**
+            Gets or sets the maximum distance from the horizontal or vertical line that the marker can be dragged.
+        */
+        get dragThreshold(): number {
+            return this._dragThreshold;
+        }
+        set dragThreshold(value: number) {
+            if (value != this._dragThreshold) {
+                this._dragThreshold = asNumber(value);
+            }
+        }
+
+        /**
+            Gets or sets a value indicating whether the content of the marker is draggable when the interaction mode is "Drag."
+        */
+        get dragContent(): boolean {
+            return this._dragContent;
+        }
+        set dragContent(value: boolean) {
+            var self = this;
+            if (value !== self._dragContent) {
+                self._dragContent = asBoolean(value);
+            }
+            toggleClass(self._dragEle, LineMarker._CSS_LINE_DRAGGABLE,
+                self._interaction === LineMarkerInteraction.Drag &&
+                self._dragContent &&
+                self._lines !== LineMarkerLines.None);
+        }
+
+        /**
+            Gets or sets a value indicating whether the lines are linked when the horizontal or vertical line is dragged when the interaction mode is "Drag."
+        */
+        get dragLines(): boolean {
+            return this._dragLines;
+        }
+        set dragLines(value: boolean) {
+            if (value != this._dragLines) {
+                this._dragLines = asBoolean(value);
+            }
+        }
+
+        /**
+         * Occurs after the LineMarker's position changes.
+         */
+        positionChanged = new Event();
+
+        /**
+         * Raises the @see:positionChanged event.
+         *
+         * @param point The target point at which to show the LineMarker.
+         */
+        onPositionChanged(point: Point) {
+            this.positionChanged.raise(this, point);
+        }
+
+        //--------------------------------------------------------------------------
+        //** implementation
+
+        /**
+         * Removes the LineMarker from the chart.
+         */
+        remove() {
+            var self = this,
+                chart = self._chart;
+            if (self._marker) {
+                chart.rendered.removeHandler(self._initialize, self);
+                self._detach();
+                self._removeMarker();
+                self._wrapperMoveMarker = null;
+                self._wrapperMousedown = null;
+                self._wrapperMouseup = null;
+            }
+        }
+
+        private _attach() {
+            var self = this;
+
+            lineMarkers.attach(self);
+            self._attachDrag();
+        }
+
+        private _attachDrag() {
+            var self = this;
+
+            if (self._interaction !== LineMarkerInteraction.Drag) {
+                return;
+            }
+
+            if (!self._wrapperMousedown) {
+                self._wrapperMousedown = self._onMousedown.bind(self);
+            }
+            if (!self._wrapperMouseup) {
+                self._wrapperMouseup = self._onMouseup.bind(self);
+            }
+            // Drag mode
+            self._toggleDragEventAttach(true);
+        }
+
+        private _detach() {
+            var self = this;
+
+            lineMarkers.detach(self);
+            self._detachDrag();
+        }
+
+        private _detachDrag() {
+            var self = this;
+
+            if (self._interaction !== LineMarkerInteraction.Drag) {
+                return;
+            }
+
+            // Drag mode
+            self._toggleDragEventAttach(false);
+        }
+
+        private _toggleDragEventAttach(isAttach: boolean) {
+            var self = this,
+                chartHostEle = self._chart.hostElement,
+                eventListener = isAttach ? 'addEventListener' : 'removeEventListener';
+
+            chartHostEle[eventListener]('mousedown', self._wrapperMousedown);
+            document[eventListener]('mouseup', self._wrapperMouseup);
+
+            if ('ontouchstart' in window) {
+                chartHostEle[eventListener]('touchstart', self._wrapperMousedown);
+            }
+
+            if ('ontouchend' in window) {
+                document[eventListener]('touchend', self._wrapperMouseup);
+            }
+        }
+
+        private _onMousedown(e) {
+            var self = this, pt = self._getEventPoint(e),
+                hRect, vRect, contentRect;
+
+            if (self._interaction !== LineMarkerInteraction.Drag) {
+                return;
+            }
+
+            hRect = getElementRect(self._hLine);
+            vRect = getElementRect(self._vLine);
+            contentRect = getElementRect(self._markerContent);
+
+            if (self._dragContent &&
+                self._pointInRect(pt, contentRect)) {
+                self._capturedEle = self._markerContent;
+                self._contentDragStartPoint = new Point(pt.x, pt.y);
+                self._mouseDownCrossPoint = new Point(self._targetPoint.x, self._targetPoint.y);
+            } else if ((Math.abs(hRect.top - pt.y) <= self._dragThreshold) ||
+                (Math.abs(pt.y - hRect.top - hRect.height) <= self._dragThreshold) ||
+                (pt.y >= hRect.top && pt.y <= hRect.top + hRect.height)) {
+                self._capturedEle = self._hLine;
+                self._contentDragStartPoint = undefined;
+                addClass(self._chart.hostElement, LineMarker._CSS_LINE_DRAGGABLE);
+            } else if (Math.abs(vRect.left - pt.x) <= self._dragThreshold ||
+                (Math.abs(pt.x - vRect.left - vRect.width) <= self._dragThreshold) ||
+                (pt.x >= vRect.left && pt.x <= vRect.left + vRect.width)) {
+                self._capturedEle = self._vLine;
+                self._contentDragStartPoint = undefined;
+                addClass(self._chart.hostElement, LineMarker._CSS_LINE_DRAGGABLE);
+            }
+
+            e.preventDefault();
+        }
+
+        private _onMouseup(e) {
+            var self = this,
+                needReAlignment = self._alignment === LineMarkerAlignment.Auto
+                && self._capturedEle === self._markerContent && self._lines !== LineMarkerLines.None;
+
+            self._capturedEle = undefined;
+            self._contentDragStartPoint = undefined;
+            self._mouseDownCrossPoint = undefined;
+            if (needReAlignment) {
+                // because the size of content has changed, so need to adjust the position twice.
+                self._updatePositionByAlignment();
+                self._updatePositionByAlignment();
+            }
+            removeClass(self._chart.hostElement, LineMarker._CSS_LINE_DRAGGABLE);
+            e.preventDefault();
+        }
+
+        _moveMarker(e) {
+            var self = this,
+                chart = self._chart,
+                point = self._getEventPoint(e),
+                plotRect = self._plotRect,
+                isDragAction = self._interaction === LineMarkerInteraction.Drag,
+                hLineVisible = self._lines === LineMarkerLines.Horizontal,
+                vLineVisible = self._lines === LineMarkerLines.Vertical,
+                seriesIndex = self._seriesIndex,
+                series: wijmo.chart.Series,
+                offset = getElementRect(chart.hostElement),
+                hitTest, xAxis, yAxis, x, y;
+            if (!self._isVisible || self._interaction === LineMarkerInteraction.None ||
+                (self._interaction === LineMarkerInteraction.Drag &&
+                (!self._capturedEle || self._lines === LineMarkerLines.None))) {
+                return;
+            }
+
+            if (isDragAction) {
+                if (self._contentDragStartPoint) {
+                    point.x = hLineVisible ? self._targetPoint.x :
+                            self._mouseDownCrossPoint.x + point.x - self._contentDragStartPoint.x;
+                    point.y = vLineVisible ? self._targetPoint.y :
+                            self._mouseDownCrossPoint.y + point.y - self._contentDragStartPoint.y;
+                } else if (hLineVisible ||
+                    (!self._dragLines && self._capturedEle === self._hLine)) {
+                    // horizontal hine dragging
+                    point.x = self._targetPoint.x;
+                } else if (vLineVisible ||
+                     (!self._dragLines && self._capturedEle === self._vLine)) {
+                    // vertical hine dragging
+                    point.y = self._targetPoint.y;
+                }
+            }
+
+            if ((isDragAction && self._lines === LineMarkerLines.Horizontal) ||
+                 (!self._dragLines && self._capturedEle === self._hLine)) {
+                if (point.y <= plotRect.top || point.y >= plotRect.top + plotRect.height) {
+                    return;
+                }
+            } else if ((isDragAction && self._lines === LineMarkerLines.Vertical) ||
+                (!self._dragLines && self._capturedEle === self._vLine)) {
+                if (point.x <= plotRect.left || point.x >= plotRect.left + plotRect.width) {
+                    return;
+                }
+            } else {
+                if (point.x <= plotRect.left || point.y <= plotRect.top
+                    || point.x >= plotRect.left + plotRect.width
+                    || point.y >= plotRect.top + plotRect.height) {
+                    return;
+                }
+            }
+
+            if (seriesIndex != null && seriesIndex >= 0 && seriesIndex < chart.series.length) {
+                series = chart.series[seriesIndex];
+                hitTest = series.hitTest(new Point(point.x, NaN));
+                if (hitTest == null || hitTest.x == null || hitTest.y == null) {
+                    return;
+                }
+                xAxis = series.axisX || chart.axisX;
+                yAxis = series._getAxisY();
+                x = isDate(hitTest.x) ? FlexChart._toOADate(hitTest.x) : hitTest.x;
+                y = isDate(hitTest.y) ? FlexChart._toOADate(hitTest.y) : hitTest.y;
+                point.x = xAxis.convert(x) + offset.left;
+                point.y = yAxis.convert(y) + offset.top;
+            }
+            self._updateMarkerPosition(point);
+            e.preventDefault();
+        }
+
+        private _show(ele?: HTMLElement) {
+            var e = ele ? ele : this._marker;
+            e.style.display = 'block';
+        }
+
+        private _hide(ele?: HTMLElement) {
+            var e = ele ? ele : this._marker;
+            e.style.display = 'none';
+        }
+
+        private _toggleVisibility() {
+            this._isVisible ? this._show() : this._hide();
+        }
+
+        private _resetDefaultValue() {
+            var self = this;
+
+            self._isVisible = true;
+            self._alignment = LineMarkerAlignment.Auto;
+            self._lines = LineMarkerLines.None;
+            self._interaction = LineMarkerInteraction.None;
+            self._horizontalPosition = null;
+            self._verticalPosition = null;
+            self._content = null;
+            self._seriesIndex = null;
+            self._dragThreshold = 15;
+            self._dragContent = false;
+            self._dragLines = false;
+
+            self._targetPoint = new Point();
+        }
+
+        private _initialize() {
+            var self = this,
+                plot = <SVGGElement>self._chart.hostElement.querySelector("." + FlexChart._CSS_PLOT_AREA),
+                box;
+
+            self._plot = plot;
+            if (!self._marker) {
+                self._createMarker();
+            }
+            if (plot) {
+                self._plotRect = getElementRect(plot);
+
+                box = plot.getBBox();
+                self._plotRect.width = box.width;
+                self._plotRect.height = box.height;
+                self._updateMarkerSize();
+                self._updateLinesSize();
+            }
+            self._updateMarkerPosition();
+            self._wrapperMoveMarker = self._moveMarker.bind(self);
+            self._attach();
+        }
+
+        private _createMarker() {
+            var self = this,
+                marker: HTMLElement,
+                container: HTMLElement;
+
+            marker = document.createElement('div');
+            addClass(marker, LineMarker._CSS_MARKER);
+
+            container = self._getContainer();
+            container.appendChild(marker);
+
+            self._markerContainer = container;
+            self._marker = marker;
+
+            self._createChildren();
+        }
+
+        private _removeMarker() {
+            var self = this,
+                mc = self._markerContainer;
+
+            mc.removeChild(self._marker);
+            self._content = null;
+            self._hLine = null;
+            self._vLine = null;
+
+            if (!mc.hasChildNodes()) {
+                self._chart.hostElement.removeChild(self._markerContainer);
+                self._markerContainer = null;
+            }
+            self._marker = null;
+        }
+
+        private _getContainer(): HTMLElement {
+            var container = <HTMLElement>this._chart.hostElement.querySelector(LineMarker._CSS_MARKER_CONTAINER);
+
+            if (!container) {
+                container = this._createContainer();
+            }
+            return container;
+        }
+
+        private _createContainer(): HTMLElement {
+            var markerContainer = document.createElement('div'),
+                hostEle = this._chart.hostElement;
+
+            addClass(markerContainer, LineMarker._CSS_MARKER_CONTAINER);
+            hostEle.insertBefore(markerContainer, hostEle.firstChild);
+
+            return markerContainer;
+        }
+
+        private _createChildren() {
+            var self = this,
+                marker = self._marker,
+                markerContent: HTMLElement, hline: HTMLElement, vline: HTMLElement, dragEle: HTMLElement;
+
+            // work around for marker content touchmove: 
+            // when the content is dynamic element, the touchmove fire only once.
+            dragEle = document.createElement('div');
+            dragEle.style.position = 'absolute';
+            dragEle.style.height = '100%';
+            dragEle.style.width = '100%';
+            marker.appendChild(dragEle);
+            self._dragEle = dragEle;
+            //content
+            markerContent = document.createElement('div');
+            addClass(markerContent, LineMarker._CSS_MARKER_CONTENT);
+            marker.appendChild(markerContent);
+            self._markerContent = markerContent;
+            // lines
+            hline = document.createElement('div');
+            addClass(hline, LineMarker._CSS_MARKER_HLINE);
+            marker.appendChild(hline);
+            self._hLine = hline;
+            vline = document.createElement('div');
+            addClass(vline, LineMarker._CSS_MARKER_VLINE);
+            marker.appendChild(vline);
+            self._vLine = vline;
+            self._toggleElesDraggableClass(self._interaction === LineMarkerInteraction.Drag);
+            self._resetLinesVisibility();
+        }
+
+        private _toggleElesDraggableClass(draggable: boolean) {
+            var self = this;
+            toggleClass(self._hLine, LineMarker._CSS_LINE_DRAGGABLE, draggable);
+            toggleClass(self._vLine, LineMarker._CSS_LINE_DRAGGABLE, draggable);
+            toggleClass(self._dragEle, LineMarker._CSS_LINE_DRAGGABLE, draggable &&
+                self._dragContent && self._lines !== LineMarkerLines.None);
+        }
+
+        private _updateMarkerSize() {
+            var self = this,
+                plotRect = self._plotRect,
+                chartEle = self._chart.hostElement,
+                computedStyle = window.getComputedStyle(chartEle, null),
+                chartRect = getElementRect(chartEle);
+
+            if (!self._marker) {
+                return;
+            }
+            self._marker.style.marginTop = (plotRect.top - chartRect.top - (parseFloat(computedStyle.getPropertyValue('padding-top')) || 0)) + 'px';
+            self._marker.style.marginLeft = (plotRect.left - chartRect.left - (parseFloat(computedStyle.getPropertyValue('padding-left')) || 0)) + 'px';
+        }
+
+        private _updateLinesSize() {
+            var self = this,
+                plotRect = self._plotRect;
+
+            if (!self._hLine || !self._vLine) {
+                return;
+            }
+
+            self._hLine.style.width = plotRect.width + 'px';
+            self._vLine.style.height = plotRect.height + 'px';
+        }
+
+        private _resetLinesVisibility() {
+            var self = this;
+
+            if (!self._hLine || !self._vLine) {
+                return;
+            }
+
+            self._hide(self._hLine);
+            self._hide(self._vLine);
+            if (self._lines === LineMarkerLines.Horizontal || self._lines === LineMarkerLines.Both) {
+                self._show(self._hLine);
+            }
+            if (self._lines === LineMarkerLines.Vertical || self._lines === LineMarkerLines.Both) {
+                self._show(self._vLine);
+            }
+        }
+
+        private _updateMarkerPosition(point?: Point) {
+            var self = this,
+                plotRect = self._plotRect,
+                targetPoint = self._targetPoint,
+                x, y, raiseEvent = false,
+                isDragAction = self._interaction === LineMarkerInteraction.Drag;
+
+            if (!self._plot) {
+                return;
+            }
+
+            x = plotRect.left + plotRect.width * (self._horizontalPosition || 0);
+            y = plotRect.top + plotRect.height * (self._verticalPosition || 0);
+
+            if (self._horizontalPosition == null && point) {
+                x = point.x;
+            }
+            if (self._verticalPosition == null && point) {
+                y = point.y;
+            }
+
+            if (x !== targetPoint.x || y !== targetPoint.y) {
+                raiseEvent = true;
+            }
+
+            targetPoint.x = x;
+            targetPoint.y = y;
+            self._toggleVisibility();
+            if (self._content) {
+                self._updateContent();
+            }
+
+            if (raiseEvent) {
+                self._raisePositionChanged(x, y);
+            }
+
+            // after the content changed(size changed), then update the marker's position
+            self._updatePositionByAlignment(point ? true : false);
+        }
+
+        private _updateContent() {
+            var self = this,
+                chart = self._chart,
+                point = self._targetPoint,
+                hitTestInfo = chart.hitTest(point),
+                text;
+
+            text = self._content.call(null, hitTestInfo, point);
+            self._markerContent.innerHTML = text || '';
+        }
+
+        private _raisePositionChanged(x: number, y: number) {
+            var plotRect = this._plotRect;
+
+            this.onPositionChanged(new Point(x, y));
+            //this.onPositionChanged(new Point(x - plotRect.left, y - plotRect.top));
+        }
+
+        private _updatePositionByAlignment(isMarkerMoved?: boolean) {
+            var self = this,
+                align = self._alignment,
+                tp = self._targetPoint,
+                marker = self._marker,
+                topBottom = 0, leftRight = 0,
+                width = marker.clientWidth,
+                height = marker.clientHeight,
+                plotRect = self._plotRect,
+                //offset for right-bottom lnkemarker to avoid mouse overlapping.
+                offset = 12;
+
+            if (!self._plot) {
+                return;
+            }
+
+            if (!self._capturedEle || (self._capturedEle && self._capturedEle !== self._markerContent)) {
+                if (align === LineMarkerAlignment.Auto) {
+                    if (tp.x + width + offset > plotRect.left + plotRect.width) {
+                        leftRight = width;
+                    }
+                    //set default auto to right top.
+                    topBottom = height;
+                    if (tp.y - height < plotRect.top) {
+                        topBottom = 0;
+                    }
+                } else {
+                    if ((1 & align) === 1) {//left
+                        leftRight = width;
+                    }
+                    if ((2 & align) === 2) {//Top
+                        topBottom = height;
+                    }
+                }
+                //only add offset when interaction is move and alignment is right bottom
+                if (self._interaction === LineMarkerInteraction.Move && topBottom === 0 && leftRight === 0) {
+                    leftRight = -offset;
+                }
+            } else {
+                //content dragging: when the content is on top position
+                if (parseInt(self._hLine.style.top) > 0) {
+                    topBottom = height;
+                }
+                //content dragging: when the content is on left position
+                if (parseInt(self._vLine.style.left) > 0) {
+                    leftRight = width;
+                }
+            }
+
+            marker.style.left = (tp.x - leftRight - plotRect.left) + 'px';
+            marker.style.top = (tp.y - topBottom - plotRect.top) + 'px';
+            self._hLine.style.top = topBottom + 'px';
+            self._hLine.style.left = plotRect.left - tp.x + leftRight + 'px';
+            self._vLine.style.top = plotRect.top - tp.y + topBottom + 'px';
+            self._vLine.style.left = leftRight + 'px';
+        }
+
+
+        private _getEventPoint(e: any): Point {
+            return e instanceof MouseEvent ?
+                new Point(e.pageX, e.pageY) :
+                new Point(e.changedTouches[0].pageX, e.changedTouches[0].pageY);
+        }
+
+        private _pointInRect(pt: Point, rect: Rect): boolean {
+            if (!pt || !rect) {
+                return false;
+            }
+            if (pt.x >= rect.left && pt.x <= rect.left + rect.width &&
+                pt.y >= rect.top && pt.y <= rect.top + rect.height) {
+                return true;
+            }
+
+            return false;
+        }
+    }
+}
+module wijmo.chart {
+    'use strict';
+
+    export class _DataPoint {
+        private _seriesIndex: number;
+        private _pointIndex: number;
+        private _dataX: number;
+        private _dataY: number;
+
+        constructor(seriesIndex: number, pointIndex: number, dataX: number, dataY: number) {
+            this._seriesIndex = seriesIndex;
+            this._pointIndex = pointIndex;
+            this._dataX = dataX;
+            this._dataY = dataY;
+        }
+
+        get seriesIndex(): number {
+            return this._seriesIndex;
+        }
+
+        get pointIndex(): number {
+            return this._pointIndex;
+        }
+
+        get dataX(): number {
+            return this._dataX;
+        }
+
+        get dataY(): number {
+            return this._dataY;
+        }
+    }
+
+    export enum _MeasureOption {
+        X,
+        Y,
+        XY
+    }
+
+    export class _RectArea implements _IHitArea {
+        private _rect: Rect;
+
+        constructor(rect: Rect) {
+            this._rect = rect;
+        }
+
+        get rect(): Rect {
+            return this._rect;
+        }
+
+        tag: any;
+
+        contains(pt: Point): boolean {
+            var rect = this._rect;
+            return pt.x >= rect.left && pt.x <= rect.right && pt.y >= rect.top && pt.y <= rect.bottom;
+        }
+
+        pointDistance(pt1: Point, pt2: Point, option: _MeasureOption): number {
+            var dx = pt2.x - pt1.x;
+            var dy = pt2.y - pt1.y;
+            if (option == _MeasureOption.X) {
+                return Math.abs(dx);
+            } else if (option == _MeasureOption.Y) {
+                return Math.abs(dy);
+            }
+
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        distance(pt: Point): number {
+            var option = _MeasureOption.XY;
+            if (pt.x === null) {
+                option = _MeasureOption.Y;
+            } else if (pt.y === null) {
+                option = _MeasureOption.X;
+            }
+
+            var rect = this._rect;
+            if (pt.x < rect.left) { // Region I, VIII, or VII
+                if (pt.y < rect.top) { // I
+                    return this.pointDistance(pt, new Point(rect.left, rect.top), option);
+                }
+                else if (pt.y > rect.bottom) { // VII
+                    return this.pointDistance(pt, new Point(rect.left, rect.bottom), option);
+                }
+                else { // VIII
+
+                    if (option == _MeasureOption.Y) {
+                        return 0;
+                    }
+                    return rect.left - pt.x;
+                }
+            }
+            else if (pt.x > rect.right) { // Region III, IV, or V
+                if (pt.y < rect.top) { // III
+                    return this.pointDistance(pt, new Point(rect.right, rect.top), option);
+                }
+                else if (pt.y > rect.bottom) { // V
+                    return this.pointDistance(pt, new Point(rect.right, rect.bottom), option);
+                }
+                else { // IV
+                    if (option == _MeasureOption.Y) {
+                        return 0;
+                    }
+
+                    return pt.x - rect.right;
+                }
+            }
+            else { // Region II, IX, or VI
+                if (option == _MeasureOption.X) {
+                    return 0;
+                }
+
+                if (pt.y < rect.top) { // II
+                    return rect.top - pt.y;
+                }
+                else if (pt.y > rect.bottom) { // VI
+                    return pt.y - rect.bottom;
+                }
+                else { // IX
+                    return 0;
+                }
+            }
+        }
+    }
+
+    export class _CircleArea implements _IHitArea {
+        private _center: Point;
+        private _rad: number;
+        private _rad2: number;
+
+        tag: any;
+
+        constructor(center: Point, radius: number) {
+            this._center = center;
+            this._rad = radius;
+            this._rad2 = radius * radius;
+        }
+
+        get center(): Point {
+            return this._center;
+        }
+
+        contains(pt: Point): boolean {
+            var dx = this._center.x - pt.x;
+            var dy = this._center.y - pt.y;
+            return dx * dx + dy * dy <= this._rad2;
+        }
+
+        distance(pt: Point): number {
+            //var dx = pt.x !== null ? this._center.x - pt.x : 0;
+            //var dy = pt.y !== null ? this._center.y - pt.y : 0;
+            var dx = !isNaN(pt.x) ? this._center.x - pt.x : 0;
+            var dy = !isNaN(pt.y) ? this._center.y - pt.y : 0;
+
+            var d2 = dx * dx + dy * dy;
+
+            if (d2 <= this._rad2)
+                return 0;
+            else
+                return Math.sqrt(d2) - this._rad;
+        }
+    }
+
+    export class _LinesArea implements _IHitArea {
+        private _x = [];
+        private _y = [];
+
+        tag: any;
+
+        constructor(x: any, y: any) {
+            this._x = x;
+            this._y = y;
+        }
+
+        contains(pt: Point): boolean {
+            return false;
+        }
+
+        distance(pt: Point): number {
+            var dmin = NaN;
+            for (var i = 0; i < this._x.length - 1; i++) {
+                var d = FlexChart._dist(pt, new Point(this._x[i], this._y[i]), new Point(this._x[i + 1], this._y[i + 1]));
+                if (isNaN(dmin) || d < dmin) {
+                    dmin = d;
+                }
+            }
+
+            return dmin;
+        }
+    }
+
+    export class _HitResult {
+        area: _IHitArea;
+        distance: number;
+    }
+
+    export class _HitTester {
+        _chart: FlexChartCore;
+        _map: { [key: number]: Array<_IHitArea> } = {};
+        //private _areas = new Array<IHitArea>();
+
+        constructor(chart: FlexChartCore) {
+            this._chart = chart;
+        }
+
+        add(area: _IHitArea, seriesIndex: number) {
+            if (this._map[seriesIndex]) {
+                if (!area.tag) {
+                    area.tag = new _DataPoint(seriesIndex, NaN, NaN, NaN);
+                }
+                this._map[seriesIndex].push(area);
+            }
+        }
+
+        clear() {
+            this._map = {};
+            var series = this._chart.series;
+            for (var i = 0; i < series.length; i++) {
+                if (series[i].hitTest === Series.prototype.hitTest) {
+                    this._map[i] = new Array<_IHitArea>();
+                }
+            }
+        }
+
+        hitTest(pt: Point, testLines= false): _HitResult {
+            var closest = null;
+            var dist = Number.MAX_VALUE;
+
+            for (var key in this._map) {
+                var areas = this._map[key];
+                if (areas) {
+                    var len = areas.length;
+
+                    for (var i = len - 1; i >= 0; i--) {
+                        var area = areas[i];
+                        if (tryCast(area, _LinesArea) && !testLines) {
+                            continue;
+                        }
+
+                        var d = area.distance(pt);
+                        if (d < dist) {
+                            dist = d;
+                            closest = area;
+                            if (dist == 0)
+                                break;
+                        }
+                    }
+
+                    if (dist == 0)
+                        break;
+                }
+            }
+
+            if (closest) {
+                var hr = new _HitResult();
+                hr.area = closest;
+                hr.distance = dist;
+                return hr;
+            }
+
+            return null;
+        }
+
+        hitTestSeries(pt: Point, seriesIndex): _HitResult {
+            var closest = null;
+            var dist = Number.MAX_VALUE;
+
+            var areas = this._map[seriesIndex];
+            if (areas) {
+                var len = areas.length;
+
+                for (var i = len - 1; i >= 0; i--) {
+                    var area = areas[i];
+
+                    var d = area.distance(pt);
+                    if (d < dist) {
+                        dist = d;
+                        closest = area;
+                        if (dist == 0)
+                            break;
+                    }
+                }
+            }
+
+            if (closest) {
+                var hr = new _HitResult();
+                hr.area = closest;
+                hr.distance = dist;
+                return hr;
+            }
+
+            return null;
+        }
+    }
+}
+module wijmo.chart {
+    'use strict';
+
+    /**
+     * Plots data series.
+     */
+    export interface _IPlotter {
+        chart: FlexChartCore;
+        dataInfo: _DataInfo;
+        hitTester: _HitTester;
+        seriesIndex: number;
+        seriesCount: number;
+        clipping: boolean;
+
+        stacking: Stacking;
+        rotated: boolean;
+        adjustLimits(dataInfo: _DataInfo, plotRect: Rect): Rect;
+        plotSeries(engine: IRenderEngine, ax: _IAxis, ay: _IAxis, series: _ISeries, palette: _IPalette, iser: number, nser: number);
+    }
+
+    /**
+     * Base class for chart plotters of all types (bar, line, area).
+     */
+    export class _BasePlotter {
+        _DEFAULT_WIDTH = 2;
+        _DEFAULT_SYM_SIZE = 10;
+
+        clipping = true;
+        chart: FlexChart;
+        hitTester: _HitTester;
+        dataInfo: _DataInfo;
+        seriesIndex: number;
+        seriesCount: number;
+
+        clear() {
+            this.seriesCount = 0;
+            this.seriesIndex = 0;
+        }
+
+        getNumOption(name: string, parent?: string): number {
+            var options = this.chart.options;
+            if (parent) {
+                options = options ? options[parent] : null;
+            }
+            if (options && options[name]) {
+                return asNumber(options[name], true);
+            }
+            return undefined;
+        }
+
+        cloneStyle(style: any, ignore: string[]): any {
+            if (!style) {
+                return style;
+            }
+            var newStyle = {};
+
+            for (var key in style) {
+                if (ignore && ignore.indexOf(key) >= 0) {
+                    continue;
+                }
+                newStyle[key] = style[key];
+            }
+
+            return newStyle;
+        }
+
+        isValid(datax: number, datay: number, ax: _IAxis, ay: _IAxis): boolean {
+            return _DataInfo.isValid(datax) && _DataInfo.isValid(datay) &&
+                FlexChart._contains(this.chart._plotRect, new Point(datax, datay))
+        }
+    }
+} 
+module wijmo.chart {
+    'use strict';
+
+    /**
+     * Bar/column chart plotter.
+     */
+    export class _BarPlotter extends _BasePlotter implements _IPlotter {
+        origin = 0;
+        width = 0.7;
+        //isColumn = false;
+
+        private stackPosMap = {}; //{ [key: number]: number } = {};
+        private stackNegMap = {};// { [key: number]: number } = {};
+
+        stacking = Stacking.None;
+        rotated: boolean;
+
+        clear() {
+            super.clear();
+
+            this.stackNegMap[this.chart.axisY._uniqueId] = {};
+            this.stackPosMap[this.chart.axisY._uniqueId] = {};
+        }
+
+        adjustLimits(dataInfo: _DataInfo, plotRect: Rect): Rect {
+            this.dataInfo = dataInfo;
+
+            var xmin = dataInfo.getMinX();
+            var ymin = dataInfo.getMinY();
+            var xmax = dataInfo.getMaxX();
+            var ymax = dataInfo.getMaxY();
+
+            var dx = dataInfo.getDeltaX();
+            if (dx <= 0) {
+                dx = 1;
+            }
+
+            if (this.rotated) {
+                if (!this.chart.axisY.logBase) {
+                    if (this.origin > ymax) {
+                        ymax = this.origin;
+                    } else if (this.origin < ymin) {
+                        ymin = this.origin;
+                    }
+                }
+                return new Rect(ymin, xmin - 0.5 * dx, ymax - ymin, xmax - xmin + dx);
+            } else {
+                if (!this.chart.axisY.logBase) {
+                    if (this.origin > ymax) {
+                        ymax = this.origin;
+                    } else if (this.origin < ymin) {
+                        ymin = this.origin;
+                    }
+                }
+                return new Rect(xmin - 0.5 * dx, ymin, xmax - xmin + dx, ymax - ymin);
+            }
+        }
+
+        plotSeries(engine: IRenderEngine, ax: _IAxis, ay: _IAxis, series: _ISeries, palette: _IPalette, iser: number, nser: number) {
+            var si = this.chart.series.indexOf(series);
+            var ser = <SeriesBase>series;
+            var options = this.chart.options;
+            var cw = this.width;
+            var wpx = 0;
+
+            if (options && options.groupWidth) {
+                var gw = options.groupWidth;
+                if (isNumber(gw)) {
+                    // px
+                    var gwn = asNumber(gw);
+                    if (isFinite(gwn) && gwn > 0) {
+                        wpx = gwn; cw = 1;
+                    }
+                } else if (isString(gw)) {
+                    var gws = asString(gw);
+
+                    // %
+                    if (gws && gws.indexOf('%') >= 0) {
+                        gws = gws.replace('%', '');
+                        var gwn = parseFloat(gws);
+                        if (isFinite(gwn)) {
+                            if (gwn < 0) {
+                                gwn = 0;
+                            } else if (gwn > 100) {
+                                gwn = 100;
+                            }
+                            wpx = 0; cw = gwn / 100;
+                        }
+                    } else {
+                        // px
+                        var gwn = parseFloat(gws);
+                        if (isFinite(gwn) && gwn > 0) {
+                            wpx = gwn; cw = 1;
+                        }
+                    }
+                }
+            }
+
+            //var cw = this.getNumOption("clusterWidth");
+            //if (cw == undefined || cw <= 0 || cw > 1) {
+            //    cw = this.width;
+            //}
+
+            var w = cw / nser;
+
+            var axid = ser._getAxisY()._uniqueId;
+
+            //if (iser == 0) {
+            //    this.stackNegMap[axid] = {};
+            //    this.stackPosMap[axid] = {};
+            // }
+            var stackNeg = this.stackNegMap[axid];
+            var stackPos = this.stackPosMap[axid];
+
+            var yvals = series.getValues(0);
+            var xvals = series.getValues(1);
+
+            if (!yvals) {
+                return;
+            }
+
+            if (!xvals) {
+                xvals = this.dataInfo.getXVals();
+            }
+
+            if (xvals) {
+                // find mininmal distance between point and use it as column width
+                var delta = this.dataInfo.getDeltaX();
+                if (delta > 0) {
+                    cw *= delta;
+                    w *= delta;
+                }
+            }
+
+            // set series fill and stroke from style
+            var style = series.style,
+                fill = null,
+                stroke = null;
+            if (style) {
+                if (style.fill) {
+                    fill = style.fill;
+                }
+                if (style.stroke) {
+                    stroke = style.stroke;
+                }
+            }
+
+            // get colors not provided from palette
+            if (!fill) {
+                fill = palette._getColorLight(si);
+            }
+            if (!stroke) {
+                stroke = palette._getColor(si);
+            }
+
+            // apply fill and stroke
+            engine.fill = fill;
+            engine.stroke = stroke;
+
+            var len = yvals.length;
+            if (xvals != null) {
+                len = Math.min(len, xvals.length);
+            }
+            var origin = this.origin;
+
+            //var symClass = FlexChart._CSS_SERIES_ITEM;
+            var itemIndex = 0;
+
+            if (!this.rotated) {
+                if (origin < ay.actualMin) {
+                    origin = ay.actualMin;
+                } else if (origin > ay.actualMax) {
+                    origin = ay.actualMax;
+                }
+
+                var originScreen = ay.convert(origin);
+
+                for (var i = 0; i < len; i++) {
+                    var datax = xvals ? xvals[i] : i;
+                    var datay = yvals[i];
+
+                    if (_DataInfo.isValid(datax) && _DataInfo.isValid(datay)) {
+
+                        if (this.stacking != Stacking.None && !ser._isCustomAxisY()) {
+                            var x0 = ax.convert(datax - 0.5 * cw);
+                            var x1 = ax.convert(datax + 0.5 * cw);
+                            var y0: number, y1: number;
+
+                            if (this.stacking == Stacking.Stacked100pc) {
+                                var sumabs = this.dataInfo.getStackedAbsSum(datax);
+                                datay = datay / sumabs;
+                            }
+
+                            var sum = 0;
+                            if (datay > 0) {
+                                sum = isNaN(stackPos[datax]) ? 0 : stackPos[datax];
+                                y0 = ay.convert(sum);
+                                y1 = ay.convert(sum + datay);
+                                stackPos[datax] = sum + datay;
+                            } else {
+                                sum = isNaN(stackNeg[datax]) ? 0 : stackNeg[datax];
+                                y0 = ay.convert(sum);
+                                y1 = ay.convert(sum + datay);
+                                stackNeg[datax] = sum + datay;
+                            }
+
+                            var rect = new Rect(Math.min(x0, x1), Math.min(y0, y1), Math.abs(x1 - x0), Math.abs(y1 - y0));
+                            if (wpx > 0) {
+                                var ratio = 1 - wpx / rect.width;
+                                if (ratio < 0) {
+                                    ratio = 0;
+                                }
+                                var xc = rect.left + 0.5 * rect.width;
+                                rect.left += (xc - rect.left) * ratio;
+                                rect.width = Math.min(wpx, rect.width);
+                            }
+
+                            var area = new _RectArea(rect);
+
+                            //engine.drawRect(rect.left, rect.top, rect.width, rect.height, null, series.symbolStyle);
+                            this.drawSymbol(engine, rect, series, i, new Point(rect.left + 0.5 * rect.width, y1));
+                            series._setPointIndex(i, itemIndex);
+                            itemIndex++;
+
+                            area.tag = new _DataPoint(si, i, datax, sum + datay);
+                            this.hitTester.add(area, si);
+                        } else {
+                            var x0 = ax.convert(datax - 0.5 * cw + iser * w),
+                                x1 = ax.convert(datax - 0.5 * cw + (iser + 1) * w),
+                                y = ay.convert(datay),
+                                rect = new Rect(Math.min(x0, x1), Math.min(y, originScreen), Math.abs(x1 - x0), Math.abs(originScreen - y));
+
+                            if (wpx > 0) {
+                                var sw = wpx / nser;
+                                var ratio = 1 - sw / rect.width;
+                                if (ratio < 0) {
+                                    ratio = 0;
+                                }
+                                var xc = ax.convert(datax);
+                                rect.left += (xc - rect.left) * ratio;
+                                rect.width = Math.min(sw, rect.width);
+                            }
+
+                            var area = new _RectArea(rect);
+
+                            //engine.drawRect(rect.left, rect.top, rect.width, rect.height, null, series.symbolStyle);
+                            this.drawSymbol(engine, rect, series, i, new Point(rect.left + 0.5 * rect.width, y));
+                            series._setPointIndex(i, itemIndex);
+                            itemIndex++;
+
+                            area.tag = new _DataPoint(si, i, datax, datay);
+                            this.hitTester.add(area, si);
+                        }
+                    }
+                }
+            } else {
+                if (origin < ax.actualMin) {
+                    origin = ax.actualMin;
+                } else if (origin > ax.actualMax) {
+                    origin = ax.actualMax;
+                }
+
+                var originScreen = ax.convert(origin);
+
+                for (var i = 0; i < len; i++) {
+                    var datax = xvals ? xvals[i] : i,
+                        datay = yvals[i];
+
+                    if (_DataInfo.isValid(datax) && _DataInfo.isValid(datay)) {
+                        if (this.stacking != Stacking.None) {
+                            var y0 = ay.convert(datax - 0.5 * cw);
+                            var y1 = ay.convert(datax + 0.5 * cw);
+                            var x0: number, x1: number;
+
+                            if (this.stacking == Stacking.Stacked100pc) {
+                                var sumabs = this.dataInfo.getStackedAbsSum(datax);
+                                datay = datay / sumabs;
+                            }
+
+                            var sum = 0;
+                            if (datay > 0) {
+                                sum = isNaN(stackPos[datax]) ? 0 : stackPos[datax];
+                                x0 = ax.convert(sum);
+                                x1 = ax.convert(sum + datay);
+                                stackPos[datax] = sum + datay;
+                            } else {
+                                sum = isNaN(stackNeg[datax]) ? 0 : stackNeg[datax];
+                                x0 = ax.convert(sum);
+                                x1 = ax.convert(sum + datay);
+                                stackNeg[datax] = sum + datay;
+                            }
+
+                            var rect = new Rect(Math.min(x0, x1), Math.min(y0, y1), Math.abs(x1 - x0), Math.abs(y1 - y0));
+                            if (wpx > 0) {
+                                var ratio = 1 - wpx / rect.height;
+                                if (ratio < 0) {
+                                    ratio = 0;
+                                }
+                                var yc = rect.top + 0.5 * rect.height;
+                                rect.top += (yc - rect.top) * ratio;
+                                rect.height = Math.min(wpx, rect.height);
+                            }
+
+                            var area = new _RectArea(rect);
+                            //engine.drawRect(rect.left, rect.top, rect.width, rect.height, null, series.symbolStyle);
+                            this.drawSymbol(engine, rect, series, i, new Point(x1, rect.top + 0.5 * rect.height));
+                            series._setPointIndex(i, itemIndex);
+                            itemIndex++;
+
+                            area.tag = new _DataPoint(si, i, sum + datay, datax);
+                            this.hitTester.add(area, si);
+                        }
+                        else {
+                            var y0 = ay.convert(datax - 0.5 * cw + iser * w),
+                                y1 = ay.convert(datax - 0.5 * cw + (iser + 1) * w),
+                                x = ax.convert(datay),
+                                rect = new Rect(Math.min(x, originScreen), Math.min(y0, y1), Math.abs(originScreen - x), Math.abs(y1 - y0));
+
+                            if (wpx > 0) {
+                                var sw = wpx / nser;
+                                var ratio = 1 - sw / rect.height;
+                                if (ratio < 0) {
+                                    ratio = 0;
+                                }
+                                var yc = ay.convert(datax);
+                                rect.top += (yc - rect.top) * ratio;
+                                rect.height = Math.min(sw, rect.height);
+                            }
+
+                            var area = new _RectArea(rect);
+                            //engine.drawRect(rect.left, rect.top, rect.width, rect.height, null, series.symbolStyle);
+                            this.drawSymbol(engine, rect, series, i, new Point(x, rect.top + 0.5 * rect.height));
+                            series._setPointIndex(i, itemIndex);
+                            itemIndex++;
+
+                            area.tag = new _DataPoint(si, i, datay, datax);
+                            this.hitTester.add(area, si);
+                        }
+                    }
+                }
+            }
+        }
+
+        private drawSymbol(engine: IRenderEngine, rect: Rect, series: _ISeries, pointIndex: number, point: Point) {
+            if (this.chart.itemFormatter) {
+                engine.startGroup();
+                var hti = new HitTestInfo(this.chart, point);
+                hti._chartElement = ChartElement.SeriesSymbol;
+                hti._pointIndex = pointIndex;
+                hti._series = <Series>series;
+
+                this.chart.itemFormatter(engine, hti, () => {
+                    this.drawDefaultSymbol(engine, rect, series);
+                });
+                engine.endGroup();
+            }
+            else {
+                this.drawDefaultSymbol(engine, rect, series);
+            }
+        }
+
+        private drawDefaultSymbol(engine: IRenderEngine, rect: Rect, series: _ISeries) {
+            engine.drawRect(rect.left, rect.top, rect.width, rect.height, null, series.symbolStyle/* ,'plotRect'*/);
+        }
+    }
+} 
+module wijmo.chart {
+    'use strict';
+
+    /**
+     * Line/scatter chart plotter.
+     */
+    export class _LinePlotter extends _BasePlotter implements _IPlotter {
+        hasSymbols: boolean = false;
+        hasLines: boolean = true;
+        isSpline: boolean = false;
+        rotated: boolean;
+        stacking = Stacking.None;
+
+        private stackPos: { [key: number]: number } = {};
+        private stackNeg: { [key: number]: number } = {};
+
+        constructor() {
+            super();
+            this.clipping = false;
+        }
+
+        clear() {
+            super.clear();
+            this.stackNeg = {};
+            this.stackPos = {};
+        }
+
+        adjustLimits(dataInfo: _DataInfo, plotRect: Rect): Rect {
+            this.dataInfo = dataInfo;
+            var xmin = dataInfo.getMinX();
+            var ymin = dataInfo.getMinY();
+            var xmax = dataInfo.getMaxX();
+            var ymax = dataInfo.getMaxY();
+
+            if (this.isSpline && !this.chart.axisY.logBase) {
+                var dy = 0.1 * (ymax - ymin);
+                ymin -= dy;
+                ymax += dy;
+            }
+
+            return this.rotated
+                ? new Rect(ymin, xmin, ymax - ymin, xmax - xmin)
+                : new Rect(xmin, ymin, xmax - xmin, ymax - ymin);
+        }
+
+        plotSeries(engine: IRenderEngine, ax: _IAxis, ay: _IAxis, series: _ISeries, palette: _IPalette, iser: number, nser: number) {
+            var ser: SeriesBase = asType(series, SeriesBase);
+            var si = this.chart.series.indexOf(series);
+            //if (iser == 0) {
+            //    this.stackNeg = {};
+            //    this.stackPos = {};
+            //}
+
+            var ys = series.getValues(0);
+            var xs = series.getValues(1);
+            if (!ys) {
+                return;
+            }
+            if (!xs) {
+                xs = this.dataInfo.getXVals();
+            }
+
+            var style = this.cloneStyle(series.style, ['fill']);
+            var len = ys.length;
+            var hasXs = true;
+            if (!xs) {
+                hasXs = false;
+                xs = new Array<number>(len);
+            } else {
+                len = Math.min(len, xs.length);
+            }
+
+            var swidth = this._DEFAULT_WIDTH;
+            var fill = null;
+            var stroke = null;
+            var symSize = ser._getSymbolSize();
+
+            if (fill === null) {
+                fill = palette._getColorLight(si);
+            }
+            if (stroke === null) {
+                stroke = palette._getColor(si);
+            }
+
+            engine.stroke = stroke;
+            engine.strokeWidth = swidth;
+            engine.fill = fill;
+
+            var xvals = new Array<number>();
+            var yvals = new Array<number>();
+
+            var rotated = this.rotated;
+            var stacked = this.stacking != Stacking.None && !ser._isCustomAxisY();
+            var stacked100 = this.stacking == Stacking.Stacked100pc && !ser._isCustomAxisY();
+
+            var interpolateNulls = this.chart.interpolateNulls;
+            var hasNulls = false;
+
+            //var symClass = FlexChart._CSS_SERIES_ITEM;
+
+            for (var i = 0; i < len; i++) {
+                var datax = hasXs ? xs[i] : i;
+                var datay = ys[i];
+
+                if (_DataInfo.isValid(datax) && _DataInfo.isValid(datay)) {
+
+                    if (stacked) {
+                        if (stacked100) {
+                            var sumabs = this.dataInfo.getStackedAbsSum(datax);
+                            datay = datay / sumabs;
+                        }
+
+                        if (datay >= 0) {
+                            var sum = isNaN(this.stackPos[datax]) ? 0 : this.stackPos[datax];
+                            datay = this.stackPos[datax] = sum + datay;
+                        }
+                        else {
+                            var sum = isNaN(this.stackNeg[datax]) ? 0 : this.stackNeg[datax];
+                            datay = this.stackNeg[datax] = sum + datay;
+                        }
+                    }
+
+                    var dpt: _DataPoint;
+
+                    if (rotated) {
+                        dpt = new _DataPoint(si, i, datay, datax);
+                        var x = ax.convert(datay);
+                        datay = ay.convert(datax);
+                        datax = x;
+                    } else {
+                        dpt = new _DataPoint(si, i, datax, datay);
+                        datax = ax.convert(datax);
+                        datay = ay.convert(datay);
+                    }
+                    if (!isNaN(datax) && !isNaN(datay)) {
+                        xvals.push(datax);
+                        yvals.push(datay);
+
+                        //if (this.hasSymbols) {
+                        //    this.drawSymbol(engine, datax, datay, symSize, symSize, symClass + i.toString());
+                        //}
+
+                        var area = new _CircleArea(new Point(datax, datay), 0.5 * symSize);
+                        area.tag = dpt;
+                        this.hitTester.add(area, si);
+                    } else {
+                        hasNulls = true;
+                        if (interpolateNulls !== true) {
+                            xvals.push(undefined);
+                            yvals.push(undefined);
+                        }
+                    }
+                } else {
+                    hasNulls = true;
+                    if (interpolateNulls !== true) {
+                        xvals.push(undefined);
+                        yvals.push(undefined);
+                    }
+                }
+            }
+
+            var itemIndex = 0;
+
+            if (this.hasLines) {
+                engine.fill = null;
+
+                if (hasNulls && interpolateNulls !== true) {
+                    var dx = [];
+                    var dy = [];
+
+                    for (var i = 0; i < len; i++) {
+                        if (xvals[i] === undefined) {
+                            if (dx.length > 1) {
+                                this._drawLines(engine, dx, dy, null, style, this.chart._plotrectId);
+                                this.hitTester.add(new _LinesArea(dx, dy), si);
+                                itemIndex++;
+                            }
+                            dx = [];
+                            dy = [];
+                        }
+                        else {
+                            dx.push(xvals[i]);
+                            dy.push(yvals[i]);
+                        }
+                    }
+                    if (dx.length > 1) {
+                        this._drawLines(engine, dx, dy, null, style, this.chart._plotrectId);
+                        this.hitTester.add(new _LinesArea(dx, dy), si);
+                        itemIndex++;
+                    }
+                } else {
+                    this._drawLines(engine, xvals, yvals, null, style, this.chart._plotrectId);
+                    this.hitTester.add(new _LinesArea(xvals, yvals), si);
+                    itemIndex++;
+                }
+            }
+
+            if ((this.hasSymbols || this.chart.itemFormatter) && symSize > 0) {
+                engine.fill = fill;
+                for (var i = 0; i < len; i++) {
+                    var datax = xvals[i];
+                    var datay = yvals[i];
+                    //if (DataInfo.isValid(datax) && DataInfo.isValid(datay)) {
+                    if (this.isValid(datax, datay, ax, ay)) {
+                        this._drawSymbol(engine, datax, datay, symSize, ser, i);
+                        series._setPointIndex(i, itemIndex);
+                        itemIndex++;
+                    }
+                }
+            }
+        }
+
+        _drawLines(engine: IRenderEngine, xs: number[], ys: number[], className?: string, style?: any, clipPath?: string) {
+            if (this.isSpline) {
+                engine.drawSplines(xs, ys, className, style, clipPath);
+            } else {
+                engine.drawLines(xs, ys, className, style, clipPath);
+            }
+        }
+
+        _drawSymbol(engine: IRenderEngine, x: number, y: number, sz: number, series: SeriesBase, pointIndex: number) {
+            if (this.chart.itemFormatter) {
+                engine.startGroup();
+                var hti = new HitTestInfo(this.chart, new Point(x, y));
+                hti._chartElement = ChartElement.SeriesSymbol;
+                hti._pointIndex = pointIndex;
+                hti._series = series;
+
+                this.chart.itemFormatter(engine, hti, () => {
+                    if (this.hasSymbols) {
+                        this._drawDefaultSymbol(engine, x, y, sz, series.symbolMarker, series.symbolStyle);
+                    }
+                });
+                engine.endGroup();
+            } else {
+                this._drawDefaultSymbol(engine, x, y, sz, series.symbolMarker, series.symbolStyle);
+            }
+        }
+
+        _drawDefaultSymbol(engine: IRenderEngine, x: number, y: number, sz: number, marker: Marker, style?: any) {
+            if (marker == Marker.Dot) {
+                engine.drawEllipse(x, y, 0.5 * sz, 0.5 * sz, null, style);
+            } else if (marker == Marker.Box) {
+                engine.drawRect(x - 0.5 * sz, y - 0.5 * sz, sz, sz, null, style);
+            }
+        }
+    }
+} 
+module wijmo.chart {
+    'use strict';
+
+    /**
+     * Area chart plotter.
+     */
+    export class _AreaPlotter extends _BasePlotter implements _IPlotter {
+        stacking = Stacking.None;
+        isSpline = false;
+        rotated: boolean;
+
+        private stackPos: { [key: number]: number } = {};
+        private stackNeg: { [key: number]: number } = {};
+
+        constructor() {
+            super();
+            //this.clipping = false;
+        }
+
+        adjustLimits(dataInfo: _DataInfo, plotRect: Rect): Rect {
+            this.dataInfo = dataInfo;
+            var xmin = dataInfo.getMinX();
+            var ymin = dataInfo.getMinY();
+            var xmax = dataInfo.getMaxX();
+            var ymax = dataInfo.getMaxY();
+
+            if (this.isSpline) {
+                var dy = 0.1 * (ymax - ymin);
+                if (!this.chart.axisY.logBase)
+                    ymin -= dy;
+                ymax += dy;
+            }
+
+            if (this.rotated) {
+                return new Rect(ymin, xmin, ymax - ymin, xmax - xmin);
+            }
+            else {
+                return new Rect(xmin, ymin, xmax - xmin, ymax - ymin);
+            }
+        }
+
+        clear() {
+            super.clear();
+            this.stackNeg = {};
+            this.stackPos = {};
+        }
+
+        plotSeries(engine: IRenderEngine, ax: _IAxis, ay: _IAxis, series: _ISeries, palette: _IPalette, iser: number, nser: number) {
+            var si = this.chart.series.indexOf(series);
+            var ser = <SeriesBase>series;
+            //if (iser == 0) {
+            //    this.stackNeg = {};
+            //    this.stackPos = {};
+            //}
+
+            var ys = series.getValues(0);
+            var xs = series.getValues(1);
+
+            if (!ys) {
+                return;
+            }
+
+            var len = ys.length;
+
+            if (!xs)
+                xs = this.dataInfo.getXVals();
+
+            var hasXs = true;
+            if (!xs) {
+                hasXs = false
+                xs = new Array<number>(len);
+            }
+            else if (xs.length < len) {
+                len = xs.length;
+            }
+
+            var xvals = new Array<number>();
+            var yvals = new Array<number>();
+
+            var xvals0 = new Array<number>();
+            var yvals0 = new Array<number>();
+
+            var stacked = this.stacking != Stacking.None && !ser._isCustomAxisY();
+            var stacked100 = this.stacking == Stacking.Stacked100pc && !ser._isCustomAxisY();
+            var rotated = this.rotated;
+
+            var hasNulls = false;
+            var interpolateNulls = this.chart.interpolateNulls;
+
+            var xmax: number = null;
+            var xmin: number = null;
+
+            var prect = this.chart._plotRect;
+
+            for (var i = 0; i < len; i++) {
+                var datax = hasXs ? xs[i] : i;
+                var datay = ys[i];
+                if (xmax === null || datax > xmax) {
+                    xmax = datax;
+                }
+                if (xmin === null || datax < xmin) {
+                    xmin = datax;
+                }
+                if (_DataInfo.isValid(datax) && _DataInfo.isValid(datay)) {
+                    var x = rotated ? ay.convert(datax) : ax.convert(datax);
+                    if (stacked) {
+                        if (stacked100) {
+                            var sumabs = this.dataInfo.getStackedAbsSum(datax);
+                            datay = datay / sumabs;
+                        }
+
+                        var sum = 0;
+
+                        if (datay >= 0) {
+                            sum = isNaN(this.stackPos[datax]) ? 0 : this.stackPos[datax];
+                            datay = this.stackPos[datax] = sum + datay;
+                        }
+                        else {
+                            sum = isNaN(this.stackNeg[datax]) ? 0 : this.stackNeg[datax];
+                            datay = this.stackNeg[datax] = sum + datay;
+                        }
+
+                        if (rotated) {
+                            if (sum < ax.actualMin) {
+                                sum = ax.actualMin;
+                            }
+                            xvals0.push(ax.convert(sum));
+                            yvals0.push(x);
+                        } else {
+                            xvals0.push(x);
+                            if (sum < ay.actualMin) {
+                                sum = ay.actualMin;
+                            }
+                            yvals0.push(ay.convert(sum));
+                        }
+                    }
+                    if (rotated) {
+                        var y = ax.convert(datay);
+                        if (!isNaN(x) && !isNaN(y)) {
+                            xvals.push(y);
+                            yvals.push(x);
+                            if (FlexChart._contains(prect, new Point(y, x))) {
+                                var area = new _CircleArea(new Point(y, x), this._DEFAULT_SYM_SIZE);
+                                area.tag = new _DataPoint(si, i, datay, datax);
+                                this.hitTester.add(area, si);
+                            }
+                        }
+                        else {
+                            hasNulls = true;
+                            if (!stacked && interpolateNulls !== true) {
+                                xvals.push(undefined);
+                                yvals.push(undefined);
+                            }
+                        }
+                    }
+                    else {
+                        var y = ay.convert(datay);
+
+                        if (!isNaN(x) && !isNaN(y)) {
+                            xvals.push(x);
+                            yvals.push(y);
+                            if (FlexChart._contains(prect, new Point(x, y))) {
+                                var area = new _CircleArea(new Point(x, y), this._DEFAULT_SYM_SIZE);
+                                area.tag = new _DataPoint(si, i, datax, datay);
+                                this.hitTester.add(area, si);
+                            }
+                        }
+                        else {
+                            hasNulls = true;
+                            if (!stacked && interpolateNulls !== true) {
+                                xvals.push(undefined);
+                                yvals.push(undefined);
+                            }
+                        }
+                    }
+                }
+                else {
+                    hasNulls = true;
+                    if (!stacked && interpolateNulls !== true) {
+                        xvals.push(undefined);
+                        yvals.push(undefined);
+                    }
+                }
+            }
+
+            var swidth = this._DEFAULT_WIDTH;
+            var fill = palette._getColorLight(si);
+            var stroke = palette._getColor(si);
+
+            var lstyle = this.cloneStyle(series.style, ['fill']);
+            var pstyle = this.cloneStyle(series.style, ['stroke']);
+
+            if (!stacked && interpolateNulls !== true && hasNulls) {
+                var dx = [];
+                var dy = [];
+
+                for (var i = 0; i < len; i++) {
+                    if (xvals[i] === undefined) {
+                        if (dx.length > 1) {
+                            if (this.isSpline) {
+                                var s = this._convertToSpline(dx, dy);
+                                dx = s.xs; dy = s.ys;
+                            }
+
+                            engine.stroke = stroke;
+                            engine.strokeWidth = swidth;
+                            engine.fill = 'none';
+                            engine.drawLines(dx, dy, null, lstyle);
+                            this.hitTester.add(new _LinesArea(dx, dy), si);
+
+                            if (rotated) {
+                                dx.push(ax.convert(ax.actualMin), ax.convert(ax.actualMin));
+                                dy.push(ay.convert(ay.actualMax), ay.convert(ay.actualMin));
+                            }
+                            else {
+                                dx.push(dx[dx.length - 1], dx[0]);
+                                dy.push(ay.convert(ay.actualMin), ay.convert(ay.actualMin));
+                            }
+                            engine.fill = fill;
+                            engine.stroke = 'none';
+                            engine.drawPolygon(dx, dy, null, pstyle);
+                        }
+                        dx = [];
+                        dy = [];
+                    }
+                    else {
+                        dx.push(xvals[i]);
+                        dy.push(yvals[i]);
+                    }
+                }
+                if (dx.length > 1) {
+                    if (this.isSpline) {
+                        var s = this._convertToSpline(dx, dy);
+                        dx = s.xs; dy = s.ys;
+                    }
+
+                    engine.stroke = stroke;
+                    engine.strokeWidth = swidth;
+                    engine.fill = 'none';
+                    engine.drawLines(dx, dy, null, lstyle);
+                    this.hitTester.add(new _LinesArea(dx, dy), si);
+
+                    if (rotated) {
+                        dx.push(ax.convert(ax.actualMin), ax.convert(ax.actualMin));
+                        dy.push(ay.convert(ay.actualMax), ay.convert(ay.actualMin));
+                    }
+                    else {
+                        dx.push(dx[dx.length - 1], dx[0]);
+                        dy.push(ay.convert(ay.actualMin), ay.convert(ay.actualMin));
+                    }
+                    engine.fill = fill;
+                    engine.stroke = 'none';
+                    engine.drawPolygon(dx, dy, null, pstyle);
+                }
+            }
+            else {
+                //
+                if (this.isSpline) {
+                    var s = this._convertToSpline(xvals, yvals);
+                    xvals = s.xs; yvals = s.ys;
+                }
+                //
+
+                if (stacked) {
+                    if (this.isSpline) {
+                        var s0 = this._convertToSpline(xvals0, yvals0);
+                        xvals0 = s0.xs; yvals0 = s0.ys;
+                    }
+
+                    xvals = xvals.concat(xvals0.reverse());
+                    yvals = yvals.concat(yvals0.reverse());
+                }
+                else {
+                    if (rotated) {
+                        xvals.push(ax.convert(ax.actualMin), ax.convert(ax.actualMin));
+                        yvals.push(ay.convert(xmax), ay.convert(xmin));
+                    }
+                    else {
+                        xvals.push(ax.convert(xmax), ax.convert(xmin));
+                        yvals.push(ay.convert(ay.actualMin), ay.convert(ay.actualMin));
+                    }
+                }
+
+                engine.fill = fill;
+                engine.stroke = 'none';
+                engine.drawPolygon(xvals, yvals, null, pstyle);
+
+                if (stacked) {
+                    xvals = xvals.slice(0, xvals.length - xvals0.length);
+                    yvals = yvals.slice(0, yvals.length - yvals0.length);
+                } else {
+                    xvals = xvals.slice(0, xvals.length - 2);
+                    yvals = yvals.slice(0, yvals.length - 2);
+                }
+
+                engine.stroke = stroke;
+                engine.strokeWidth = swidth;
+                engine.fill = 'none';
+                engine.drawLines(xvals, yvals, null, lstyle);
+                this.hitTester.add(new _LinesArea(xvals, yvals), si);
+            }
+
+            this._drawSymbols(engine, series, si);
+        }
+
+        _convertToSpline(x: number[], y: number[]) {
+            if (x && y) {
+                var spline = new _Spline(x, y);
+                var s = spline.calculate();
+                return { xs: s.xs, ys: s.ys };
+            } else {
+                return { xs: x, ys: y };
+            }
+        }
+
+        _drawSymbols(engine: IRenderEngine, series: _ISeries, seriesIndex: number) {
+            if (this.chart.itemFormatter != null) {
+                var areas = this.hitTester._map[seriesIndex];
+                for (var i = 0; i < areas.length; i++) {
+                    var area: _CircleArea = tryCast(areas[i], _CircleArea);
+                    if (area) {
+                        var dpt = <_DataPoint>area.tag;
+                        engine.startGroup();
+                        var hti = new HitTestInfo(this.chart, area.center);
+                        hti._chartElement = ChartElement.SeriesSymbol;
+                        hti._pointIndex = dpt.pointIndex;
+                        hti._series = <Series>series;
+                        this.chart.itemFormatter(engine, hti, () => {
+                        });
+                        engine.endGroup();
+                    }
+                }
+            }
+        }
+    }
+}
+module wijmo.chart {
+    'use strict';
+
+    export class _BubblePlotter extends _LinePlotter {
+        private _MIN_SIZE = 5;
+        private _MAX_SIZE = 30;
+
+        private _minSize: number;
+        private _maxSize: number;
+        private _minValue: number;
+        private _maxValue: number;
+
+        constructor() {
+            super();
+            this.hasLines = false;
+            this.hasSymbols = true;
+            this.clipping = true;
+        }
+
+        adjustLimits(dataInfo: _DataInfo, plotRect: Rect): Rect {
+            var minSize = this.getNumOption('minSize', 'bubble');
+            this._minSize = minSize ? minSize : this._MIN_SIZE;
+            var maxSize = this.getNumOption('maxSize', 'bubble');
+            this._maxSize = maxSize ? maxSize : this._MAX_SIZE;
+
+            var series = this.chart.series;
+            var len = series.length;
+
+            var min: number = NaN;
+            var max: number = NaN;
+            for (var i = 0; i < len; i++) {
+                var ser = <Series>series[i];
+                var vals = ser._getBindingValues(1);
+                if (vals) {
+                    var vlen = vals.length;
+                    for (var j = 0; j < vlen; j++) {
+                        if (_DataInfo.isValid(vals[j])) {
+                            if (isNaN(min) || vals[j] < min) {
+                                min = vals[j];
+                            }
+                            if (isNaN(max) || vals[j] > max) {
+                                max = vals[j];
+                            }
+                        }
+                    }
+                }
+            }
+            this._minValue = min;
+            this._maxValue = max;
+
+            var rect = super.adjustLimits(dataInfo, plotRect);
+
+            var w = plotRect.width - this._maxSize;
+            var kw = w / rect.width;
+            rect.left -= this._maxSize * 0.5 / kw;
+            rect.width += this._maxSize / kw;
+
+            var h = plotRect.height - this._maxSize;
+            var kh = h / rect.height;
+            rect.top -= this._maxSize * 0.5 / kh;
+            rect.height += this._maxSize / kh;
+
+            return rect;
+        }
+
+        _drawSymbol(engine: IRenderEngine, x: number, y: number, sz: number, series: Series, pointIndex: number) {
+            var item = series._getItem(pointIndex);
+            if (item) {
+                var szBinding = series._getBinding(1);
+                if (szBinding) {
+                    var sz = <number>item[szBinding];
+                    if (_DataInfo.isValid(sz)) {
+                        var k = this._minValue == this._maxValue ? 1 :
+                            Math.sqrt((sz - this._minValue) / (this._maxValue - this._minValue));
+                        sz = this._minSize + (this._maxSize - this._minSize) * k;
+
+                        if (this.chart.itemFormatter) {
+                            var hti = new HitTestInfo(this.chart, new Point(x, y));
+                            hti._chartElement = ChartElement.SeriesSymbol;
+                            hti._pointIndex = pointIndex;
+                            hti._series = series;
+
+                            engine.startGroup();
+                            this.chart.itemFormatter(engine, hti, () => {
+                                this._drawDefaultSymbol(engine, x, y, sz, series.symbolMarker, series.symbolStyle);
+                            });
+                            engine.endGroup();
+                        } else {
+                            this._drawDefaultSymbol(engine, x, y, sz, series.symbolMarker, series.symbolStyle);
+                        }
+                    }
+                }
+            }
+        }
+    }
+} 
+module wijmo.chart {
+    'use strict';
+
+    export class _FinancePlotter extends _BasePlotter {
+        isCandle: boolean = true;
+
+        adjustLimits(dataInfo: _DataInfo, plotRect: Rect): Rect {
+            this.dataInfo = dataInfo;
+            var xmin = dataInfo.getMinX();
+            var ymin = dataInfo.getMinY();
+            var xmax = dataInfo.getMaxX();
+            var ymax = dataInfo.getMaxY();
+
+            var series = this.chart.series;
+            var len = series.length;
+
+            var swmax = 0;
+
+            for (var i = 0; i < len; i++) {
+                var ser = <SeriesBase>series[i];
+                if (ser._isCustomAxisY()) {
+                    continue;
+                }
+
+                var bndLow = ser._getBinding(1),
+                    bndOpen = ser._getBinding(2),
+                    bndClose = ser._getBinding(3);
+
+                var slen = ser._getLength();
+                if (slen) {
+
+                    var sw = ser._getSymbolSize();
+                    if (sw > swmax) {
+                        swmax = sw;
+                    }
+
+                    for (var j = 0; j < slen; j++) {
+                        var item = ser._getItem(j);
+                        if (item) {
+                            var yvals = [bndLow ? item[bndLow] : null,
+                                bndOpen ? item[bndOpen] : null,
+                                bndClose ? item[bndClose] : null];
+
+                            yvals.forEach((yval) => {
+                                if (_DataInfo.isValid(yval) && yval !== null) {
+                                    if (isNaN(ymin) || yval < ymin) {
+                                        ymin = yval;
+                                    }
+                                    if (isNaN(ymax) || yval > ymax) {
+                                        ymax = yval;
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+
+            // adjust limits according to symbol size
+            var xrng = xmax - xmin;
+            var pr = this.chart._plotRect;
+            if (pr && pr.width) {
+                sw += 2;
+                var xrng1 = pr.width / (pr.width - sw) * xrng;
+                xmin = xmin - 0.5 * (xrng1 - xrng);
+                xrng = xrng1;
+            }
+
+            return new Rect(xmin, ymin, xrng, ymax - ymin);
+        }
+
+        plotSeries(engine: IRenderEngine, ax: _IAxis, ay: _IAxis, series: _ISeries, palette: _IPalette, iser: number, nser: number) {
+            var ser: SeriesBase = asType(series, SeriesBase);
+            var si = this.chart.series.indexOf(series);
+
+            var highs = series.getValues(0);
+            var xs = series.getValues(1);
+
+            if (!highs) {
+                return;
+            }
+
+            if (!xs) {
+                xs = this.dataInfo.getXVals();
+            }
+
+            //var style = this.cloneStyle(series.style, null);// ['fill']);
+            var len = highs.length;
+            var hasXs = true;
+            if (!xs) {
+                hasXs = false;
+                xs = new Array<number>(len);
+            } else {
+                len = Math.min(len, xs.length);
+            }
+
+            var swidth = this._DEFAULT_WIDTH,
+                fill = ser._getSymbolFill(si),
+                stroke = ser._getSymbolStroke(si),
+                symSize = ser._getSymbolSize(),
+                symStyle = series.symbolStyle;
+
+            /*if (symStyle) {
+                fill = symStyle.fill;
+                stroke = symStyle.stroke;
+            }
+
+            if (style) {
+                if (fill === null) {
+                    fill = style.fill;
+                }
+                if (stroke === null) {
+                    stroke = style.stroke;
+                }
+            }
+
+            if (fill === null) {
+                fill = palette._getColorLight(si);
+            }
+            if (stroke === null) {
+                stroke = palette._getColor(si);
+            }*/
+
+            engine.stroke = stroke;
+            engine.strokeWidth = swidth;
+            engine.fill = fill;
+
+            var bndLow = ser._getBinding(1);
+            var bndOpen = ser._getBinding(2);
+            var bndClose = ser._getBinding(3);
+
+            var xmin = ax.actualMin,
+                xmax = ax.actualMax;
+
+            var itemIndex = 0;
+            for (var i = 0; i < len; i++) {
+                var item = ser._getItem(i);
+                if (item) {
+                    var x = hasXs ? xs[i] : i;
+
+                    if (_DataInfo.isValid(x) && xmin <= x && x <= xmax) {
+                        var hi = highs[i];
+                        var lo = bndLow ? item[bndLow] : null;
+                        var open = bndOpen ? item[bndOpen] : null;
+                        var close = bndClose ? item[bndClose] : null;
+
+                        engine.startGroup();
+
+                        var currentFill = open < close ? 'transparent' : fill;
+
+                        if (this.chart.itemFormatter) {
+                            var hti = new HitTestInfo(this.chart, new Point(ax.convert(x), ay.convert(hi)));
+                            hti._chartElement = ChartElement.SeriesSymbol;
+                            hti._pointIndex = i;
+                            hti._series = ser;
+
+                            this.chart.itemFormatter(engine, hti, () => {
+                                this._drawSymbol(engine, ax, ay, si, i, currentFill, symSize, x, hi, lo, open, close);
+                            });
+                        } else {
+                            this._drawSymbol(engine, ax, ay, si, i, currentFill, symSize, x, hi, lo, open, close);
+                        }
+                        engine.endGroup();
+
+                        series._setPointIndex(i, itemIndex);
+                        itemIndex++;
+                    }
+                }
+            }
+        }
+
+        _drawSymbol(engine: IRenderEngine, ax: _IAxis, ay: _IAxis, si: number, pi: number, fill: any, w: number, x: number, hi: number, lo: number, open: number, close: number) {
+            var dpt = new _DataPoint(si, pi, x, hi);
+            var area: _RectArea;
+            x = ax.convert(x);
+            if (this.isCandle) {
+                var y0 = null,
+                    y1 = null;
+                if (_DataInfo.isValid(open) && _DataInfo.isValid(close)) {
+                    engine.fill = fill;
+                    open = ay.convert(open);
+                    close = ay.convert(close);
+                    y0 = Math.min(open, close);
+                    y1 = y0 + Math.abs(open - close);
+                    engine.drawRect(x - 0.5 * w, y0, w, y1 - y0);
+                    area = new _RectArea(new Rect(x - 0.5 * w, y0, w, y1 - y0));
+                    area.tag = dpt;
+                    this.hitTester.add(area, si);
+                }
+                if (_DataInfo.isValid(hi)) {
+                    hi = ay.convert(hi);
+                    if (y0 !== null) {
+                        engine.drawLine(x, y0, x, hi);
+                    }
+                }
+                if (_DataInfo.isValid(lo)) {
+                    lo = ay.convert(lo);
+                    if (y1 !== null) {
+                        engine.drawLine(x, y1, x, lo);
+                    }
+                }
+            } else {
+                if (_DataInfo.isValid(hi) && _DataInfo.isValid(lo)) {
+                    hi = ay.convert(hi);
+                    lo = ay.convert(lo);
+                    engine.drawLine(x, lo, x, hi);
+                    area = new _RectArea(new Rect(x - 0.5 * w, Math.min(hi, lo), w, Math.abs(hi - lo)));
+                    area.tag = dpt;
+                    this.hitTester.add(area, si);
+                }
+                if (_DataInfo.isValid(open)) {
+                    open = ay.convert(open);
+                    engine.drawLine(x - 0.5 * w, open, x, open);
+                }
+                if (_DataInfo.isValid(close)) {
+                    close = ay.convert(close);
+                    engine.drawLine(x, close, x + 0.5 * w, close);
+                }
+            }
+        }
+    }
+}
