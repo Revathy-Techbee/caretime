@@ -626,7 +626,7 @@ angular.module('ctApp.jobs', [
         $scope.savedisable = 1;
         filterObj = {
           field: 'id',
-          filter: 'job_name=\'' + $scope.job.job_name + '\' and agency_id = ' + Services.getAgencyID()
+          filter: 'job_name="' + $scope.job.job_name + '" and agency_id = ' + Services.getAgencyID()
         };
         if (!angular.isUndefined($stateParams.jobId) && $stateParams.jobId) {
           filterObj.filter += ' and id <>' + $stateParams.jobId;

@@ -632,7 +632,7 @@ angular.module('ctApp.mapView', [
                         };
                         if(query.term)
                         {
-                            $scope.jobObj.filter+="  and job_name like '%" + query.term + "%'";
+                            $scope.jobObj.filter+=' and job_name like "%' + query.term + '%"';
                         }
             Services.jobService.get($scope.jobObj, function(remoteData) {
                 items = remoteData.record;

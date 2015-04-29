@@ -490,7 +490,7 @@ angular.module('utils.ct.filters', [])
             }
         };
     })
-  .filter('stripslashes', function() {
+  /*.filter('stripslashes', function() {
         return function(data) {
             if (data) {
                 data = data.replace(/\\'/g, "'");
@@ -501,4 +501,4 @@ angular.module('utils.ct.filters', [])
                 return "";
             }
         };
-    });
+    })*/;

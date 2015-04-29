@@ -482,7 +482,7 @@ angular.module('ctApp.schedules', [
                     limit: 5
                 };
                 if (query.term) {
-                    $scope.jobObj.filter += "  and job_name like '%" + query.term + "%'";
+                    $scope.jobObj.filter += ' and job_name like "%' + query.term + '%"';
                 }
 
                 Services.jobService.get($scope.jobObj, function(remoteData) {
@@ -517,7 +517,7 @@ angular.module('ctApp.schedules', [
                     limit: 5
                 };
                 if (query.term) {
-                    $scope.empObj.filter += "  and ( last_name like '%" + query.term + "%' or first_name like '%" + query.term + "%' )";
+                    $scope.empObj.filter +='  and (last_name like "%' + query.term + '%" or first_name like "%' + query.term + '%")';
                 }
                 Services.employeeService.get($scope.empObj, function(remoteData) {
                     items = remoteData.record;
@@ -1865,7 +1865,7 @@ angular.module('ctApp.schedules', [
                     limit: 5
                 };
                 if (query.term) {
-                    $scope.jobObj.filter += "  and job_name like '%" + query.term + "%'";
+                    $scope.jobObj.filter += '  and job_name like "%' + query.term + '%"';
                 }
 
                 Services.jobService.get($scope.jobObj, function(remoteData) {
@@ -1970,7 +1970,7 @@ angular.module('ctApp.schedules', [
                     limit: 5
                 };
                 if (query.term) {
-                    $scope.empObj.filter += "  and ( last_name like '%" + query.term + "%' or first_name like '%" + query.term + "%' )";
+                    $scope.empObj.filter += '  and (last_name like "%' + query.term + '%" or first_name like "%' + query.term + '%")';
                 }
                 Services.employeeService.get($scope.empObj, function(remoteData) {
                     items = remoteData.record;

@@ -396,7 +396,7 @@ angular.module('ctApp.employeeWeeklyHours', [
                     limit: 5
                 };
                 if (query.term) {
-                    $scope.empObj.filter += " and ( last_name like '%" + query.term + "%' or first_name like '%" + query.term + "%' )";
+                    $scope.empObj.filter += ' and ( last_name like "%' + query.term + '%" or first_name like "%' + query.term + '%" )';
                 }
                 Services.employeeService.get($scope.empObj, function(remoteData) {
                     items = remoteData.record;

@@ -505,7 +505,7 @@ angular.module('ctApp.zones', [
             };
             if(name)
             {
-                 $scope.SupervisorEmp.filter+=" and (first_name  like '%" + name + "%' OR last_name   like '%" + name + "%' )" ; 
+                 $scope.SupervisorEmp.filter+=' and (first_name  like "%' + name + '%" OR last_name   like "%' + name + '%" )' ; 
             }
             Services.employeeService.get($scope.SupervisorEmp, function(remoteData) {
                 $scope.supervisors = [];
@@ -535,7 +535,7 @@ angular.module('ctApp.zones', [
                 };
                 if(name)
                 {
-                     $scope.NotifyEmp.filter+=" and (first_name  like '%" + name + "%' OR last_name   like '%" + name + "%' )" ; 
+                     $scope.NotifyEmp.filter+=' and (first_name  like "%' + name + '%" OR last_name   like "%' + name + '%" )' ; 
                 }
                 Services.employeeService.get($scope.NotifyEmp, function(remoteData) {
                     $scope.NotifyEmployees = [];

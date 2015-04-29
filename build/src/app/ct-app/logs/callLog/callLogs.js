@@ -369,7 +369,7 @@ angular.module('ctApp.callLog', [
             limit: 5
           };
           if (query.term) {
-            $scope.jobObj.filter += ' and (job_name like \'%' + query.term + '%\')';
+            $scope.jobObj.filter += ' and (job_name like "%' + query.term + '%")';
           }
           Services.jobService.get($scope.jobObj, function (remoteData) {
             items = remoteData.record;
@@ -394,7 +394,7 @@ angular.module('ctApp.callLog', [
             limit: 5
           };
           if (query.term) {
-            $scope.employeeObj.filter += '  and (last_name like \'%' + query.term + '%\' or first_name like \'%' + query.term + '%\')';
+            $scope.employeeObj.filter += '  and (last_name like "%' + query.term + '%" or first_name like "%' + query.term + '%")';
           }
           Services.employeeService.get($scope.employeeObj, function (remoteData) {
             items = remoteData.record;

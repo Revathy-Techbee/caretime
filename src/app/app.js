@@ -237,7 +237,7 @@ angular.module('app', [
             globalLimit : globalLimit,
             globaltime : globaltime,
             time : time,
-            //siteurl: "https://securecaretime.us/caretime/index.html",
+           // siteurl: "https://securecaretime.us/caretime/index.html",
             siteurl: "http://caretimetest.bitnamiapp.com",
            timezoneKey:"K9A8OQROG3QQ", //Timezone key
 

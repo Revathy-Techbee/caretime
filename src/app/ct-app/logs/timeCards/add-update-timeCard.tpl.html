@@ -84,7 +84,7 @@
                     <label class="col-sm-2 control-label text-danger" ng-if="pageTitle=='Add New'">Clock-in Date/time</label>
                     <div class="col-sm-10">
                         <div class="input-group w-md" appendcalendar>
-                            <input type="text" readonly class="form-control w-md" date-time ng-model="timecard.clock_in" name="clock_in" required="true" partial="true" max-view="date" view="date">
+                            <input type="text" readonly class="form-control w-md" date-time ng-model="timecard.clock_in" name="clock_in" required="true" partial="true"  view="date">
                             <span class="input-group-btn">
                             
                                 <button class="btn btn-default"  type="button"><i class="glyphicon glyphicon-calendar"></i></button>
@@ -102,7 +102,7 @@
                     <label class="col-sm-2 control-label text-danger" ng-if="pageTitle=='Add New'">Clock-out Date/time</label>
                     <div class="col-sm-10">
                         <div class="input-group w-md" appendcalendar>
-                            <input type="text" readonly name="clock_out" class="form-control " date-time ng-model="timecard.clock_out" required="true" partial="true" max-view="date" view="date">
+                            <input type="text" readonly name="clock_out" class="form-control " date-time ng-model="timecard.clock_out" required="true" partial="true"  view="date">
                             <span class="input-group-btn">
                                 <button class="btn btn-default"   type="button"><i class="glyphicon glyphicon-calendar"></i></button>
                            </span>

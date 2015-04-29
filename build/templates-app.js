@@ -1564,12 +1564,12 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "                            <div class=\"col-sm-10\">\n" +
     "                                <div class=\"row\">\n" +
     "                                    <div class=\"col-md-6\" ng-class=\"{'has-error': rc.general.needsAttention(general.firstname)}\">\n" +
-    "                                        <input type=\"text\" required=\"\" name=\"firstname\" class=\"form-control\" capitalize placeholder=\"First Name\" ng-model=\"employee.firstname\" ng-pattern=\"/^[a-zA-Z\\d\\s:]*$/\" ng-blur=\"checkEmpName()\" ng-keyup=\"generateUsername()\">\n" +
+    "                                        <input type=\"text\" required=\"\" name=\"firstname\" class=\"form-control\" capitalize placeholder=\"First Name\" ng-model=\"employee.firstname\" ng-pattern=\"/^[a-zA-Z\\d\\s\\-\\':]*$/\" ng-blur=\"checkEmpName()\" ng-keyup=\"generateUsername()\">\n" +
     "                                        <span class=\"help-block\" ng-show=\"general.firstname.$error.required\n" +
     "                                && rc.general.needsAttention(general.firstname)\">First Name is required.</span>\n" +
     "                                    </div>\n" +
     "                                    <div class=\"col-md-6\" ng-class=\"{'has-error': rc.general.needsAttention(general.lastname)}\">\n" +
-    "                                        <input type=\"text\" class=\"form-control\" capitalize name=\"lastname\" required=\"\" placeholder=\"Last Name\" ng-model=\"employee.lastname\" ng-pattern=\"/^[a-zA-Z\\d\\s:]*$/\" ng-blur=\"checkEmpName()\" ng-keyup=\"generateUsername()\">\n" +
+    "                                        <input type=\"text\" class=\"form-control\" capitalize name=\"lastname\" required=\"\" placeholder=\"Last Name\" ng-model=\"employee.lastname\" ng-pattern=\"/^[a-zA-Z\\d\\s\\-\\':]*$/\" ng-blur=\"checkEmpName()\" ng-keyup=\"generateUsername()\">\n" +
     "                                        <span class=\"help-block\" ng-show=\"general.lastname.$error.required\n" +
     "                                && rc.general.needsAttention(general.lastname)\">Last Name is required.</span>\n" +
     "                                    </div>\n" +
@@ -3115,7 +3115,7 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "\n" +
     "                            <div class=\"col-sm-10\">\n" +
     "\n" +
-    "                                <input type=\"text\" class=\"form-control\" capitalize name=\"job_name\" required=\"\" placeholder=\"Job Name\" ng-pattern=\"/^[a-zA-Z\\d\\s:]*$/\"  ng-blur=\"checkJobName()\" ng-model=\"job.job_name\">\n" +
+    "                                <input type=\"text\" class=\"form-control\" capitalize name=\"job_name\" required=\"\" placeholder=\"Job Name\" ng-pattern=\"/^[a-zA-Z\\d\\s\\-\\':]*$/\"  ng-blur=\"checkJobName()\" ng-model=\"job.job_name\">\n" +
     "                                <span class=\"help-block\" ng-show=\"basic.job_name.$error.required\n" +
     "                                && rc.basic.needsAttention(basic.job_name)\">Job Name is required.</span>\n" +
     "\n" +
@@ -3821,7 +3821,7 @@ angular.module("ct-app/jobs/jobs.tpl.html", []).run(["$templateCache", function(
     "                <tbody infinite-scroll='getNextData()' infinite-scroll-disabled='disable_infinite_scroll' infinite-scroll-distance='0'>\n" +
     "                    <tr ng-repeat=\"detail in jobDetailList\" class=\"animate-repeat\">\n" +
     "                        <td>{{detail.job_code }}</td>\n" +
-    "                        <td> <span ng-bind-html=\"detail.last_clocked_in_date | iconColor\">{{detail.last_clocked_in_date  | iconColor}}</span> &nbsp;   <span ng-bind-html=\"detail.last_scheduled_date | calenderIconColor\">{{detail.last_scheduled_date  | iconColor}}</span> &nbsp; {{detail.job_name | stripslashes }}</td>\n" +
+    "                        <td> <span ng-bind-html=\"detail.last_clocked_in_date | iconColor\">{{detail.last_clocked_in_date  | iconColor}}</span> &nbsp;   <span ng-bind-html=\"detail.last_scheduled_date | calenderIconColor\">{{detail.last_scheduled_date  | iconColor}}</span> &nbsp; {{detail.job_name  }}</td>\n" +
     "                        <td>{{detail.job_zone_detail |  parseToJson:0:'zone' }}</td>\n" +
     "                        <td ng-if=\"empCountry=='' || empCountry=='United States'\">{{detail.authorized_phone_format }}</td>\n" +
     "                        <td ng-if=\"empCountry!='' && empCountry!='United States'\">{{detail.work_phone_format}}</td>\n" +
@@ -4892,7 +4892,7 @@ angular.module("ct-app/logs/timeCards/add-update-timeCard.tpl.html", []).run(["$
     "                    <label class=\"col-sm-2 control-label text-danger\" ng-if=\"pageTitle=='Add New'\">Clock-in Date/time</label>\n" +
     "                    <div class=\"col-sm-10\">\n" +
     "                        <div class=\"input-group w-md\" appendcalendar>\n" +
-    "                            <input type=\"text\" readonly class=\"form-control w-md\" date-time ng-model=\"timecard.clock_in\" name=\"clock_in\" required=\"true\" partial=\"true\" max-view=\"date\" view=\"date\">\n" +
+    "                            <input type=\"text\" readonly class=\"form-control w-md\" date-time ng-model=\"timecard.clock_in\" name=\"clock_in\" required=\"true\" partial=\"true\"  view=\"date\">\n" +
     "                            <span class=\"input-group-btn\">\n" +
     "                            \n" +
     "                                <button class=\"btn btn-default\"  type=\"button\"><i class=\"glyphicon glyphicon-calendar\"></i></button>\n" +
@@ -4910,7 +4910,7 @@ angular.module("ct-app/logs/timeCards/add-update-timeCard.tpl.html", []).run(["$
     "                    <label class=\"col-sm-2 control-label text-danger\" ng-if=\"pageTitle=='Add New'\">Clock-out Date/time</label>\n" +
     "                    <div class=\"col-sm-10\">\n" +
     "                        <div class=\"input-group w-md\" appendcalendar>\n" +
-    "                            <input type=\"text\" readonly name=\"clock_out\" class=\"form-control \" date-time ng-model=\"timecard.clock_out\" required=\"true\" partial=\"true\" max-view=\"date\" view=\"date\">\n" +
+    "                            <input type=\"text\" readonly name=\"clock_out\" class=\"form-control \" date-time ng-model=\"timecard.clock_out\" required=\"true\" partial=\"true\"  view=\"date\">\n" +
     "                            <span class=\"input-group-btn\">\n" +
     "                                <button class=\"btn btn-default\"   type=\"button\"><i class=\"glyphicon glyphicon-calendar\"></i></button>\n" +
     "                           </span>\n" +
@@ -9169,7 +9169,7 @@ angular.module("ct-app/schedules/add-update-schedule.tpl.html", []).run(["$templ
     "                                    <input type=\"radio\" ng-model=\"shift.recurrence.end.isendOccur\" value=\"2\" ng-click=\"shift.recurrence.end.occurcount=''\" name=\"ef\" class=\"ng-valid ng-dirty inputSmall\"><i></i> End on\n" +
     "                                </label>\n" +
     "                                <label class=\"radio-inline\">\n" +
-    "                                    <input type=\"text\" ng-model=\"shift.recurrence.end.date\" name=\"a\" class=\"ng-valid ng-dirty\" date-time partial=\"true\" max-view=\"date\" min-view=\"date\" view=\"date\"><i></i>\n" +
+    "                                    <input type=\"text\" ng-model=\"shift.recurrence.end.date\" name=\"a\" class=\"ng-valid ng-dirty\" date-time partial=\"true\"  min-view=\"date\" view=\"date\"><i></i>\n" +
     "                                </label>\n" +
     "                                <!--\n" +
     "                                    <div  ng-controller=\"DatepickerDemoCtrl\">\n" +

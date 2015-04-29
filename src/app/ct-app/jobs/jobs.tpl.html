@@ -65,7 +65,7 @@
                 <tbody infinite-scroll='getNextData()' infinite-scroll-disabled='disable_infinite_scroll' infinite-scroll-distance='0'>
                     <tr ng-repeat="detail in jobDetailList" class="animate-repeat">
                         <td>{{detail.job_code }}</td>
-                        <td> <span ng-bind-html="detail.last_clocked_in_date | iconColor">{{detail.last_clocked_in_date  | iconColor}}</span> &nbsp;   <span ng-bind-html="detail.last_scheduled_date | calenderIconColor">{{detail.last_scheduled_date  | iconColor}}</span> &nbsp; {{detail.job_name | stripslashes }}</td>
+                        <td> <span ng-bind-html="detail.last_clocked_in_date | iconColor">{{detail.last_clocked_in_date  | iconColor}}</span> &nbsp;   <span ng-bind-html="detail.last_scheduled_date | calenderIconColor">{{detail.last_scheduled_date  | iconColor}}</span> &nbsp; {{detail.job_name  }}</td>
                         <td>{{detail.job_zone_detail |  parseToJson:0:'zone' }}</td>
                         <td ng-if="empCountry=='' || empCountry=='United States'">{{detail.authorized_phone_format }}</td>
                         <td ng-if="empCountry!='' && empCountry!='United States'">{{detail.work_phone_format}}</td>

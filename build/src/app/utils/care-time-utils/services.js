@@ -360,22 +360,6 @@ angular.module('utils.ct.services', []).factory('HelperService', [function () {
         } else {
           return '-';
         }
-      },
-      addslashes: function addslashes(data) {
-        if (data) {
-          data = data.replace(/'/g, '\\\'');
-          return data;
-        } else {
-          return '';
-        }
-      },
-      stripslashes: function stripslashes(data) {
-        if (data) {
-          data = data.replace(/\\'/g, '\'');
-          return data;
-        } else {
-          return '';
-        }
       }
     };
   }]);

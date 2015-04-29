@@ -432,7 +432,7 @@ angular.module('utils.ct.services', [])
             }
 
         },
-        addslashes: function addslashes(data) {
+       /* addslashes: function addslashes(data) {
 
             if (data) {
                 data = data.replace(/'/g, "\\'");
@@ -452,6 +452,7 @@ angular.module('utils.ct.services', [])
             }
 
         }
+        */
 
     
         };
