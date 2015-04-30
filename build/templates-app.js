@@ -8944,9 +8944,13 @@ angular.module("ct-app/schedules/add-update-schedule.tpl.html", []).run(["$templ
     "                            <div class=\"alert alert-warning\" ng-if=\"WarningClass\">\n" +
     "                                Please Note Authorization Ends on {{ shift.authorization.enddate }}, there is no Shift added after {{shift.authorization.enddate}}\n" +
     "                            </div>\n" +
-    "                            <div class=\"alert alert-danger\" ng-if=\"showShiftError\">\n" +
-    "                               {{ShiftErrorMsg}}\n" +
-    "                              \n" +
+    "                            <div class=\"alert alert-danger\" ng-if=\"showShiftError\">                       \n" +
+    "                                <p>Date conflict for the Employee selected, please select a different employee.</p>\n" +
+    "                                <p>The following is a list of dates that conflicted</p>\n" +
+    "                                <p class=\"schedule_error\">  {{ShiftErrorMsg}}</p>                              \n" +
+    "                                <p class=\"text-right\" >\n" +
+    "                                    <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='ShiftErrorClose()'>Close</button>\n" +
+    "                                </p>                                \n" +
     "                            </div>\n" +
     "                        </div>\n" +
     "                    </div>\n" +
@@ -9209,9 +9213,13 @@ angular.module("ct-app/schedules/add-update-schedule.tpl.html", []).run(["$templ
     "                            <div class=\"alert alert-warning\" ng-if=\"WarningClass\">\n" +
     "                                Please Note Authorization Ends on {{ shift.authorization.enddate }}, there is no Shift added after {{shift.authorization.enddate}}\n" +
     "                            </div>\n" +
-    "                            <div class=\"alert alert-danger\" ng-if=\"showShiftError\">\n" +
-    "                               {{ShiftErrorMsg}}\n" +
-    "                              \n" +
+    "                            <div class=\"alert alert-danger\" ng-if=\"showShiftError\">                       \n" +
+    "                                <p>Date conflict for the Employee selected, please select a different employee.</p>\n" +
+    "                                <p>The following is a list of dates that conflicted</p>\n" +
+    "                                <p class=\"schedule_error\">  {{ShiftErrorMsg}}</p>                              \n" +
+    "                                <p class=\"text-right\" >\n" +
+    "                                    <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='ShiftErrorClose()'>Close</button>\n" +
+    "                                </p>                                \n" +
     "                            </div>\n" +
     "                        </div>\n" +
     "                    </div>\n" +

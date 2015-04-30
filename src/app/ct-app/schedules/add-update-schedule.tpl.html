@@ -130,9 +130,13 @@
                             <div class="alert alert-warning" ng-if="WarningClass">
                                 Please Note Authorization Ends on {{ shift.authorization.enddate }}, there is no Shift added after {{shift.authorization.enddate}}
                             </div>
-                            <div class="alert alert-danger" ng-if="showShiftError">
-                               {{ShiftErrorMsg}}
-                              
+                            <div class="alert alert-danger" ng-if="showShiftError">                       
+                                <p>Date conflict for the Employee selected, please select a different employee.</p>
+                                <p>The following is a list of dates that conflicted</p>
+                                <p class="schedule_error">  {{ShiftErrorMsg}}</p>                              
+                                <p class="text-right" >
+                                    <button type="button" class="btn btn-default btn-rounded" ng-click='ShiftErrorClose()'>Close</button>
+                                </p>                                
                             </div>
                         </div>
                     </div>
@@ -395,9 +399,13 @@
                             <div class="alert alert-warning" ng-if="WarningClass">
                                 Please Note Authorization Ends on {{ shift.authorization.enddate }}, there is no Shift added after {{shift.authorization.enddate}}
                             </div>
-                            <div class="alert alert-danger" ng-if="showShiftError">
-                               {{ShiftErrorMsg}}
-                              
+                            <div class="alert alert-danger" ng-if="showShiftError">                       
+                                <p>Date conflict for the Employee selected, please select a different employee.</p>
+                                <p>The following is a list of dates that conflicted</p>
+                                <p class="schedule_error">  {{ShiftErrorMsg}}</p>                              
+                                <p class="text-right" >
+                                    <button type="button" class="btn btn-default btn-rounded" ng-click='ShiftErrorClose()'>Close</button>
+                                </p>                                
                             </div>
                         </div>
                     </div>

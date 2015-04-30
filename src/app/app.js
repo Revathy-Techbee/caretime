@@ -210,8 +210,8 @@ angular.module('app', [
     .factory('Services', ['$resource', "$http","$location", function($resource, $http,$location) {
          var fullpath=($location.$$path).split("/");
       
-        var baseurl = "http://dreamfactory.caretimetest.bitnamiapp.com/";
-        //var baseurl = "https://securecaretime.us/";
+        //var baseurl = "http://dreamfactory.caretimetest.bitnamiapp.com/";
+        var baseurl = "https://securecaretime.us/";
      
        // var serviceName = "caretime"; //"caretimebluesaki";
        var serviceName = fullpath[2];
@@ -221,8 +221,8 @@ angular.module('app', [
         var time = new Date();
         var globaltime = "";
        
-        var appUrl = "http://caretimetest.bitnamiapp.com";
-        //var appUrl = "https://securecaretime.us/caretime/index.html";
+        //var appUrl = "http://caretimetest.bitnamiapp.com";
+        var appUrl = "https://securecaretime.us/caretime/index.html";
 
         return{
             baseurl :baseurl,
@@ -230,15 +230,15 @@ angular.module('app', [
             appName :appName,
             currentpath:'/files',
             uploadListingPath:'caretime/uploads/',
-            //mailUrl:'https://securecaretime.us/mailcodes/mailgun/mail.php',
-            mailUrl:'http://caretimetest.bitnamiapp.com/mailcodes/mailgun/mail.php',
+            mailUrl:'https://securecaretime.us/mailcodes/mailgun/mail.php',
+            //mailUrl:'http://caretimetest.bitnamiapp.com/mailcodes/mailgun/mail.php',
             appUrl : appUrl,
             //globalAgency : globalAgency,
             globalLimit : globalLimit,
             globaltime : globaltime,
             time : time,
-           // siteurl: "https://securecaretime.us/caretime/index.html",
-            siteurl: "http://caretimetest.bitnamiapp.com",
+            siteurl: "https://securecaretime.us/caretime/index.html",
+            //siteurl: "http://caretimetest.bitnamiapp.com",
            timezoneKey:"K9A8OQROG3QQ", //Timezone key
 
            

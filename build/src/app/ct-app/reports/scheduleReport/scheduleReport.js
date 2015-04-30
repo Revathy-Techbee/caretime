@@ -55,7 +55,7 @@ angular.module('ctApp.scheduleReport', [
           'limit': $scope.call_limit,
           'offset': offset,
           'include_count': true,
-          'order': fieldname.id + ' desc',
+          'order': fieldname.id + ',id desc',
           'filter': 'employee_code<>\'\' and job_id<>\'\' and ref_in_at >=\'' + fdate + '\' and ref_out_at <=\'' + ldate + '\'  and agency_id = ' + Services.getAgencyID()
         };
       if (fieldval && !angular.isUndefined(fieldval.code) && fieldval.code) {
@@ -239,8 +239,7 @@ angular.module('ctApp.scheduleReport', [
         $scope.numcount = 0;
         $scope.downlodFilterObj = {
           'include_count': true,
-          'filter': 'employee_code<>"" and job_id<>"" and ref_in_at >="' + fdate + '" and ref_out_at <="' + ldate + '" and agency_id = ' + Services.getAgencyID(),
-          'order': 'id desc'
+          'filter': 'employee_code<>"" and job_id<>"" and ref_in_at >="' + fdate + '" and ref_out_at <="' + ldate + '" and agency_id = ' + Services.getAgencyID()
         };
         if ($scope.reportFilters.field_value && !angular.isUndefined($scope.reportFilters.field_value.code) && $scope.reportFilters.field_value.code) {
           if ($scope.reportFilters.field.id == 'job_id') {
@@ -253,12 +252,15 @@ angular.module('ctApp.scheduleReport', [
           $scope.downlodFilterObj.filter = $scope.downlodFilterObj.filter + ' and zone_id in(' + $scope.zone_id + ')';
         }
         if ($scope.reportFilters.field.id == 'ref_in_at') {
+          $scope.downlodFilterObj.order = 'ref_in_at,id desc';
           $scope.downlodFilterObj.fields = 'ref_in_at,in_date ,job_id ,sum(duriation)';
           $scope.downlodFilterObj.filter = $scope.downlodFilterObj.filter + '  GROUP BY in_date';
         } else if ($scope.reportFilters.field.id == 'job_id') {
+          $scope.downlodFilterObj.order = 'job_id,id desc';
           $scope.downlodFilterObj.fields = 'job ,job_id ,sum(duriation)';
           $scope.downlodFilterObj.filter = $scope.downlodFilterObj.filter + '  GROUP BY job_id';
         } else {
+          $scope.downlodFilterObj.order = 'employee_code,id desc';
           $scope.downlodFilterObj.fields = 'employee,employee_code,sum(duriation)';
           $scope.downlodFilterObj.filter = $scope.downlodFilterObj.filter + '  GROUP BY employee_code';
         }

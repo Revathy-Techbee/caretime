@@ -204,8 +204,8 @@ angular.module('app', [
   '$location',
   function ($resource, $http, $location) {
     var fullpath = $location.$$path.split('/');
-    var baseurl = 'http://dreamfactory.caretimetest.bitnamiapp.com/';
-    //var baseurl = "https://securecaretime.us/";
+    //var baseurl = "http://dreamfactory.caretimetest.bitnamiapp.com/";
+    var baseurl = 'https://securecaretime.us/';
     // var serviceName = "caretime"; //"caretimebluesaki";
     var serviceName = fullpath[2];
     var appName = 'caretime';
@@ -213,20 +213,20 @@ angular.module('app', [
     globalAgency = 1;
     var time = new Date();
     var globaltime = '';
-    var appUrl = 'http://caretimetest.bitnamiapp.com';
-    //var appUrl = "https://securecaretime.us/caretime/index.html";
+    //var appUrl = "http://caretimetest.bitnamiapp.com";
+    var appUrl = 'https://securecaretime.us/caretime/index.html';
     return {
       baseurl: baseurl,
       serviceName: serviceName,
       appName: appName,
       currentpath: '/files',
       uploadListingPath: 'caretime/uploads/',
-      mailUrl: 'http://caretimetest.bitnamiapp.com/mailcodes/mailgun/mail.php',
+      mailUrl: 'https://securecaretime.us/mailcodes/mailgun/mail.php',
       appUrl: appUrl,
       globalLimit: globalLimit,
       globaltime: globaltime,
       time: time,
-      siteurl: 'http://caretimetest.bitnamiapp.com',
+      siteurl: 'https://securecaretime.us/caretime/index.html',
       timezoneKey: 'K9A8OQROG3QQ',
       getZoneDetail: function getZoneDetail(zone_id) {
         return $http.get(baseurl + '/rest/' + serviceName + '/agency_zones/?app_name=' + appName + '&fields=*&filter=id=' + zone_id + '&include_count=true');

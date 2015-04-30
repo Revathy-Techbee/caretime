@@ -660,6 +660,9 @@ angular.module('ctApp.schedules', [
             $modalInstance.dismiss('cancel');
 
         };
+        
+       
+
         $scope.empSteps = {};
         $scope.savedisable = 0;
         $scope.shift = {};
@@ -1621,10 +1624,11 @@ angular.module('ctApp.schedules', [
                         } else {
                             $scope.savedisable = 0;
                             $scope.showShiftError = true;
-                            $scope.ShiftErrorMsg = "Date already allocated [" + err_date.substring(0, err_date.length - 2) + "]";
-                            $timeout(function() {
+                            $scope.ShiftErrorMsg =  err_date.substring(0, err_date.length - 2) ;
+                            /*$timeout(function() {
                                 $scope.showShiftError = false;
                             }, 5000);
+                            */
                             return false;
                         }
 
@@ -2073,6 +2077,9 @@ angular.module('ctApp.schedules', [
 
             }
 
+        };
+         $scope.ShiftErrorClose = function() {
+           $scope.showShiftError=false;
         };
 
         $scope.removeShifts = function() {

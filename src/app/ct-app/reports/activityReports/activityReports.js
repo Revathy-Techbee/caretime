@@ -359,31 +359,30 @@ angular.module('ctApp.activityReports', [
                 var jobname = '-';
                 var call_status = '-';
                 var created_by = '-';
-                if (value.timestamp !== null) {
+                if (value.timestamp !== null && value.timestamp) {
                     date = value.timestamp;
                 }
-                if (value.phone_number !== null) {
+                if (value.phone_number !== null && value.phone_number) {
                     phone = value.phone_number;
                 }
-                if (value.call_duriation !== null) {
+                if (value.call_duriation !== null && value.call_duriation) {
                     duration = value.call_duriation;
                 }
                  
-                if (value.log_type !== null) {
+                if (value.log_type !== null && value.log_type) {
                     logtype = value.log_type;
                 }
 
-
-                if (value.employee_code !== null) {
+                if (value.employee_code !== null && value.employee_code) {
                     empname = value.employee_code;
                 }
-                if (value.job_code !== null) {
+                if (value.job_code !== null && value.job_code) {
                     jobname = value.job_code;
                 }
-                if (value.call_status !== null) {
+                if (value.call_status !== null && value.call_status) {
                     call_status = value.call_status;
                 }
-                if (value.created_by !== null) {
+                if (value.created_by !== null && value.created_by) {
                     created_by = value.created_by;
                 }
                 resultarray.push([{

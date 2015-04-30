@@ -307,11 +307,12 @@ angular.module('ctApp.jobTimecard', [
             };
 
             resultarray = [];
+            $jobcodelist=[];
             $scope.gettotal = HelperService.getAsSum($scope.resultData, "Job_code");
             angular.forEach($scope.resultData, function(value, key) {
 
                 if (angular.isUndefined(resultarray[value.Job_code])) { // to create header for each job
-
+                    $jobcodelist.push(value.Job_code);
                     resultarray[value.Job_code] = [];
                     var sum_total = "Job Rounded Total 0 {0h 0m}";
                     var non_rounded_total = "Job Total 0 {0h 0m}";
@@ -438,14 +439,16 @@ angular.module('ctApp.jobTimecard', [
                     ],
 
                 });
-                angular.forEach(resultarray, function(item, key) {
+                                //console.log(resultarray);
+
+                angular.forEach($jobcodelist, function(item, key) {
 
                     $scope.docDefinition["content"].push({
                         style: 'tableExample',
 
                         table: {
                             widths: [80, 60, 70, 50, 50, 100, 40],
-                            body: resultarray[key]
+                            body: resultarray[item]
                         },
 
                         layout: {

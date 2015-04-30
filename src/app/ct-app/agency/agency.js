@@ -397,8 +397,8 @@ function($scope, Services, $state, $modal, HelperService, $stateParams, $localSt
                 }
                 if ($scope.mymapVariable.geometry) {
                     $scope.agency.long_lat = {};
-                    $scope.agency.long_lat.long = $scope.mymapVariable.geometry.location['D'];
-                    $scope.agency.long_lat.lat = $scope.mymapVariable.geometry.location['k'];
+                    $scope.agency.long_lat.long = $scope.mymapVariable.geometry.location['F'];
+                    $scope.agency.long_lat.lat = $scope.mymapVariable.geometry.location['A'];
                     $scope.getmyTimezone($scope.agency.long_lat.lat, $scope.agency.long_lat.long);
                 }
 
