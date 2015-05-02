@@ -50,7 +50,7 @@ angular.module('ctApp.employeeList', [
     $scope.loadData = function (fdate, ldate, zone, fieldname, offset) {
       var filterObj;
       filterObj = {
-        'fields': 'access_code,last_name,first_name,agency_empid,primary_address1,primary_city,primary_state,primary_zip,birth_date,zone_detail,is_supervisor,status,last_clocked_in_date,last_scheduled_date,created_on',
+        'fields': 'access_code,last_name,first_name,agency_empid,primary_address1,primary_city,primary_state,primary_zip,birth_date,zone_detail,is_supervisor,status,last_clocked_in_date,last_scheduled_date,created_on,primary_phone,country',
         'limit': $scope.call_limit,
         'offset': offset,
         'include_count': true,
@@ -77,7 +77,8 @@ angular.module('ctApp.employeeList', [
             'status': HelperService.checkstatus(item.status),
             'last_clocked_in_date': item.last_clocked_in_date ? HelperService.formatUTCOnlyDate(item.last_clocked_in_date, $localStorage.user_info.country) : 'Not Yet Clockedin',
             'last_scheduled_date': item.last_scheduled_date ? HelperService.formatUTCOnlyDate(item.last_scheduled_date, $localStorage.user_info.country) : 'Not Yet Scheduled',
-            'created_on': item.created_on ? HelperService.formatUTCOnlyDate(item.created_on, $localStorage.user_info.country) : 'No Created Date'
+            'created_on': item.created_on ? HelperService.formatUTCOnlyDate(item.created_on, $localStorage.user_info.country) : 'No Created Date',
+            'primary_phone': HelperService.phoneFormat(item.primary_phone, item.country)
           });
         });
         if (data.meta.count > offset + $scope.call_limit) {

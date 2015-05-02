@@ -7028,6 +7028,7 @@ angular.module("ct-app/reports/employeeList/employeeList.tpl.html", []).run(["$t
     "                <wj-flex-grid-column header=\"Birthday\" is-read-only=\"true\" binding=\"birth_date\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Zone\" is-read-only=\"true\" binding=\"zone_detail\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Employee Level\" is-read-only=\"true\" binding=\"is_supervisor\" > </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"Work Phone\" is-read-only=\"true\" binding=\"primary_phone\" > </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Current Status\" is-read-only=\"true\" binding=\"status\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Created Date\" is-read-only=\"true\" binding=\"created_on\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Last Clocked IN\" is-read-only=\"true\" binding=\"last_clocked_in_date\" > </wj-flex-grid-column>\n" +
