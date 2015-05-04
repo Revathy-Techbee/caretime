@@ -200,8 +200,8 @@ angular.module('ctApp.zones', [
  * Zone Controller....
  * **/
 
-.controller("AddUpdateZoneCtrl", ["$scope", "Services", "$state", "$stateParams", "$timeout", "$localStorage", "HelperService",
-    function AddUpdateZoneCtrl($scope, Services, $state, $stateParams, $timeout, $localStorage, HelperService) {
+.controller("AddUpdateZoneCtrl", ["$scope", "Services", "$state", "$stateParams", "$timeout", "$localStorage", "HelperService","$window",
+    function AddUpdateZoneCtrl($scope, Services, $state, $stateParams, $timeout, $localStorage, HelperService,$window) {
         $scope.default_ivr_number = null;
         $scope.zone_id = $stateParams.zoneId;
         $scope.zone = {};
@@ -217,6 +217,7 @@ angular.module('ctApp.zones', [
         $scope.zone.ivr_number = null;
         $scope.zoneDBField = null;
         $scope.show_zone_form_loader = false;
+        $scope.generateZonecode_count = 0;
 
        /* $scope.employeeList = function() {
             $scope.noemployee = 0;
@@ -294,7 +295,7 @@ angular.module('ctApp.zones', [
 
 
         $scope.getIVRDefault();
-        $scope.generateZonecode = function(lastIdDB) {
+       /* $scope.generateZonecode = function(lastIdDB) {
             var temp = lastIdDB;
             var characters = 0;
             if (($localStorage.configCode.zone) && ($localStorage.configCode.zone == "4")) {
@@ -306,6 +307,20 @@ angular.module('ctApp.zones', [
             }
             return characters + temp;
         };
+        */
+         // coded by Revathy to get  Zone code 
+        $scope.getZonecode = function() {
+            
+                var characters = 0;
+            if ($localStorage.configCode.zone) {
+                getminimum = Math.pow(10, ($localStorage.configCode.zone - 1));
+                characters = (Math.pow(10, ($localStorage.configCode.zone))) - getminimum;
+            }
+            $scope.zoneDBField.zone_code = $window.Math.floor($window.Math.random() * characters) + getminimum;
+            
+
+        };
+
 
         $scope.zoneManage = function(step) {
             $scope.showerrorMsg = false;
@@ -376,7 +391,7 @@ angular.module('ctApp.zones', [
 
                     if ($scope.zone_id) { // means it is in edit state
                         $scope.zoneDBField.edited_on = moment().utc();
-                        $scope.zoneDBField.zone_code = $scope.zone.zone_code;
+                        //$scope.zoneDBField.zone_code = $scope.zone.zone_code;
                         $scope.zoneDBField.edited_by =JSON.stringify({
                             "username": $localStorage.user_info.username,
                             "firstname": $localStorage.user_info.first_name,
@@ -394,75 +409,9 @@ angular.module('ctApp.zones', [
                             "user_id": $localStorage.user_info.user_id
                         });
                     }
+                    $scope.addEditZone();
 
-                    if ($scope.zone_id) {
-                        // means it is in edit state
-
-                      /*  Services.employeeZones.get({
-                            filter: "zone_code='" + $scope.zone.zone_code + "'"
-                        }, function(data) {
-                            if ($scope.zone.zone_code != $scope.zone.zone_code1) {
-                                if (data.record.length >= 1) {
-                                    showMessageFunc("Zone code is already exist.", "danger");
-                                    $scope.show_zone_form_loader = false;
-                                    return false;
-                                } else {
-                                    Services.employeeZones.update({
-                                        id: $stateParams.zoneId
-                                    }, $scope.zoneDBField, function(data) {
-                                        showMessageFunc("Zone detail edited sucessfully.", "success", function() {
-                                            $scope.show_zone_form_loader = false;
-                                            $timeout(function() {
-                                                $scope.showerrorMsg = false;
-                                                $state.go("ctApp.zones");
-                                            }, 3000);
-                                        });
-                                    });
-
-                                }
-                            } else {*/
-                                Services.employeeZones.update({
-                                    id: $stateParams.zoneId
-                                }, $scope.zoneDBField, function(data) {
-                                    $scope.show_zone_form_loader = false;
-                                    showMessageFunc("Zone detail edited sucessfully.", "success", function() {
-                                        $timeout(function() {
-                                            $scope.showerrorMsg = false;
-                                            $state.go("ctApp.zones");
-                                        }, 3000);
-                                    });
-                                });
-                           /* }
-                        });*/
-
-                    } else {
-                       /* Services.employeeZones.get({
-                            filter: "zone_code='" + $scope.zone.zone_code + "'"
-                        }, function(data) {
-                            if (data.record.length >= 1) {
-                                $scope.show_zone_form_loader = false;
-                                showMessageFunc("Zone code is already exist.", "danger");
-                                return false;
-                            } else {*/
-                                Services.employeeZones.save($scope.zoneDBField, function(data) {
-                                    $scope.zoneDBField.zone_code = $scope.generateZonecode(data.id);
-                                    Services.employeeZones.update({
-                                        id: data.id
-                                    }, $scope.zoneDBField, function(data) {
-                                        showMessageFunc("New Zone added sucessfully.", "success", function() {
-                                            $scope.show_zone_form_loader = false;
-                                            $timeout(function() {
-                                                $scope.showerrorMsg = false;
-                                                $state.go("ctApp.zones");
-                                            }, 3000);
-                                        });
-                                    });
-                                });
-
-                          /*  }
-                        });*/
-
-                    }
+                    
                 }
                 else
                 {
@@ -480,7 +429,55 @@ angular.module('ctApp.zones', [
             }
 
         };
+        $scope.addEditZone = function() {
+            if ($scope.zone_id) { // means it is in edit state                     
+                Services.employeeZones.update({
+                    id: $stateParams.zoneId
+                }, $scope.zoneDBField, function(data) {
+                    $scope.show_zone_form_loader = false;
+                    showMessageFunc("Zone detail edited sucessfully.", "success", function() {
+                        $timeout(function() {
+                            $scope.showerrorMsg = false;
+                            $state.go("ctApp.zones");
+                        }, 3000);
+                    });
+                });
+            } else {
+                $scope.getZonecode();
+                Services.employeeZones.get({
+                    filter: "zone_code='" + $scope.zoneDBField.zone_code + "'"
+                }, function(data) {
+                    if (data.record.length >= 1) {
+                        $scope.generateZonecode_count++;
+                        if ($scope.generateZonecode_count < 5) {
+                            $scope.getZonecode();
+                            $scope.addEditZone();
+                        } else {
+                            $scope.show_zone_form_loader = false;
+                            showMessageFunc("Conflict occur in zone code,try again if the problem persists please contact Administrator !!!", "danger");
+                            return false;
+                        }
+                    } else {
+                        Services.employeeZones.save($scope.zoneDBField, function(data) {
+                           // $scope.zoneDBField.zone_code = $scope.generateZonecode(data.id);
+                            Services.employeeZones.update({
+                                id: data.id
+                            }, $scope.zoneDBField, function(data) {
+                                showMessageFunc("New Zone added sucessfully.", "success", function() {
+                                    $scope.show_zone_form_loader = false;
+                                    $timeout(function() {
+                                        $scope.showerrorMsg = false;
+                                        $state.go("ctApp.zones");
+                                    }, 3000);
+                                });
+                            });
+                        });
 
+                    }
+                });
+
+            }
+        };
         var showMessageFunc = function(error_msg, error_class, callback) {
             $scope.ErrorMsg = error_msg || "Operation was successfull.";
             $scope.ErrorClass = error_class || "success";
