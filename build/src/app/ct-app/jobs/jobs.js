@@ -877,8 +877,9 @@ angular.module('ctApp.jobs', [
             /* $scope.job.long_lat.long = $scope.mymapVariable.geometry.location['D'];
                             $scope.job.long_lat.lat = $scope.mymapVariable.geometry.location['k'];
                             */
-            $scope.job.long_lat.long = $scope.mymapVariable.geometry.location['F'];
-            $scope.job.long_lat.lat = $scope.mymapVariable.geometry.location['A'];
+            //$scope.mymapVariable.geometry.location.lat()
+            $scope.job.long_lat.long = $scope.mymapVariable.geometry.location.lng();
+            $scope.job.long_lat.lat = $scope.mymapVariable.geometry.location.lat();
             $scope.getmyTimezone($scope.job.long_lat.lat, $scope.job.long_lat.long);
           }
         }

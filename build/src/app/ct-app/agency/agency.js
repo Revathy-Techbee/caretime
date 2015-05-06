@@ -329,8 +329,8 @@ angular.module('ctApp.agency', ['ui.router']).config([
           }
           if ($scope.mymapVariable.geometry) {
             $scope.agency.long_lat = {};
-            $scope.agency.long_lat.long = $scope.mymapVariable.geometry.location['F'];
-            $scope.agency.long_lat.lat = $scope.mymapVariable.geometry.location['A'];
+            $scope.agency.long_lat.long = $scope.mymapVariable.geometry.location.lng();
+            $scope.agency.long_lat.lat = $scope.mymapVariable.geometry.location.lat();
             $scope.getmyTimezone($scope.agency.long_lat.lat, $scope.agency.long_lat.long);
           }  //}
         }

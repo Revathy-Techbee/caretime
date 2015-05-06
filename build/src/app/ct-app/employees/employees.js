@@ -1146,8 +1146,8 @@ angular.module('ctApp.employees', [
           }
           if ($scope.mymapVariable.geometry) {
             $scope.employee.long_lat = {};
-            $scope.employee.long_lat.long = $scope.mymapVariable.geometry.location['F'];
-            $scope.employee.long_lat.lat = $scope.mymapVariable.geometry.location['A'];
+            $scope.employee.long_lat.long = $scope.mymapVariable.geometry.location.lng();
+            $scope.employee.long_lat.lat = $scope.mymapVariable.geometry.location.lat();
             $scope.getmyTimezone($scope.employee.long_lat.lat, $scope.employee.long_lat.long);
           }
         }

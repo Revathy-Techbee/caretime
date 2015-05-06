@@ -235,6 +235,7 @@ angular.module('utils.ct.directives', ['ui.load']).directive('uiModule', [
         scope.gPlace = new google.maps.places.Autocomplete(element[0], options);
         google.maps.event.addListener(scope.gPlace, 'place_changed', function () {
           scope.$apply(function () {
+            console.log(element.val());
             model.$setViewValue(element.val());
           });
         });
@@ -264,7 +265,7 @@ angular.module('utils.ct.directives', ['ui.load']).directive('uiModule', [
           // When the user selects an address from the dropdown,
           // populate the address fields in the form.
           google.maps.event.addListener(autocomplete, 'place_changed', function () {
-            fillInAddress();
+            //fillInAddress();
             return false;  //$scope.apply();
           });
         }
