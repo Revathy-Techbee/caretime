@@ -79,11 +79,13 @@ angular.module('ctApp.employeeTimecard', [
                         "clockout": HelperService.formatingDate(item.clockout,$localStorage.user_info.country),
                         "work_duration": item.work_duration,
                         "work_duration_non_rounded_number": (item.work_duration_non_rounded_number) ? Number(parseFloat(item.work_duration_non_rounded_number.replace(',', ''))) : Number(0),
-                        /* "work_duration_non_rounded_number": Number(item.work_duration_non_rounded_number),*/
-                        "work_duration_formated": (item.work_duration_non_rounded_number) ? HelperService.formating_hours(HelperService.floatToTime(parseFloat(item.work_duration_non_rounded_number.replace(',', '')))) : "(0h 0m)",
+                        "work_duration_formated": (item.work_duration) ? HelperService.formating_hours(item.work_duration) : "(0h 0m)",
+                        //"work_duration_formated": (item.work_duration_non_rounded_number) ? HelperService.formating_hours(HelperService.floatToTime(parseFloat(item.work_duration_non_rounded_number.replace(',', '')))) : "(0h 0m)",
+
                         "work_duration_rounded": item.work_duration_rounded,
                         "work_duration_rounded_number": (item.work_duration_rounded_number) ? Number(parseFloat(item.work_duration_rounded_number.replace(',', ''))) : Number(0),
-                        "work_duration_rounded_formated": (item.work_duration_rounded_number) ? HelperService.formating_hours(HelperService.floatToTime(parseFloat(item.work_duration_rounded_number.replace(',', '')))) : "(0h 0m)"
+                        "work_duration_rounded_formated": (item.work_duration_rounded) ? HelperService.formating_hours(item.work_duration_rounded) : "(0h 0m)"
+                       // "work_duration_rounded_formated": (item.work_duration_rounded_number) ? HelperService.formating_hours(HelperService.floatToTime(parseFloat(item.work_duration_rounded_number.replace(',', '')))) : "(0h 0m)"
 
                     });
                 });

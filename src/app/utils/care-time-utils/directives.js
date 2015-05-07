@@ -247,7 +247,6 @@ angular.module('utils.ct.directives', ['ui.load'])
 
                 google.maps.event.addListener(scope.gPlace, 'place_changed', function() {
                     scope.$apply(function() {
-                        console.log(element.val());
                         model.$setViewValue(element.val());
                     });
                 });

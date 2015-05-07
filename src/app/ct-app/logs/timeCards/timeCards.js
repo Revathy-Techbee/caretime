@@ -896,33 +896,35 @@ angular.module('ctApp.timeCard', [
                     }
                     a = moment($scope.timecard.newClockin);
                     b = moment($scope.timecard.newClockout);
-                    $scope.timecard.newduration = HelperService.floatToTime(b.diff(a, 'hours', true));
-                    checkclockin = moment($scope.timecard.newClockin).format("YYYY-MM-DD");
+                    if((moment($scope.timecard.newClockin).unix() !=  moment($scope.timecard.newClockout).unix()) || (i===0))
+                    {
+                        $scope.timecard.newduration = HelperService.floatToTime(b.diff(a, 'hours', true));
+                        checkclockin = moment($scope.timecard.newClockin).format("YYYY-MM-DD");
 
-                    if (!angular.isUndefined($scope.timecard.authorization) && !angular.isUndefined($scope.timecard.authorization.id)) {
-                        if ((moment($scope.timecard.authorization.enddate).unix() >= moment(checkclockin).unix()) && (moment($scope.timecard.authorization.startdate).unix() <= moment(checkclockin).unix())) {
+                        if (!angular.isUndefined($scope.timecard.authorization) && !angular.isUndefined($scope.timecard.authorization.id)) {
+                            if ((moment($scope.timecard.authorization.enddate).unix() >= moment(checkclockin).unix()) && (moment($scope.timecard.authorization.startdate).unix() <= moment(checkclockin).unix())) {
+                                $scope.newInOut.push({
+                                    "clockin": $scope.timecard.newClockin,
+                                    "clockout": $scope.timecard.newClockout,
+                                    "duration": $scope.timecard.newduration
+                                });
+                            } else {
+                                $scope.authWarning = true;
+                                break;
+
+
+                            }
+                        } else {
                             $scope.newInOut.push({
                                 "clockin": $scope.timecard.newClockin,
                                 "clockout": $scope.timecard.newClockout,
                                 "duration": $scope.timecard.newduration
                             });
-                        } else {
-                            $scope.authWarning = true;
-                            break;
-
-
                         }
-                    } else {
-                        $scope.newInOut.push({
-                            "clockin": $scope.timecard.newClockin,
-                            "clockout": $scope.timecard.newClockout,
-                            "duration": $scope.timecard.newduration
-                        });
+
                     }
 
-                   
-
-                    $scope.timecard.newClockin = moment(moment(moment($scope.timecard.newClockin).format('YYYY-MM-DD')).add(1, 'days')).format('YYYY-MM-DD') + ' 00:01';
+                    $scope.timecard.newClockin = moment(moment(moment($scope.timecard.newClockin).format('YYYY-MM-DD')).add(1, 'days')).format('YYYY-MM-DD') + ' 00:00';
 
                     i++;
                 }
