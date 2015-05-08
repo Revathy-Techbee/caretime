@@ -360,6 +360,24 @@ angular.module('utils.ct.services', []).factory('HelperService', [function () {
         } else {
           return '-';
         }
+      },
+      calcHours: function calcHours(smallest, biggest) {
+        duration = '';
+        if (smallest && biggest) {
+          hours = 0;
+          minutes = 0;
+          if (biggest > smallest) {
+            seconds = biggest - smallest;
+            days = Math.floor(seconds / 86400);
+            hours = Math.floor((seconds - days * 86400) / 3600);
+            minutes = Math.floor((seconds - days * 86400 - hours * 3600) / 60);
+            if (seconds >= 86400) {
+              hours = days * 24;
+            }
+          }
+          duration = hours + ':' + minutes;
+        }
+        return duration;
       }
     };
   }]);
