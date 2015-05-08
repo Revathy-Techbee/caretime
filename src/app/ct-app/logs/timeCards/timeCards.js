@@ -894,19 +894,11 @@ angular.module('ctApp.timeCard', [
                         $scope.timecard.newClockout = moment($scope.timecard.clock_out).format('YYYY-MM-DD HH:mm');
 
                     }
-                    //a = moment($scope.timecard.newClockin);
-                    //b = moment($scope.timecard.newClockout);
-                    
-
-
+                    a = moment($scope.timecard.newClockin);
+                    b = moment($scope.timecard.newClockout);
                     if((moment($scope.timecard.newClockin).unix() !=  moment($scope.timecard.newClockout).unix()) || (i===0))
                     {
-
-                    dur_clockin=moment(moment($scope.timecard.newClockin).format('YYYY-MM-DD HH:mm')).unix();
-                    dur_clockout=moment(moment($scope.timecard.newClockout).format('YYYY-MM-DD HH:mm')).unix();    
-                    $scope.timecard.newduration=HelperService.calcHours(dur_clockin,dur_clockout);
-
-                       // $scope.timecard.newduration = HelperService.floatToTime(b.diff(a, 'hours', true));
+                        $scope.timecard.newduration = HelperService.floatToTime(b.diff(a, 'hours', true));
                         checkclockin = moment($scope.timecard.newClockin).format("YYYY-MM-DD");
 
                         if (!angular.isUndefined($scope.timecard.authorization) && !angular.isUndefined($scope.timecard.authorization.id)) {
@@ -1492,13 +1484,8 @@ angular.module('ctApp.timeCard', [
                     duration = a.diff(b, 'hours', true);
 
                     if (duration >= 0) {
-                        /*
                         duration = a.diff(b, 'hours', true);
                         $scope.timecard.duration = HelperService.floatToTime(duration);
-                        */
-                        dur_clockin=moment(moment($scope.timecard.clock_in).format('YYYY-MM-DD HH:mm')).unix();
-                        dur_clockout=moment(moment(newValue).format('YYYY-MM-DD HH:mm')).unix();
-                        $scope.timecard.duration=HelperService.calcHours(dur_clockin,dur_clockout);
                     } else {
                         $scope.timecard.clock_out = '';
 
@@ -1526,24 +1513,16 @@ angular.module('ctApp.timeCard', [
                     if (dur < 0) {
                         $scope.timecard.clock_in = '';
                     } else {
-
                         if ($scope.timecardId) {
                             if ($scope.log_type == 2) {
                                 $scope.timecard.duration = $scope.timecard.duration;
                             }
                             if ($scope.log_type == 1) {
-                                dur_clockin=moment(moment(newValue).format('YYYY-MM-DD HH:mm')).unix();
-                                dur_clockout=moment(moment($scope.timecard.clock_out).format('YYYY-MM-DD HH:mm')).unix();                               
-                                $scope.timecard.duration=HelperService.calcHours(dur_clockin,dur_clockout);
-                                //$scope.timecard.duration = HelperService.floatToTime(b.diff(a, 'hours', true));
+                                $scope.timecard.duration = HelperService.floatToTime(b.diff(a, 'hours', true));
                             }
 
                         } else {
-                           dur_clockin=moment(moment(newValue).format('YYYY-MM-DD HH:mm')).unix();
-                           dur_clockout=moment(moment($scope.timecard.clock_out).format('YYYY-MM-DD HH:mm')).unix();                               
-                           $scope.timecard.duration=HelperService.calcHours(dur_clockin,dur_clockout);
-
-                            //$scope.timecard.duration = HelperService.floatToTime(dur);
+                            $scope.timecard.duration = HelperService.floatToTime(dur);
                         }
                     }
 
