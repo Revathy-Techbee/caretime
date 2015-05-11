@@ -136,6 +136,7 @@ angular.module('ctApp.tasks', ['ui.router']).config([
     $scope.taskDBField = null;
     $scope.show_task_form_loader = false;
     $scope.task.status = 1;
+    $scope.savedisable = 0;
     $scope.getTaskDetail = function () {
       if ($scope.task_id) {
         $scope.pageTitle = 'Update';
@@ -151,44 +152,67 @@ angular.module('ctApp.tasks', ['ui.router']).config([
       }
     };
     $scope.getTaskDetail();
-    $scope.taskManage = function (step) {
+    $scope.taskManage = function () {
       $scope.showerrorMsg = false;
       if ($scope.addUpdateTaskForm.$valid) {
         $scope.show_task_form_loader = true;
-        $scope.taskDBField = {
-          task_name: $scope.task.name,
-          status: $scope.task.status
+        $scope.savedisable = 1;
+        $scope.filterObj = {
+          field: 'id',
+          filter: 'task_name="' + $scope.task.name + '" and agency_id = ' + Services.getAgencyID()
         };
-        if ($scope.task_id) {
-        } else {
-          $scope.taskDBField.agency_id = Services.getAgencyID();
-          $scope.taskDBField.created_date = moment().utc();
-          $scope.taskDBField.modified_date = moment().utc();  /* $scope.taskDBField.created_by = JSON.stringify({
-                         name: $localStorage.user_info.username,
-                         id: $localStorage.user_info.user_id
-                     });*/
+        if (!angular.isUndefined($scope.task_id) && $scope.task_id) {
+          $scope.filterObj.filter += ' and id <>' + $scope.task_id;
         }
-        if ($scope.task_id) {
-          Services.tasksName.update({ id: $stateParams.taskId }, $scope.taskDBField, function (data) {
+        Services.tasksName.get($scope.filterObj, function (data) {
+          if (data.record.length > 0) {
             $scope.show_task_form_loader = false;
-            $scope.showMessageFunc('Task detail edited sucessfully.', 'success', function () {
-              $timeout(function () {
-                $scope.showerrorMsg = false;
-                $state.go('ctApp.tasks');
-              }, 3000);
-            });
-          });
-        } else {
-          Services.tasksName.save($scope.taskDBField, function (data) {
-            $scope.showMessageFunc('New Task added sucessfully.', 'success', function () {
-              $scope.show_task_form_loader = false;
-              $timeout(function () {
-                $scope.showerrorMsg = false;
-                $state.go('ctApp.tasks');
-              }, 3000);
-            });
-          });
-        }
+            $scope.savedisable = 0;
+            $scope.showerrorMsg = true;
+            $scope.ErrorClass = 'danger';
+            $scope.ErrorMsg = 'Task detail Alread Exist!!!';
+            jQuery('.basic .ng-invalid').addClass('ng-dirty');
+            $timeout(function () {
+              $scope.showerrorMsg = false;
+            }, 3000);
+            return false;
+          } else {
+            $scope.taskDBField = {
+              task_name: $scope.task.name,
+              status: $scope.task.status
+            };
+            if ($scope.task_id) {
+            } else {
+              $scope.taskDBField.agency_id = Services.getAgencyID();
+              $scope.taskDBField.created_date = moment().utc();
+              $scope.taskDBField.modified_date = moment().utc();  /* $scope.taskDBField.created_by = JSON.stringify({
+                                 name: $localStorage.user_info.username,
+                                 id: $localStorage.user_info.user_id
+                             });*/
+            }
+            if ($scope.task_id) {
+              Services.tasksName.update({ id: $stateParams.taskId }, $scope.taskDBField, function (data) {
+                $scope.show_task_form_loader = false;
+                $scope.showMessageFunc('Task detail edited sucessfully.', 'success', function () {
+                  $timeout(function () {
+                    $scope.showerrorMsg = false;
+                    $state.go('ctApp.tasks');
+                  }, 3000);
+                });
+              });
+            } else {
+              Services.tasksName.save($scope.taskDBField, function (data) {
+                $scope.showMessageFunc('New Task added sucessfully.', 'success', function () {
+                  $scope.show_task_form_loader = false;
+                  $timeout(function () {
+                    $scope.showerrorMsg = false;
+                    $state.go('ctApp.tasks');
+                  }, 3000);
+                });
+              });
+            }
+          }
+        });
       }
     };
     $scope.showMessageFunc = function (error_msg, error_class, callback) {

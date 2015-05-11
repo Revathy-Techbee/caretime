@@ -136,6 +136,7 @@ angular.module('ctApp.customPrompts', ['ui.router']).config([
     $scope.customPromptDBField = null;
     $scope.show_customPrompt_form_loader = false;
     $scope.customPrompt.status = 1;
+    $scope.savedisable = 0;
     $scope.getCustomPromptDetail = function () {
       if ($scope.customPrompt_id) {
         $scope.pageTitle = 'Update';
@@ -155,56 +156,79 @@ angular.module('ctApp.customPrompts', ['ui.router']).config([
       }
     };
     $scope.getCustomPromptDetail();
-    $scope.customPromptManage = function (step) {
+    $scope.customPromptManage = function () {
       $scope.showerrorMsg = false;
       if ($scope.addUpdateCustomPromptForm.$valid) {
         $scope.show_customPrompt_form_loader = true;
-        $scope.customPromptDBField = {
-          prompt_name: $scope.customPrompt.prompt_name,
-          prompt_text: $scope.customPrompt.prompt_text,
-          prompt_answers: JSON.stringify($scope.customPrompt.prompt_answers),
-          status: $scope.customPrompt.status
+        $scope.savedisable = 1;
+        $scope.filterObj = {
+          field: 'id',
+          filter: 'prompt_name="' + $scope.customPrompt.prompt_name + '" and agency_id = ' + Services.getAgencyID()
         };
-        if ($scope.customPrompt_id) {
-          // means it is in edit state
-          $scope.customPromptDBField.updated_on = moment().utc();
-          $scope.customPromptDBField.edited_by = JSON.stringify({
-            'username': $localStorage.user_info.username,
-            'firstname': $localStorage.user_info.first_name,
-            'lastname': $localStorage.user_info.last_name,
-            'user_id': $localStorage.user_info.user_id
-          });
-        } else {
-          $scope.customPromptDBField.agency_id = Services.getAgencyID();
-          $scope.customPromptDBField.created_on = moment().utc();
-          $scope.customPromptDBField.created_by = JSON.stringify({
-            'username': $localStorage.user_info.username,
-            'firstname': $localStorage.user_info.first_name,
-            'lastname': $localStorage.user_info.last_name,
-            'user_id': $localStorage.user_info.user_id
-          });
+        if (!angular.isUndefined($scope.customPrompt_id) && $scope.customPrompt_id) {
+          $scope.filterObj.filter += ' and id <>' + $scope.customPrompt_id;
         }
-        if ($scope.customPrompt_id) {
-          Services.customPromptService.update({ id: $stateParams.customPromptId }, $scope.customPromptDBField, function (data) {
+        Services.customPromptService.get($scope.filterObj, function (data) {
+          if (data.record.length > 0) {
             $scope.show_customPrompt_form_loader = false;
-            $scope.showMessageFunc('Custom Prompt detail edited sucessfully.', 'success', function () {
-              $timeout(function () {
-                $scope.showerrorMsg = false;
-                $state.go('ctApp.customPrompts');
-              }, 3000);
-            });
-          });
-        } else {
-          Services.customPromptService.save($scope.customPromptDBField, function (data) {
-            $scope.showMessageFunc('New Custom Prompt added sucessfully.', 'success', function () {
-              $scope.show_customPrompt_form_loader = false;
-              $timeout(function () {
-                $scope.showerrorMsg = false;
-                $state.go('ctApp.customPrompts');
-              }, 3000);
-            });
-          });
-        }
+            $scope.savedisable = 0;
+            $scope.showerrorMsg = true;
+            $scope.ErrorClass = 'danger';
+            $scope.ErrorMsg = 'Custom Prompt Alread Exist!!!';
+            jQuery('.basic .ng-invalid').addClass('ng-dirty');
+            $timeout(function () {
+              $scope.showerrorMsg = false;
+            }, 3000);
+            return false;
+          } else {
+            $scope.customPromptDBField = {
+              prompt_name: $scope.customPrompt.prompt_name,
+              prompt_text: $scope.customPrompt.prompt_text,
+              prompt_answers: JSON.stringify($scope.customPrompt.prompt_answers),
+              status: $scope.customPrompt.status
+            };
+            if ($scope.customPrompt_id) {
+              // means it is in edit state
+              $scope.customPromptDBField.updated_on = moment().utc();
+              $scope.customPromptDBField.edited_by = JSON.stringify({
+                'username': $localStorage.user_info.username,
+                'firstname': $localStorage.user_info.first_name,
+                'lastname': $localStorage.user_info.last_name,
+                'user_id': $localStorage.user_info.user_id
+              });
+            } else {
+              $scope.customPromptDBField.agency_id = Services.getAgencyID();
+              $scope.customPromptDBField.created_on = moment().utc();
+              $scope.customPromptDBField.created_by = JSON.stringify({
+                'username': $localStorage.user_info.username,
+                'firstname': $localStorage.user_info.first_name,
+                'lastname': $localStorage.user_info.last_name,
+                'user_id': $localStorage.user_info.user_id
+              });
+            }
+            if ($scope.customPrompt_id) {
+              Services.customPromptService.update({ id: $stateParams.customPromptId }, $scope.customPromptDBField, function (data) {
+                $scope.show_customPrompt_form_loader = false;
+                $scope.showMessageFunc('Custom Prompt detail edited sucessfully.', 'success', function () {
+                  $timeout(function () {
+                    $scope.showerrorMsg = false;
+                    $state.go('ctApp.customPrompts');
+                  }, 3000);
+                });
+              });
+            } else {
+              Services.customPromptService.save($scope.customPromptDBField, function (data) {
+                $scope.showMessageFunc('New Custom Prompt added sucessfully.', 'success', function () {
+                  $scope.show_customPrompt_form_loader = false;
+                  $timeout(function () {
+                    $scope.showerrorMsg = false;
+                    $state.go('ctApp.customPrompts');
+                  }, 3000);
+                });
+              });
+            }
+          }
+        });
       }
     };
     $scope.showMessageFunc = function (error_msg, error_class, callback) {

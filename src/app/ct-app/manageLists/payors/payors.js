@@ -32,9 +32,9 @@ angular.module('ctApp.payors', [
 
 }])
 
-.controller("PayorsCtrl", ["$scope", "Services", "$state", "$modal","$localStorage",
-    function($scope, Services, $state, $modal,$localStorage) {
-        $scope.empCountry=$localStorage.user_info.country;
+.controller("PayorsCtrl", ["$scope", "Services", "$state", "$modal", "$localStorage",
+    function($scope, Services, $state, $modal, $localStorage) {
+        $scope.empCountry = $localStorage.user_info.country;
         $scope.config = {
             general: {
                 searchtxt: ""
@@ -60,10 +60,10 @@ angular.module('ctApp.payors', [
                 include_count: true,
                 offset: $scope.payorDetailList.length,
                 order: $scope.sortField + ' ' + $scope.sortType,
-                filter:'agency_id='+Services.getAgencyID()
+                filter: 'agency_id=' + Services.getAgencyID()
             };
             if ($scope.config.general.searchtxt && $scope.config.general.searchtxt !== '') {
-                $scope.filterObj.filter = $scope.filterObj.filter+' and name like "%' + $scope.config.general.searchtxt + '%"';
+                $scope.filterObj.filter = $scope.filterObj.filter + ' and name like "%' + $scope.config.general.searchtxt + '%"';
             }
             Services.auth_payorsService.get($scope.filterObj, function(data) {
                 for (var i = 0; i < data.record.length; i++) {
@@ -85,10 +85,10 @@ angular.module('ctApp.payors', [
                 limit: $scope.config.page_size,
                 include_count: true,
                 order: $scope.sortField + ' ' + $scope.sortType,
-                filter:'agency_id='+Services.getAgencyID()
+                filter: 'agency_id=' + Services.getAgencyID()
             };
             if ($scope.config.general.searchtxt && $scope.config.general.searchtxt !== '') {
-                $scope.filterObj.filter = $scope.filterObj.filter+' and name like "%' + $scope.config.general.searchtxt + '%"';
+                $scope.filterObj.filter = $scope.filterObj.filter + ' and name like "%' + $scope.config.general.searchtxt + '%"';
             }
             Services.auth_payorsService.get($scope.filterObj, function(data) {
                 $scope.payorDetailList = data.record;
@@ -121,7 +121,7 @@ angular.module('ctApp.payors', [
             Services.setModelTempVar(id);
             $scope.modalInstance = $modal.open({
                 template: '<div class="modal-header"> <h3 class="modal-title">Delete</h3></div><div class="modal-body"><b> Would you like to delete the Payor permanently?</b></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">Cancel</button><button class="btn btn-primary" ng-click="all()">Delete</button> </div>',
-                controller:'DeletePayorCtrl'
+                controller: 'DeletePayorCtrl'
             });
             $scope.modalInstance.result.then(function(id) {
                 Services.auth_payorsService.delete({
@@ -154,7 +154,8 @@ angular.module('ctApp.payors', [
         $scope.payorDBField = null;
         $scope.show_payor_form_loader = false;
         $scope.payor.status = 1;
-       
+         $scope.savedisable = 0;
+
         $scope.getPayorDetail = function() {
             if ($scope.payor_id) {
                 $scope.pageTitle = "Update";
@@ -164,7 +165,7 @@ angular.module('ctApp.payors', [
                     "filter": "id='" + $scope.payor_id + "'"
                 }, function(resp) {
                     $scope.payorDBField = resp.record[0];
-   angular.extend($scope.payor, {
+                    angular.extend($scope.payor, {
                         name: $scope.payorDBField.name,
                         status: $scope.payorDBField.status,
                         created_on: HelperService.convertUTCtoMytimeZone($scope.payorDBField.created_on),
@@ -178,64 +179,88 @@ angular.module('ctApp.payors', [
             }
         };
         $scope.getPayorDetail();
-        $scope.payorManage = function(step) {
+        $scope.payorManage = function() {
             $scope.showerrorMsg = false;
             if ($scope.addUpdatePayorForm.$valid) {
                 $scope.show_payor_form_loader = true;
-                $scope.payorDBField = {
-                    name: $scope.payor.name,
-                    status: $scope.payor.status
+                 $scope.savedisable = 1;
+                $scope.filterObj = {
+                    field: "id",
+                    filter: 'name="' + $scope.payor.name + '" and agency_id = ' + Services.getAgencyID()
+
                 };
-
-                if ($scope.payor_id) { // means it is in edit state
-                    $scope.payorDBField.edited_on = moment().utc();
-                    $scope.payorDBField.edited_by = JSON.stringify({
-                        "username": $localStorage.user_info.username,
-                        "firstname": $localStorage.user_info.first_name,
-                        "lastname": $localStorage.user_info.last_name,
-                        "user_id": $localStorage.user_info.user_id
-                    });
-
-
-                } else {
-                    $scope.payorDBField.agency_id=Services.getAgencyID();
-                    $scope.payorDBField.created_on = moment().utc();
-                    $scope.payorDBField.created_by = JSON.stringify({
-                        "username": $localStorage.user_info.username,
-                        "firstname": $localStorage.user_info.first_name,
-                        "lastname": $localStorage.user_info.last_name,
-                        "user_id": $localStorage.user_info.user_id
-                    });
-
+                if (!angular.isUndefined($scope.payor_id) && $scope.payor_id) {
+                    $scope.filterObj.filter += " and id <>" + $scope.payor_id;
                 }
-
-                if ($scope.payor_id) {
-
-                    Services.auth_payorsService.update({
-                        id: $stateParams.payorId
-                    }, $scope.payorDBField, function(data) {
+                Services.auth_payorsService.get($scope.filterObj, function(data) {
+                    if (data.record.length > 0) {
                         $scope.show_payor_form_loader = false;
-                        $scope.showMessageFunc("Payor detail edited sucessfully.", "success", function() {
-                            $timeout(function() {
-                                $scope.showerrorMsg = false;
-                                $state.go("ctApp.payors");
-                            }, 3000);
-                        });
-                    });
+                        $scope.savedisable = 0;
+                        $scope.showerrorMsg = true;
+                        $scope.ErrorClass = "danger";
+                        $scope.ErrorMsg = "Payor Alread Exist!!!";
+                        jQuery(".basic .ng-invalid").addClass("ng-dirty");
+                        $timeout(function() {
+                            $scope.showerrorMsg = false;
+                        }, 3000);
+                        return false;
+                    } else {
+                        $scope.payorDBField = {
+                            name: $scope.payor.name,
+                            status: $scope.payor.status
+                        };
 
-                } else {
-
-                    Services.auth_payorsService.save($scope.payorDBField, function(data) {
-                        $scope.showMessageFunc("New Payor added sucessfully.", "success", function() {
-                                $scope.show_payor_form_loader = false;
-                                $timeout(function() {
-                                    $scope.showerrorMsg = false;
-                                    $state.go("ctApp.payors");
-                                }, 3000);
+                        if ($scope.payor_id) { // means it is in edit state
+                            $scope.payorDBField.edited_on = moment().utc();
+                            $scope.payorDBField.edited_by = JSON.stringify({
+                                "username": $localStorage.user_info.username,
+                                "firstname": $localStorage.user_info.first_name,
+                                "lastname": $localStorage.user_info.last_name,
+                                "user_id": $localStorage.user_info.user_id
                             });
-                     });
 
-                }
+
+                        } else {
+                            $scope.payorDBField.agency_id = Services.getAgencyID();
+                            $scope.payorDBField.created_on = moment().utc();
+                            $scope.payorDBField.created_by = JSON.stringify({
+                                "username": $localStorage.user_info.username,
+                                "firstname": $localStorage.user_info.first_name,
+                                "lastname": $localStorage.user_info.last_name,
+                                "user_id": $localStorage.user_info.user_id
+                            });
+
+                        }
+
+                        if ($scope.payor_id) {
+
+                            Services.auth_payorsService.update({
+                                id: $stateParams.payorId
+                            }, $scope.payorDBField, function(data) {
+                                $scope.show_payor_form_loader = false;
+                                $scope.showMessageFunc("Payor detail edited sucessfully.", "success", function() {
+                                    $timeout(function() {
+                                        $scope.showerrorMsg = false;
+                                        $state.go("ctApp.payors");
+                                    }, 3000);
+                                });
+                            });
+
+                        } else {
+
+                            Services.auth_payorsService.save($scope.payorDBField, function(data) {
+                                $scope.showMessageFunc("New Payor added sucessfully.", "success", function() {
+                                    $scope.show_payor_form_loader = false;
+                                    $timeout(function() {
+                                        $scope.showerrorMsg = false;
+                                        $state.go("ctApp.payors");
+                                    }, 3000);
+                                });
+                            });
+
+                        }
+                    }
+                });
 
 
             }
@@ -264,15 +289,14 @@ angular.module('ctApp.payors', [
 
     }
 ]).controller("DeletePayorCtrl", ["$scope", "Services", "$modalInstance", function($scope, Services, $modalInstance) {
-        var PayorID= Services.getModelTempVar();
-        Services.setModelTempVar('');
-        $scope.all = function() {
-            $modalInstance.close(PayorID);
-        };
-        $scope.cancel = function() {
+    var PayorID = Services.getModelTempVar();
+    Services.setModelTempVar('');
+    $scope.all = function() {
+        $modalInstance.close(PayorID);
+    };
+    $scope.cancel = function() {
 
-            $modalInstance.dismiss('cancel');
+        $modalInstance.dismiss('cancel');
 
-        };
-    }
-]);
+    };
+}]);

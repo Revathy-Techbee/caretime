@@ -4,7 +4,7 @@ angular.module('ctApp.zones', [
 
 .config(['$stateProvider', function config($stateProvider) {
     var access = routingConfig.accessLevels;
-     //var access_inter = routingConfig.accessinterface; 
+    //var access_inter = routingConfig.accessinterface; 
     $stateProvider.state('ctApp.zones', {
         url: '/zones',
         views: {
@@ -34,15 +34,16 @@ angular.module('ctApp.zones', [
 }])
 
 
-.controller("ZonesCtrl", ["$scope", "Auth", "Services", "$window", "$state", "$modal", "HelperService","$localStorage",
-    function($scope, Auth, Services, $window, $state, $modal, HelperService,$localStorage) {
-       /* $scope.addAccess = false;
-        if($localStorage.user_info.user_type=='1' || $localStorage.user_info.user_type=='9')
-        {
-                        $scope.addAccess = true;
 
-        }*/
-         $scope.addAccess = true;
+.controller("ZonesCtrl", ["$scope", "Auth", "Services", "$window", "$state", "$modal", "HelperService", "$localStorage",
+    function($scope, Auth, Services, $window, $state, $modal, HelperService, $localStorage) {
+        /* $scope.addAccess = false;
+         if($localStorage.user_info.user_type=='1' || $localStorage.user_info.user_type=='9')
+         {
+                         $scope.addAccess = true;
+
+         }*/
+        $scope.addAccess = true;
         $scope.config = {
             general: {
                 searchtxt: "",
@@ -114,17 +115,17 @@ angular.module('ctApp.zones', [
                 include_count: true,
                 offset: $scope.zoneDetailList.length, //30
                 order: $scope.sortField + ' ' + $scope.sortType,
-                filter:'agency_id='+Services.getAgencyID()
+                filter: 'agency_id=' + Services.getAgencyID()
             };
-          
+
 
             if ($scope.config.general.filterDBField) {
-                filterObj.filter = filterObj.filter +' and '+$scope.config.general.filterDBField.id + ' like "%' + $scope.config.general.searchtxt + '%"';
+                filterObj.filter = filterObj.filter + ' and ' + $scope.config.general.filterDBField.id + ' like "%' + $scope.config.general.searchtxt + '%"';
             } else if ($scope.config.general.searchtxt && $scope.config.general.searchtxt !== '') {
-                filterObj.filter = filterObj.filter +' and zone_name like "%' + $scope.config.general.searchtxt + '%" or zone_code like "%' + $scope.config.general.searchtxt + '%" or supervisor like "%' + $scope.config.general.searchtxt + '%" or supervisor_detail like "%' + $scope.config.general.searchtxt + '%"';
+                filterObj.filter = filterObj.filter + ' and zone_name like "%' + $scope.config.general.searchtxt + '%" or zone_code like "%' + $scope.config.general.searchtxt + '%" or supervisor like "%' + $scope.config.general.searchtxt + '%" or supervisor_detail like "%' + $scope.config.general.searchtxt + '%"';
             }
 
-            
+
 
             Services.employeeZones.get(filterObj, function(data) {
                 for (var i = 0; i < data.record.length; i++) {
@@ -147,13 +148,13 @@ angular.module('ctApp.zones', [
                 limit: $scope.config.page_size,
                 include_count: true,
                 order: $scope.sortField + ' ' + $scope.sortType,
-                filter:'agency_id='+Services.getAgencyID()
+                filter: 'agency_id=' + Services.getAgencyID()
             };
-          
+
             if ($scope.config.general.filterDBField) {
-                filterObj.filter = filterObj.filter +' and '+$scope.config.general.filterDBField.id + ' like "%' + $scope.config.general.searchtxt + '%"';
+                filterObj.filter = filterObj.filter + ' and ' + $scope.config.general.filterDBField.id + ' like "%' + $scope.config.general.searchtxt + '%"';
             } else if ($scope.config.general.searchtxt && $scope.config.general.searchtxt !== '') {
-                filterObj.filter = filterObj.filter +' and zone_name like "%' + $scope.config.general.searchtxt + '%" or zone_code like "%' + $scope.config.general.searchtxt + '%" or supervisor like "%' + $scope.config.general.searchtxt + '%" or supervisor_detail like "%' + $scope.config.general.searchtxt + '%"';
+                filterObj.filter = filterObj.filter + ' and zone_name like "%' + $scope.config.general.searchtxt + '%" or zone_code like "%' + $scope.config.general.searchtxt + '%" or supervisor like "%' + $scope.config.general.searchtxt + '%" or supervisor_detail like "%' + $scope.config.general.searchtxt + '%"';
             }
 
 
@@ -169,7 +170,7 @@ angular.module('ctApp.zones', [
             });
 
         };
-        
+
         $scope.applyProgramSort = function() {
             $scope.updateTableData();
         };
@@ -200,9 +201,9 @@ angular.module('ctApp.zones', [
  * Zone Controller....
  * **/
 
-.controller("AddUpdateZoneCtrl", ["$scope", "Services", "$state", "$stateParams", "$timeout", "$localStorage", "HelperService","$window",
-    function AddUpdateZoneCtrl($scope, Services, $state, $stateParams, $timeout, $localStorage, HelperService,$window) {
-        $scope.default_ivr_number = null;
+.controller("AddUpdateZoneCtrl", ["$scope", "Services", "$state", "$stateParams", "$timeout", "$localStorage", "HelperService", "$window",
+    function AddUpdateZoneCtrl($scope, Services, $state, $stateParams, $timeout, $localStorage, HelperService, $window) {
+        // $scope.default_ivr_number = null;
         $scope.zone_id = $stateParams.zoneId;
         $scope.zone = {};
         $scope.zoneSteps = {};
@@ -214,48 +215,47 @@ angular.module('ctApp.zones', [
             "Employee": ""
         }];
         $scope.zone.notify_empname.addshow = -1;
-        $scope.zone.ivr_number = null;
+        //$scope.zone.ivr_number = null;
         $scope.zoneDBField = null;
         $scope.show_zone_form_loader = false;
         $scope.generateZonecode_count = 0;
 
-       /* $scope.employeeList = function() {
-            $scope.noemployee = 0;
+        /* $scope.employeeList = function() {
+             $scope.noemployee = 0;
 
-            if (!angular.isUndefined($scope.zone.zone_code) && $scope.zone.zone_code) {
-                Services.employeeService.get({
-                    filter: "status > 0 and zone_id='" + $scope.zone.zone_code + "'",
-                    fields: "count(id)"
-                }, function(remoteData) {
-                    if ((remoteData.record[0]["count(id)"]) < 1) {
-                        $scope.noemployee = 1;
+             if (!angular.isUndefined($scope.zone.zone_code) && $scope.zone.zone_code) {
+                 Services.employeeService.get({
+                     filter: "status > 0 and zone_id='" + $scope.zone.zone_code + "'",
+                     fields: "count(id)"
+                 }, function(remoteData) {
+                     if ((remoteData.record[0]["count(id)"]) < 1) {
+                         $scope.noemployee = 1;
 
-                        $scope.norecord = HelperService.errorMsg('alert-danger', 'No Employees in the Zone');
+                         $scope.norecord = HelperService.errorMsg('alert-danger', 'No Employees in the Zone');
 
-                    } else {
-                        $scope.noemployee = 0;
-                    }
-                });
-            } else {
-                $scope.noemployee = 1;
-                $scope.norecord = HelperService.errorMsg('alert-danger', 'Employee not avaliable');
-            }
+                     } else {
+                         $scope.noemployee = 0;
+                     }
+                 });
+             } else {
+                 $scope.noemployee = 1;
+                 $scope.norecord = HelperService.errorMsg('alert-danger', 'Employee not avaliable');
+             }
 
-        };
-        $scope.employeeList();
-        */
+         };
+         $scope.employeeList();
+         */
         $scope.getZoneDetail = function() {
             if ($scope.zone_id) {
                 $scope.pageTitle = "Update";
                 Services.getZoneDetail($scope.zone_id).then(function(resp) {
                     $scope.zoneDBField = resp.data.record[0];
                     angular.extend($scope.zone, {
-                        ///ivr_number : $scope.default_ivr_number,
                         zone_name: $scope.zoneDBField.zone_name,
                         zone_code: $scope.zoneDBField.zone_code,
                         supervisor: JSON.parse($scope.zoneDBField.supervisor_detail),
                         zone_code1: $scope.zoneDBField.zone_code,
-                        ivr_number: $scope.zoneDBField.ivr_number,
+                        //ivr_number: $scope.zoneDBField.ivr_number,
                         editedOn: HelperService.convertUTCtoMytimeZone($scope.zoneDBField.edited_on),
                         edited_by: $scope.zoneDBField.edited_by,
                         created_on: HelperService.convertUTCtoMytimeZone($scope.zoneDBField.created_on),
@@ -278,13 +278,13 @@ angular.module('ctApp.zones', [
 
 
                     }
-                   // $scope.employeeList();
+                    // $scope.employeeList();
 
                 });
             }
         };
         $scope.getZoneDetail();
-        $scope.getIVRDefault = function() {
+        /*$scope.getIVRDefault = function() {
             Services.getIVRDefault().then(function(resp) {
                 $scope.default_ivr_number = resp.data.record[0].ivr_number;
                 if (!$scope.zone_id) {
@@ -295,29 +295,18 @@ angular.module('ctApp.zones', [
 
 
         $scope.getIVRDefault();
-       /* $scope.generateZonecode = function(lastIdDB) {
-            var temp = lastIdDB;
-            var characters = 0;
-            if (($localStorage.configCode.zone) && ($localStorage.configCode.zone == "4")) {
-                characters = 1000;
-            } else if (($localStorage.configCode.zone) && ($localStorage.configCode.zone == "5")) {
-                characters = 10000;
-            } else if (($localStorage.configCode.zone) && ($localStorage.configCode.zone == "6")) {
-                characters = 100000;
-            }
-            return characters + temp;
-        };
         */
-         // coded by Revathy to get  Zone code 
+
+        // coded by Revathy to get  Zone code 
         $scope.getZonecode = function() {
-            
-                var characters = 0;
+
+            var characters = 0;
             if ($localStorage.configCode.zone) {
                 getminimum = Math.pow(10, ($localStorage.configCode.zone - 1));
                 characters = (Math.pow(10, ($localStorage.configCode.zone))) - getminimum;
             }
             $scope.zoneDBField.zone_code = $window.Math.floor($window.Math.random() * characters) + getminimum;
-            
+
 
         };
 
@@ -365,7 +354,7 @@ angular.module('ctApp.zones', [
                 for (var i = 0; i < ids.length - 1; i++) {
                     if ($scope.sorted_arr[i + 1] == $scope.sorted_arr[i]) {
                         flag = 0;
-                        
+
                     }
                 }
 
@@ -375,56 +364,75 @@ angular.module('ctApp.zones', [
                 if (flag == 1) {
 
                     $scope.show_zone_form_loader = true;
-                    $scope.zoneDBField = {
-                        agency_id: Services.getAgencyID(),
-                        zone_name: $scope.zone.zone_name,
-                        ivr_number: $scope.zone.ivr_number
+                    $scope.filterObj = {
+                        field: "id",
+                        filter: 'zone_name="' + $scope.zone.zone_name + '" and agency_id = ' + Services.getAgencyID()
+
                     };
-                    if ($scope.zone.supervisor) {
-                        $scope.zoneDBField.supervisor = $scope.zone.supervisor.id;
-                        $scope.zoneDBField.supervisor_detail = JSON.stringify($scope.zone.supervisor);
-
+                    if (!angular.isUndefined($scope.zone_id) && $scope.zone_id) {
+                        $scope.filterObj.filter += " and id <>" + $scope.zone_id;
                     }
-                    $scope.zoneDBField.notify_id = JSON.stringify(ids);
-                    $scope.zoneDBField.notify_detail = JSON.stringify($scope.zone.notify_empname);
+                    Services.employeeZones.get($scope.filterObj, function(data) {
+                        if (data.record.length > 0) {
+                            $scope.show_zone_form_loader = false;
+                            $scope.savedisable = 0;
+                            $scope.showerrorMsg = true;
+                            $scope.ErrorClass = "danger";
+                            $scope.ErrorMsg = "Zone Alread Exist!!!";
+                            jQuery(".basic .ng-invalid").addClass("ng-dirty");
+                            $scope.savedisable = 0;
+                            $timeout(function() {
+                                $scope.showerrorMsg = false;
+                            }, 3000);
+                            return false;
 
+                        } else {
+                            $scope.zoneDBField = {
+                                agency_id: Services.getAgencyID(),
+                                zone_name: $scope.zone.zone_name,
+                                //ivr_number: $scope.zone.ivr_number
+                            };
+                            if ($scope.zone.supervisor) {
+                                $scope.zoneDBField.supervisor = $scope.zone.supervisor.id;
+                                $scope.zoneDBField.supervisor_detail = JSON.stringify($scope.zone.supervisor);
 
-                    if ($scope.zone_id) { // means it is in edit state
-                        $scope.zoneDBField.edited_on = moment().utc();
-                        //$scope.zoneDBField.zone_code = $scope.zone.zone_code;
-                        $scope.zoneDBField.edited_by =JSON.stringify({
-                            "username": $localStorage.user_info.username,
-                            "firstname": $localStorage.user_info.first_name,
-                            "lastname": $localStorage.user_info.last_name,
-                            "user_id": $localStorage.user_info.user_id
-                        });
+                            }
+                            $scope.zoneDBField.notify_id = JSON.stringify(ids);
+                            $scope.zoneDBField.notify_detail = JSON.stringify($scope.zone.notify_empname);
+                            if ($scope.zone_id) { // means it is in edit state
+                                $scope.zoneDBField.edited_on = moment().utc();
+                                //$scope.zoneDBField.zone_code = $scope.zone.zone_code;
+                                $scope.zoneDBField.edited_by = JSON.stringify({
+                                    "username": $localStorage.user_info.username,
+                                    "firstname": $localStorage.user_info.first_name,
+                                    "lastname": $localStorage.user_info.last_name,
+                                    "user_id": $localStorage.user_info.user_id
+                                });
+                            } else {
+                                $scope.zoneDBField.created_on = moment().utc();
+                                $scope.zoneDBField.created_by = JSON.stringify({
+                                    "username": $localStorage.user_info.username,
+                                    "firstname": $localStorage.user_info.first_name,
+                                    "lastname": $localStorage.user_info.last_name,
+                                    "user_id": $localStorage.user_info.user_id
+                                });
+                            }
 
+                            $scope.addEditZone();
 
-                    } else {
-                        $scope.zoneDBField.created_on = moment().utc();
-                        $scope.zoneDBField.created_by = JSON.stringify({
-                            "username": $localStorage.user_info.username,
-                            "firstname": $localStorage.user_info.first_name,
-                            "lastname": $localStorage.user_info.last_name,
-                            "user_id": $localStorage.user_info.user_id
-                        });
-                    }
-                    $scope.addEditZone();
-
-                    
-                }
-                else
-                {
+                        }
+                    });
+                } else {
                     $scope.savedisable = 0;
-                        $scope.showerrorMsg = true;
-                        $scope.ErrorClass = "danger";
-                        $scope.ErrorMsg = "Please select different Employee!!!";
-                        jQuery(".basic .ng-invalid").addClass("ng-dirty");
-                        $scope.savedisable = 0;
-                        $timeout(function() {
-                            $scope.showerrorMsg = false;
-                        }, 3000);
-                        return false;
+                    $scope.showerrorMsg = true;
+                    $scope.ErrorClass = "danger";
+                    $scope.ErrorMsg = "Please select different Employee!!!";
+                    jQuery(".basic .ng-invalid").addClass("ng-dirty");
+                    $scope.savedisable = 0;
+                    $timeout(function() {
+                        $scope.showerrorMsg = false;
+                    }, 3000);
+                    return false;
                 }
             }
 
@@ -459,7 +467,7 @@ angular.module('ctApp.zones', [
                         }
                     } else {
                         Services.employeeZones.save($scope.zoneDBField, function(data) {
-                           // $scope.zoneDBField.zone_code = $scope.generateZonecode(data.id);
+                            // $scope.zoneDBField.zone_code = $scope.generateZonecode(data.id);
                             Services.employeeZones.update({
                                 id: data.id
                             }, $scope.zoneDBField, function(data) {
@@ -494,15 +502,14 @@ angular.module('ctApp.zones', [
 
         $scope.supervisors = [];
         $scope.refreshSupervisors = function(name) {
-            $scope.SupervisorEmp={
+            $scope.SupervisorEmp = {
                 fields: "first_name,last_name,id",
                 filter: "status > 0 and agency_id = " + Services.getAgencyID(),
                 'order': 'last_name asc',
                 limit: 5
             };
-            if(name)
-            {
-                 $scope.SupervisorEmp.filter+=' and (first_name  like "%' + name + '%" OR last_name   like "%' + name + '%" )' ; 
+            if (name) {
+                $scope.SupervisorEmp.filter += ' and (first_name  like "%' + name + '%" OR last_name   like "%' + name + '%" )';
             }
             Services.employeeService.get($scope.SupervisorEmp, function(remoteData) {
                 $scope.supervisors = [];
@@ -521,33 +528,32 @@ angular.module('ctApp.zones', [
             $state.go("ctApp.zones");
         };
         $scope.refreshNotifyEmp = function(name) {
-            
+
             //if (!angular.isUndefined($scope.zone.zone_code) && $scope.zone.zone_code) {
-                $scope.NotifyEmp={
-                    //filter: "status > 0 and zone_id=" + $scope.zone.zone_code,
-                    fields: "first_name,last_name,id",
-                    filter: "status > 0 and agency_id = " + Services.getAgencyID(),
-                    'order': 'last_name asc',
-                    limit: 20
-                };
-                if(name)
-                {
-                     $scope.NotifyEmp.filter+=' and (first_name  like "%' + name + '%" OR last_name   like "%' + name + '%" )' ; 
-                }
-                Services.employeeService.get($scope.NotifyEmp, function(remoteData) {
-                    $scope.NotifyEmployees = [];
+            $scope.NotifyEmp = {
+                //filter: "status > 0 and zone_id=" + $scope.zone.zone_code,
+                fields: "first_name,last_name,id",
+                filter: "status > 0 and agency_id = " + Services.getAgencyID(),
+                'order': 'last_name asc',
+                limit: 20
+            };
+            if (name) {
+                $scope.NotifyEmp.filter += ' and (first_name  like "%' + name + '%" OR last_name   like "%' + name + '%" )';
+            }
+            Services.employeeService.get($scope.NotifyEmp, function(remoteData) {
+                $scope.NotifyEmployees = [];
 
 
-                    angular.forEach(remoteData.record, function(item, key) {
-                        $scope.NotifyEmployees.push({
-                            "text": item.first_name + ' ' + item.last_name,
-                            "id": item.id
-                        });
-
+                angular.forEach(remoteData.record, function(item, key) {
+                    $scope.NotifyEmployees.push({
+                        "text": item.first_name + ' ' + item.last_name,
+                        "id": item.id
                     });
 
                 });
-           // }
+
+            });
+            // }
         };
 
         /*$scope.selectnotifyemp = {
@@ -593,24 +599,21 @@ angular.module('ctApp.zones', [
             });
         };
         $scope.removeEmpdetails = function(index) {
-          
-            //console.log(index);
-           // console.log($scope.zone.notify_empname.length);
-            
-          if($scope.zone.notify_empname.length===1)
-            {
-             $scope.zone.notify_empname = [{
-                "Employee": ""
-            }];
-            $scope.zone.notify_empname.addshow = -1;
 
+            //console.log(index);
+            // console.log($scope.zone.notify_empname.length);
+
+            if ($scope.zone.notify_empname.length === 1) {
+                $scope.zone.notify_empname = [{
+                    "Employee": ""
+                }];
+                $scope.zone.notify_empname.addshow = -1;
+
+            } else {
+                $scope.zone.notify_empname.addshow = $scope.zone.notify_empname.addshow - 1;
+                $scope.zone.notify_empname.splice(index, 1);
             }
-            else
-            {
-            $scope.zone.notify_empname.addshow = $scope.zone.notify_empname.addshow - 1;
-            $scope.zone.notify_empname.splice(index, 1);
-            }
-            
+
         };
         $scope.zoneManagePrev = function(step) {
             if (step == "notify") {

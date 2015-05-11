@@ -136,6 +136,7 @@ angular.module('ctApp.observations', ['ui.router']).config([
     $scope.observationDBField = null;
     $scope.show_observation_form_loader = false;
     $scope.observation.status = 1;
+    $scope.savedisable = 0;
     $scope.getObservationDetail = function () {
       if ($scope.observation_id) {
         $scope.pageTitle = 'Update';
@@ -152,51 +153,74 @@ angular.module('ctApp.observations', ['ui.router']).config([
       }
     };
     $scope.getObservationDetail();
-    $scope.observationManage = function (step) {
+    $scope.observationManage = function () {
       $scope.showerrorMsg = false;
       if ($scope.addUpdateObservationForm.$valid) {
         $scope.show_observation_form_loader = true;
-        $scope.observationDBField = {
-          obv_name: $scope.observation.name,
-          status: $scope.observation.status,
-          category: $scope.observation.category
+        $scope.savedisable = 1;
+        $scope.filterObj = {
+          field: 'id',
+          filter: 'obv_name="' + $scope.observation.name + '" and agency_id = ' + Services.getAgencyID()
         };
-        if ($scope.observation_id) {
-          // means it is in edit state
-          $scope.observationDBField.modified_date = moment().utc();  /* $scope.observationDBField.edited_by = JSON.stringify({
-                        name: $localStorage.user_info.username,
-                        id: $localStorage.user_info.user_id
-                    });
-*/
-        } else {
-          $scope.observationDBField.agency_id = Services.getAgencyID();
-          $scope.observationDBField.created_date = moment().utc();
-          $scope.observationDBField.modified_date = moment().utc();  /* $scope.observationDBField.created_by = JSON.stringify({
-                         name: $localStorage.user_info.username,
-                         id: $localStorage.user_info.user_id
-                     });*/
+        if (!angular.isUndefined($scope.observation_id) && $scope.observation_id) {
+          $scope.filterObj.filter += ' and id <>' + $scope.observation_id;
         }
-        if ($scope.observation_id) {
-          Services.observationsName.update({ id: $stateParams.observationId }, $scope.observationDBField, function (data) {
+        Services.observationsName.get($scope.filterObj, function (data) {
+          if (data.record.length > 0) {
             $scope.show_observation_form_loader = false;
-            $scope.showMessageFunc('Observation detail edited sucessfully.', 'success', function () {
-              $timeout(function () {
-                $scope.showerrorMsg = false;
-                $state.go('ctApp.observations');
-              }, 3000);
-            });
-          });
-        } else {
-          Services.observationsName.save($scope.observationDBField, function (data) {
-            $scope.showMessageFunc('New Observation added sucessfully.', 'success', function () {
-              $scope.show_observation_form_loader = false;
-              $timeout(function () {
-                $scope.showerrorMsg = false;
-                $state.go('ctApp.observations');
-              }, 3000);
-            });
-          });
-        }
+            $scope.savedisable = 0;
+            $scope.showerrorMsg = true;
+            $scope.ErrorClass = 'danger';
+            $scope.ErrorMsg = 'Observation Alread Exist!!!';
+            jQuery('.basic .ng-invalid').addClass('ng-dirty');
+            $timeout(function () {
+              $scope.showerrorMsg = false;
+            }, 3000);
+            return false;
+          } else {
+            $scope.observationDBField = {
+              obv_name: $scope.observation.name,
+              status: $scope.observation.status,
+              category: $scope.observation.category
+            };
+            if ($scope.observation_id) {
+              // means it is in edit state
+              $scope.observationDBField.modified_date = moment().utc();  /* $scope.observationDBField.edited_by = JSON.stringify({
+                                    name: $localStorage.user_info.username,
+                                    id: $localStorage.user_info.user_id
+                                });
+                            */
+            } else {
+              $scope.observationDBField.agency_id = Services.getAgencyID();
+              $scope.observationDBField.created_date = moment().utc();
+              $scope.observationDBField.modified_date = moment().utc();  /* $scope.observationDBField.created_by = JSON.stringify({
+                                 name: $localStorage.user_info.username,
+                                 id: $localStorage.user_info.user_id
+                             });*/
+            }
+            if ($scope.observation_id) {
+              Services.observationsName.update({ id: $stateParams.observationId }, $scope.observationDBField, function (data) {
+                $scope.show_observation_form_loader = false;
+                $scope.showMessageFunc('Observation detail edited sucessfully.', 'success', function () {
+                  $timeout(function () {
+                    $scope.showerrorMsg = false;
+                    $state.go('ctApp.observations');
+                  }, 3000);
+                });
+              });
+            } else {
+              Services.observationsName.save($scope.observationDBField, function (data) {
+                $scope.showMessageFunc('New Observation added sucessfully.', 'success', function () {
+                  $scope.show_observation_form_loader = false;
+                  $timeout(function () {
+                    $scope.showerrorMsg = false;
+                    $state.go('ctApp.observations');
+                  }, 3000);
+                });
+              });
+            }
+          }
+        });
       }
     };
     $scope.showMessageFunc = function (error_msg, error_class, callback) {

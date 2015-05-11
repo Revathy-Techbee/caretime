@@ -46,7 +46,7 @@
                 </div>
                 <div class="form-group">
                     <div class="col-sm-12">
-                        <button type="submit" class="btn btn-primary  btn-rounded">Save Changes</button>
+                        <button type="submit" class="btn btn-primary  btn-rounded" ng-disabled="savedisable == 1">Save Changes</button>
                         <button type="button" ng-click='cancelCustomPrompt()' class="btn btn-default  btn-rounded pull-right">Cancel</button>
                         <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
                                   

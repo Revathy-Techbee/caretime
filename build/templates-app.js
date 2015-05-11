@@ -5424,7 +5424,7 @@ angular.module("ct-app/manageLists/activities/add-update-activity.tpl.html", [])
     "                <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
     "                <div class=\"form-group\">\n" +
     "                    <div class=\"col-sm-12\">\n" +
-    "                        <button type=\"submit\" class=\"btn btn-primary  btn-rounded\">Save Changes</button>\n" +
+    "                        <button type=\"submit\" class=\"btn btn-primary  btn-rounded\" ng-disabled=\"savedisable == 1\">Save Changes</button>\n" +
     "                        <button type=\"button\" ng-click='cancelActivity()' class=\"btn btn-default  btn-rounded pull-right\">Cancel</button>\n" +
     "                        <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">{{ErrorMsg}}</span>\n" +
     "                    </div>\n" +
@@ -5496,7 +5496,7 @@ angular.module("ct-app/manageLists/customPrompts/add-update-customPrompt.tpl.htm
     "                </div>\n" +
     "                <div class=\"form-group\">\n" +
     "                    <div class=\"col-sm-12\">\n" +
-    "                        <button type=\"submit\" class=\"btn btn-primary  btn-rounded\">Save Changes</button>\n" +
+    "                        <button type=\"submit\" class=\"btn btn-primary  btn-rounded\" ng-disabled=\"savedisable == 1\">Save Changes</button>\n" +
     "                        <button type=\"button\" ng-click='cancelCustomPrompt()' class=\"btn btn-default  btn-rounded pull-right\">Cancel</button>\n" +
     "                        <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">\n" +
     "                                  \n" +
@@ -5623,7 +5623,7 @@ angular.module("ct-app/manageLists/observations/add-update-observation.tpl.html"
     "                <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
     "                <div class=\"form-group\">\n" +
     "                    <div class=\"col-sm-12\">\n" +
-    "                        <button type=\"submit\" class=\"btn btn-primary  btn-rounded\">Save Changes</button>\n" +
+    "                        <button type=\"submit\" class=\"btn btn-primary  btn-rounded\" ng-disabled=\"savedisable == 1\">Save Changes</button>\n" +
     "                        <button type=\"button\" ng-click='cancelObservation()' class=\"btn btn-default  btn-rounded pull-right\">Cancel</button>\n" +
     "                        <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">{{ErrorMsg}}</span>\n" +
     "                    </div>\n" +
@@ -5747,7 +5747,7 @@ angular.module("ct-app/manageLists/payClasses/add-update-payClass.tpl.html", [])
     "                <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
     "                <div class=\"form-group\">\n" +
     "                    <div class=\"col-sm-12\">\n" +
-    "                        <button type=\"submit\" class=\"btn btn-primary  btn-rounded\">Save Changes</button>\n" +
+    "                        <button type=\"submit\" class=\"btn btn-primary  btn-rounded\" ng-disabled=\"savedisable == 1\">Save Changes</button>\n" +
     "                        <button type=\"button\" ng-click='cancelPayClass()' class=\"btn btn-default  btn-rounded pull-right\">Cancel</button>\n" +
     "                        <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">{{ErrorMsg}}</span>\n" +
     "                    </div>\n" +
@@ -5877,7 +5877,7 @@ angular.module("ct-app/manageLists/payTypes/add-update-payType.tpl.html", []).ru
     "                <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
     "                <div class=\"form-group\">\n" +
     "                    <div class=\"col-sm-12\">\n" +
-    "                        <button type=\"submit\" class=\"btn btn-primary  btn-rounded\">Save Changes</button>\n" +
+    "                        <button type=\"submit\" class=\"btn btn-primary  btn-rounded\" ng-disabled=\"savedisable == 1\">Save Changes</button>\n" +
     "                        <button type=\"button\" ng-click='cancelPayType()' class=\"btn btn-default  btn-rounded pull-right\">Cancel</button>\n" +
     "                        <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">{{ErrorMsg}}</span>\n" +
     "                    </div>\n" +
@@ -5995,7 +5995,7 @@ angular.module("ct-app/manageLists/payors/add-update-payor.tpl.html", []).run(["
     "                <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
     "                <div class=\"form-group\">\n" +
     "                    <div class=\"col-sm-12\">\n" +
-    "                        <button type=\"submit\" class=\"btn btn-primary  btn-rounded\">Save Changes</button>\n" +
+    "                        <button type=\"submit\" class=\"btn btn-primary  btn-rounded\" ng-disabled=\"savedisable == 1\">Save Changes</button>\n" +
     "                        <button type=\"button\" ng-click='cancelPayor()' class=\"btn btn-default  btn-rounded pull-right\">Cancel</button>\n" +
     "                        <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">{{ErrorMsg}}</span>\n" +
     "                    </div>\n" +
@@ -6126,7 +6126,7 @@ angular.module("ct-app/manageLists/serviceItems/add-update-serviceItem.tpl.html"
     "                <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
     "                <div class=\"form-group\">\n" +
     "                    <div class=\"col-sm-12\">\n" +
-    "                        <button type=\"submit\" class=\"btn btn-primary  btn-rounded\">Save Changes</button>\n" +
+    "                        <button type=\"submit\" class=\"btn btn-primary  btn-rounded\" ng-disabled=\"savedisable == 1\">Save Changes</button>\n" +
     "                        <button type=\"button\" ng-click='cancelServiceItem()' class=\"btn btn-default  btn-rounded pull-right\">Cancel</button>\n" +
     "                        <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">\n" +
     "                                  \n" +
@@ -6246,7 +6246,7 @@ angular.module("ct-app/manageLists/skills/add-update-skill.tpl.html", []).run(["
     "                <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
     "                <div class=\"form-group\">\n" +
     "                    <div class=\"col-sm-12\">\n" +
-    "                        <button type=\"submit\" class=\"btn btn-primary  btn-rounded\">Save Changes</button>\n" +
+    "                        <button type=\"submit\" class=\"btn btn-primary  btn-rounded\" ng-disabled=\"savedisable == 1\">Save Changes</button>\n" +
     "                        <button type=\"button\" ng-click='cancelSkill()' class=\"btn btn-default  btn-rounded pull-right\">Cancel</button>\n" +
     "                        <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">{{ErrorMsg}}</span>\n" +
     "                    </div>\n" +
@@ -6364,7 +6364,7 @@ angular.module("ct-app/manageLists/tasks/add-update-task.tpl.html", []).run(["$t
     "                <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
     "                <div class=\"form-group\">\n" +
     "                    <div class=\"col-sm-12\">\n" +
-    "                        <button type=\"submit\" class=\"btn btn-primary  btn-rounded\">Save Changes</button>\n" +
+    "                        <button type=\"submit\" class=\"btn btn-primary  btn-rounded\" ng-disabled=\"savedisable == 1\">Save Changes</button>\n" +
     "                        <button type=\"button\" ng-click='cancelTask()' class=\"btn btn-default  btn-rounded pull-right\">Cancel</button>\n" +
     "                        <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">{{ErrorMsg}}</span>\n" +
     "                    </div>\n" +
@@ -9453,12 +9453,12 @@ angular.module("ct-app/zones/add-update-zone.tpl.html", []).run(["$templateCache
     "                            </div>\n" +
     "                        </div>\n" +
     "\n" +
-    "                        <div class=\"form-group\">\n" +
+    "                        <!--<div class=\"form-group\">\n" +
     "                            <label class=\"col-sm-2 control-label\">IVR Number</label>\n" +
     "                            <div class=\"col-sm-4\">\n" +
     "                                <input type=\"text\" class=\"form-control\" ui-mask=\"(999) 999-9999\" ui-mask-use-viewvalue=\"false\" ng-model=\"zone.ivr_number\">\n" +
     "                            </div>\n" +
-    "                        </div>\n" +
+    "                        </div>-->\n" +
     "                        <div class=\"col-sm-4 col-sm-offset-2\">\n" +
     "                            <div show-loader=\"show_zone_form_loader\"></div>\n" +
     "                        </div>\n" +

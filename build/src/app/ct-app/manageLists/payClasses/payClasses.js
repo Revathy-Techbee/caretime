@@ -136,6 +136,7 @@ angular.module('ctApp.payClasses', ['ui.router']).config([
     $scope.payClassDBField = null;
     $scope.show_payClass_form_loader = false;
     $scope.payClass.status = 1;
+    $scope.savedisable = 0;
     $scope.getPayClassDetail = function () {
       if ($scope.payClass_id) {
         $scope.pageTitle = 'Update';
@@ -153,54 +154,77 @@ angular.module('ctApp.payClasses', ['ui.router']).config([
       }
     };
     $scope.getPayClassDetail();
-    $scope.payClassManage = function (step) {
+    $scope.payClassManage = function () {
       $scope.showerrorMsg = false;
       if ($scope.addUpdatePayClassForm.$valid) {
         $scope.show_payClass_form_loader = true;
-        $scope.payClassDBField = {
-          pay_class: $scope.payClass.pay_class,
-          status: $scope.payClass.status
+        $scope.savedisable = 1;
+        $scope.filterObj = {
+          field: 'id',
+          filter: 'pay_class="' + $scope.payClass.pay_class + '" and agency_id = ' + Services.getAgencyID()
         };
-        if ($scope.payClass_id) {
-          // means it is in edit state
-          $scope.payClassDBField.edited_on = moment().utc();
-          $scope.payClassDBField.edited_by = JSON.stringify({
-            'username': $localStorage.user_info.username,
-            'firstname': $localStorage.user_info.first_name,
-            'lastname': $localStorage.user_info.last_name,
-            'user_id': $localStorage.user_info.user_id
-          });
-        } else {
-          $scope.payClassDBField.agency_id = Services.getAgencyID();
-          $scope.payClassDBField.created_on = moment().utc();
-          $scope.payClassDBField.created_by = JSON.stringify({
-            'username': $localStorage.user_info.username,
-            'firstname': $localStorage.user_info.first_name,
-            'lastname': $localStorage.user_info.last_name,
-            'user_id': $localStorage.user_info.user_id
-          });
+        if (!angular.isUndefined($scope.payClass_id) && $scope.payClass_id) {
+          $scope.filterObj.filter += ' and id <>' + $scope.payClass_id;
         }
-        if ($scope.payClass_id) {
-          Services.agencyPayclass.update({ id: $stateParams.payClassId }, $scope.payClassDBField, function (data) {
+        Services.agencyPayclass.get($scope.filterObj, function (data) {
+          if (data.record.length > 0) {
             $scope.show_payClass_form_loader = false;
-            $scope.showMessageFunc('Pay Class detail edited sucessfully.', 'success', function () {
-              $timeout(function () {
-                $scope.showerrorMsg = false;
-                $state.go('ctApp.payClasses');
-              }, 3000);
-            });
-          });
-        } else {
-          Services.agencyPayclass.save($scope.payClassDBField, function (data) {
-            $scope.showMessageFunc('New Pay Class added sucessfully.', 'success', function () {
-              $scope.show_payClass_form_loader = false;
-              $timeout(function () {
-                $scope.showerrorMsg = false;
-                $state.go('ctApp.payClasses');
-              }, 3000);
-            });
-          });
-        }
+            $scope.savedisable = 0;
+            $scope.showerrorMsg = true;
+            $scope.ErrorClass = 'danger';
+            $scope.ErrorMsg = 'Pay Class Alread Exist!!!';
+            jQuery('.basic .ng-invalid').addClass('ng-dirty');
+            $timeout(function () {
+              $scope.showerrorMsg = false;
+            }, 3000);
+            return false;
+          } else {
+            $scope.payClassDBField = {
+              pay_class: $scope.payClass.pay_class,
+              status: $scope.payClass.status
+            };
+            if ($scope.payClass_id) {
+              // means it is in edit state
+              $scope.payClassDBField.edited_on = moment().utc();
+              $scope.payClassDBField.edited_by = JSON.stringify({
+                'username': $localStorage.user_info.username,
+                'firstname': $localStorage.user_info.first_name,
+                'lastname': $localStorage.user_info.last_name,
+                'user_id': $localStorage.user_info.user_id
+              });
+            } else {
+              $scope.payClassDBField.agency_id = Services.getAgencyID();
+              $scope.payClassDBField.created_on = moment().utc();
+              $scope.payClassDBField.created_by = JSON.stringify({
+                'username': $localStorage.user_info.username,
+                'firstname': $localStorage.user_info.first_name,
+                'lastname': $localStorage.user_info.last_name,
+                'user_id': $localStorage.user_info.user_id
+              });
+            }
+            if ($scope.payClass_id) {
+              Services.agencyPayclass.update({ id: $stateParams.payClassId }, $scope.payClassDBField, function (data) {
+                $scope.show_payClass_form_loader = false;
+                $scope.showMessageFunc('Pay Class detail edited sucessfully.', 'success', function () {
+                  $timeout(function () {
+                    $scope.showerrorMsg = false;
+                    $state.go('ctApp.payClasses');
+                  }, 3000);
+                });
+              });
+            } else {
+              Services.agencyPayclass.save($scope.payClassDBField, function (data) {
+                $scope.showMessageFunc('New Pay Class added sucessfully.', 'success', function () {
+                  $scope.show_payClass_form_loader = false;
+                  $timeout(function () {
+                    $scope.showerrorMsg = false;
+                    $state.go('ctApp.payClasses');
+                  }, 3000);
+                });
+              });
+            }
+          }
+        });
       }
     };
     $scope.showMessageFunc = function (error_msg, error_class, callback) {

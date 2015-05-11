@@ -136,6 +136,7 @@ angular.module('ctApp.skills', ['ui.router']).config([
     $scope.skillDBField = null;
     $scope.show_skill_form_loader = false;
     $scope.skill.status = 1;
+    $scope.savedisable = 0;
     $scope.getSkillDetail = function () {
       if ($scope.skill_id) {
         $scope.pageTitle = 'Update';
@@ -153,54 +154,77 @@ angular.module('ctApp.skills', ['ui.router']).config([
       }
     };
     $scope.getSkillDetail();
-    $scope.skillManage = function (step) {
+    $scope.skillManage = function () {
       $scope.showerrorMsg = false;
       if ($scope.addUpdateSkillForm.$valid) {
         $scope.show_skill_form_loader = true;
-        $scope.skillDBField = {
-          name: $scope.skill.name,
-          status: $scope.skill.status
+        $scope.savedisable = 1;
+        $scope.filterObj = {
+          field: 'id',
+          filter: 'name="' + $scope.skill.name + '" and agency_id = ' + Services.getAgencyID()
         };
-        if ($scope.skill_id) {
-          // means it is in edit state
-          $scope.skillDBField.edited_on = moment().utc();
-          $scope.skillDBField.edited_by = JSON.stringify({
-            'username': $localStorage.user_info.username,
-            'firstname': $localStorage.user_info.first_name,
-            'lastname': $localStorage.user_info.last_name,
-            'user_id': $localStorage.user_info.user_id
-          });
-        } else {
-          $scope.skillDBField.agency_id = Services.getAgencyID();
-          $scope.skillDBField.created_on = moment().utc();
-          $scope.skillDBField.created_by = JSON.stringify({
-            'username': $localStorage.user_info.username,
-            'firstname': $localStorage.user_info.first_name,
-            'lastname': $localStorage.user_info.last_name,
-            'user_id': $localStorage.user_info.user_id
-          });
+        if (!angular.isUndefined($scope.skill_id) && $scope.skill_id) {
+          $scope.filterObj.filter += ' and id <>' + $scope.skill_id;
         }
-        if ($scope.skill_id) {
-          Services.auth_skillsService.update({ id: $stateParams.skillId }, $scope.skillDBField, function (data) {
+        Services.auth_skillsService.get($scope.filterObj, function (data) {
+          if (data.record.length > 0) {
             $scope.show_skill_form_loader = false;
-            $scope.showMessageFunc('Skill detail edited sucessfully.', 'success', function () {
-              $timeout(function () {
-                $scope.showerrorMsg = false;
-                $state.go('ctApp.skills');
-              }, 3000);
-            });
-          });
-        } else {
-          Services.auth_skillsService.save($scope.skillDBField, function (data) {
-            $scope.showMessageFunc('New Skill added sucessfully.', 'success', function () {
-              $scope.show_skill_form_loader = false;
-              $timeout(function () {
-                $scope.showerrorMsg = false;
-                $state.go('ctApp.skills');
-              }, 3000);
-            });
-          });
-        }
+            $scope.savedisable = 0;
+            $scope.showerrorMsg = true;
+            $scope.ErrorClass = 'danger';
+            $scope.ErrorMsg = 'Skill  Alread Exist!!!';
+            jQuery('.basic .ng-invalid').addClass('ng-dirty');
+            $timeout(function () {
+              $scope.showerrorMsg = false;
+            }, 3000);
+            return false;
+          } else {
+            $scope.skillDBField = {
+              name: $scope.skill.name,
+              status: $scope.skill.status
+            };
+            if ($scope.skill_id) {
+              // means it is in edit state
+              $scope.skillDBField.edited_on = moment().utc();
+              $scope.skillDBField.edited_by = JSON.stringify({
+                'username': $localStorage.user_info.username,
+                'firstname': $localStorage.user_info.first_name,
+                'lastname': $localStorage.user_info.last_name,
+                'user_id': $localStorage.user_info.user_id
+              });
+            } else {
+              $scope.skillDBField.agency_id = Services.getAgencyID();
+              $scope.skillDBField.created_on = moment().utc();
+              $scope.skillDBField.created_by = JSON.stringify({
+                'username': $localStorage.user_info.username,
+                'firstname': $localStorage.user_info.first_name,
+                'lastname': $localStorage.user_info.last_name,
+                'user_id': $localStorage.user_info.user_id
+              });
+            }
+            if ($scope.skill_id) {
+              Services.auth_skillsService.update({ id: $stateParams.skillId }, $scope.skillDBField, function (data) {
+                $scope.show_skill_form_loader = false;
+                $scope.showMessageFunc('Skill detail edited sucessfully.', 'success', function () {
+                  $timeout(function () {
+                    $scope.showerrorMsg = false;
+                    $state.go('ctApp.skills');
+                  }, 3000);
+                });
+              });
+            } else {
+              Services.auth_skillsService.save($scope.skillDBField, function (data) {
+                $scope.showMessageFunc('New Skill added sucessfully.', 'success', function () {
+                  $scope.show_skill_form_loader = false;
+                  $timeout(function () {
+                    $scope.showerrorMsg = false;
+                    $state.go('ctApp.skills');
+                  }, 3000);
+                });
+              });
+            }
+          }
+        });
       }
     };
     $scope.showMessageFunc = function (error_msg, error_class, callback) {

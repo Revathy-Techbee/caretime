@@ -155,6 +155,7 @@ angular.module('ctApp.payTypes', [
         $scope.payTypeDBField = null;
         $scope.show_payType_form_loader = false;
         $scope.payType.status = 1;
+        $scope.savedisable = 0;
         $scope.overtime_exempts = [{
             "text": "No",
             "id": 0
@@ -199,65 +200,90 @@ angular.module('ctApp.payTypes', [
             }
         };
         $scope.getPayTypeDetail();
-        $scope.payTypeManage = function(step) {
+        $scope.payTypeManage = function() {
             $scope.showerrorMsg = false;
             if ($scope.addUpdatePayTypeForm.$valid) {
                 $scope.show_payType_form_loader = true;
-                $scope.payTypeDBField = {
-                    name: $scope.payType.name,
-                    overtime_exempt: $scope.payType.overtime_exempt.id,
-                    status: $scope.payType.status
+                $scope.savedisable = 1;
+                $scope.filterObj = {
+                    field: "id",
+                    filter: 'name="' + $scope.payType.name + '" and agency_id = ' + Services.getAgencyID()
+
                 };
-
-                if ($scope.payType_id) { // means it is in edit state
-                    $scope.payTypeDBField.edited_on = moment().utc();
-                    $scope.payTypeDBField.edited_by =JSON.stringify({
-                        "username": $localStorage.user_info.username,
-                        "firstname": $localStorage.user_info.first_name,
-                        "lastname": $localStorage.user_info.last_name,
-                        "user_id": $localStorage.user_info.user_id
-                    });
-
-
-                } else {
-                    $scope.payTypeDBField.agency_id = Services.getAgencyID();
-                    $scope.payTypeDBField.created_on = moment().utc();
-                    $scope.payTypeDBField.created_by = JSON.stringify({
-                        "username": $localStorage.user_info.username,
-                        "firstname": $localStorage.user_info.first_name,
-                        "lastname": $localStorage.user_info.last_name,
-                        "user_id": $localStorage.user_info.user_id
-                    });
-
+                if (!angular.isUndefined($scope.payType_id) && $scope.payType_id) {
+                    $scope.filterObj.filter += " and id <>" + $scope.payType_id;
                 }
-
-                if ($scope.payType_id) {
-
-                    Services.pay_type.update({
-                        id: $stateParams.payTypeId
-                    }, $scope.payTypeDBField, function(data) {
+                Services.pay_type.get($scope.filterObj, function(data) {
+                    if (data.record.length > 0) {
                         $scope.show_payType_form_loader = false;
-                        showMessageFunc("PayType detail edited sucessfully.", "success", function() {
-                            $timeout(function() {
-                                $scope.showerrorMsg = false;
-                                $state.go("ctApp.payTypes");
-                            }, 3000);
-                        });
-                    });
+                        $scope.savedisable = 0;
+                        $scope.showerrorMsg = true;
+                        $scope.ErrorClass = "danger";
+                        $scope.ErrorMsg = "Pay Type Alread Exist!!!";
+                        jQuery(".basic .ng-invalid").addClass("ng-dirty");
+                        $timeout(function() {
+                            $scope.showerrorMsg = false;
+                        }, 3000);
+                        return false;
+                    } else {
 
-                } else {
+                        $scope.payTypeDBField = {
+                            name: $scope.payType.name,
+                            overtime_exempt: $scope.payType.overtime_exempt.id,
+                            status: $scope.payType.status
+                        };
 
-                    Services.pay_type.save($scope.payTypeDBField, function(data) {
-                        showMessageFunc("New PayType added sucessfully.", "success", function() {
-                            $scope.show_payType_form_loader = false;
-                            $timeout(function() {
-                                $scope.showerrorMsg = false;
-                                $state.go("ctApp.payTypes");
-                            }, 3000);
-                        });
-                    });
+                        if ($scope.payType_id) { // means it is in edit state
+                            $scope.payTypeDBField.edited_on = moment().utc();
+                            $scope.payTypeDBField.edited_by = JSON.stringify({
+                                "username": $localStorage.user_info.username,
+                                "firstname": $localStorage.user_info.first_name,
+                                "lastname": $localStorage.user_info.last_name,
+                                "user_id": $localStorage.user_info.user_id
+                            });
 
-                }
+
+                        } else {
+                            $scope.payTypeDBField.agency_id = Services.getAgencyID();
+                            $scope.payTypeDBField.created_on = moment().utc();
+                            $scope.payTypeDBField.created_by = JSON.stringify({
+                                "username": $localStorage.user_info.username,
+                                "firstname": $localStorage.user_info.first_name,
+                                "lastname": $localStorage.user_info.last_name,
+                                "user_id": $localStorage.user_info.user_id
+                            });
+
+                        }
+
+                        if ($scope.payType_id) {
+
+                            Services.pay_type.update({
+                                id: $stateParams.payTypeId
+                            }, $scope.payTypeDBField, function(data) {
+                                $scope.show_payType_form_loader = false;
+                                showMessageFunc("PayType detail edited sucessfully.", "success", function() {
+                                    $timeout(function() {
+                                        $scope.showerrorMsg = false;
+                                        $state.go("ctApp.payTypes");
+                                    }, 3000);
+                                });
+                            });
+
+                        } else {
+
+                            Services.pay_type.save($scope.payTypeDBField, function(data) {
+                                showMessageFunc("New PayType added sucessfully.", "success", function() {
+                                    $scope.show_payType_form_loader = false;
+                                    $timeout(function() {
+                                        $scope.showerrorMsg = false;
+                                        $state.go("ctApp.payTypes");
+                                    }, 3000);
+                                });
+                            });
+
+                        }
+                    }
+                });
 
 
             }

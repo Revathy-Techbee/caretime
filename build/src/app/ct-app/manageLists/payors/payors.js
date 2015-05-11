@@ -136,6 +136,7 @@ angular.module('ctApp.payors', ['ui.router']).config([
     $scope.payorDBField = null;
     $scope.show_payor_form_loader = false;
     $scope.payor.status = 1;
+    $scope.savedisable = 0;
     $scope.getPayorDetail = function () {
       if ($scope.payor_id) {
         $scope.pageTitle = 'Update';
@@ -153,54 +154,77 @@ angular.module('ctApp.payors', ['ui.router']).config([
       }
     };
     $scope.getPayorDetail();
-    $scope.payorManage = function (step) {
+    $scope.payorManage = function () {
       $scope.showerrorMsg = false;
       if ($scope.addUpdatePayorForm.$valid) {
         $scope.show_payor_form_loader = true;
-        $scope.payorDBField = {
-          name: $scope.payor.name,
-          status: $scope.payor.status
+        $scope.savedisable = 1;
+        $scope.filterObj = {
+          field: 'id',
+          filter: 'name="' + $scope.payor.name + '" and agency_id = ' + Services.getAgencyID()
         };
-        if ($scope.payor_id) {
-          // means it is in edit state
-          $scope.payorDBField.edited_on = moment().utc();
-          $scope.payorDBField.edited_by = JSON.stringify({
-            'username': $localStorage.user_info.username,
-            'firstname': $localStorage.user_info.first_name,
-            'lastname': $localStorage.user_info.last_name,
-            'user_id': $localStorage.user_info.user_id
-          });
-        } else {
-          $scope.payorDBField.agency_id = Services.getAgencyID();
-          $scope.payorDBField.created_on = moment().utc();
-          $scope.payorDBField.created_by = JSON.stringify({
-            'username': $localStorage.user_info.username,
-            'firstname': $localStorage.user_info.first_name,
-            'lastname': $localStorage.user_info.last_name,
-            'user_id': $localStorage.user_info.user_id
-          });
+        if (!angular.isUndefined($scope.payor_id) && $scope.payor_id) {
+          $scope.filterObj.filter += ' and id <>' + $scope.payor_id;
         }
-        if ($scope.payor_id) {
-          Services.auth_payorsService.update({ id: $stateParams.payorId }, $scope.payorDBField, function (data) {
+        Services.auth_payorsService.get($scope.filterObj, function (data) {
+          if (data.record.length > 0) {
             $scope.show_payor_form_loader = false;
-            $scope.showMessageFunc('Payor detail edited sucessfully.', 'success', function () {
-              $timeout(function () {
-                $scope.showerrorMsg = false;
-                $state.go('ctApp.payors');
-              }, 3000);
-            });
-          });
-        } else {
-          Services.auth_payorsService.save($scope.payorDBField, function (data) {
-            $scope.showMessageFunc('New Payor added sucessfully.', 'success', function () {
-              $scope.show_payor_form_loader = false;
-              $timeout(function () {
-                $scope.showerrorMsg = false;
-                $state.go('ctApp.payors');
-              }, 3000);
-            });
-          });
-        }
+            $scope.savedisable = 0;
+            $scope.showerrorMsg = true;
+            $scope.ErrorClass = 'danger';
+            $scope.ErrorMsg = 'Payor Alread Exist!!!';
+            jQuery('.basic .ng-invalid').addClass('ng-dirty');
+            $timeout(function () {
+              $scope.showerrorMsg = false;
+            }, 3000);
+            return false;
+          } else {
+            $scope.payorDBField = {
+              name: $scope.payor.name,
+              status: $scope.payor.status
+            };
+            if ($scope.payor_id) {
+              // means it is in edit state
+              $scope.payorDBField.edited_on = moment().utc();
+              $scope.payorDBField.edited_by = JSON.stringify({
+                'username': $localStorage.user_info.username,
+                'firstname': $localStorage.user_info.first_name,
+                'lastname': $localStorage.user_info.last_name,
+                'user_id': $localStorage.user_info.user_id
+              });
+            } else {
+              $scope.payorDBField.agency_id = Services.getAgencyID();
+              $scope.payorDBField.created_on = moment().utc();
+              $scope.payorDBField.created_by = JSON.stringify({
+                'username': $localStorage.user_info.username,
+                'firstname': $localStorage.user_info.first_name,
+                'lastname': $localStorage.user_info.last_name,
+                'user_id': $localStorage.user_info.user_id
+              });
+            }
+            if ($scope.payor_id) {
+              Services.auth_payorsService.update({ id: $stateParams.payorId }, $scope.payorDBField, function (data) {
+                $scope.show_payor_form_loader = false;
+                $scope.showMessageFunc('Payor detail edited sucessfully.', 'success', function () {
+                  $timeout(function () {
+                    $scope.showerrorMsg = false;
+                    $state.go('ctApp.payors');
+                  }, 3000);
+                });
+              });
+            } else {
+              Services.auth_payorsService.save($scope.payorDBField, function (data) {
+                $scope.showMessageFunc('New Payor added sucessfully.', 'success', function () {
+                  $scope.show_payor_form_loader = false;
+                  $timeout(function () {
+                    $scope.showerrorMsg = false;
+                    $state.go('ctApp.payors');
+                  }, 3000);
+                });
+              });
+            }
+          }
+        });
       }
     };
     $scope.showMessageFunc = function (error_msg, error_class, callback) {
