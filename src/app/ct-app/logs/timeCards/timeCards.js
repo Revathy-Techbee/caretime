@@ -518,7 +518,7 @@ angular.module('ctApp.timeCard', [
                     limit: 5
                 };
                 if (query.term) {
-                    $scope.employeeObj.filter +='  and (last_name like "%' + query.term + '%" or first_name like "%' + query.term + '%")';
+                    $scope.employeeObj.filter += '  and (last_name like "%' + query.term + '%" or first_name like "%' + query.term + '%")';
                 }
                 Services.employeeService.get($scope.employeeObj, function(remoteData) {
                     items = remoteData.record;
@@ -896,8 +896,7 @@ angular.module('ctApp.timeCard', [
                     }
                     a = moment($scope.timecard.newClockin);
                     b = moment($scope.timecard.newClockout);
-                    if((moment($scope.timecard.newClockin).unix() !=  moment($scope.timecard.newClockout).unix()) || (i===0))
-                    {
+                    if ((moment($scope.timecard.newClockin).unix() != moment($scope.timecard.newClockout).unix()) || (i === 0)) {
                         $scope.timecard.newduration = HelperService.floatToTime(b.diff(a, 'hours', true));
                         checkclockin = moment($scope.timecard.newClockin).format("YYYY-MM-DD");
 
@@ -929,7 +928,7 @@ angular.module('ctApp.timeCard', [
                     i++;
                 }
                 while (i <= dayCount);
-               
+
 
             } else {
                 $scope.newInOut.push({
@@ -1066,14 +1065,14 @@ angular.module('ctApp.timeCard', [
                     id: $scope.timecardId
                 }, clock_in, function(data) {
 
-                   
+
 
                     if ($scope.clock_in_flag != 1) {
                         Services.timeLog.update({
                             id: $scope.logoutID
                         }, updatedur, function(data) {
                             if (updatedur.authorization_id || $scope.timecard.authOld) {
-                                if ((updatedur.authorization_id == $scope.timecard.authOld) && (moment($scope.timecard.authorization.enddate).isBefore(moment().format('MM/DD/YYYY')))) { //Update for same  authorization
+                                if (updatedur.authorization_id == $scope.timecard.authOld) { //Update for same  authorization
 
                                     Services.jobauthorizationService.get({
                                         filter: "id='" + updatedur.authorization_id + "'",
@@ -1109,21 +1108,18 @@ angular.module('ctApp.timeCard', [
                                             filter: "id='" + $scope.timecard.authOld + "'",
                                             fields: "hours_used,hours_remaining,authorization_end_date,total_hours"
                                         }, function(remoteData) {
-                                            if (moment(moment(remoteData.record[0].authorization_end_date).format('MM/DD/YYYY')).isBefore(moment().format('MM/DD/YYYY'))) //check existing authorization is past date
-                                            {
+                                            /*if (moment(moment(remoteData.record[0].authorization_end_date).format('MM/DD/YYYY')).isBefore(moment().format('MM/DD/YYYY'))) //check existing authorization is past date
+                                            {*/
                                                 hours_used = (remoteData.record[0].hours_used ? remoteData.record[0].hours_used : 0);
                                                 newhours_used = (parseFloat(hours_used) - parseFloat(HelperService.timeToFloat($scope.timecard.durOld)));
                                                 Services.jobauthorizationService.update({
                                                     id: $scope.timecard.authOld
                                                 }, {
-                                                    /*hours_used: (parseFloat(remoteData.record[0].hours_used) - parseFloat(HelperService.timeToFloat($scope.timecard.durOld))),
-                                                    hours_remaining: (parseFloat(remoteData.record[0].hours_remaining) + parseFloat(HelperService.timeToFloat($scope.timecard.durOld))),*/
+                                                    
                                                     hours_used: newhours_used,
                                                     hours_remaining: (parseFloat(remoteData.record[0].total_hours) - parseFloat(newhours_used)),
                                                 }, function(data) {
-                                                    if (updatedur.authorization_id && moment($scope.timecard.authorization.enddate).isBefore(moment().format('MM/DD/YYYY'))) {
-
-
+                                                    if (updatedur.authorization_id) {
                                                         Services.jobauthorizationService.get({
                                                             filter: "id='" + updatedur.authorization_id + "'",
                                                             fields: "hours_used,hours_remaining,total_hours"
@@ -1152,6 +1148,7 @@ angular.module('ctApp.timeCard', [
                                                                 }
                                                             });
                                                         });
+
                                                     } else {
                                                         if ($scope.newInOut.length > $scope.Splittimecnt) {
                                                             $scope.AddUpdatetimecard($scope.newInOut[$scope.Splittimecnt]);
@@ -1168,7 +1165,8 @@ angular.module('ctApp.timeCard', [
 
                                                     }
                                                 });
-                                            } else if (updatedur.authorization_id && moment($scope.timecard.authorization.enddate).isBefore(moment().format('MM/DD/YYYY'))) {
+                                           // } 
+                                            /*else if (updatedur.authorization_id && moment($scope.timecard.authorization.enddate).isBefore(moment().format('MM/DD/YYYY'))) {
 
 
                                                 Services.jobauthorizationService.get({
@@ -1199,7 +1197,7 @@ angular.module('ctApp.timeCard', [
                                                         }
                                                     });
                                                 });
-                                            } else {
+                                            }*//* else {
                                                 if ($scope.newInOut.length > $scope.Splittimecnt) {
                                                     $scope.AddUpdatetimecard($scope.newInOut[$scope.Splittimecnt]);
                                                 } else {
@@ -1213,7 +1211,7 @@ angular.module('ctApp.timeCard', [
                                                     }, 3000);
                                                 }
 
-                                            }
+                                            }*/
 
                                         });
                                     } else if (updatedur.authorization_id && moment($scope.timecard.authorization.enddate).isBefore(moment().format('MM/DD/YYYY'))) {
@@ -1334,18 +1332,15 @@ angular.module('ctApp.timeCard', [
                     if (!angular.isUndefined($scope.timecard.zone) && $scope.timecard.zone && $scope.timecard.zone != null) {
                         clock_in.zone_code = $scope.timecard.zone;
                     }
-                    clock_in.call_status= "Timecard Split";
+                    clock_in.call_status = "Timecard Split";
 
 
                 } else {
-                    if($scope.Splittimecnt == 1)
-                    {
-                        clock_in.call_status= "Agency-Manual";
+                    if ($scope.Splittimecnt == 1) {
+                        clock_in.call_status = "Agency-Manual";
 
-                    }
-                    else
-                    {
-                        clock_in.call_status= "Timecard Split";
+                    } else {
+                        clock_in.call_status = "Timecard Split";
 
                     }
                     clock_in.employee_code = $scope.timecard.employee_code.id;
@@ -1384,16 +1379,13 @@ angular.module('ctApp.timeCard', [
                         if (!angular.isUndefined($scope.timecard.zone) && $scope.timecard.zone && $scope.timecard.zone != null) {
                             clock_in.zone_code = $scope.timecard.zone;
                         }
-                        clock_out.call_status= "Timecard Split";
+                        clock_out.call_status = "Timecard Split";
 
                     } else {
-                        if($scope.Splittimecnt == $scope.newInOut.length)
-                        {
-                            clock_out.call_status= "Agency-Manual";
-                        }
-                        else
-                        {
-                            clock_out.call_status= "Timecard Split";
+                        if ($scope.Splittimecnt == $scope.newInOut.length) {
+                            clock_out.call_status = "Agency-Manual";
+                        } else {
+                            clock_out.call_status = "Timecard Split";
                         }
                         clock_out.employee_code = $scope.timecard.employee_code.id;
                         clock_out.job_code = $scope.timecard.job_code.id;
@@ -1586,7 +1578,7 @@ angular.module('ctApp.timeCard', [
                     limit: 5
                 };
                 if (query.term) {
-                    $scope.jobObj.filter += ' and (job_name like "%' + query.term + '%")'; 
+                    $scope.jobObj.filter += ' and (job_name like "%' + query.term + '%")';
                 }
                 Services.jobService.get($scope.jobObj, function(remoteData) {
                     items = remoteData.record;
@@ -1762,22 +1754,22 @@ angular.module('ctApp.timeCard', [
             clockin = {
                 timestamp: moment($scope.TimecardDetails.clock_in).utc().format('YYYY-MM-DD HH:mm'),
                 call_status: "Inactivated",
-                
+
             };
-             if (!$scope.TimecardDetails.originaldat) {
-                clockin.adjusted_timestamp= moment($scope.TimecardDetails.clock_in).utc().format('YYYY-MM-DD HH:mm');
-             }
+            if (!$scope.TimecardDetails.originaldat) {
+                clockin.adjusted_timestamp = moment($scope.TimecardDetails.clock_in).utc().format('YYYY-MM-DD HH:mm');
+            }
             clockout = {
                 timestamp: moment($scope.TimecardDetails.clock_in).utc().format('YYYY-MM-DD HH:mm'),
                 call_duriation: "0:0",
                 call_status: "Inactivated",
-                
+
             };
             if (!$scope.TimecardDetails.originaldat) {
-                clockout.adjusted_timestamp= moment($scope.TimecardDetails.clock_out).utc().format('YYYY-MM-DD HH:mm');
-                clockout.adjusted_call_duriation=$scope.TimecardDetails.duration;
-             }
-           
+                clockout.adjusted_timestamp = moment($scope.TimecardDetails.clock_out).utc().format('YYYY-MM-DD HH:mm');
+                clockout.adjusted_call_duriation = $scope.TimecardDetails.duration;
+            }
+
             Services.timeLog.update({
                 id: $scope.TimecardDetails.clockinID
             }, clockin, function(data) {
