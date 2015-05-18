@@ -6821,7 +6821,7 @@ angular.module("ct-app/reports/authorizedVsActuall/authorizedVsActuall.tpl.html"
     "                <wj-flex-grid-column header=\"Authorized Hours\" is-read-only=\"true\" binding=\"authorizedHours\" > </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Total Authorized\" is-read-only=\"true\" binding=\"totalauthorizedHours\"> </wj-flex-grid-column>\n" +
     "                 <wj-flex-grid-column header=\"Hours Used\" is-read-only=\"true\" binding=\"hoursUsed\" > </wj-flex-grid-column>\n" +
-    "                <wj-flex-grid-column header=\"Hours Remaining\" is-read-only=\"true\" binding=\"hoursRemaining\"  ng-style=\"{color:getAmountColor($item.hoursRemaining)}\" > </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"Hours Remaining\" is-read-only=\"true\" binding=\"hoursRemaining\"  ng-style=\"{color:getAmountColor($item.hoursRemainingNo)}\" > </wj-flex-grid-column>\n" +
     "                \n" +
     "                 \n" +
     "\n" +

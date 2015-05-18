@@ -67,6 +67,12 @@ angular.module('ctApp.authorizedVsActuall', [
           var zoneDetail = JSON.parse(item.zone_detail);
           var jobDetail = JSON.parse(item.job_detail);
           var payorDetail = JSON.parse(item.payor_detail);
+          remaininghours = item.hours_used ? HelperService.timeToFloat(item.total_hours) - item.hours_used : HelperService.timeToFloat(item.total_hours);
+          if (remaininghours < 0) {
+            hrs_format = HelperService.floatToTime(item.hours_used - HelperService.timeToFloat(item.total_hours));
+          } else {
+            hrs_format = HelperService.floatToTime(remaininghours);
+          }
           $scope.resultData.push({
             'endDate': HelperService.formatOnlyDate(item.authorization_end_date, $localStorage.user_info.country),
             'zone': zoneDetail.text + ' (' + zoneDetail.id + ')',
@@ -75,7 +81,8 @@ angular.module('ctApp.authorizedVsActuall', [
             'authorizedHours': item.frequency + ' ' + item.hours + ' Hrs',
             'totalauthorizedHours': item.total_hours,
             'hoursUsed': item.hours_used ? HelperService.floatToTime(item.hours_used) : 0,
-            'hoursRemaining': item.hours_remaining ? HelperService.floatToTime(item.hours_remaining) : item.total_hours
+            'hoursRemaining': hrs_format,
+            'hoursRemainingNo': remaininghours
           });
         });
         if (data.meta.count > offset + $scope.call_limit) {
