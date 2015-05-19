@@ -24,8 +24,15 @@ angular.module('access.employeeLogin', [
 .controller("EmployeeLoginCtrl", ["$scope", "$rootScope", "$http", "Services", "$state", "$timeout", "$stateParams",
     function($scope, $rootScope, $http, Services, $state, $timeout, $stateParams) {
         $scope.updateuser = false;
+        $scope.agencyName = $rootScope.dfAgencyNameVariable;
+
+                $scope.$on('AgencyNameVariable', function() {
+                $scope.agencyName = $rootScope.dfAgencyNameVariable;
+
+                });
         $timeout(function() {
             // console.log($stateParams);
+
             if (!angular.isUndefined($stateParams.username) && $stateParams.username) {
                // $scope.username = $stateParams.username;
                 $scope.username = $stateParams.empId;

@@ -248,7 +248,7 @@ angular.module('ctApp.jobList', [
                         fields: "zone_name,zone_code,id",
                         filter: "status > 0 and agency_id = " + Services.getAgencyID(),
                         order: 'zone_name asc',
-                        limit: 5
+                        limit: 20
                     };
                     if (query.term) {
                         $scope.zoneObj.filter += " and zone_name like '%" + query.term + "%'";

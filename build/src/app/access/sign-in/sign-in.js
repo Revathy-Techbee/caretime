@@ -25,6 +25,10 @@ angular.module('access.signIn', ['ui.router']).config([
   'Auth',
   function ($scope, $rootScope, Services, $state, $timeout, Auth) {
     $scope.user = {};
+    $scope.agencyName = $rootScope.dfAgencyNameVariable;
+    $scope.$on('AgencyNameVariable', function () {
+      $scope.agencyName = $rootScope.dfAgencyNameVariable;
+    });
     // console.log($rootScope.newCache.get('current_user'));
     $scope.showError = function (msg, error_class) {
       $scope.showerrorMsg = true;

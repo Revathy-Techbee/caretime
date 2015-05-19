@@ -317,7 +317,7 @@ angular.module('ctApp.schedules', [
           fields: 'zone_name,zone_code',
           filter: 'status > 0 and agency_id = ' + Services.getAgencyID(),
           order: 'zone_name asc',
-          limit: 5
+          limit: 20
         };
         if (query.term) {
           $scope.zoneObj.filter += ' and zone_name like \'%' + query.term + '%\'';
@@ -386,7 +386,7 @@ angular.module('ctApp.schedules', [
             fields: 'job_name,job_code,id',
             filter: 'status > 0 and agency_id =' + Services.getAgencyID() + '  and job_zone =' + $scope.shiftFilters.zoneName.id,
             order: 'job_name asc',
-            limit: 5
+            limit: 20
           };
           if (query.term) {
             $scope.jobObj.filter += ' and job_name like "%' + query.term + '%"';
@@ -417,7 +417,7 @@ angular.module('ctApp.schedules', [
             fields: 'first_name,last_name,access_code,id',
             filter: 'status > 0 and agency_id =' + Services.getAgencyID() + ' and zone_id =' + $scope.shiftFilters.zoneName.id,
             'order': 'last_name asc',
-            limit: 5
+            limit: 20
           };
           if (query.term) {
             $scope.empObj.filter += '  and (last_name like "%' + query.term + '%" or first_name like "%' + query.term + '%")';
@@ -1422,7 +1422,7 @@ angular.module('ctApp.schedules', [
           fields: 'zone_name,zone_code',
           filter: 'status > 0 and agency_id = ' + Services.getAgencyID(),
           order: 'zone_name asc',
-          limit: 5
+          limit: 20
         };
         if (query.term) {
           $scope.zoneObj.filter += ' and zone_name like \'%' + query.term + '%\'';
@@ -1466,7 +1466,7 @@ angular.module('ctApp.schedules', [
           fields: 'zone_name,zone_code',
           filter: 'status > 0 and agency_id = ' + Services.getAgencyID(),
           order: 'zone_name asc',
-          limit: 5
+          limit: 20
         };
         if (query.term) {
           $scope.zoneObj.filter += ' and zone_name like \'%' + query.term + '%\'';
@@ -1504,7 +1504,7 @@ angular.module('ctApp.schedules', [
           fields: 'job_name,job_code',
           filter: 'status > 0 and agency_id = ' + Services.getAgencyID() + ' and job_zone =' + $scope.shift.zone.id,
           order: 'job_name asc',
-          limit: 5
+          limit: 20
         };
         if (query.term) {
           $scope.jobObj.filter += '  and job_name like "%' + query.term + '%"';

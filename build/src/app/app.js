@@ -85,9 +85,17 @@ angular.module('app', [
   function run($rootScope, $cookies, $state, $http, Auth, Services) {
     // For CSRF token compatibility with Django
     $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+    // $scope.dfAgencyNameVariable="test";
     $rootScope.dfAuthVariable = Services.dflogin();
     $rootScope.dfAuthVariable.success(function (data) {
       $http.defaults.headers.common['X-DreamFactory-Session-Token'] = data.session_id;
+      $rootScope.dfAgencyNameVariable = Services.getAgencyName();
+      $rootScope.dfAgencyNameVariable.success(function (data) {
+        if (data.record.length == 1) {
+          $rootScope.dfAgencyNameVariable = data.record[0].agency_name;
+          $rootScope.$broadcast('AgencyNameVariable');
+        }
+      });
     });
     $rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
       if (!Auth.authorize(toState.data.access)) {
@@ -264,6 +272,9 @@ angular.module('app', [
       },
       dflogin: function () {
         return $http.get(baseurl + '/rest/' + serviceName + '/tasks?app_name=' + appName, {});
+      },
+      getAgencyName: function () {
+        return $http.get(baseurl + '/rest/' + serviceName + '/agency_detail?app_name=' + appName + '&fields=agency_name', {});
       },
       employeeService: $resource(baseurl + '/rest/' + serviceName + '/agency_employees/:id/?app_name=' + appName + '&fields=*', null, { 'update': { method: 'PUT' } }),
       employeeZones: $resource(baseurl + '/rest/' + serviceName + '/agency_zones/:id/?app_name=' + appName + '&fields=*', null, { 'update': { method: 'PUT' } }),

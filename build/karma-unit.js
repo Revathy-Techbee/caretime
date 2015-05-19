@@ -34,7 +34,7 @@ module.exports = function ( karma ) {
       'custom-vendors/angular/input.js',
       'custom-vendors/angular/ngAutocomplete.js',
       'vendor/angular-mapbox/dist/angular-mapbox.min.js',
-      'vendor/select2/select2.min.js',
+      'custom-vendors/select2/select2.min.js',
       'vendor/angular-ui-select2/src/select2.js',
       'vendor/angular-ui-select/dist/select.js',
       'vendor/ngInfiniteScroll/build/ng-infinite-scroll.min.js',

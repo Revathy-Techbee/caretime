@@ -329,7 +329,7 @@ angular.module('ctApp.alertLog', [
                         fields: "zone_name,zone_code,id",
                         filter: "status > 0 and agency_id = " + Services.getAgencyID(),
                         order: 'zone_name asc',
-                        limit: 5
+                        limit: 20
                     };
                     if (query.term) {
                         $scope.zoneObj.filter += " and zone_name like '%" + query.term + "%'";
@@ -440,7 +440,7 @@ angular.module('ctApp.alertLog', [
                     $scope.jobObj = {
                         fields: "id,job_name,job_code",
                         filter: "job_zone in(" + $scope.zone_id + ") and status > 0",
-                        limit: 5
+                        limit: 20
                     };
                     if (query.term) {
                         $scope.jobObj.filter += ' and (job_name like "%' + query.term + '%")';

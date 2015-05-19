@@ -305,7 +305,7 @@ angular.module('ctApp.timeCard', [
             fields: 'zone_name,zone_code',
             filter: 'status > 0 and agency_id = ' + Services.getAgencyID(),
             order: 'zone_name asc',
-            limit: 5
+            limit: 20
           };
           if (query.term) {
             $scope.zoneObj.filter += ' and zone_name like \'%' + query.term + '%\'';
@@ -396,7 +396,7 @@ angular.module('ctApp.timeCard', [
           $scope.jobObj = {
             fields: 'id,job_name,job_code',
             filter: 'job_zone in(' + $scope.zoneid + ')  and status > 0 and agency_id =' + Services.getAgencyID(),
-            limit: 5
+            limit: 20
           };
           if (query.term) {
             $scope.jobObj.filter += ' and (job_name like "%' + query.term + '%")';
@@ -421,7 +421,7 @@ angular.module('ctApp.timeCard', [
           $scope.employeeObj = {
             fields: 'last_name,first_name,access_code',
             filter: 'zone_id in(' + $scope.zoneid + ')  and status > 0 and agency_id =' + Services.getAgencyID(),
-            limit: 5
+            limit: 20
           };
           if (query.term) {
             $scope.employeeObj.filter += '  and (last_name like "%' + query.term + '%" or first_name like "%' + query.term + '%")';
@@ -594,7 +594,7 @@ angular.module('ctApp.timeCard', [
           fields: 'zone_name,zone_code',
           filter: 'status > 0 and agency_id = ' + Services.getAgencyID(),
           order: 'zone_name asc',
-          limit: 5
+          limit: 20
         };
         if (query.term) {
           $scope.zoneObj.filter += ' and zone_name like \'%' + query.term + '%\'';
@@ -1289,7 +1289,7 @@ angular.module('ctApp.timeCard', [
         $scope.employeeObj = {
           fields: 'last_name,first_name,access_code',
           filter: 'zone_id = ' + ($scope.timecard.zone.id ? $scope.timecard.zone.id : 0) + ' and status > 0 and agency_id = ' + Services.getAgencyID(),
-          limit: 5
+          limit: 20
         };
         if (query.term) {
           $scope.employeeObj.filter += '  and (last_name like "%' + query.term + '%" or first_name like "%' + query.term + '%")';
@@ -1319,7 +1319,7 @@ angular.module('ctApp.timeCard', [
         $scope.jobObj = {
           fields: 'id,job_name,job_code',
           filter: 'job_zone = ' + ($scope.timecard.zone.id ? $scope.timecard.zone.id : 0) + ' and status > 0 and agency_id = ' + Services.getAgencyID(),
-          limit: 5
+          limit: 20
         };
         if (query.term) {
           $scope.jobObj.filter += ' and (job_name like "%' + query.term + '%")';

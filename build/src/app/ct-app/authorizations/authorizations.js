@@ -181,7 +181,7 @@ angular.module('ctApp.authorizations', ['ui.router']).config([
             fields: 'id,zone_name,zone_code',
             filter: 'status > 0 and agency_id=' + Services.getAgencyID(),
             order: 'zone_name asc',
-            limit: 5
+            limit: 20
           };
           if (query.term) {
             $scope.zoneObj.filter += ' and zone_name like \'%' + query.term + '%\'';
@@ -430,7 +430,7 @@ angular.module('ctApp.authorizations', ['ui.router']).config([
           fields: 'zone_name,zone_code',
           filter: 'status > 0 and agency_id=' + Services.getAgencyID(),
           order: 'zone_name asc',
-          limit: 5
+          limit: 20
         };
         if (query.term) {
           $scope.zoneObj.filter += ' and zone_name like \'%' + query.term + '%\'';
@@ -491,7 +491,7 @@ angular.module('ctApp.authorizations', ['ui.router']).config([
         $scope.jobObj = {
           filter: 'status > 0 and agency_id =' + Services.getAgencyID() + ' and job_zone =' + $scope.jobAuthorization.zone.id,
           order: 'job_name asc',
-          limit: 5
+          limit: 20
         };
         if (query.term) {
           $scope.jobObj.filter += ' and job_name like "%' + query.term + '%"';

@@ -279,7 +279,7 @@ angular.module('ctApp.jobs', [
                         fields: "id,zone_name,zone_code",
                         filter: "status > 0 and agency_id=" + Services.getAgencyID(),
                         order: 'zone_name asc',
-                        limit: 5
+                        limit: 20
                     };
                     if (query.term) {
                         $scope.zoneObj.filter += " and zone_name like '%" + query.term + "%'";
@@ -793,7 +793,63 @@ angular.module('ctApp.jobs', [
                 }
                
             };
+            $scope.checkJobAddress = function() {
+                if($scope.job.job_address1)
+                {
+                    //Job Address1,Job Address2,Job State,Job City,Job Zip,Job County,Country
+                    $scope.savedisable = 1;
+                    filterObj={
+                        field: "id",
+                        filter: 'job_address1="'+ $scope.job.job_address1 +'" and job_address2 ="'+ $scope.job.job_address2+'" and job_zip="' + $scope.job.zip + '" and job_county="' + $scope.job.county+'" and job_state="' + $scope.job.state + '" and job_city="' + $scope.job.city+'" and country="' + $scope.job.country +'"'                           
+                    };
+                    if (!angular.isUndefined($stateParams.jobId) && $stateParams.jobId) {
+                        filterObj.filter+=" and id <>"+$stateParams.jobId;
+                    }
+                    Services.jobService.get(filterObj, function(data) {
+                        if (data.record.length > 0) {
+                               
+                                
+                                $scope.modalInstance = $modal.open({
+                                template: '<div class="modal-body"><div class="alert alert-warning"> There is a job already have that address '+$scope.job.job_address1  +'. Please make sure you are not creating a duplicate address.<br>Do you want to still continue ?</div></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">No</button><button class="btn btn-primary" ng-click="all()">Yes</button> </div>',
+                                controller: "JobNameCtrl"
 
+                            });
+                                
+                            $scope.modalInstance.result.then(function(id) {
+                                if(id=='yes')
+                                {
+                                    $scope.savedisable = 0;
+                                }
+                                else
+                                {
+
+                                    $scope.savedisable = 0;
+                                    $scope.job.job_address1 = "";
+                                    $scope.job.job_address2 = "";
+                                    $scope.job.city = "";
+                                    $scope.job.state ="";
+                                    $scope.job.zip = "";
+                                    $scope.job.county = "";
+                                    $scope.job.country = "";
+                                    $scope.job.timezone="";
+                                    //$state.go("ctApp.jobs");
+                                }
+                            }, function() {
+                                 $scope.savedisable = 0;
+
+                            });
+                            
+                            return false;
+                        }
+                        else
+                        {
+                            $scope.savedisable = 0;
+                        }
+                       
+                    });
+                }
+               
+            };
             $scope.saveUpdateJob = function() {
                 $scope.savedisable = 1;
                 if (!angular.isUndefined($stateParams.jobId) && $stateParams.jobId) { // means it is in edit state 
@@ -1023,6 +1079,8 @@ angular.module('ctApp.jobs', [
 
 
             $scope.getmyTimezone = function(lat, lng) {
+                $scope.checkJobAddress();
+
                 if (lat && lng) {
                     var tz = new TimeZoneDB();
                     tz.getJSON({
@@ -1148,7 +1206,7 @@ angular.module('ctApp.jobs', [
                         fields: "zone_name,zone_code",
                         filter: "status > 0 and agency_id = " + Services.getAgencyID(),
                         order: 'zone_name asc',
-                        limit: 5
+                        limit: 20
                     };
                     if (query.term) {
                         $scope.zoneObj.filter += " and zone_name like '%" + query.term + "%'";
@@ -1472,5 +1530,6 @@ angular.module('ctApp.jobs', [
 
             };
         }
+
 
     ]);

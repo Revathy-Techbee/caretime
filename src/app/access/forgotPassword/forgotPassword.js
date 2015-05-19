@@ -21,9 +21,16 @@ angular.module('access.forgotPassword', [
 
 }])
 
-.controller("ForgotPasswordCtrl", ["$scope", "Services", "$state", "$timeout", "$http","$localStorage",
-    function($scope, Services, $state, $timeout, $http,$localStorage) {
+.controller("ForgotPasswordCtrl", ["$scope", "Services", "$state", "$timeout", "$http","$localStorage","$rootScope",
+    function($scope, Services, $state, $timeout, $http,$localStorage,$rootScope) {
         $scope.savedisable = 0;
+    $scope.agencyName = $rootScope.dfAgencyNameVariable;
+
+    $scope.$on('AgencyNameVariable', function() {
+    $scope.agencyName = $rootScope.dfAgencyNameVariable;
+
+    });
+
     $scope.forgotPassword = function() {
         Services.signinService.get({
             fields: "user_email,id",

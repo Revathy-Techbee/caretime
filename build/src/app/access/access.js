@@ -28,7 +28,7 @@ angular.module('app.access', [
       views: {
         'main': {
           controller: 'AccessCtrl',
-          template: '<div ui-view="accessNested" class="fade-in-right-big smooth"></div>'
+          templateUrl: 'access/access.tpl.html'
         }
       },
       data: {

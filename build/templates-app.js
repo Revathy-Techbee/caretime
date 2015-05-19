@@ -1,9 +1,37 @@
-angular.module('templates-app', ['access/employeeLogin/employeeLogin.tpl.html', 'access/forgotPassword/forgotPassword.tpl.html', 'access/resetPassword/resetPassword.tpl.html', 'access/sign-in/sign-in.tpl.html', 'access/sign-up/sign-up.tpl.html', 'admin/admin.tpl.html', 'admin/agency/add-update-agency.tpl.html', 'admin/agency/agencies.tpl.html', 'admin/agency/mapDetailView.tpl.html', 'admin/updatePassword/updatePassword.tpl.html', 'ct-app/agency/add-update-agency.tpl.html', 'ct-app/agency/mapDetailView.tpl.html', 'ct-app/authorizations/add-update-authorizations.tpl.html', 'ct-app/authorizations/authorizations.tpl.html', 'ct-app/ct-app.tpl.html', 'ct-app/employees/add-update-employee.tpl.html', 'ct-app/employees/employee-dashboard.tpl.html', 'ct-app/employees/employees.tpl.html', 'ct-app/employees/mapDetailView.tpl.html', 'ct-app/employees/upload-skeleton.tpl.html', 'ct-app/employees/view-employee.tpl.html', 'ct-app/jobs/add-update-job.tpl.html', 'ct-app/jobs/jobs.tpl.html', 'ct-app/jobs/mapDetailView.tpl.html', 'ct-app/jobs/view-job.tpl.html', 'ct-app/logs/alertLog/add-update-alertLog.tpl.html', 'ct-app/logs/alertLog/alertLog.tpl.html', 'ct-app/logs/callLog/callLogs.tpl.html', 'ct-app/logs/customPrompts/customPrompts.tpl.html', 'ct-app/logs/employeeActivities/employeeActivities.tpl.html', 'ct-app/logs/timeCards/InactiveTimeCard.tpl.html', 'ct-app/logs/timeCards/add-update-timeCard.tpl.html', 'ct-app/logs/timeCards/timeCards.tpl.html', 'ct-app/mainDashboard/mainDashboard.tpl.html', 'ct-app/manageLists/activities/activities.tpl.html', 'ct-app/manageLists/activities/add-update-activity.tpl.html', 'ct-app/manageLists/customPrompts/add-update-customPrompt.tpl.html', 'ct-app/manageLists/customPrompts/customPrompts.tpl.html', 'ct-app/manageLists/observations/add-update-observation.tpl.html', 'ct-app/manageLists/observations/observations.tpl.html', 'ct-app/manageLists/payClasses/add-update-payClass.tpl.html', 'ct-app/manageLists/payClasses/payClasses.tpl.html', 'ct-app/manageLists/payTypes/add-update-payType.tpl.html', 'ct-app/manageLists/payTypes/payTypes.tpl.html', 'ct-app/manageLists/payors/add-update-payor.tpl.html', 'ct-app/manageLists/payors/payors.tpl.html', 'ct-app/manageLists/serviceItems/add-update-serviceItem.tpl.html', 'ct-app/manageLists/serviceItems/serviceItems.tpl.html', 'ct-app/manageLists/skills/add-update-skill.tpl.html', 'ct-app/manageLists/skills/skills.tpl.html', 'ct-app/manageLists/tasks/add-update-task.tpl.html', 'ct-app/manageLists/tasks/tasks.tpl.html', 'ct-app/mapView/mapView.tpl.html', 'ct-app/reports/accountActivities/accountActivities.tpl.html', 'ct-app/reports/activityReports/activityReports.tpl.html', 'ct-app/reports/authorizedVsActuall/authorizedVsActuall.tpl.html', 'ct-app/reports/dailyHoursChart/dailyHoursChart.tpl.html', 'ct-app/reports/employeeList/employeeList.tpl.html', 'ct-app/reports/employeeTimecard/employeeTimecard.tpl.html', 'ct-app/reports/employeeWeeklyHours/employeeWeeklyHours.tpl.html', 'ct-app/reports/inactivityEmployees/inactivityEmployees.tpl.html', 'ct-app/reports/jobList/jobList.tpl.html', 'ct-app/reports/jobNoSchedule/jobNoSchedule.tpl.html', 'ct-app/reports/jobObservation/jobObservation.tpl.html', 'ct-app/reports/jobTask/jobTask.tpl.html', 'ct-app/reports/jobTimecard/jobTimecard.tpl.html', 'ct-app/reports/jobWeeklyHours/jobWeeklyHours.tpl.html', 'ct-app/reports/mapReport/mapReport.tpl.html', 'ct-app/reports/scheduleReport/scheduleReport.tpl.html', 'ct-app/reports/scheduleVsActuall/scheduleVsActuall.tpl.html', 'ct-app/reports/timecardExport/timecardExport.tpl.html', 'ct-app/schedules/add-update-schedule.tpl.html', 'ct-app/schedules/schedules.tpl.html', 'ct-app/updatePassword/updatePassword.tpl.html', 'ct-app/zones/add-update-zone.tpl.html', 'ct-app/zones/zone-employee-dashboard.tpl.html', 'ct-app/zones/zones.tpl.html', 'partials/admin_header.tpl.html', 'partials/admin_nav.tpl.html', 'partials/aside.tpl.html', 'partials/datepicker.tpl.html', 'partials/header.tpl.html', 'partials/nav.tpl.html', 'partials/page_footer.tpl.html', 'partials/settings.tpl.html', 'utils/directive-templates/dropdown.tpl.html', 'utils/directive-templates/inline-edit.tpl.html', 'utils/directive-templates/popover-html-unsafe-popup.tpl.html']);
+angular.module('templates-app', ['access/access.tpl.html', 'access/employeeLogin/employeeLogin.tpl.html', 'access/forgotPassword/forgotPassword.tpl.html', 'access/resetPassword/resetPassword.tpl.html', 'access/sign-in/sign-in.tpl.html', 'access/sign-up/sign-up.tpl.html', 'admin/admin.tpl.html', 'admin/agency/add-update-agency.tpl.html', 'admin/agency/agencies.tpl.html', 'admin/agency/mapDetailView.tpl.html', 'admin/updatePassword/updatePassword.tpl.html', 'ct-app/agency/add-update-agency.tpl.html', 'ct-app/agency/mapDetailView.tpl.html', 'ct-app/authorizations/add-update-authorizations.tpl.html', 'ct-app/authorizations/authorizations.tpl.html', 'ct-app/ct-app.tpl.html', 'ct-app/employees/add-update-employee.tpl.html', 'ct-app/employees/employee-dashboard.tpl.html', 'ct-app/employees/employees.tpl.html', 'ct-app/employees/mapDetailView.tpl.html', 'ct-app/employees/upload-skeleton.tpl.html', 'ct-app/employees/view-employee.tpl.html', 'ct-app/jobs/add-update-job.tpl.html', 'ct-app/jobs/jobs.tpl.html', 'ct-app/jobs/mapDetailView.tpl.html', 'ct-app/jobs/view-job.tpl.html', 'ct-app/logs/alertLog/add-update-alertLog.tpl.html', 'ct-app/logs/alertLog/alertLog.tpl.html', 'ct-app/logs/callLog/callLogs.tpl.html', 'ct-app/logs/customPrompts/customPrompts.tpl.html', 'ct-app/logs/employeeActivities/employeeActivities.tpl.html', 'ct-app/logs/timeCards/InactiveTimeCard.tpl.html', 'ct-app/logs/timeCards/add-update-timeCard.tpl.html', 'ct-app/logs/timeCards/timeCards.tpl.html', 'ct-app/mainDashboard/mainDashboard.tpl.html', 'ct-app/manageLists/activities/activities.tpl.html', 'ct-app/manageLists/activities/add-update-activity.tpl.html', 'ct-app/manageLists/customPrompts/add-update-customPrompt.tpl.html', 'ct-app/manageLists/customPrompts/customPrompts.tpl.html', 'ct-app/manageLists/observations/add-update-observation.tpl.html', 'ct-app/manageLists/observations/observations.tpl.html', 'ct-app/manageLists/payClasses/add-update-payClass.tpl.html', 'ct-app/manageLists/payClasses/payClasses.tpl.html', 'ct-app/manageLists/payTypes/add-update-payType.tpl.html', 'ct-app/manageLists/payTypes/payTypes.tpl.html', 'ct-app/manageLists/payors/add-update-payor.tpl.html', 'ct-app/manageLists/payors/payors.tpl.html', 'ct-app/manageLists/serviceItems/add-update-serviceItem.tpl.html', 'ct-app/manageLists/serviceItems/serviceItems.tpl.html', 'ct-app/manageLists/skills/add-update-skill.tpl.html', 'ct-app/manageLists/skills/skills.tpl.html', 'ct-app/manageLists/tasks/add-update-task.tpl.html', 'ct-app/manageLists/tasks/tasks.tpl.html', 'ct-app/mapView/mapView.tpl.html', 'ct-app/reports/accountActivities/accountActivities.tpl.html', 'ct-app/reports/activityReports/activityReports.tpl.html', 'ct-app/reports/authorizedVsActuall/authorizedVsActuall.tpl.html', 'ct-app/reports/dailyHoursChart/dailyHoursChart.tpl.html', 'ct-app/reports/employeeList/employeeList.tpl.html', 'ct-app/reports/employeeTimecard/employeeTimecard.tpl.html', 'ct-app/reports/employeeWeeklyHours/employeeWeeklyHours.tpl.html', 'ct-app/reports/inactivityEmployees/inactivityEmployees.tpl.html', 'ct-app/reports/jobList/jobList.tpl.html', 'ct-app/reports/jobNoSchedule/jobNoSchedule.tpl.html', 'ct-app/reports/jobObservation/jobObservation.tpl.html', 'ct-app/reports/jobTask/jobTask.tpl.html', 'ct-app/reports/jobTimecard/jobTimecard.tpl.html', 'ct-app/reports/jobWeeklyHours/jobWeeklyHours.tpl.html', 'ct-app/reports/mapReport/mapReport.tpl.html', 'ct-app/reports/scheduleReport/scheduleReport.tpl.html', 'ct-app/reports/scheduleVsActuall/scheduleVsActuall.tpl.html', 'ct-app/reports/timecardExport/timecardExport.tpl.html', 'ct-app/schedules/add-update-schedule.tpl.html', 'ct-app/schedules/schedules.tpl.html', 'ct-app/updatePassword/updatePassword.tpl.html', 'ct-app/zones/add-update-zone.tpl.html', 'ct-app/zones/zone-employee-dashboard.tpl.html', 'ct-app/zones/zones.tpl.html', 'partials/access_header.tpl.html', 'partials/admin_header.tpl.html', 'partials/admin_nav.tpl.html', 'partials/aside.tpl.html', 'partials/datepicker.tpl.html', 'partials/header.tpl.html', 'partials/nav.tpl.html', 'partials/page_footer.tpl.html', 'partials/settings.tpl.html', 'utils/directive-templates/dropdown.tpl.html', 'utils/directive-templates/inline-edit.tpl.html', 'utils/directive-templates/popover-html-unsafe-popup.tpl.html']);
+
+angular.module("access/access.tpl.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("access/access.tpl.html",
+    "<!-- navbar -->\n" +
+    "  <div data-ng-include=\" 'partials/access_header.tpl.html' \" class=\"app-header navbar\">\n" +
+    "  </div>\n" +
+    "  <!-- / navbar -->\n" +
+    "\n" +
+    "\n" +
+    "  <!-- content -->\n" +
+    "    <div ui-view=\"accessNested\" class=\"fade-in-right-big smooth\"></div>\n" +
+    "\n" +
+    "  <!-- /content -->\n" +
+    "\n" +
+    "  <!-- footer -->\n" +
+    "\n" +
+    "  <!--<div class=\"app-footer wrapper b-t bg-light\">\n" +
+    "    <span class=\"pull-right\">{{app.version}} <a href ui-scroll=\"app\" class=\"m-l-sm text-muted\"><i class=\"fa fa-long-arrow-up\"></i></a></span>\n" +
+    "    &copy; 2014 Caretime Copyright.\n" +
+    "  </div>-->\n" +
+    "\n" +
+    "\n" +
+    "  \n" +
+    "\n" +
+    "  <!-- / footer -->\n" +
+    "\n" +
+    " <!-- <div data-ng-include=\" 'partials/settings.tpl.html' \" ></div> Revathy Not Needed-->");
+}]);
 
 angular.module("access/employeeLogin/employeeLogin.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("access/employeeLogin/employeeLogin.tpl.html",
+    "<a href class=\"navbar-brand block m-t\">{{app.name}}<span ng-if=\"agencyName && agencyName!=''\">  - {{agencyName}}</span></a>\n" +
     "<div class=\"container w-xxl w-auto-xs\">\n" +
-    "    <a href class=\"navbar-brand block m-t\">{{app.name}}</a>\n" +
     "    <div class=\"m-b-lg\">\n" +
     "        <div class=\"wrapper text-center\">\n" +
     "            <strong>Set Your Password</strong>\n" +
@@ -56,8 +84,9 @@ angular.module("access/employeeLogin/employeeLogin.tpl.html", []).run(["$templat
 
 angular.module("access/forgotPassword/forgotPassword.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("access/forgotPassword/forgotPassword.tpl.html",
+    "<a href class=\"navbar-brand block m-t\">{{app.name}}<span ng-if=\"agencyName && agencyName!=''\">  - {{agencyName}}</span></a>\n" +
     "<div class=\"container w-xl w-auto-xs\">\n" +
-    "    <a href class=\"navbar-brand block m-t\">{{app.name}}</a>\n" +
+    "    \n" +
     "    <div class=\"m-b-lg\">\n" +
     "        <div class=\"wrapper text-center\">\n" +
     "            <strong>Forgot Password</strong>\n" +
@@ -91,8 +120,8 @@ angular.module("access/forgotPassword/forgotPassword.tpl.html", []).run(["$templ
 
 angular.module("access/resetPassword/resetPassword.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("access/resetPassword/resetPassword.tpl.html",
+    "<a href class=\"navbar-brand block m-t\">{{app.name}}<span ng-if=\"agencyName && agencyName!=''\">  - {{agencyName}}</span></a>\n" +
     "<div class=\"container w-xl w-auto-xs\">\n" +
-    "    <a href class=\"navbar-brand block m-t\">{{app.name}}</a>\n" +
     "    <div class=\"m-b-lg\">\n" +
     "        <div class=\"wrapper text-center\">\n" +
     "            <strong>Reset your password</strong>\n" +
@@ -132,11 +161,14 @@ angular.module("access/resetPassword/resetPassword.tpl.html", []).run(["$templat
 angular.module("access/sign-in/sign-in.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("access/sign-in/sign-in.tpl.html",
     "<div class=\"wrapper-md\" >\n" +
+    "    <div>\n" +
+    "      <a href class=\"navbar-brand block m-t\">{{app.name}}<span ng-if=\"agencyName && agencyName!=''\">  - {{agencyName}}</span></a>\n" +
+    "    </div>\n" +
     "    <div class=\"container w-xxl w-auto-xs\">\n" +
-    "        <a href class=\"navbar-brand block m-t\">{{app.name}}</a>\n" +
+    "        \n" +
     "        <div class=\"m-b-lg\">\n" +
     "            <div class=\"wrapper text-center\">\n" +
-    "                <strong>Sign in to get in touch</strong>\n" +
+    "                <strong>Enter your email address and Password to access the system</strong>\n" +
     "            </div>\n" +
     "            <form name=\"singInForm\" class=\"form-validation form-horizontal general\"\n" +
     "                  rc-submit=\"signInUser()\" novalidate>\n" +
@@ -1564,12 +1596,12 @@ angular.module("ct-app/employees/add-update-employee.tpl.html", []).run(["$templ
     "                            <div class=\"col-sm-10\">\n" +
     "                                <div class=\"row\">\n" +
     "                                    <div class=\"col-md-6\" ng-class=\"{'has-error': rc.general.needsAttention(general.firstname)}\">\n" +
-    "                                        <input type=\"text\" required=\"\" name=\"firstname\" class=\"form-control\" capitalize placeholder=\"First Name\" ng-model=\"employee.firstname\" ng-pattern=\"/^[a-zA-Z\\d\\s\\-\\':]*$/\" ng-blur=\"checkEmpName()\" ng-keyup=\"generateUsername()\">\n" +
+    "                                        <input type=\"text\" autocomplete=\"off\" required=\"\" name=\"firstname\" class=\"form-control\" capitalize placeholder=\"First Name\" ng-model=\"employee.firstname\" ng-pattern=\"/^[a-zA-Z\\d\\s\\-\\':]*$/\" ng-blur=\"checkEmpName()\" ng-keyup=\"generateUsername()\">\n" +
     "                                        <span class=\"help-block\" ng-show=\"general.firstname.$error.required\n" +
     "                                && rc.general.needsAttention(general.firstname)\">First Name is required.</span>\n" +
     "                                    </div>\n" +
     "                                    <div class=\"col-md-6\" ng-class=\"{'has-error': rc.general.needsAttention(general.lastname)}\">\n" +
-    "                                        <input type=\"text\" class=\"form-control\" capitalize name=\"lastname\" required=\"\" placeholder=\"Last Name\" ng-model=\"employee.lastname\" ng-pattern=\"/^[a-zA-Z\\d\\s\\-\\':]*$/\" ng-blur=\"checkEmpName()\" ng-keyup=\"generateUsername()\">\n" +
+    "                                        <input type=\"text\" autocomplete=\"off\" class=\"form-control\" capitalize name=\"lastname\" required=\"\" placeholder=\"Last Name\" ng-model=\"employee.lastname\" ng-pattern=\"/^[a-zA-Z\\d\\s\\-\\':]*$/\" ng-blur=\"checkEmpName()\" ng-keyup=\"generateUsername()\">\n" +
     "                                        <span class=\"help-block\" ng-show=\"general.lastname.$error.required\n" +
     "                                && rc.general.needsAttention(general.lastname)\">Last Name is required.</span>\n" +
     "                                    </div>\n" +
@@ -9954,6 +9986,34 @@ angular.module("ct-app/zones/zones.tpl.html", []).run(["$templateCache", functio
     "\n" +
     "</div>\n" +
     "");
+}]);
+
+angular.module("partials/access_header.tpl.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("partials/access_header.tpl.html",
+    "<!-- navbar header -->\n" +
+    "<div class=\"navbar-header {{app.settings.navbarHeaderColor}}\">\n" +
+    "  \n" +
+    "  <!-- brand -->\n" +
+    "  <a href=\"javascript:void(0)\" class=\"navbar-brand text-white ct-nav-brand logopaddingbottom\">\n" +
+    "  \n" +
+    "    <img src=\"assets/logo-sm.png\" alt=\".\" >\n" +
+    "    <span class=\"hidden-folded m-l-xs text-white\"><img alt=\"CareTime\" src=\"assets/logotext.png\"></span>\n" +
+    "\n" +
+    "    <!--<span class=\"hidden-folded m-l-xs text-white\">\n" +
+    "      CARETIME\n" +
+    "    </span>-->\n" +
+    "  </a>\n" +
+    "  <!-- / brand -->\n" +
+    "</div>\n" +
+    "<!-- / navbar header -->\n" +
+    "\n" +
+    "<!-- navbar collapse -->\n" +
+    "<div class=\"collapse navbar-collapse box-shadow {{app.settings.navbarCollapseColor}}\" >\n" +
+    "  \n" +
+    "\n" +
+    "  \n" +
+    "</div>\n" +
+    "<!-- / navbar collapse -->");
 }]);
 
 angular.module("partials/admin_header.tpl.html", []).run(["$templateCache", function($templateCache) {

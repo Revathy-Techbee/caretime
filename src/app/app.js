@@ -88,9 +88,19 @@ angular.module('app', [
         // For CSRF token compatibility with Django
         
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+       // $scope.dfAgencyNameVariable="test";
         $rootScope.dfAuthVariable = Services.dflogin();
         $rootScope.dfAuthVariable.success(function(data){
           $http.defaults.headers.common['X-DreamFactory-Session-Token'] = data.session_id;
+          $rootScope.dfAgencyNameVariable =Services.getAgencyName();
+                  $rootScope.dfAgencyNameVariable.success(function(data){
+                    if(data.record.length==1)
+                    {
+                        $rootScope.dfAgencyNameVariable=data.record[0].agency_name;
+                        $rootScope.$broadcast('AgencyNameVariable');
+                    }
+
+                  });
         });
 
         $rootScope.$on("$stateChangeStart", function (event, toState, toParams, fromState, fromParams) {
@@ -330,7 +340,12 @@ angular.module('app', [
 
             });
             },
+            getAgencyName : function(){
 
+            return $http.get(baseurl + '/rest/'+serviceName+'/agency_detail?app_name='+appName+'&fields=agency_name',{
+
+            });
+            },
             employeeService: $resource(baseurl+'/rest/'+serviceName+'/agency_employees/:id/?app_name='+appName+'&fields=*', null, {'update': { method:'PUT' }}),
             employeeZones  : $resource(baseurl+'/rest/'+serviceName+'/agency_zones/:id/?app_name='+appName+'&fields=*', null, {'update': { method:'PUT' }}),
             employeeZips   : $resource(baseurl+'/rest/'+serviceName+'/agency_zip/:id/?app_name='+appName+'&fields=*', null, {'update': { method:'PUT' }}),
@@ -338,8 +353,7 @@ angular.module('app', [
             agencyDetail   : $resource(baseurl+'/rest/'+serviceName+'/agency_detail/:id/?app_name='+appName+'&fields=*', null, {'update': { method:'PUT' }}),
             jobService	   : $resource(baseurl+'/rest/'+serviceName+'/agency_jobs/:id/?app_name='+appName+'&fields=*', null, {'update': { method:'PUT' }}),
             
-            signinService  : $resource(baseurl+'/rest/'+serviceName+'/signin/:id/?app_name='+appName+'&fields=*', null, {'update': { method:'PUT' }}),
-            
+            signinService  : $resource(baseurl+'/rest/'+serviceName+'/signin/:id/?app_name='+appName+'&fields=*', null, {'update': { method:'PUT' }}),           
 
             service_item   : $resource(baseurl+'/rest/'+serviceName+'/service_item/:id/?app_name='+appName+'&fields=*', null, {'update': { method:'PUT' }}),
             pay_type   	   : $resource(baseurl+'/rest/'+serviceName+'/pay_type/:id/?app_name='+appName+'&fields=*', null, {'update': { method:'PUT' }}),

@@ -506,7 +506,7 @@ angular.module('ctApp.zones', [
                 fields: "first_name,last_name,id",
                 filter: "status > 0 and agency_id = " + Services.getAgencyID(),
                 'order': 'last_name asc',
-                limit: 5
+                limit: 20
             };
             if (name) {
                 $scope.SupervisorEmp.filter += ' and (first_name  like "%' + name + '%" OR last_name   like "%' + name + '%" )';

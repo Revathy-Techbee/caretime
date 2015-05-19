@@ -284,7 +284,7 @@ angular.module('ctApp.employees', [
             fields: 'id,zone_name,zone_code',
             filter: 'status > 0 and agency_id=' + Services.getAgencyID(),
             order: 'zone_name asc',
-            limit: 5
+            limit: 20
           };
           if (query.term) {
             $scope.zoneObj.filter += ' and zone_name like \'%' + query.term + '%\'';
@@ -909,6 +909,45 @@ angular.module('ctApp.employees', [
         });
       }
     };
+    $scope.checkEmpAddress = function () {
+      if ($scope.employee.firstname && $scope.employee.lastname) {
+        $scope.savedisable = 1;
+        filterObj = {
+          field: 'id',
+          filter: 'primary_address1="' + $scope.employee.address1 + '" and primary_address2 ="' + $scope.employee.address2 + '" and primary_zip="' + $scope.employee.zip + '" and primary_county="' + $scope.employee.county + '" and primary_state="' + $scope.employee.state + '" and primary_city="' + $scope.employee.city + '" and country="' + $scope.employee.country + '"'
+        };
+        if (!angular.isUndefined($scope.employee_id) && $scope.employee_id) {
+          filterObj.filter += ' and id <>' + $scope.employee_id;
+        }
+        Services.employeeService.get(filterObj, function (data) {
+          if (data.record.length > 0) {
+            $scope.modalInstance = $modal.open({
+              template: '<div class="modal-body"><div class="alert alert-warning"> There is a employee already have that address ' + $scope.employee.address1 + '. Please make sure you are not creating a duplicate address.<br>Do you want to still continue ?</div></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">No</button><button class="btn btn-primary" ng-click="all()">Yes</button> </div>',
+              controller: 'EmpNameCtrl'
+            });
+            $scope.modalInstance.result.then(function (id) {
+              if (id == 'yes') {
+                $scope.savedisable = 0;
+              } else {
+                $scope.employee.timezone = '';
+                $scope.employee.address1 = '';
+                $scope.employee.address2 = '';
+                $scope.employee.city = '';
+                $scope.employee.state = '';
+                $scope.employee.zip = '';
+                $scope.employee.county = '';
+                $scope.employee.country = '';  //$state.go("ctApp.employees");
+              }
+            }, function () {
+              $scope.savedisable = 0;  // $state.go("ctApp.employees");
+            });
+            return false;
+          } else {
+            $scope.savedisable = 0;
+          }
+        });
+      }
+    };
     $scope.saveUpdateEmployee = function () {
       $scope.savedisable = 1;
       if ($scope.updateCertificates) {
@@ -1085,6 +1124,7 @@ angular.module('ctApp.employees', [
       });
     };
     $scope.getmyTimezone = function (lat, lng) {
+      $scope.checkEmpAddress();
       if (lat && lng) {
         var tz = new TimeZoneDB();
         tz.getJSON({
@@ -1228,7 +1268,7 @@ angular.module('ctApp.employees', [
           fields: 'zone_name,zone_code',
           filter: 'status > 0 and agency_id = ' + Services.getAgencyID(),
           order: 'zone_name asc',
-          limit: 5
+          limit: 20
         };
         if (query.term) {
           $scope.zoneObj.filter += ' and zone_name like \'%' + query.term + '%\'';

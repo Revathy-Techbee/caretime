@@ -21,8 +21,14 @@ angular.module('access.signIn', [
     }])
     .controller("SignInCtrl", ["$scope", "$rootScope", "Services", "$state", "$timeout", "Auth",
         function($scope, $rootScope, Services, $state, $timeout, Auth) {
-
             $scope.user = {};
+            $scope.agencyName = $rootScope.dfAgencyNameVariable;
+
+            $scope.$on('AgencyNameVariable', function() {
+            $scope.agencyName = $rootScope.dfAgencyNameVariable;
+
+            });
+
             // console.log($rootScope.newCache.get('current_user'));
             $scope.showError = function(msg, error_class) {
                 $scope.showerrorMsg = true;

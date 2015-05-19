@@ -23,8 +23,13 @@ angular.module('access.resetPassword', ['ui.router']).config([
   '$timeout',
   '$http',
   '$stateParams',
-  function ($scope, Services, $state, $timeout, $http, $stateParams) {
+  '$rootScope',
+  function ($scope, Services, $state, $timeout, $http, $stateParams, $rootScope) {
     $timeout(function () {
+      $scope.agencyName = $rootScope.dfAgencyNameVariable;
+      $scope.$on('AgencyNameVariable', function () {
+        $scope.agencyName = $rootScope.dfAgencyNameVariable;
+      });
       $scope.userID = $stateParams.userID;
       Services.signinService.get({
         fields: 'ForgotpwdStatus,ForgotpwdOn',

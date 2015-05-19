@@ -502,7 +502,7 @@ angular.module('ctApp.employeeTimecard', [
                         fields: "zone_name,zone_code,id",
                         filter: "status > 0 and agency_id = " + Services.getAgencyID(),
                         order: 'zone_name asc',
-                        limit: 5
+                        limit: 20
                     };
                     if (query.term) {
                         $scope.zoneObj.filter += " and zone_name like '%" + query.term + "%'";
@@ -551,7 +551,7 @@ angular.module('ctApp.employeeTimecard', [
                     fields: "last_name,first_name,access_code,id",
                     filter: "status > 0 and zone_id in(" + $scope.zone_id + ") and agency_id =" + Services.getAgencyID(),
                     order: 'last_name asc',
-                    limit: 5
+                    limit: 20
                 };
                 if (query.term) {
                     $scope.empObj.filter += '  and (last_name like "%' + query.term + '%" or first_name like "%' + query.term + '%")';
