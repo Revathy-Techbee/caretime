@@ -5,7 +5,7 @@
         <div class="bg-light lter b-b wrapper-md">
             <div class="row">
                 <div class="col-sm-6 col-xs-12">
-                    <h1 class="m-n font-thin h3 text-black">Employee Dashboard - {{empName}}</h1>
+                    <h1 class="m-n font-thin h3 text-black">Job Dashboard - {{jobName}}</h1>
                 </div>
                 <div class="col-sm-6 text-right hidden-xs">
 
@@ -117,8 +117,8 @@
             <div class="row wrapper" ng-if="showRecord==1">
                 <div class="col-md-12">
                     <wj-flex-grid items-source="calllogListDetail">
-                        <!--<wj-flex-grid-column header="Employee " is-read-only="true" binding="employee_code" width="*"> </wj-flex-grid-column>-->
-                        <wj-flex-grid-column header="Job" is-read-only="true" binding="job_code" width="*"> </wj-flex-grid-column >
+                        <wj-flex-grid-column header="Employee " is-read-only="true" binding="employee_code" width="*"> </wj-flex-grid-column>
+                        <!--<wj-flex-grid-column header="Job" is-read-only="true" binding="job_code"> </wj-flex-grid-column >-->
                         <wj-flex-grid-column header="Log Type" is-read-only="true" binding="log_type"> </wj-flex-grid-column>
                         <wj-flex-grid-column header="Work Duration" is-read-only="true" binding="call_duriation"> </wj-flex-grid-column>
                         <wj-flex-grid-column header="Time Stamp" is-read-only="true" binding="timestamp"> </wj-flex-grid-column>

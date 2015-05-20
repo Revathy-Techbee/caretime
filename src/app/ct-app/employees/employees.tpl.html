@@ -80,12 +80,12 @@
                             </button>
                          <!--   <button ng-click="enableDelete(detail.id)" class="btn btn-rounded btn-sm btn-icon btn-default"><i class="fa fa-trash-o"></i>
                             </button> -->
-                            <!-- <button ng-click="enableDashboard(detail.id)" class="btn btn-rounded btn-sm btn-icon btn-default"><i class="fa fa-dashboard"></i>
-                            </button> -->
+                            <button ng-click="enableDashboard(detail.access_code)" class="btn btn-rounded btn-sm btn-icon btn-default"><i class="fa fa-dashboard"></i>
+                            </button> 
                         </td>
                     </tr>
                     <tr ng-if="config.show_employees_loader">
-                        <td colspan="4">
+                        <td colspan="7">
                             <div show-loader="config.show_employees_loader"></div>
                         </td>
                     </tr>
