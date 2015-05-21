@@ -156,6 +156,20 @@ angular.module('ctApp.authorizations', ['ui.router']).config([
       });
       $scope.modalInstance.result.then(function (id) {
         Services.jobauthorizationService.delete({ filter: 'id=\'' + id + '\'' }, function (data) {
+          $scope.logger = {};
+          $scope.logger.userid = $localStorage.user_info.user_id;
+          $scope.logger.user_detail = JSON.stringify({
+            'username': $localStorage.user_info.username,
+            'firstname': $localStorage.user_info.first_name,
+            'lastname': $localStorage.user_info.last_name
+          });
+          $scope.logger.action = 'Delete';
+          $scope.logger.agency_id = Services.getAgencyID();
+          $scope.logger.action_id = id;
+          $scope.logger.action_table = 'job_authorization';
+          $scope.logger.timestamp = moment().utc().format('YYYY-MM-DD HH:mm:ss');
+          Services.userLog.save({}, $scope.logger, function (data) {
+          });
           $scope.updateTableData();
         });
       }, function () {
@@ -351,13 +365,17 @@ angular.module('ctApp.authorizations', ['ui.router']).config([
               Services.jobauthorizationService.update({ id: $scope.authorization_id }, updateprompt, function (data) {
                 $scope.logger = {};
                 $scope.logger.userid = $localStorage.user_info.user_id;
-                $scope.logger.username = $localStorage.user_info.username;
-                $scope.logger.useremail = $localStorage.user_info.email;
-                $scope.logger.authorization_id = data.id;
-                $scope.logger.activity = 'Update "' + data.id + '" record by ' + $localStorage.user_info.username;
+                $scope.logger.user_detail = JSON.stringify({
+                  'username': $localStorage.user_info.username,
+                  'firstname': $localStorage.user_info.first_name,
+                  'lastname': $localStorage.user_info.last_name
+                });
+                $scope.logger.action = 'Update';
+                $scope.logger.agency_id = Services.getAgencyID();
+                $scope.logger.action_id = data.id;
+                $scope.logger.action_table = 'job_authorization';
                 $scope.logger.timestamp = moment().utc().format('YYYY-MM-DD HH:mm:ss');
-                $scope.logger.timestamp_ref = moment().utc();
-                Services.log_details.save({ dbname: 'log_authorization' }, $scope.logger, function (data) {
+                Services.userLog.save({}, $scope.logger, function (data) {
                 });
                 $scope.showerrorMsg = true;
                 $scope.ErrorClass = 'success';
@@ -401,13 +419,17 @@ angular.module('ctApp.authorizations', ['ui.router']).config([
               Services.jobauthorizationService.save(addprompt, function (data) {
                 $scope.logger = {};
                 $scope.logger.userid = $localStorage.user_info.user_id;
-                $scope.logger.username = $localStorage.user_info.username;
-                $scope.logger.useremail = $localStorage.user_info.email;
-                $scope.logger.authorization_id = data.id;
-                $scope.logger.activity = 'Created "' + data.id + '" record by ' + $localStorage.user_info.username;
+                $scope.logger.user_detail = JSON.stringify({
+                  'username': $localStorage.user_info.username,
+                  'firstname': $localStorage.user_info.first_name,
+                  'lastname': $localStorage.user_info.last_name
+                });
+                $scope.logger.action = 'Add';
+                $scope.logger.agency_id = Services.getAgencyID();
+                $scope.logger.action_id = data.id;
+                $scope.logger.action_table = 'job_authorization';
                 $scope.logger.timestamp = moment().utc().format('YYYY-MM-DD HH:mm:ss');
-                $scope.logger.timestamp_ref = moment().utc();
-                Services.log_details.save({ dbname: 'log_authorization' }, $scope.logger, function (data) {
+                Services.userLog.save({}, $scope.logger, function (data) {
                 });
                 $scope.showerrorMsg = true;
                 $scope.ErrorClass = 'success';

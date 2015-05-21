@@ -32,8 +32,8 @@ angular.module('ctApp.serviceItems', [
 
 }])
 
-.controller("ServiceItemsCtrl", ["$scope", "Services", "$state", "$modal",
-    function($scope, Services, $state, $modal) {
+.controller("ServiceItemsCtrl", ["$scope", "Services", "$state", "$modal","$localStorage",
+    function($scope, Services, $state, $modal,$localStorage) {
         $scope.config = {
             general: {
                 searchtxt: ""
@@ -128,7 +128,23 @@ angular.module('ctApp.serviceItems', [
                 Services.service_item.delete({
                     filter: "id='" + id + "'"
                 }, function(data) {
+                    $scope.logger = {};
+                    $scope.logger.userid = $localStorage.user_info.user_id;
+                    $scope.logger.user_detail = JSON.stringify({
+                        "username": $localStorage.user_info.username,
+                        "firstname": $localStorage.user_info.first_name,
+                        "lastname": $localStorage.user_info.last_name,
+                    });
+                    $scope.logger.action ="Delete";
+                    $scope.logger.agency_id = Services.getAgencyID();
+                    $scope.logger.action_id =  id;
+                    $scope.logger.action_table ="service_item";
+                    $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
 
+                    Services.userLog.save({
+                    }, $scope.logger, function(data) {
+
+                    });
 
                     $scope.updateTableData();
                 });
@@ -262,6 +278,25 @@ angular.module('ctApp.serviceItems', [
                                 Services.service_item.update({
                                     id: $stateParams.serviceItemId
                                 }, $scope.serviceItemDBField, function(data) {
+                                    $scope.logger = {};
+                                    $scope.logger.userid = $localStorage.user_info.user_id;
+                                    $scope.logger.user_detail = JSON.stringify({
+                                        "username": $localStorage.user_info.username,
+                                        "firstname": $localStorage.user_info.first_name,
+                                        "lastname": $localStorage.user_info.last_name,
+                                    });
+                                    $scope.logger.action ="Update";
+                                    $scope.logger.agency_id = Services.getAgencyID();
+                                    $scope.logger.action_id =  data.id;
+                                    $scope.logger.action_table ="service_item";
+                                    $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
+
+                                    Services.userLog.save({
+                                    }, $scope.logger, function(data) {
+
+                                    });
+
+
                                     $scope.show_serviceItem_form_loader = false;
                                     $scope.showMessageFunc("Service Item detail edited sucessfully.", "success", function() {
                                         $timeout(function() {
@@ -274,6 +309,23 @@ angular.module('ctApp.serviceItems', [
                             } else {
 
                                 Services.service_item.save($scope.serviceItemDBField, function(data) {
+                                    $scope.logger = {};
+                                    $scope.logger.userid = $localStorage.user_info.user_id;
+                                    $scope.logger.user_detail = JSON.stringify({
+                                        "username": $localStorage.user_info.username,
+                                        "firstname": $localStorage.user_info.first_name,
+                                        "lastname": $localStorage.user_info.last_name,
+                                    });
+                                    $scope.logger.action ="Add";
+                                    $scope.logger.agency_id = Services.getAgencyID();
+                                    $scope.logger.action_id =  data.id;
+                                    $scope.logger.action_table ="service_item";
+                                    $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
+
+                                    Services.userLog.save({
+                                    }, $scope.logger, function(data) {
+
+                                    });
                                     $scope.showMessageFunc("New Service Item added sucessfully.", "success", function() {
                                         $scope.show_serviceItem_form_loader = false;
                                         $timeout(function() {

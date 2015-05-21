@@ -31,16 +31,16 @@ angular.module('access.employeeLogin', ['ui.router']).config([
       $scope.agencyName = $rootScope.dfAgencyNameVariable;
     });
     $timeout(function () {
-      // console.log($stateParams);
       if (!angular.isUndefined($stateParams.username) && $stateParams.username) {
-        // $scope.username = $stateParams.username;
         $scope.username = $stateParams.empId;
         $scope.updateuser = true;
       } else {
         Services.employeeService.get({
-          fields: 'username,access_code,is_supervisor,email,agency_id',
+          fields: 'first_name,last_name,username,access_code,is_supervisor,email,agency_id',
           filter: 'id=\'' + $stateParams.empId + '\''
         }, function (data) {
+          $scope.first_name = data.record[0].first_name;
+          $scope.last_name = data.record[0].last_name;
           $scope.employeeName = data.record[0].username;
           $scope.employeeCode = data.record[0].access_code;
           $scope.employeeLevel = data.record[0].is_supervisor;
@@ -148,6 +148,19 @@ angular.module('access.employeeLogin', ['ui.router']).config([
                 $scope.signinDBField.agency_id = data.record[0].id;
                 $scope.signinDBField.user_password = $scope.password2;
                 Services.signinService.save($scope.signinDBField, function (signindata) {
+                  $scope.logger = {};
+                  $scope.logger.userid = signindata.id;
+                  $scope.logger.user_detail = JSON.stringify({
+                    'username': $scope.signinDBField.user_name,
+                    'firstname': $scope.signinDBField.user_name
+                  });
+                  $scope.logger.action = 'Add';
+                  $scope.logger.agency_id = data.record[0].id;
+                  $scope.logger.action_id = signindata.id;
+                  $scope.logger.action_table = 'signin';
+                  $scope.logger.timestamp = moment().utc().format('YYYY-MM-DD HH:mm:ss');
+                  Services.userLog.save({}, $scope.logger, function (data) {
+                  });
                   $scope.showerrorMsg = true;
                   $scope.ErrorClass = 'success';
                   $scope.ErrorMsg = 'You have Set Password Successfully, redirecting to login page...';
@@ -200,6 +213,20 @@ angular.module('access.employeeLogin', ['ui.router']).config([
           } else {
             $scope.showerrorMsg = false;
             Services.signinService.save($scope.empDBField, function (data) {
+              $scope.logger = {};
+              $scope.logger.userid = data.id;
+              $scope.logger.user_detail = JSON.stringify({
+                'username': $scope.empDBField.user_name,
+                'firstname': $scope.first_name,
+                'lastname': $scope.last_name
+              });
+              $scope.logger.action = 'Add';
+              $scope.logger.agency_id = $scope.agency_id;
+              $scope.logger.action_id = data.id;
+              $scope.logger.action_table = 'signin';
+              $scope.logger.timestamp = moment().utc().format('YYYY-MM-DD HH:mm:ss');
+              Services.userLog.save({}, $scope.logger, function (data) {
+              });
               $scope.showerrorMsg = true;
               $scope.ErrorClass = 'success';
               $scope.ErrorMsg = 'You have Set Password Successfully, redirecting to login page...';

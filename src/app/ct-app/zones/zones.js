@@ -442,6 +442,25 @@ angular.module('ctApp.zones', [
                 Services.employeeZones.update({
                     id: $stateParams.zoneId
                 }, $scope.zoneDBField, function(data) {
+                    
+                    $scope.logger = {};
+                    $scope.logger.userid = $localStorage.user_info.user_id;
+                    $scope.logger.user_detail = JSON.stringify({
+                        "username": $localStorage.user_info.username,
+                        "firstname": $localStorage.user_info.first_name,
+                        "lastname": $localStorage.user_info.last_name,
+                    });
+                    $scope.logger.action ="Update";
+                    $scope.logger.agency_id = Services.getAgencyID();
+                    $scope.logger.action_id =  data.id;
+                    $scope.logger.action_table ="agency_zones";
+                    $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
+
+                    Services.userLog.save({
+                    }, $scope.logger, function(data) {
+
+                    });
+
                     $scope.show_zone_form_loader = false;
                     showMessageFunc("Zone detail edited sucessfully.", "success", function() {
                         $timeout(function() {
@@ -468,9 +487,45 @@ angular.module('ctApp.zones', [
                     } else {
                         Services.employeeZones.save($scope.zoneDBField, function(data) {
                             // $scope.zoneDBField.zone_code = $scope.generateZonecode(data.id);
+                            $scope.logger = {};
+                            $scope.logger.userid = $localStorage.user_info.user_id;
+                            $scope.logger.user_detail = JSON.stringify({
+                                "username": $localStorage.user_info.username,
+                                "firstname": $localStorage.user_info.first_name,
+                                "lastname": $localStorage.user_info.last_name,
+                            });
+                            $scope.logger.action ="Add";
+                            $scope.logger.agency_id = Services.getAgencyID();
+                            $scope.logger.action_id =  data.id;
+                            $scope.logger.action_table ="agency_zones";
+                            $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
+
+                            Services.userLog.save({
+                            }, $scope.logger, function(data) {
+
+                            });
+
                             Services.employeeZones.update({
                                 id: data.id
                             }, $scope.zoneDBField, function(data) {
+                                /*$scope.logger = {};
+                                $scope.logger.userid = $localStorage.user_info.user_id;
+                                $scope.logger.user_detail = JSON.stringify({
+                                    "username": $localStorage.user_info.username,
+                                    "firstname": $localStorage.user_info.first_name,
+                                    "lastname": $localStorage.user_info.last_name,
+                                });
+                                $scope.logger.action ="Update";
+                                $scope.logger.agency_id = Services.getAgencyID();
+                                $scope.logger.action_id =  data.id;
+                                $scope.logger.action_table ="agency_zones";
+                                $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
+
+                                Services.userLog.save({
+                                }, $scope.logger, function(data) {
+
+                                });*/
+
                                 showMessageFunc("New Zone added sucessfully.", "success", function() {
                                     $scope.show_zone_form_loader = false;
                                     $timeout(function() {

@@ -467,13 +467,17 @@ angular.module('admin.agency', ['ui.router']).config([
                 /* Edited by Lavanya Fot Logger Details*/
                 $scope.logger = {};
                 $scope.logger.userid = $localStorage.user_info.user_id;
-                $scope.logger.username = $localStorage.user_info.username;
-                $scope.logger.useremail = $localStorage.user_info.email;
-                $scope.logger.agencyid = data.id;
-                $scope.logger.activity = 'Update "' + data.id + '" record by ' + $localStorage.user_info.username;
+                $scope.logger.user_detail = JSON.stringify({
+                  'username': $localStorage.user_info.username,
+                  'firstname': $localStorage.user_info.first_name,
+                  'lastname': $localStorage.user_info.last_name
+                });
+                $scope.logger.action = 'Update';
+                $scope.logger.agency_id = data.id;
+                $scope.logger.action_id = data.id;
+                $scope.logger.action_table = 'agency_detail';
                 $scope.logger.timestamp = moment().utc().format('YYYY-MM-DD HH:mm:ss');
-                $scope.logger.timestamp_ref = moment().utc();
-                Services.log_details.save({ dbname: 'log_agency' }, $scope.logger, function (data) {
+                Services.userLog.save({}, $scope.logger, function (data) {
                 });
                 $scope.showerrorMsg = true;
                 $scope.ErrorClass = 'success';
@@ -492,6 +496,20 @@ angular.module('admin.agency', ['ui.router']).config([
             } else {
               //toMailId=$scope.agencyDBField.contact_email+','+$localStorage.user_info.email;
               Services.agencyDetail.save($scope.agencyDBField, function (data) {
+                $scope.logger = {};
+                $scope.logger.userid = $localStorage.user_info.user_id;
+                $scope.logger.user_detail = JSON.stringify({
+                  'username': $localStorage.user_info.username,
+                  'firstname': $localStorage.user_info.first_name,
+                  'lastname': $localStorage.user_info.last_name
+                });
+                $scope.logger.action = 'Add';
+                $scope.logger.agency_id = data.id;
+                $scope.logger.action_id = data.id;
+                $scope.logger.action_table = 'agency_detail';
+                $scope.logger.timestamp = moment().utc().format('YYYY-MM-DD HH:mm:ss');
+                Services.userLog.save({}, $scope.logger, function (data) {
+                });
                 $scope.signinDBField = {};
                 $scope.signinDBField.user_name = (data.id + $scope.agency.contact_name).replace(/ /g, '');
                 $scope.signinDBField.user_email = $scope.agency.contact_email;

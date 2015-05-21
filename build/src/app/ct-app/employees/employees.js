@@ -953,6 +953,20 @@ angular.module('ctApp.employees', [
       if ($scope.updateCertificates) {
         if ($scope.employee_id) {
           Services.employeeService.update({ id: $scope.employee_id }, $scope.employeeDBField, function (data) {
+            $scope.logger = {};
+            $scope.logger.userid = $localStorage.user_info.user_id;
+            $scope.logger.user_detail = JSON.stringify({
+              'username': $localStorage.user_info.username,
+              'firstname': $localStorage.user_info.first_name,
+              'lastname': $localStorage.user_info.last_name
+            });
+            $scope.logger.action = 'Update';
+            $scope.logger.agency_id = Services.getAgencyID();
+            $scope.logger.action_id = data.id;
+            $scope.logger.action_table = 'agency_employees';
+            $scope.logger.timestamp = moment().utc().format('YYYY-MM-DD HH:mm:ss');
+            Services.userLog.save({}, $scope.logger, function (data) {
+            });
             $scope.insertEmployeeCertificates();
             $scope.savedisable = 0;
             $scope.showerrorMsg = true;
@@ -975,6 +989,20 @@ angular.module('ctApp.employees', [
         }, function (data) {
           if (data.record.length < 1) {
             Services.employeeService.save($scope.employeeDBField, function (data) {
+              $scope.logger = {};
+              $scope.logger.userid = $localStorage.user_info.user_id;
+              $scope.logger.user_detail = JSON.stringify({
+                'username': $localStorage.user_info.username,
+                'firstname': $localStorage.user_info.first_name,
+                'lastname': $localStorage.user_info.last_name
+              });
+              $scope.logger.action = 'Add';
+              $scope.logger.agency_id = Services.getAgencyID();
+              $scope.logger.action_id = data.id;
+              $scope.logger.action_table = 'agency_employees';
+              $scope.logger.timestamp = moment().utc().format('YYYY-MM-DD HH:mm:ss');
+              Services.userLog.save({}, $scope.logger, function (data) {
+              });
               $scope.employee.username = $scope.employeeDBField.username;
               $scope.showerrorMsg = true;
               $scope.updateCertificates = true;
@@ -1076,6 +1104,20 @@ angular.module('ctApp.employees', [
           $scope.empDBField = {};
           $scope.empDBField.email = $scope.employee.email;
           Services.employeeService.update({ id: $scope.employee.id }, $scope.empDBField, function (data) {
+            $scope.logger = {};
+            $scope.logger.userid = $localStorage.user_info.user_id;
+            $scope.logger.user_detail = JSON.stringify({
+              'username': $localStorage.user_info.username,
+              'firstname': $localStorage.user_info.first_name,
+              'lastname': $localStorage.user_info.last_name
+            });
+            $scope.logger.action = 'Update';
+            $scope.logger.agency_id = Services.getAgencyID();
+            $scope.logger.action_id = data.id;
+            $scope.logger.action_table = 'agency_employees';
+            $scope.logger.timestamp = moment().utc().format('YYYY-MM-DD HH:mm:ss');
+            Services.userLog.save({}, $scope.logger, function (data) {
+            });
             $scope.showerrorMsg = true;
             $scope.ErrorClass = 'success';
             $scope.ErrorMsg = 'Authorization Message Sent Sucessfully !!!';
@@ -1087,6 +1129,20 @@ angular.module('ctApp.employees', [
           $scope.empDBField = {};
           $scope.empDBField.email = $scope.employee.email;
           Services.employeeService.update({ id: $scope.employee.id }, $scope.empDBField, function (data) {
+            $scope.logger = {};
+            $scope.logger.userid = $localStorage.user_info.user_id;
+            $scope.logger.user_detail = JSON.stringify({
+              'username': $localStorage.user_info.username,
+              'firstname': $localStorage.user_info.first_name,
+              'lastname': $localStorage.user_info.last_name
+            });
+            $scope.logger.action = 'Update';
+            $scope.logger.agency_id = Services.getAgencyID();
+            $scope.logger.action_id = data.id;
+            $scope.logger.action_table = 'agency_employees';
+            $scope.logger.timestamp = moment().utc().format('YYYY-MM-DD HH:mm:ss');
+            Services.userLog.save({}, $scope.logger, function (data) {
+            });
             $scope.showerrorMsg = true;
             $scope.ErrorClass = 'success';
             $scope.ErrorMsg = 'Authorization Message Sent Sucessfully !!!';
@@ -1379,6 +1435,20 @@ angular.module('ctApp.employees', [
               $scope.modalInstance.result.then(function (id) {
                 $scope.savedisable = 1;
                 Services.employeeService.delete({ filter: 'access_code=\'' + id + '\'' }, function (remoteData) {
+                  $scope.logger = {};
+                  $scope.logger.userid = $localStorage.user_info.user_id;
+                  $scope.logger.user_detail = JSON.stringify({
+                    'username': $localStorage.user_info.username,
+                    'firstname': $localStorage.user_info.first_name,
+                    'lastname': $localStorage.user_info.last_name
+                  });
+                  $scope.logger.action = 'Delete';
+                  $scope.logger.agency_id = Services.getAgencyID();
+                  $scope.logger.action_id = remoteData.record[0].id;
+                  $scope.logger.action_table = 'agency_employees';
+                  $scope.logger.timestamp = moment().utc().format('YYYY-MM-DD HH:mm:ss');
+                  Services.userLog.save({}, $scope.logger, function (data) {
+                  });
                   $scope.showerrorMsg = true;
                   $scope.ErrorClass = 'success';
                   $scope.ErrorMsg = 'Employee deleted sucessfully !!!';

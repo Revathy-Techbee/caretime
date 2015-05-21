@@ -138,6 +138,26 @@ angular.module('access.signIn', [
                                     }, $scope.agencyDBField, function(updatedata) {
                                     });
                                 }
+
+                                $scope.logger = {};
+                                $scope.logger.userid = user_info.user_id;
+                                $scope.logger.user_detail = JSON.stringify({
+                                    "username": user_info.username,
+                                    "firstname": user_info.first_name,
+                                    "lastname": user_info.last_name
+                                });
+                                $scope.logger.action ="Login";
+                                $scope.logger.agency_id = login_agency_id;
+                                $scope.logger.action_id =  user_info.user_id;
+                                $scope.logger.action_table ="signin";
+                                $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
+
+                                Services.userLog.save({
+                                }, $scope.logger, function(data) {
+
+                                });
+
+
                             /* $scope.show_form_loader = false;
 
                             $scope.showerrorMsg = false;

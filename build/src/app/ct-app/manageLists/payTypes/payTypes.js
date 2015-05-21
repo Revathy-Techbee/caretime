@@ -33,7 +33,8 @@ angular.module('ctApp.payTypes', ['ui.router']).config([
   'Services',
   '$state',
   '$modal',
-  function ($scope, Services, $state, $modal) {
+  '$localStorage',
+  function ($scope, Services, $state, $modal, $localStorage) {
     $scope.config = {
       general: { searchtxt: '' },
       page_size: 15,
@@ -113,6 +114,21 @@ angular.module('ctApp.payTypes', ['ui.router']).config([
         });
       modalInstance.result.then(function (id) {
         Services.pay_type.delete({ filter: 'id=\'' + id + '\'' }, function (data) {
+          //pay_type
+          $scope.logger = {};
+          $scope.logger.userid = $localStorage.user_info.user_id;
+          $scope.logger.user_detail = JSON.stringify({
+            'username': $localStorage.user_info.username,
+            'firstname': $localStorage.user_info.first_name,
+            'lastname': $localStorage.user_info.last_name
+          });
+          $scope.logger.action = 'Delete';
+          $scope.logger.agency_id = Services.getAgencyID();
+          $scope.logger.action_id = id;
+          $scope.logger.action_table = 'pay_type';
+          $scope.logger.timestamp = moment().utc().format('YYYY-MM-DD HH:mm:ss');
+          Services.userLog.save({}, $scope.logger, function (data) {
+          });
           $scope.updateTableData();
         });
       }, function () {
@@ -224,6 +240,20 @@ angular.module('ctApp.payTypes', ['ui.router']).config([
             }
             if ($scope.payType_id) {
               Services.pay_type.update({ id: $stateParams.payTypeId }, $scope.payTypeDBField, function (data) {
+                $scope.logger = {};
+                $scope.logger.userid = $localStorage.user_info.user_id;
+                $scope.logger.user_detail = JSON.stringify({
+                  'username': $localStorage.user_info.username,
+                  'firstname': $localStorage.user_info.first_name,
+                  'lastname': $localStorage.user_info.last_name
+                });
+                $scope.logger.action = 'Update';
+                $scope.logger.agency_id = Services.getAgencyID();
+                $scope.logger.action_id = data.id;
+                $scope.logger.action_table = 'pay_type';
+                $scope.logger.timestamp = moment().utc().format('YYYY-MM-DD HH:mm:ss');
+                Services.userLog.save({}, $scope.logger, function (data) {
+                });
                 $scope.show_payType_form_loader = false;
                 showMessageFunc('PayType detail edited sucessfully.', 'success', function () {
                   $timeout(function () {
@@ -234,6 +264,20 @@ angular.module('ctApp.payTypes', ['ui.router']).config([
               });
             } else {
               Services.pay_type.save($scope.payTypeDBField, function (data) {
+                $scope.logger = {};
+                $scope.logger.userid = $localStorage.user_info.user_id;
+                $scope.logger.user_detail = JSON.stringify({
+                  'username': $localStorage.user_info.username,
+                  'firstname': $localStorage.user_info.first_name,
+                  'lastname': $localStorage.user_info.last_name
+                });
+                $scope.logger.action = 'Add';
+                $scope.logger.agency_id = Services.getAgencyID();
+                $scope.logger.action_id = data.id;
+                $scope.logger.action_table = 'pay_type';
+                $scope.logger.timestamp = moment().utc().format('YYYY-MM-DD HH:mm:ss');
+                Services.userLog.save({}, $scope.logger, function (data) {
+                });
                 showMessageFunc('New PayType added sucessfully.', 'success', function () {
                   $scope.show_payType_form_loader = false;
                   $timeout(function () {

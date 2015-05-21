@@ -33,11 +33,13 @@ angular.module('access.resetPassword', [
                 
         $scope.userID=$stateParams.userID;
         Services.signinService.get({
-            fields: "ForgotpwdStatus,ForgotpwdOn",
+            fields: "ForgotpwdStatus,ForgotpwdOn,agency_id,user_name",
             filter: "id='" + $scope.userID + "'"
         }, function(data) {
             $scope.ForgotpwdStatus = data.record[0]["ForgotpwdStatus"];
             $scope.ForgotpwdOn = data.record[0]["ForgotpwdOn"];
+            $scope.agency_id = data.record[0].agency_id;
+            $scope.username=data.record[0].user_name;
              $scope.savedisable = 0;
             $scope.expire_date = moment($scope.ForgotpwdOn).add(24, 'hours').format("YYYY-MM-DD HH:mm"); 
             
@@ -160,6 +162,22 @@ angular.module('access.resetPassword', [
             Services.signinService.update({
                 id: userId
             }, $scope.userDBField, function(data) {
+                $scope.logger = {};
+                $scope.logger.userid = $scope.userID;   
+                $scope.logger.user_detail = JSON.stringify({
+                                    "username": $scope.username,
+                                   
+                                });                                   
+                $scope.logger.action ="Reset Password";
+                $scope.logger.agency_id = $scope.agency_id;
+                $scope.logger.action_id =  data.id;
+                $scope.logger.action_table ="signin";
+                $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
+
+                Services.userLog.save({
+                }, $scope.logger, function(data) {
+
+                });
                 $scope.showerrorMsg = true;
                 $scope.ErrorClass = "success";
                 $scope.ErrorMsg = "Your Password Updated Successfully !!!";

@@ -728,7 +728,26 @@ angular.module('ctApp.jobs', [
                                     Services.jobService.delete({
                                         filter: "job_code='" + id + "'"
                                     }, function(remoteData) {
+                                        //agency_jobs
 
+                                    
+                                    $scope.logger = {};
+                                    $scope.logger.userid = $localStorage.user_info.user_id;
+                                    $scope.logger.user_detail = JSON.stringify({
+                                        "username": $localStorage.user_info.username,
+                                        "firstname": $localStorage.user_info.first_name,
+                                        "lastname": $localStorage.user_info.last_name,
+                                    });
+                                    $scope.logger.action ="Delete";
+                                    $scope.logger.agency_id = Services.getAgencyID();
+                                    $scope.logger.action_id =  remoteData.record[0].id;
+                                    $scope.logger.action_table ="agency_jobs";
+                                    $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
+
+                                    Services.userLog.save({
+                                    }, $scope.logger, function(data) {
+
+                                    });
                                      $scope.showerrorMsg = true;
                                     $scope.ErrorClass = "success";
                                     $scope.ErrorMsg = "Job deleted sucessfully !!!";
@@ -898,7 +917,23 @@ angular.module('ctApp.jobs', [
                                 Services.jobService.update({
                                     id: $stateParams.jobId
                                 }, $scope.jobDBField, function(data) {
+                                    $scope.logger = {};
+                                    $scope.logger.userid = $localStorage.user_info.user_id;
+                                    $scope.logger.user_detail = JSON.stringify({
+                                        "username": $localStorage.user_info.username,
+                                        "firstname": $localStorage.user_info.first_name,
+                                        "lastname": $localStorage.user_info.last_name,
+                                    });
+                                    $scope.logger.action ="Update";
+                                    $scope.logger.agency_id = Services.getAgencyID();
+                                    $scope.logger.action_id =  data.id;
+                                    $scope.logger.action_table ="agency_jobs";
+                                    $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
 
+                                    Services.userLog.save({
+                                    }, $scope.logger, function(data) {
+
+                                    });
                                     $scope.insertJobAuthorizedPhones();
                                     $scope.showerrorMsg = true;
                                     $scope.ErrorClass = "success";
@@ -935,6 +970,23 @@ angular.module('ctApp.jobs', [
                         Services.jobService.update({
                             id: $stateParams.jobId
                         }, $scope.jobDBField, function(data) {
+                            $scope.logger = {};
+                            $scope.logger.userid = $localStorage.user_info.user_id;
+                            $scope.logger.user_detail = JSON.stringify({
+                                "username": $localStorage.user_info.username,
+                                "firstname": $localStorage.user_info.first_name,
+                                "lastname": $localStorage.user_info.last_name,
+                            });
+                            $scope.logger.action ="Update";
+                            $scope.logger.agency_id = Services.getAgencyID();
+                            $scope.logger.action_id =  data.id;
+                            $scope.logger.action_table ="agency_jobs";
+                            $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
+
+                            Services.userLog.save({
+                            }, $scope.logger, function(data) {
+
+                            });
 
                             $scope.insertJobAuthorizedPhones();
 
@@ -974,7 +1026,23 @@ angular.module('ctApp.jobs', [
                             Services.jobService.save($scope.jobDBField, function(data) {
 
                                 $scope.insertJobAuthorizedPhones();
+                                $scope.logger = {};
+                                    $scope.logger.userid = $localStorage.user_info.user_id;
+                                    $scope.logger.user_detail = JSON.stringify({
+                                        "username": $localStorage.user_info.username,
+                                        "firstname": $localStorage.user_info.first_name,
+                                        "lastname": $localStorage.user_info.last_name,
+                                    });
+                                    $scope.logger.action ="Add";
+                                    $scope.logger.agency_id = Services.getAgencyID();
+                                    $scope.logger.action_id =  data.id;
+                                    $scope.logger.action_table ="agency_jobs";
+                                    $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
 
+                                    Services.userLog.save({
+                                    }, $scope.logger, function(data) {
+
+                                    });
 
 
                                 $scope.savedisable = 1;

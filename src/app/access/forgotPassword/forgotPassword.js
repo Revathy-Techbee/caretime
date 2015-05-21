@@ -33,7 +33,7 @@ angular.module('access.forgotPassword', [
 
     $scope.forgotPassword = function() {
         Services.signinService.get({
-            fields: "user_email,id",
+            fields: "user_email,id,agency_id",
             filter: "user_name='" + $scope.username + "' and status > 0"
         }, function(data) {
             if (data.record.length === 0) {
@@ -49,6 +49,7 @@ angular.module('access.forgotPassword', [
                 $scope.savedisable = 1;
                 $scope.user_email = data.record[0].user_email;
                 $scope.user_id = data.record[0].id;
+                $scope.agency_id = data.record[0].agency_id;
                  var Emailmessage = "";
                 Emailmessage = '<b>Hi '+$scope.username+',</b><br>';
                 Emailmessage += '<br /><br />'+$localStorage.agencyDetails.agency_name+'  is sending you this email so that you may reset your password.  Please click on the link below to reset your password.';
@@ -82,6 +83,22 @@ angular.module('access.forgotPassword', [
                         Services.signinService.update({
                             id: $scope.user_id
                         }, $scope.signinDBField, function(data) {
+                            $scope.logger = {};
+                            $scope.logger.userid = $scope.user_id;  
+                            $scope.logger.user_detail = JSON.stringify({
+                                    "username": $scope.username,
+                                   
+                                });                              
+                            $scope.logger.action ="Forgot Password";
+                            $scope.logger.agency_id = $scope.agency_id;
+                            $scope.logger.action_id =  data.id;
+                            $scope.logger.action_table ="signin";
+                            $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
+
+                            Services.userLog.save({
+                            }, $scope.logger, function(data) {
+
+                            });
                             $scope.showerrorMsg = true;
                             $scope.ErrorClass = "success";
                             $scope.ErrorMsg = "Reset link sent your mail sucessfully !!!";
@@ -97,6 +114,23 @@ angular.module('access.forgotPassword', [
                         Services.signinService.update({
                             id: $scope.user_id
                         }, $scope.signinDBField, function(data) {
+                             $scope.logger = {};
+                            $scope.logger.userid = $scope.user_id; 
+                             $scope.logger.user_detail = JSON.stringify({
+                                    "username": $scope.username,
+                                   
+                                });                                           
+                            $scope.logger.action ="Forgot Password";
+                            $scope.logger.agency_id = $scope.agency_id;
+                            $scope.logger.action_id =  data.id;
+                            $scope.logger.action_table ="signin";
+                            $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
+
+                            Services.userLog.save({
+                            }, $scope.logger, function(data) {
+
+                            });
+
                             $scope.showerrorMsg = true;
                             $scope.ErrorClass = "success";
                             $scope.ErrorMsg = "Reset link sent your mail sucessfully !!!";
