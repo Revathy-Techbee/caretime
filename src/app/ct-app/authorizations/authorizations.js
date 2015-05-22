@@ -468,7 +468,7 @@ angular.module('ctApp.authorizations', [
 
                                 $scope.showerrorMsg = true;
                                 $scope.ErrorClass = "success";
-                                $scope.ErrorMsg = "Authorization edited sucessfully !!!";
+                                $scope.ErrorMsg = "Authorization edited successfully !!!";
                                 $timeout(function() {
                                     $scope.showerrorMsg = false;
                                     $scope.cancelAuthorization();
@@ -533,7 +533,7 @@ angular.module('ctApp.authorizations', [
 
                                 $scope.showerrorMsg = true;
                                 $scope.ErrorClass = "success";
-                                $scope.ErrorMsg = "Authorization Added sucessfully !!!";
+                                $scope.ErrorMsg = "Authorization Added successfully !!!";
                                 $timeout(function() {
                                     $scope.showerrorMsg = false;
                                     $state.go("ctApp.authorizations");

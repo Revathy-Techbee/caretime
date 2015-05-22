@@ -455,6 +455,19 @@ angular.module('utils.ct.services', [])
 
 
         },
+        capitalize: function capitalize(data) {
+
+            if (data) {
+                  // return data.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
+                  return data.toLowerCase().replace( /\b\w/g, function (m) {
+                return m.toUpperCase();
+            });
+            } else {
+                return "";
+            }
+
+        },
+
        /* addslashes: function addslashes(data) {
 
             if (data) {

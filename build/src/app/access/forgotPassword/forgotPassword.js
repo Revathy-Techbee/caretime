@@ -50,7 +50,7 @@ angular.module('access.forgotPassword', ['ui.router']).config([
           $scope.user_id = data.record[0].id;
           $scope.agency_id = data.record[0].agency_id;
           var Emailmessage = '';
-          Emailmessage = '<b>Hi ' + $scope.username + ',</b><br>';
+          Emailmessage = '<b>Dear ' + $scope.username + ',</b><br>';
           Emailmessage += '<br /><br />' + $localStorage.agencyDetails.agency_name + '  is sending you this email so that you may reset your password.  Please click on the link below to reset your password.';
           Emailmessage += '<br /><br />Please note that upon clicking the link below, you will be able to create a password. Your password must be 8 characters, with one upper case and one number.';
           Emailmessage += '<br /><br />Please click on the Activation link below';
@@ -84,7 +84,7 @@ angular.module('access.forgotPassword', ['ui.router']).config([
               });
               $scope.showerrorMsg = true;
               $scope.ErrorClass = 'success';
-              $scope.ErrorMsg = 'Reset link sent your mail sucessfully !!!';
+              $scope.ErrorMsg = 'Reset link sent your mail successfully !!!';
               $timeout(function () {
                 $scope.showerrorMsg = false;
                 $state.go('access.signin');
@@ -107,7 +107,7 @@ angular.module('access.forgotPassword', ['ui.router']).config([
               });
               $scope.showerrorMsg = true;
               $scope.ErrorClass = 'success';
-              $scope.ErrorMsg = 'Reset link sent your mail sucessfully !!!';
+              $scope.ErrorMsg = 'Reset link sent your mail successfully !!!';
               $timeout(function () {
                 $scope.showerrorMsg = false;
                 $state.go('access.signin');

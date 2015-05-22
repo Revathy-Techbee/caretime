@@ -35,8 +35,8 @@ angular.module('admin.agency', [
 
 }])
 
-.controller("AdminAgencyCtrl", ["$scope", "Services", "$state", "$modal", "$localStorage", "$timeout", "$http",
-    function($scope, Services, $state, $modal, $localStorage, $timeout, $http) {
+.controller("AdminAgencyCtrl", ["$scope", "Services", "$state", "$modal", "$localStorage", "$timeout", "$http","HelperService",
+    function($scope, Services, $state, $modal, $localStorage, $timeout, $http,HelperService) {
         $scope.empCountry = $localStorage.user_info.country;
         $scope.config = {
             general: {
@@ -163,10 +163,11 @@ angular.module('admin.agency', [
         };
         $scope.resendEmail = function(agencyDetail) {
             $scope.user_name = (agencyDetail.id + agencyDetail.contact_name).replace(/ /g, '');
-
+            $scope.userFirstname=(agencyDetail.contact_name).split(' ');
+            $scope.userFirstname=HelperService.capitalize($scope.userFirstname[0]);
             var Emailmessage = "";
-            Emailmessage = 'Hi ' + agencyDetail.contact_name + ':';
-            Emailmessage += '<br /><br />' + agencyDetail.agency_name + ' agency is register with Caretime.  In order to complete the registration process and login to your account, you must click on the link below.  Please make a note of your user name before you click on the link.';
+            Emailmessage = 'Dear ' + $scope.userFirstname + ':';
+            Emailmessage += '<br /><br />' + agencyDetail.agency_name + ' agency is now registered with Caretime.  In order to complete the registration process and login to your account, you must click on the link below.  Please make a note of your user name before you click on the link.';
             Emailmessage += '<br /><br /><strong>' + $scope.user_name + '</strong>';
             Emailmessage += '<br /><br />Please note that upon clicking the link below, you will be able to create a password.  Your password must be 8 characters, with one upper case and one number.';
             Emailmessage += '<br /><br />Please click on the Activation link below';
@@ -192,7 +193,7 @@ angular.module('admin.agency', [
             success(function(data, status, headers, config) {
                 $scope.showerrorMsg = true;
                 $scope.ErrorClass = "success";
-                $scope.ErrorMsg = "Mail Sent Sucessfully !!!";
+                $scope.ErrorMsg = "Mail Sent Successfully !!!";
                 $timeout(function() {
                     $scope.showerrorMsg = false;
 
@@ -202,7 +203,7 @@ angular.module('admin.agency', [
             }).error(function(data, status, headers, config) {
                 $scope.showerrorMsg = true;
                 $scope.ErrorClass = "success";
-                $scope.ErrorMsg = "Mail Sent Sucessfully !!!";
+                $scope.ErrorMsg = "Mail Sent Successfully !!!";
                 $timeout(function() {
                     $scope.showerrorMsg = false;
 
@@ -230,8 +231,11 @@ angular.module('admin.agency', [
                     $scope.signinDBField.agency_id = agencyDetail.id;
                     $scope.signinDBField.user_password = $scope.username;
                     Services.signinService.save($scope.signinDBField, function(signindata) {
-                        Emailmessage = 'Hi ' + $localStorage.user_info.first_name + ':';
-                        Emailmessage += '<br /><br />' + agencyDetail.agency_name + '  agency is register with Caretime. ';
+                       // scope.userFirstname=(agencyDetail.contact_name).split(' ');
+                        $scope.userFirstname=HelperService.capitalize($localStorage.user_info.first_name);
+
+                        Emailmessage = 'Dear ' + $scope.userFirstname + ':';
+                        Emailmessage += '<br /><br />' + agencyDetail.agency_name + '  agency is now registered with Caretime. ';
                         Emailmessage += '<br /><br /><strong> LOGIN DETAILS  </strong><br /><br />';
                         Emailmessage += '<br /><br /><strong> Email : </strong>' + $scope.signinDBField.user_email + '<br /><br />';
                         Emailmessage += '<strong> User Name : </strong>' + $scope.signinDBField.user_name + '<br /><br />';
@@ -260,7 +264,7 @@ angular.module('admin.agency', [
                         success(function(data, status, headers, config) {
                             /*$scope.showerrorMsg = true;
                             $scope.ErrorClass = "success";
-                            $scope.ErrorMsg = "Mail Sent Sucessfully !!!";
+                            $scope.ErrorMsg = "Mail Sent Successfully !!!";
                             $timeout(function() {
                                 $scope.showerrorMsg = false;
 
@@ -276,7 +280,7 @@ angular.module('admin.agency', [
                         }).error(function(data, status, headers, config) {
                             /*$scope.showerrorMsg = true;
                             $scope.ErrorClass = "success";
-                            $scope.ErrorMsg = "Mail Sent Sucessfully !!!";
+                            $scope.ErrorMsg = "Mail Sent Successfully !!!";
                            
 
                             $timeout(function() {
@@ -552,7 +556,7 @@ angular.module('admin.agency', [
 
                                 $scope.showerrorMsg = true;
                                 $scope.ErrorClass = "success";
-                                $scope.ErrorMsg = "Agency detail edited sucessfully !!!";
+                                $scope.ErrorMsg = "Agency detail edited successfully !!!";
                                 $scope.agency.edited_on = HelperService.convertUTCtoMytimeZone(data.edited_on);
                                 //console.log(data);
                                 $timeout(function() {
@@ -626,10 +630,12 @@ angular.module('admin.agency', [
 
         };
         $scope.sendMailOnCreate = function(username, email,sendmail,showmsg) {
+            $scope.userFirstname=($scope.agency.contact_name).split(' ');
+            $scope.userFirstname=HelperService.capitalize($scope.userFirstname[0]);
 
             var Emailmessage = "";
-            Emailmessage = 'Hi ' + $scope.agency.contact_name + ':';
-            Emailmessage += '<br /><br />' + $scope.agency.agency_name + ' agency is register with Caretime.  In order to complete the registration process and login to your account, you must click on the link below.  Please make a note of your user name before you click on the link.';
+            Emailmessage = 'Dear ' + $scope.userFirstname + ':';
+            Emailmessage += '<br /><br />' + $scope.agency.agency_name + ' agency is now registered with Caretime.  In order to complete the registration process and login to your account, you must click on the link below.  Please make a note of your user name before you click on the link.';
             Emailmessage += '<br /><br /><strong>' + username + '</strong>';
             Emailmessage += '<br /><br />Please note that upon clicking the link below, you will be able to create a password.  Your password must be 8 characters, with one upper case and one number.';
             Emailmessage += '<br /><br />Please click on the Activation link below';
@@ -657,7 +663,7 @@ angular.module('admin.agency', [
                     if (!angular.isUndefined($stateParams.agencyId) && $stateParams.agencyId) {
                     $scope.showerrorMsg = true;
                     $scope.ErrorClass = "success";
-                    $scope.ErrorMsg = "Mail Sent Sucessfully !!!";
+                    $scope.ErrorMsg = "Mail Sent Successfully !!!";
                     $timeout(function() {
                         $scope.showerrorMsg = false;
                         $state.go("admin.agency");
@@ -668,7 +674,7 @@ angular.module('admin.agency', [
                 {
                     $scope.showerrorMsg = true;
                     $scope.ErrorClass = "success";
-                    $scope.ErrorMsg = "Agency sucessfully added !!!";
+                    $scope.ErrorMsg = "Agency successfully added !!!";
                     $timeout(function() {
                         $scope.showerrorMsg = false;
                         $state.go("admin.agency");
@@ -686,7 +692,7 @@ angular.module('admin.agency', [
                 if (!angular.isUndefined($stateParams.agencyId) && $stateParams.agencyId) {
                     $scope.showerrorMsg = true;
                     $scope.ErrorClass = "success";
-                    $scope.ErrorMsg = "Mail Sent Sucessfully !!!";
+                    $scope.ErrorMsg = "Mail Sent Successfully !!!";
                     $timeout(function() {
                         $scope.showerrorMsg = false;
                         $state.go("admin.agency");
@@ -697,7 +703,7 @@ angular.module('admin.agency', [
                 {
                     $scope.showerrorMsg = true;
                     $scope.ErrorClass = "success";
-                    $scope.ErrorMsg = "Agency sucessfully added !!!";
+                    $scope.ErrorMsg = "Agency successfully added !!!";
                     $timeout(function() {
                         $scope.showerrorMsg = false;
                         $state.go("admin.agency");

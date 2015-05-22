@@ -338,7 +338,7 @@ angular.module('ctApp.alertLog', [
           $scope.employeeObj = {
             fields: 'id,last_name,first_name,access_code',
             filter: 'zone_id in(' + $scope.zone_id + ')  and status > 0 and agency_id = ' + Services.getAgencyID(),
-            limit: 5
+            limit: 20
           };
           if (query.term) {
             $scope.employeeObj.filter += '  and (last_name like "%' + query.term + '%" or first_name like "%' + query.term + '%")';
@@ -453,7 +453,7 @@ angular.module('ctApp.alertLog', [
         $scope.savedisable = 0;
         $scope.showerrorMsg = true;
         $scope.ErrorClass = 'success';
-        $scope.ErrorMsg = 'Notes edited sucessfully !!!';
+        $scope.ErrorMsg = 'Notes edited successfully !!!';
         $timeout(function () {
           $scope.showerrorMsg = false;
           $modalInstance.close('takethisvalue');

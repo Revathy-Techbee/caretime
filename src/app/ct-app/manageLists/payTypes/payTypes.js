@@ -297,7 +297,7 @@ angular.module('ctApp.payTypes', [
                                 });
 
                                 $scope.show_payType_form_loader = false;
-                                showMessageFunc("PayType detail edited sucessfully.", "success", function() {
+                                showMessageFunc("PayType detail edited successfully.", "success", function() {
                                     $timeout(function() {
                                         $scope.showerrorMsg = false;
                                         $state.go("ctApp.payTypes");
@@ -326,7 +326,7 @@ angular.module('ctApp.payTypes', [
 
                                 });
 
-                                showMessageFunc("New PayType added sucessfully.", "success", function() {
+                                showMessageFunc("New PayType added successfully.", "success", function() {
                                     $scope.show_payType_form_loader = false;
                                     $timeout(function() {
                                         $scope.showerrorMsg = false;

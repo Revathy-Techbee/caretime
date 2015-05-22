@@ -628,7 +628,7 @@ angular.module('ctApp.jobs', [
                   });
                   $scope.showerrorMsg = true;
                   $scope.ErrorClass = 'success';
-                  $scope.ErrorMsg = 'Job deleted sucessfully !!!';
+                  $scope.ErrorMsg = 'Job deleted successfully !!!';
                   $timeout(function () {
                     $scope.showerrorMsg = false;
                     $state.go('ctApp.jobs');
@@ -764,7 +764,7 @@ angular.module('ctApp.jobs', [
                 $scope.insertJobAuthorizedPhones();
                 $scope.showerrorMsg = true;
                 $scope.ErrorClass = 'success';
-                $scope.ErrorMsg = 'Job detail edited sucessfully !!!';
+                $scope.ErrorMsg = 'Job detail edited successfully !!!';
                 $scope.job.edited_on = data.edited_on;
                 var timePeriod = moment().utc().format('YYYY-MM-DD HH:mm');
                 Services.shiftRecurService.delete({ filter: 'job_id=\'' + $scope.job.job_code + '\' and ref_in_at >=\'' + timePeriod + '\'' }, function (remoteData) {
@@ -797,7 +797,7 @@ angular.module('ctApp.jobs', [
             $scope.insertJobAuthorizedPhones();
             $scope.showerrorMsg = true;
             $scope.ErrorClass = 'success';
-            $scope.ErrorMsg = 'Job detail edited sucessfully !!!';
+            $scope.ErrorMsg = 'Job detail edited successfully !!!';
             $scope.job.edited_on = data.edited_on;
             $timeout(function () {
               $scope.showerrorMsg = false;
@@ -839,7 +839,7 @@ angular.module('ctApp.jobs', [
               $scope.savedisable = 1;
               $scope.showerrorMsg = true;
               $scope.ErrorClass = 'success';
-              $scope.ErrorMsg = 'Job sucessfully added !!!';
+              $scope.ErrorMsg = 'Job successfully added !!!';
               $timeout(function () {
                 $scope.showerrorMsg = false;
                 $state.go('ctApp.jobs');

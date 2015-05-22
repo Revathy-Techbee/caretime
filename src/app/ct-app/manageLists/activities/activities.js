@@ -275,7 +275,7 @@ angular.module('ctApp.activities', [
 
                                     });
                                     $scope.show_activity_form_loader = false;
-                                    $scope.showMessageFunc("Activity detail edited sucessfully.", "success", function() {
+                                    $scope.showMessageFunc("Activity detail edited successfully.", "success", function() {
                                         $timeout(function() {
                                             $scope.showerrorMsg = false;
                                             $state.go("ctApp.activities");
@@ -303,7 +303,7 @@ angular.module('ctApp.activities', [
                                     }, $scope.logger, function(data) {
 
                                     });
-                                    $scope.showMessageFunc("New Activity added sucessfully.", "success", function() {
+                                    $scope.showMessageFunc("New Activity added successfully.", "success", function() {
                                         $scope.show_activity_form_loader = false;
                                         $timeout(function() {
                                             $scope.showerrorMsg = false;

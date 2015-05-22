@@ -1144,7 +1144,7 @@ angular.module('ctApp.timeCard', [
                                                 $scope.savedisable = 0;
                                                 $scope.showerrorMsg = true;
                                                 $scope.ErrorClass = "success";
-                                                $scope.ErrorMsg = "Time card edited sucessfully !!!";
+                                                $scope.ErrorMsg = "Time card edited successfully !!!";
                                                 $timeout(function() {
                                                     $scope.showerrorMsg = false;
                                                     $scope.modelclose();
@@ -1229,7 +1229,7 @@ angular.module('ctApp.timeCard', [
                                                                     $scope.savedisable = 0;
                                                                     $scope.showerrorMsg = true;
                                                                     $scope.ErrorClass = "success";
-                                                                    $scope.ErrorMsg = "Time card edited sucessfully !!!";
+                                                                    $scope.ErrorMsg = "Time card edited successfully !!!";
                                                                     $timeout(function() {
                                                                         $scope.showerrorMsg = false;
                                                                         $scope.modelclose();
@@ -1245,7 +1245,7 @@ angular.module('ctApp.timeCard', [
                                                             $scope.savedisable = 0;
                                                             $scope.showerrorMsg = true;
                                                             $scope.ErrorClass = "success";
-                                                            $scope.ErrorMsg = "Time card edited sucessfully !!!";
+                                                            $scope.ErrorMsg = "Time card edited successfully !!!";
                                                             $timeout(function() {
                                                                 $scope.showerrorMsg = false;
                                                                 $scope.modelclose();
@@ -1278,7 +1278,7 @@ angular.module('ctApp.timeCard', [
                                                             $scope.savedisable = 0;
                                                             $scope.showerrorMsg = true;
                                                             $scope.ErrorClass = "success";
-                                                            $scope.ErrorMsg = "Time card edited sucessfully !!!";
+                                                            $scope.ErrorMsg = "Time card edited successfully !!!";
                                                             $timeout(function() {
                                                                 $scope.showerrorMsg = false;
                                                                 $scope.modelclose();
@@ -1293,7 +1293,7 @@ angular.module('ctApp.timeCard', [
                                                     $scope.savedisable = 0;
                                                     $scope.showerrorMsg = true;
                                                     $scope.ErrorClass = "success";
-                                                    $scope.ErrorMsg = "Time card edited sucessfully !!!";
+                                                    $scope.ErrorMsg = "Time card edited successfully !!!";
                                                     $timeout(function() {
                                                         $scope.showerrorMsg = false;
                                                         $scope.modelclose();
@@ -1343,7 +1343,7 @@ angular.module('ctApp.timeCard', [
                                                     $scope.savedisable = 0;
                                                     $scope.showerrorMsg = true;
                                                     $scope.ErrorClass = "success";
-                                                    $scope.ErrorMsg = "Time card edited sucessfully !!!";
+                                                    $scope.ErrorMsg = "Time card edited successfully !!!";
                                                     $timeout(function() {
                                                         $scope.showerrorMsg = false;
                                                         $scope.modelclose();
@@ -1358,7 +1358,7 @@ angular.module('ctApp.timeCard', [
                                             $scope.savedisable = 0;
                                             $scope.showerrorMsg = true;
                                             $scope.ErrorClass = "success";
-                                            $scope.ErrorMsg = "Time card edited sucessfully !!!";
+                                            $scope.ErrorMsg = "Time card edited successfully !!!";
                                             $timeout(function() {
                                                 $scope.showerrorMsg = false;
                                                 $scope.modelclose();
@@ -1374,7 +1374,7 @@ angular.module('ctApp.timeCard', [
                                         $scope.savedisable = 0;
                                         $scope.showerrorMsg = true;
                                         $scope.ErrorClass = "success";
-                                        $scope.ErrorMsg = "Time card edited sucessfully !!!";
+                                        $scope.ErrorMsg = "Time card edited successfully !!!";
                                         $timeout(function() {
                                             $scope.showerrorMsg = false;
                                             $scope.modelclose();
@@ -1389,7 +1389,7 @@ angular.module('ctApp.timeCard', [
                                     $scope.savedisable = 0;
                                     $scope.showerrorMsg = true;
                                     $scope.ErrorClass = "success";
-                                    $scope.ErrorMsg = "Time card edited sucessfully !!!";
+                                    $scope.ErrorMsg = "Time card edited successfully !!!";
                                     $timeout(function() {
                                         $scope.showerrorMsg = false;
                                         $scope.modelclose();
@@ -1401,7 +1401,7 @@ angular.module('ctApp.timeCard', [
                         $scope.savedisable = 0;
                         $scope.showerrorMsg = true;
                         $scope.ErrorClass = "success";
-                        $scope.ErrorMsg = "Time card edited sucessfully !!!";
+                        $scope.ErrorMsg = "Time card edited successfully !!!";
 
                         $timeout(function() {
                             $scope.showerrorMsg = false;
@@ -1574,14 +1574,14 @@ angular.module('ctApp.timeCard', [
                                         $scope.showerrorMsg = true;
                                         $scope.ErrorClass = "success";
                                         if ($scope.timecardId) {
-                                            $scope.ErrorMsg = "Time card edited sucessfully !!!";
+                                            $scope.ErrorMsg = "Time card edited successfully !!!";
                                             $timeout(function() {
                                                 $scope.showerrorMsg = false;
                                                 $scope.modelclose();
 
                                             }, 3000);
                                         } else {
-                                            $scope.ErrorMsg = "Time card sucessfully added !!!";
+                                            $scope.ErrorMsg = "Time card successfully added !!!";
                                             $timeout(function() {
                                                 $scope.showerrorMsg = false;
                                                 $state.go("ctApp.timeCard");
@@ -1600,14 +1600,14 @@ angular.module('ctApp.timeCard', [
                                 $scope.showerrorMsg = true;
                                 $scope.ErrorClass = "success";
                                 if ($scope.timecardId) {
-                                    $scope.ErrorMsg = "Time card edited sucessfully !!!";
+                                    $scope.ErrorMsg = "Time card edited successfully !!!";
                                     $timeout(function() {
                                         $scope.showerrorMsg = false;
                                         $scope.modelclose();
 
                                     }, 3000);
                                 } else {
-                                    $scope.ErrorMsg = "Time card sucessfully added !!!";
+                                    $scope.ErrorMsg = "Time card successfully added !!!";
                                     $timeout(function() {
                                         $scope.showerrorMsg = false;
                                         $state.go("ctApp.timeCard");
@@ -2012,7 +2012,7 @@ angular.module('ctApp.timeCard', [
                                         $scope.savedisable = 0;
                                         $scope.showerrorMsg = true;
                                         $scope.ErrorClass = "success";
-                                        $scope.ErrorMsg = "Notes edited sucessfully !!!";
+                                        $scope.ErrorMsg = "Notes edited successfully !!!";
                                         $timeout(function() {
                                             $scope.showerrorMsg = false;
                                             $modalInstance.dismiss('cancel');
@@ -2026,7 +2026,7 @@ angular.module('ctApp.timeCard', [
                                 $scope.savedisable = 0;
                                 $scope.showerrorMsg = true;
                                 $scope.ErrorClass = "success";
-                                $scope.ErrorMsg = "Notes edited sucessfully !!!";
+                                $scope.ErrorMsg = "Notes edited successfully !!!";
                                 $timeout(function() {
                                     $scope.showerrorMsg = false;
                                     $modalInstance.dismiss('cancel');

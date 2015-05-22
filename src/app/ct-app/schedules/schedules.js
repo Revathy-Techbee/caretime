@@ -1202,10 +1202,28 @@ angular.module('ctApp.schedules', [
                         if ($scope.shiftId !== "") {
                             Services.shiftRecurService.delete($scope.deleteObj, function(remoteData) {
                                 Services.shiftService.save($scope.shiftDBField, function(data) {
+                                    $scope.log_shiftId = HelperService.getAsArray(data.record, "id");
+                                    $scope.logger = {};
+                                    $scope.logger.userid = $localStorage.user_info.user_id;
+                                    $scope.logger.user_detail =JSON.stringify({
+                                        "username": $localStorage.user_info.username,
+                                        "firstname": $localStorage.user_info.first_name,
+                                        "lastname": $localStorage.user_info.last_name,
+                                    });
+                                    $scope.logger.action ="Update";
+                                    $scope.logger.agency_id = Services.getAgencyID();
+                                    $scope.logger.action_id =  $scope.log_shiftId;
+                                    $scope.logger.action_table ="job_shifts";
+                                    $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
+                                    Services.userLog.save({
+                                    }, $scope.logger, function(data) {
+
+                                    });
+
                                     $scope.savedisable = 0;
                                     $scope.showerrorMsg = true;
                                     $scope.ErrorClass = "success";
-                                    $scope.ErrorMsg = "Shift edited sucessfully !!!";
+                                    $scope.ErrorMsg = "Shift edited successfully !!!";
                                     $timeout(function() {
                                         $scope.showerrorMsg = false;
 
@@ -1216,12 +1234,30 @@ angular.module('ctApp.schedules', [
                                 });
                             });
                         } else {
-                            Services.shiftService.save($scope.shiftDBField, function(data) {
+                            Services.shiftService.save($scope.shiftDBField, function(data) {                                
+                                $scope.log_shiftId = HelperService.getAsArray(data.record, "id");
+                                $scope.logger = {};
+                                $scope.logger.userid = $localStorage.user_info.user_id;
+                                $scope.logger.user_detail =JSON.stringify({
+                                    "username": $localStorage.user_info.username,
+                                    "firstname": $localStorage.user_info.first_name,
+                                    "lastname": $localStorage.user_info.last_name,
+                                });
+                                $scope.logger.action ="Add";
+                                $scope.logger.agency_id = Services.getAgencyID();
+                                $scope.logger.action_id =  $scope.log_shiftId;
+                                $scope.logger.action_table ="job_shifts";
+                                $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
+                                Services.userLog.save({
+                                }, $scope.logger, function(data) {
+
+                                });
+
                                 $scope.savedisable = 0;
 
                                 $scope.showerrorMsg = true;
                                 $scope.ErrorClass = "success";
-                                $scope.ErrorMsg = "Shift sucessfully added !!!";
+                                $scope.ErrorMsg = "Shift successfully added !!!";
                                 $timeout(function() {
                                     $scope.showerrorMsg = false;
 
@@ -1238,8 +1274,8 @@ angular.module('ctApp.schedules', [
             } else {
                 $scope.savedisable = 0;
                 $scope.showerrorMsg = true;
-                $scope.ErrorClass = "success";
-                $scope.ErrorMsg = "Shift sucessfully added !!!";
+                $scope.ErrorClass = "danger";
+                $scope.ErrorMsg = "Conflict occur in employee code,try again if the problem persists please contact Administrator !!!";
                 $timeout(function() {
                     $scope.showerrorMsg = false;
 
@@ -1971,7 +2007,7 @@ angular.module('ctApp.schedules', [
                     fields: "first_name,last_name,access_code,id",
                     filter: "status > 0 and zone_id =" + $scope.shift.empZone.id + " and agency_id = " + Services.getAgencyID(),
                     'order': 'last_name asc',
-                    limit: 5
+                    limit: 20
                 };
                 if (query.term) {
                     $scope.empObj.filter += '  and (last_name like "%' + query.term + '%" or first_name like "%' + query.term + '%")';
@@ -2115,6 +2151,23 @@ angular.module('ctApp.schedules', [
                 $scope.modalInstance.result.then(function(id) {
 
                     Services.shiftRecurService.delete($scope.deleteCode, function(remoteData) {
+                        $scope.log_shiftId = HelperService.getAsArray(remoteData.record, "id");
+                        $scope.logger = {};
+                        $scope.logger.userid = $localStorage.user_info.user_id;
+                        $scope.logger.user_detail =JSON.stringify({
+                            "username": $localStorage.user_info.username,
+                            "firstname": $localStorage.user_info.first_name,
+                            "lastname": $localStorage.user_info.last_name,
+                        });
+                        $scope.logger.action ="Update";
+                        $scope.logger.agency_id = Services.getAgencyID();
+                        $scope.logger.action_id =  $scope.log_shiftId;
+                        $scope.logger.action_table ="job_shifts";
+                        $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
+                        Services.userLog.save({
+                        }, $scope.logger, function(data) {
+
+                        });
 
                         $scope.ok();
 

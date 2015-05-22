@@ -276,7 +276,7 @@ angular.module('ctApp.observations', [
 
                                 });
                                 $scope.show_observation_form_loader = false;
-                                $scope.showMessageFunc("Observation detail edited sucessfully.", "success", function() {
+                                $scope.showMessageFunc("Observation detail edited successfully.", "success", function() {
                                     $timeout(function() {
                                         $scope.showerrorMsg = false;
                                         $state.go("ctApp.observations");
@@ -305,7 +305,7 @@ angular.module('ctApp.observations', [
 
                                 });
 
-                                $scope.showMessageFunc("New Observation added sucessfully.", "success", function() {
+                                $scope.showMessageFunc("New Observation added successfully.", "success", function() {
                                     $scope.show_observation_form_loader = false;
                                     $timeout(function() {
                                         $scope.showerrorMsg = false;

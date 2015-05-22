@@ -221,7 +221,7 @@ angular.module('ctApp.tasks', ['ui.router']).config([
                 Services.userLog.save({}, $scope.logger, function (data) {
                 });
                 $scope.show_task_form_loader = false;
-                $scope.showMessageFunc('Task detail edited sucessfully.', 'success', function () {
+                $scope.showMessageFunc('Task detail edited successfully.', 'success', function () {
                   $timeout(function () {
                     $scope.showerrorMsg = false;
                     $state.go('ctApp.tasks');
@@ -244,7 +244,7 @@ angular.module('ctApp.tasks', ['ui.router']).config([
                 $scope.logger.timestamp = moment().utc().format('YYYY-MM-DD HH:mm:ss');
                 Services.userLog.save({}, $scope.logger, function (data) {
                 });
-                $scope.showMessageFunc('New Task added sucessfully.', 'success', function () {
+                $scope.showMessageFunc('New Task added successfully.', 'success', function () {
                   $scope.show_task_form_loader = false;
                   $timeout(function () {
                     $scope.showerrorMsg = false;

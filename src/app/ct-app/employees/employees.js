@@ -1174,7 +1174,7 @@ angular.module('ctApp.employees', [
                         $scope.savedisable = 0;
                         $scope.showerrorMsg = true;
                         $scope.ErrorClass = "success";
-                        $scope.ErrorMsg = "Employee detail edited sucessfully !!!";
+                        $scope.ErrorMsg = "Employee detail edited successfully !!!";
                         $scope.employee.editedOn = data.edited_on;
 
                         $timeout(function() {
@@ -1220,7 +1220,7 @@ angular.module('ctApp.employees', [
                             $scope.updateCertificates = true;
                             $scope.employee_id = data.id;
                             $scope.ErrorClass = "success";
-                            $scope.ErrorMsg = "Employee sucessfully added with Access code(" + data.access_code + ") and Username (" + data.username + ") !!! ";
+                            $scope.ErrorMsg = "Employee successfully added with Access code(" + data.access_code + ") and Username (" + data.username + ") !!! ";
                             $scope.employee.accesscode = data.access_code;
                             $scope.employee.username = data.username;
                             $timeout(function() {
@@ -1352,7 +1352,7 @@ angular.module('ctApp.employees', [
 
                         $scope.showerrorMsg = true;
                         $scope.ErrorClass = "success";
-                        $scope.ErrorMsg = "Authorization Message Sent Sucessfully !!!";
+                        $scope.ErrorMsg = "Authorization Message Sent Successfully !!!";
                         $timeout(function() {
                             $scope.showerrorMsg = false;
                         }, 4000);
@@ -1383,7 +1383,7 @@ angular.module('ctApp.employees', [
 
                         $scope.showerrorMsg = true;
                         $scope.ErrorClass = "success";
-                        $scope.ErrorMsg = "Authorization Message Sent Sucessfully !!!";
+                        $scope.ErrorMsg = "Authorization Message Sent Successfully !!!";
                         $timeout(function() {
                             $scope.showerrorMsg = false;
                         }, 4000);
@@ -1781,7 +1781,7 @@ angular.module('ctApp.employees', [
                                         });
                                      $scope.showerrorMsg = true;
                                     $scope.ErrorClass = "success";
-                                    $scope.ErrorMsg = "Employee deleted sucessfully !!!";
+                                    $scope.ErrorMsg = "Employee deleted successfully !!!";
                                      $timeout(function() {
                                         $scope.showerrorMsg = false;
                                         $state.go("ctApp.employees");

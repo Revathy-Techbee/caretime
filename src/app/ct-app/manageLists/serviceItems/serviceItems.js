@@ -298,7 +298,7 @@ angular.module('ctApp.serviceItems', [
 
 
                                     $scope.show_serviceItem_form_loader = false;
-                                    $scope.showMessageFunc("Service Item detail edited sucessfully.", "success", function() {
+                                    $scope.showMessageFunc("Service Item detail edited successfully.", "success", function() {
                                         $timeout(function() {
                                             $scope.showerrorMsg = false;
                                             $state.go("ctApp.serviceItems");
@@ -326,7 +326,7 @@ angular.module('ctApp.serviceItems', [
                                     }, $scope.logger, function(data) {
 
                                     });
-                                    $scope.showMessageFunc("New Service Item added sucessfully.", "success", function() {
+                                    $scope.showMessageFunc("New Service Item added successfully.", "success", function() {
                                         $scope.show_serviceItem_form_loader = false;
                                         $timeout(function() {
                                             $scope.showerrorMsg = false;

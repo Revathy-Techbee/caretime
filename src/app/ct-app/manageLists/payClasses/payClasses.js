@@ -275,7 +275,7 @@ angular.module('ctApp.payClasses', [
 
                                     });
                                     $scope.show_payClass_form_loader = false;
-                                    $scope.showMessageFunc("Pay Class detail edited sucessfully.", "success", function() {
+                                    $scope.showMessageFunc("Pay Class detail edited successfully.", "success", function() {
                                         $timeout(function() {
                                             $scope.showerrorMsg = false;
                                             $state.go("ctApp.payClasses");
@@ -304,7 +304,7 @@ angular.module('ctApp.payClasses', [
 
                                     });
 
-                                    $scope.showMessageFunc("New Pay Class added sucessfully.", "success", function() {
+                                    $scope.showMessageFunc("New Pay Class added successfully.", "success", function() {
                                         $scope.show_payClass_form_loader = false;
                                         $timeout(function() {
                                             $scope.showerrorMsg = false;

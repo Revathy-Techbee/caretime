@@ -233,7 +233,7 @@ angular.module('ctApp.payors', ['ui.router']).config([
                 Services.userLog.save({}, $scope.logger, function (data) {
                 });
                 $scope.show_payor_form_loader = false;
-                $scope.showMessageFunc('Payor detail edited sucessfully.', 'success', function () {
+                $scope.showMessageFunc('Payor detail edited successfully.', 'success', function () {
                   $timeout(function () {
                     $scope.showerrorMsg = false;
                     $state.go('ctApp.payors');
@@ -256,7 +256,7 @@ angular.module('ctApp.payors', ['ui.router']).config([
                 $scope.logger.timestamp = moment().utc().format('YYYY-MM-DD HH:mm:ss');
                 Services.userLog.save({}, $scope.logger, function (data) {
                 });
-                $scope.showMessageFunc('New Payor added sucessfully.', 'success', function () {
+                $scope.showMessageFunc('New Payor added successfully.', 'success', function () {
                   $scope.show_payor_form_loader = false;
                   $timeout(function () {
                     $scope.showerrorMsg = false;

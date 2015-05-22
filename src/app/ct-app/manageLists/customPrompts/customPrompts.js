@@ -278,7 +278,7 @@ angular.module('ctApp.customPrompts', [
 
                                     });
                                     $scope.show_customPrompt_form_loader = false;
-                                    $scope.showMessageFunc("Custom Prompt detail edited sucessfully.", "success", function() {
+                                    $scope.showMessageFunc("Custom Prompt detail edited successfully.", "success", function() {
                                         $timeout(function() {
                                             $scope.showerrorMsg = false;
                                             $state.go("ctApp.customPrompts");
@@ -306,7 +306,7 @@ angular.module('ctApp.customPrompts', [
                                     }, $scope.logger, function(data) {
 
                                     });
-                                    $scope.showMessageFunc("New Custom Prompt added sucessfully.", "success", function() {
+                                    $scope.showMessageFunc("New Custom Prompt added successfully.", "success", function() {
                                         $scope.show_customPrompt_form_loader = false;
                                         $timeout(function() {
                                             $scope.showerrorMsg = false;

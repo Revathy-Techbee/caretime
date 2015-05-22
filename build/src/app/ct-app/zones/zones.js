@@ -412,7 +412,7 @@ angular.module('ctApp.zones', ['ui.router']).config([
           Services.userLog.save({}, $scope.logger, function (data) {
           });
           $scope.show_zone_form_loader = false;
-          showMessageFunc('Zone detail edited sucessfully.', 'success', function () {
+          showMessageFunc('Zone detail edited successfully.', 'success', function () {
             $timeout(function () {
               $scope.showerrorMsg = false;
               $state.go('ctApp.zones');
@@ -467,7 +467,7 @@ angular.module('ctApp.zones', ['ui.router']).config([
                                 }, $scope.logger, function(data) {
 
                                 });*/
-                showMessageFunc('New Zone added sucessfully.', 'success', function () {
+                showMessageFunc('New Zone added successfully.', 'success', function () {
                   $scope.show_zone_form_loader = false;
                   $timeout(function () {
                     $scope.showerrorMsg = false;

@@ -276,7 +276,7 @@ angular.module('ctApp.skills', [
                                     });
 
                                     $scope.show_skill_form_loader = false;
-                                    $scope.showMessageFunc("Skill detail edited sucessfully.", "success", function() {
+                                    $scope.showMessageFunc("Skill detail edited successfully.", "success", function() {
                                         $timeout(function() {
                                             $scope.showerrorMsg = false;
                                             $state.go("ctApp.skills");
@@ -304,7 +304,7 @@ angular.module('ctApp.skills', [
                                     }, $scope.logger, function(data) {
 
                                     });
-                                    $scope.showMessageFunc("New Skill added sucessfully.", "success", function() {
+                                    $scope.showMessageFunc("New Skill added successfully.", "success", function() {
                                         $scope.show_skill_form_loader = false;
                                         $timeout(function() {
                                             $scope.showerrorMsg = false;

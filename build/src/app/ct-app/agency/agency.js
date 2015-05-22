@@ -205,7 +205,7 @@ angular.module('ctApp.agency', ['ui.router']).config([
             Services.agencyDetail.save($scope.agencyDBField, function (data) {
               $scope.showerrorMsg = true;
               $scope.ErrorClass = 'success';
-              $scope.ErrorMsg = 'Agency sucessfully added !!!';
+              $scope.ErrorMsg = 'Agency successfully added !!!';
               $timeout(function () {
                 $scope.showerrorMsg = false;
                 $state.go('ctApp.AddUpdateAgency');
@@ -218,7 +218,7 @@ angular.module('ctApp.agency', ['ui.router']).config([
                 /* Edited by Lavanya Fot Logger Details*/
                 $scope.logger = {};
                 $scope.logger.userid = $localStorage.user_info.user_id;
-                $scope.logger.user_detail = $scope.agencyDBField.created_by = JSON.stringify({
+                $scope.logger.user_detail = JSON.stringify({
                   'username': $localStorage.user_info.username,
                   'firstname': $localStorage.user_info.first_name,
                   'lastname': $localStorage.user_info.last_name
@@ -232,7 +232,7 @@ angular.module('ctApp.agency', ['ui.router']).config([
                 });
                 $scope.showerrorMsg = true;
                 $scope.ErrorClass = 'success';
-                $scope.ErrorMsg = 'Agency detail edited sucessfully !!!';
+                $scope.ErrorMsg = 'Agency detail edited successfully !!!';
                 $scope.agency.edited_on = HelperService.convertUTCtoMytimeZone(data.edited_on);
                 //console.log(data);
                 $timeout(function () {

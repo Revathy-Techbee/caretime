@@ -106,6 +106,23 @@ angular.module('ctApp.updatePassword', [
             Services.signinService.update({
                 id: userId
             }, $scope.userDBField, function(data) {
+                $scope.logger = {};
+                $scope.logger.userid = $localStorage.user_info.user_id;
+                $scope.logger.user_detail =JSON.stringify({
+                    "username": $localStorage.user_info.username,
+                    "firstname": $localStorage.user_info.first_name,
+                    "lastname": $localStorage.user_info.last_name,
+                });
+                $scope.logger.action ="Update Password";
+                $scope.logger.agency_id = Services.getAgencyID();
+                $scope.logger.action_id =  data.id;
+                $scope.logger.action_table ="signin";
+                $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
+                Services.userLog.save({
+                }, $scope.logger, function(data) {
+
+                });
+
                 $scope.showerrorMsg = true;
                 $scope.ErrorClass = "success";
                 $scope.ErrorMsg = "Your Password Updated Successfully !!!";

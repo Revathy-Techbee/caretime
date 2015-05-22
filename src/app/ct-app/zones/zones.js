@@ -462,7 +462,7 @@ angular.module('ctApp.zones', [
                     });
 
                     $scope.show_zone_form_loader = false;
-                    showMessageFunc("Zone detail edited sucessfully.", "success", function() {
+                    showMessageFunc("Zone detail edited successfully.", "success", function() {
                         $timeout(function() {
                             $scope.showerrorMsg = false;
                             $state.go("ctApp.zones");
@@ -526,7 +526,7 @@ angular.module('ctApp.zones', [
 
                                 });*/
 
-                                showMessageFunc("New Zone added sucessfully.", "success", function() {
+                                showMessageFunc("New Zone added successfully.", "success", function() {
                                     $scope.show_zone_form_loader = false;
                                     $timeout(function() {
                                         $scope.showerrorMsg = false;
