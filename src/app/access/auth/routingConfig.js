@@ -57,7 +57,8 @@
             'payClasses' :['SuperAdmin','Admin','OfficeClerical','OfficeMgr','CorporateBillingDepartment'],
             'tasks': ['SuperAdmin','Admin','HR','Nursing','OfficeClerical','OfficeMgr','OnCall','Scheduler'],
             'observations': ['SuperAdmin','Admin','HR','Nursing','OfficeClerical','OfficeMgr','OnCall','Scheduler'],
-            
+            'activityCodes': ['SuperAdmin','Admin','HR','Nursing','OfficeClerical','OfficeMgr','OnCall','Scheduler'],
+
 
 
             'zones' :['SuperAdmin','Admin','Nursing','OfficeClerical','OfficeMgr','OnCall','CorporateBillingDepartment'],

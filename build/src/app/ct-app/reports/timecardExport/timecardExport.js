@@ -56,7 +56,7 @@ angular.module('ctApp.timecardExport', [
       $scope.empData = [];
       $scope.jobData = [];
       var filterObj = {
-          'fields': 'employee_code,Job_code,employee_name,job_name,clockin,clockout,work_duration,work_duration_non_rounded_number,work_duration_rounded,work_duration_rounded_number',
+          'fields': 'employee_code,Job_code,employee_name,job_name,clockin,clockout,work_duration,work_duration_non_rounded_number,work_duration_rounded,work_duration_rounded_number,activity_name,activity_code',
           'limit': $scope.call_limit,
           'offset': offset,
           'include_count': true,
@@ -117,6 +117,10 @@ angular.module('ctApp.timecardExport', [
                 };
               });
               angular.forEach(data.record, function (item, key) {
+                $scope.activityCode = '';
+                if (item.activity_code) {
+                  $scope.activityCode = item.activity_name + '(' + item.activity_code + ')';
+                }
                 $scope.resultData.push({
                   'employee_code': item.employee_code,
                   'employee_name': item.employee_name,
@@ -151,7 +155,8 @@ angular.module('ctApp.timecardExport', [
                   'jobGroup': $scope.jobData[item.Job_code] ? $scope.jobData[item.Job_code].jobGroup : '',
                   'jobext1': $scope.jobData[item.Job_code] ? $scope.jobData[item.Job_code].jobext1 : '',
                   'jobext2': $scope.jobData[item.Job_code] ? $scope.jobData[item.Job_code].jobext2 : '',
-                  'jobext3': $scope.jobData[item.Job_code] ? $scope.jobData[item.Job_code].jobext3 : ''
+                  'jobext3': $scope.jobData[item.Job_code] ? $scope.jobData[item.Job_code].jobext3 : '',
+                  'activities': $scope.activityCode
                 });
               });
               if (data.meta.count > offset + $scope.call_limit) {

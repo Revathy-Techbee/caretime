@@ -1,4 +1,4 @@
-angular.module('templates-app', ['access/access.tpl.html', 'access/employeeLogin/employeeLogin.tpl.html', 'access/forgotPassword/forgotPassword.tpl.html', 'access/resetPassword/resetPassword.tpl.html', 'access/sign-in/sign-in.tpl.html', 'access/sign-up/sign-up.tpl.html', 'admin/admin.tpl.html', 'admin/agency/add-update-agency.tpl.html', 'admin/agency/agencies.tpl.html', 'admin/agency/mapDetailView.tpl.html', 'admin/updatePassword/updatePassword.tpl.html', 'ct-app/agency/add-update-agency.tpl.html', 'ct-app/agency/mapDetailView.tpl.html', 'ct-app/authorizations/add-update-authorizations.tpl.html', 'ct-app/authorizations/authorizations.tpl.html', 'ct-app/ct-app.tpl.html', 'ct-app/employees/add-update-employee.tpl.html', 'ct-app/employees/employee-dashboard.tpl.html', 'ct-app/employees/employee-dashboard_bk.tpl.html', 'ct-app/employees/employees.tpl.html', 'ct-app/employees/mapDetailView.tpl.html', 'ct-app/employees/upload-skeleton.tpl.html', 'ct-app/employees/view-employee.tpl.html', 'ct-app/jobs/add-update-job.tpl.html', 'ct-app/jobs/job-dashboard.tpl.html', 'ct-app/jobs/jobs.tpl.html', 'ct-app/jobs/mapDetailView.tpl.html', 'ct-app/jobs/view-job.tpl.html', 'ct-app/logs/alertLog/add-update-alertLog.tpl.html', 'ct-app/logs/alertLog/alertLog.tpl.html', 'ct-app/logs/callLog/callLogs.tpl.html', 'ct-app/logs/customPrompts/customPrompts.tpl.html', 'ct-app/logs/employeeActivities/employeeActivities.tpl.html', 'ct-app/logs/timeCards/InactiveTimeCard.tpl.html', 'ct-app/logs/timeCards/add-update-timeCard.tpl.html', 'ct-app/logs/timeCards/timeCards.tpl.html', 'ct-app/mainDashboard/mainDashboard.tpl.html', 'ct-app/manageLists/activities/activities.tpl.html', 'ct-app/manageLists/activities/add-update-activity.tpl.html', 'ct-app/manageLists/customPrompts/add-update-customPrompt.tpl.html', 'ct-app/manageLists/customPrompts/customPrompts.tpl.html', 'ct-app/manageLists/observations/add-update-observation.tpl.html', 'ct-app/manageLists/observations/observations.tpl.html', 'ct-app/manageLists/payClasses/add-update-payClass.tpl.html', 'ct-app/manageLists/payClasses/payClasses.tpl.html', 'ct-app/manageLists/payTypes/add-update-payType.tpl.html', 'ct-app/manageLists/payTypes/payTypes.tpl.html', 'ct-app/manageLists/payors/add-update-payor.tpl.html', 'ct-app/manageLists/payors/payors.tpl.html', 'ct-app/manageLists/serviceItems/add-update-serviceItem.tpl.html', 'ct-app/manageLists/serviceItems/serviceItems.tpl.html', 'ct-app/manageLists/skills/add-update-skill.tpl.html', 'ct-app/manageLists/skills/skills.tpl.html', 'ct-app/manageLists/tasks/add-update-task.tpl.html', 'ct-app/manageLists/tasks/tasks.tpl.html', 'ct-app/mapView/mapView.tpl.html', 'ct-app/reports/accountActivities/accountActivities.tpl.html', 'ct-app/reports/activityReports/activityReports.tpl.html', 'ct-app/reports/authorizedVsActuall/authorizedVsActuall.tpl.html', 'ct-app/reports/dailyHoursChart/dailyHoursChart.tpl.html', 'ct-app/reports/employeeList/employeeList.tpl.html', 'ct-app/reports/employeeTimecard/employeeTimecard.tpl.html', 'ct-app/reports/employeeWeeklyHours/employeeWeeklyHours.tpl.html', 'ct-app/reports/inactivityEmployees/inactivityEmployees.tpl.html', 'ct-app/reports/jobList/jobList.tpl.html', 'ct-app/reports/jobNoSchedule/jobNoSchedule.tpl.html', 'ct-app/reports/jobObservation/jobObservation.tpl.html', 'ct-app/reports/jobTask/jobTask.tpl.html', 'ct-app/reports/jobTimecard/jobTimecard.tpl.html', 'ct-app/reports/jobWeeklyHours/jobWeeklyHours.tpl.html', 'ct-app/reports/mapReport/mapReport.tpl.html', 'ct-app/reports/scheduleReport/scheduleReport.tpl.html', 'ct-app/reports/scheduleVsActuall/scheduleVsActuall.tpl.html', 'ct-app/reports/timecardExport/timecardExport.tpl.html', 'ct-app/schedules/add-update-schedule.tpl.html', 'ct-app/schedules/schedules.tpl.html', 'ct-app/updatePassword/updatePassword.tpl.html', 'ct-app/zones/add-update-zone.tpl.html', 'ct-app/zones/zone-employee-dashboard.tpl.html', 'ct-app/zones/zones.tpl.html', 'partials/access_header.tpl.html', 'partials/admin_header.tpl.html', 'partials/admin_nav.tpl.html', 'partials/aside.tpl.html', 'partials/datepicker.tpl.html', 'partials/header.tpl.html', 'partials/nav.tpl.html', 'partials/page_footer.tpl.html', 'partials/settings.tpl.html', 'utils/directive-templates/dropdown.tpl.html', 'utils/directive-templates/inline-edit.tpl.html', 'utils/directive-templates/popover-html-unsafe-popup.tpl.html']);
+angular.module('templates-app', ['access/access.tpl.html', 'access/employeeLogin/employeeLogin.tpl.html', 'access/forgotPassword/forgotPassword.tpl.html', 'access/resetPassword/resetPassword.tpl.html', 'access/sign-in/sign-in.tpl.html', 'access/sign-up/sign-up.tpl.html', 'admin/admin.tpl.html', 'admin/agency/add-update-agency.tpl.html', 'admin/agency/agencies.tpl.html', 'admin/agency/mapDetailView.tpl.html', 'admin/updatePassword/updatePassword.tpl.html', 'ct-app/agency/add-update-agency.tpl.html', 'ct-app/agency/mapDetailView.tpl.html', 'ct-app/authorizations/add-update-authorizations.tpl.html', 'ct-app/authorizations/authorizations.tpl.html', 'ct-app/ct-app.tpl.html', 'ct-app/employees/add-update-employee.tpl.html', 'ct-app/employees/employee-dashboard.tpl.html', 'ct-app/employees/employee-dashboard_bk.tpl.html', 'ct-app/employees/employees.tpl.html', 'ct-app/employees/mapDetailView.tpl.html', 'ct-app/employees/upload-skeleton.tpl.html', 'ct-app/employees/view-employee.tpl.html', 'ct-app/jobs/add-update-job.tpl.html', 'ct-app/jobs/job-dashboard.tpl.html', 'ct-app/jobs/jobs.tpl.html', 'ct-app/jobs/mapDetailView.tpl.html', 'ct-app/jobs/view-job.tpl.html', 'ct-app/logs/alertLog/add-update-alertLog.tpl.html', 'ct-app/logs/alertLog/alertLog.tpl.html', 'ct-app/logs/callLog/callLogs.tpl.html', 'ct-app/logs/customPrompts/customPrompts.tpl.html', 'ct-app/logs/employeeActivities/employeeActivities.tpl.html', 'ct-app/logs/timeCards/InactiveTimeCard.tpl.html', 'ct-app/logs/timeCards/add-update-timeCard.tpl.html', 'ct-app/logs/timeCards/timeCards.tpl.html', 'ct-app/mainDashboard/mainDashboard.tpl.html', 'ct-app/manageLists/activities/activities.tpl.html', 'ct-app/manageLists/activities/add-update-activity.tpl.html', 'ct-app/manageLists/activityCodes/activityCodes.tpl.html', 'ct-app/manageLists/activityCodes/add-update-activityCode.tpl.html', 'ct-app/manageLists/customPrompts/add-update-customPrompt.tpl.html', 'ct-app/manageLists/customPrompts/customPrompts.tpl.html', 'ct-app/manageLists/observations/add-update-observation.tpl.html', 'ct-app/manageLists/observations/observations.tpl.html', 'ct-app/manageLists/payClasses/add-update-payClass.tpl.html', 'ct-app/manageLists/payClasses/payClasses.tpl.html', 'ct-app/manageLists/payTypes/add-update-payType.tpl.html', 'ct-app/manageLists/payTypes/payTypes.tpl.html', 'ct-app/manageLists/payors/add-update-payor.tpl.html', 'ct-app/manageLists/payors/payors.tpl.html', 'ct-app/manageLists/serviceItems/add-update-serviceItem.tpl.html', 'ct-app/manageLists/serviceItems/serviceItems.tpl.html', 'ct-app/manageLists/skills/add-update-skill.tpl.html', 'ct-app/manageLists/skills/skills.tpl.html', 'ct-app/manageLists/tasks/add-update-task.tpl.html', 'ct-app/manageLists/tasks/tasks.tpl.html', 'ct-app/mapView/mapView.tpl.html', 'ct-app/reports/accountActivities/accountActivities.tpl.html', 'ct-app/reports/activityReports/activityReports.tpl.html', 'ct-app/reports/authorizedVsActuall/authorizedVsActuall.tpl.html', 'ct-app/reports/dailyHoursChart/dailyHoursChart.tpl.html', 'ct-app/reports/employeeList/employeeList.tpl.html', 'ct-app/reports/employeeTimecard/employeeTimecard.tpl.html', 'ct-app/reports/employeeWeeklyHours/employeeWeeklyHours.tpl.html', 'ct-app/reports/inactivityEmployees/inactivityEmployees.tpl.html', 'ct-app/reports/jobList/jobList.tpl.html', 'ct-app/reports/jobNoSchedule/jobNoSchedule.tpl.html', 'ct-app/reports/jobObservation/jobObservation.tpl.html', 'ct-app/reports/jobTask/jobTask.tpl.html', 'ct-app/reports/jobTimecard/jobTimecard.tpl.html', 'ct-app/reports/jobWeeklyHours/jobWeeklyHours.tpl.html', 'ct-app/reports/mapReport/mapReport.tpl.html', 'ct-app/reports/scheduleReport/scheduleReport.tpl.html', 'ct-app/reports/scheduleVsActuall/scheduleVsActuall.tpl.html', 'ct-app/reports/timecardExport/timecardExport.tpl.html', 'ct-app/schedules/add-update-schedule.tpl.html', 'ct-app/schedules/schedules.tpl.html', 'ct-app/updatePassword/updatePassword.tpl.html', 'ct-app/zones/add-update-zone.tpl.html', 'ct-app/zones/zone-employee-dashboard.tpl.html', 'ct-app/zones/zones.tpl.html', 'partials/access_header.tpl.html', 'partials/admin_header.tpl.html', 'partials/admin_nav.tpl.html', 'partials/aside.tpl.html', 'partials/datepicker.tpl.html', 'partials/header.tpl.html', 'partials/nav.tpl.html', 'partials/page_footer.tpl.html', 'partials/settings.tpl.html', 'utils/directive-templates/dropdown.tpl.html', 'utils/directive-templates/inline-edit.tpl.html', 'utils/directive-templates/popover-html-unsafe-popup.tpl.html']);
 
 angular.module("access/access.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("access/access.tpl.html",
@@ -3771,6 +3771,83 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "                    </form>\n" +
     "\n" +
     "                </tab>\n" +
+    "                <tab heading=\"Activity Code\" disabled=\"basic.$invalid\" active=\"jobSteps.activityCode\" select=\"jobSteps.percent=75\">\n" +
+    "\n" +
+    "                    <p class=\"m-b\"><i class=\"fa fa-question-circle\"></i> Add Activity Code.</p>\n" +
+    "\n" +
+    "                    <progressbar value=\"jobSteps.percent\" class=\"progress-xs\" type=\"success\"></progressbar>\n" +
+    "\n" +
+    "                    <form name=\"activityCode\" class=\"form-validation form-horizontal activityCode\" ng-submit=\"jobManage('activityCode')\" novalidate>\n" +
+    "\n" +
+    "                        <div class=\"form-group\">\n" +
+    "\n" +
+    "                            <label class=\"col-sm-2 control-label\">Select Activity</label>\n" +
+    "\n" +
+    "                            <div class=\"col-sm-10\">\n" +
+    "                                 <label class=\"radio-inline i-checks\">\n" +
+    "                                    <input type=\"radio\" name=\"activity\" value=0 ng-model=\"job.activity\"><i></i> None\n" +
+    "                                </label>\n" +
+    "                                <label class=\"radio-inline i-checks\">\n" +
+    "                                    <input type=\"radio\" name=\"activity\" value=1 ng-model=\"job.activity\"><i></i> Default Activity\n" +
+    "                                </label>\n" +
+    "                                 <label class=\"radio-inline i-checks\">\n" +
+    "                                    <input type=\"radio\" name=\"activity\" value=2 ng-model=\"job.activity\"><i></i> Prompt for code \n" +
+    "                                </label>\n" +
+    "                            </div>\n" +
+    "\n" +
+    "                        </div>\n" +
+    "                         <div class=\"form-group\" ng-if=\"job.activity==1\">\n" +
+    "\n" +
+    "                            <label class=\"col-sm-2 control-label\">Default Activity</label>\n" +
+    "                            <div class=\"col-sm-10\">\n" +
+    "                                <input class=\"w-md\"  name=\"activityDetail\" ui-select2=\"selectActivity\" value=\"\"  ng-model=\"job.activityDetail\">\n" +
+    "                            </div>\n" +
+    "                        </div>\n" +
+    "\n" +
+    "                        <div class=\"form-group\">\n" +
+    "\n" +
+    "                            <div class=\"col-sm-9\">\n" +
+    "\n" +
+    "                                <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\" ng-click=\"jobManagePrev('notes')\">Prev</button>\n" +
+    "\n" +
+    "                                <button type=\"submit\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
+    "                                <button type=\"button\" ng-click=\"jobManage('notes', false)\" class=\"btn btn-primary btn-rounded\" ng-disabled=\"savedisable == 1\">Save changes</button>\n" +
+    "\n" +
+    "                                <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">\n" +
+    "\n" +
+    "                                    {{ErrorMsg}}\n" +
+    "\n" +
+    "                                </span>\n" +
+    "\n" +
+    "                            </div>\n" +
+    "\n" +
+    "                            <div class=\"col-sm-3\">\n" +
+    "                                <div class=\"pull-right\">\n" +
+    "                                     <button type=\"button\" ng-disabled=\"savedisable == 1\" ng-show=\"job_id\" class=\"btn btn-default btn-rounded\" ng-click='deleteJob(job.job_code)'>Delete</button>\n" +
+    "                                    <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\" ng-click='cancelJob()'>Cancel</button>\n" +
+    "                                </div>\n" +
+    "\n" +
+    "                            </div>\n" +
+    "\n" +
+    "                        </div>\n" +
+    "\n" +
+    "                        <div class=\"form-group\" ng-show=\"job_id\">\n" +
+    "                            <div class=\"col-sm-12\">\n" +
+    "                                <div class=\"alert alert-info\">\n" +
+    "                                    <p>Job: <em class=\"ng-binding\">{{job.job_name}} ({{job.job_code}}) </em>\n" +
+    "                                    </p>\n" +
+    "                                    <p>Created by: {{job.created_by | AddEditUser}}, Created date is: <em class=\"ng-binding\">{{job.created_on | date:'medium'}}</em>\n" +
+    "                                    </p>\n" +
+    "                                    <p ng-show=\"job.editedOn\">\n" +
+    "                                        Edited by: {{job.edited_by | AddEditUser}}, Last Edited date is: <em class=\"ng-binding\">{{job.editedOn | date:'medium' }}</em>\n" +
+    "                                    </p>\n" +
+    "                                </div>\n" +
+    "                            </div>\n" +
+    "                        </div>\n" +
+    "\n" +
+    "                    </form>\n" +
+    "\n" +
+    "                </tab>\n" +
     "                <tab heading=\"Custom Prompts\" disabled=\"basic.$invalid\" active=\"jobSteps.customPrompt\" select=\"jobSteps.percent=85\">\n" +
     "\n" +
     "                    <p class=\"m-b\"><i class=\"fa fa-question-circle\"></i> If custom Prompts are required for this Job,select one or more prompts. The Order the Prompts are,will be the order the IVR will use.</p>\n" +
@@ -4397,6 +4474,31 @@ angular.module("ct-app/jobs/view-job.tpl.html", []).run(["$templateCache", funct
     "                </table>\n" +
     "            </div>\n" +
     "        </tab>\n" +
+    "         <tab>\n" +
+    "            <tab-heading>\n" +
+    "                <i class=\"glyphicon  glyphicon-plus\"></i> Activity Code </tab-heading>\n" +
+    "            <div class=\"table-responsive\">\n" +
+    "                <table class=\"table table-striped b-t b-light\">\n" +
+    "                    <tr>\n" +
+    "                        <th colspan=\"2\">\n" +
+    "                            Select Activity\n" +
+    "                        </th>\n" +
+    "                        <td colspan=\"2\">\n" +
+    "                            {{job.activity_type | activity}}\n" +
+    "                        </td>\n" +
+    "                    </tr>\n" +
+    "                    <tr>\n" +
+    "                        <th colspan=\"2\">\n" +
+    "                            Default Activity\n" +
+    "                        </th>\n" +
+    "                        <td colspan=\"2\">\n" +
+    "                            {{job.activity_detail  | parseToJson:0:'text'}}\n" +
+    "                        </td>\n" +
+    "                    </tr>\n" +
+    "                </table>\n" +
+    "            </div>\n" +
+    "        </tab>\n" +
+    "\n" +
     "       <tab>\n" +
     "            <tab-heading>\n" +
     "                <i class=\"glyphicon  glyphicon-plus\"></i> Custom Prompts\n" +
@@ -5034,6 +5136,7 @@ angular.module("ct-app/logs/employeeActivities/employeeActivities.tpl.html", [])
     "                 <wj-flex-grid-column header=\"Call Status OUT\" is-read-only=\"true\" binding=\"Call_status_OUT\"> </wj-flex-grid-column>\n" +
     "                  <wj-flex-grid-column header=\"Work Duration\" is-read-only=\"true\" binding=\"work_duration\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Original Work Duration\" is-read-only=\"true\" binding=\"orig_work_duration\"> </wj-flex-grid-column>\n" +
+    "                  <wj-flex-grid-column header=\"Activity\" is-read-only=\"true\" binding=\"activities\"> </wj-flex-grid-column>\n" +
     "\n" +
     "\n" +
     "            </wj-flex-grid>\n" +
@@ -5418,6 +5521,7 @@ angular.module("ct-app/logs/timeCards/timeCards.tpl.html", []).run(["$templateCa
     "                <wj-flex-grid-column header=\"Call Status\" is-read-only=\"true\" binding=\"call_status\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Original Time Stamp\" is-read-only=\"true\" binding=\"adjusted_timestamp\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Original Work Duration\" is-read-only=\"true\" binding=\"adjusted_call_duriation\"> </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"Activity Code\" is-read-only=\"true\" binding=\"activity_code\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Entered By\" is-read-only=\"true\" binding=\"created_by\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Edit\" is-read-only=\"true\" binding=\"id\" width=\"65\" align=\"center\">\n" +
     "                    <button type=\"button\" class=\"btn btn-rounded btn-sm btn-icon btn-default\" ng-click=\"enableEditView()\"><i class=\"fa fa-pencil\"></i>\n" +
@@ -5778,6 +5882,152 @@ angular.module("ct-app/manageLists/activities/add-update-activity.tpl.html", [])
     "                            </p>\n" +
     "                            <p ng-show=\"activity.editedOn\">\n" +
     "                                Edited by: {{activity.edited_by | AddEditUser}}, Last Edited date is: <em class=\"ng-binding\">{{activity.editedOn | date:'medium' }}</em>\n" +
+    "                            </p>\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "            </form>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>");
+}]);
+
+angular.module("ct-app/manageLists/activityCodes/activityCodes.tpl.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("ct-app/manageLists/activityCodes/activityCodes.tpl.html",
+    "<div class=\"bg-light lter b-b wrapper-md\">\n" +
+    "    <h1 class=\"m-n font-thin h3\">Activity Codes List <a ui-sref=\"ctApp.addUpdateActivityCode\" class=\"btn btn-sm btn-info pull-right\" type=\"button\">Add Activity Code</a></h1>\n" +
+    "\n" +
+    "</div>\n" +
+    "<div class=\"wrapper-md\">\n" +
+    "    <div class=\"panel panel-default\">\n" +
+    "        <div class=\"row wrapper\">\n" +
+    "\n" +
+    "            <div class=\"col-sm-3\">\n" +
+    "                <input type=\"text\" class=\"input-md form-control\" placeholder=\"Search Text\" ng-model=\"config.general.searchtxt\" ui-keypress=\"{13:'updateTableData(true)'}\" capitalize>\n" +
+    "            </div>\n" +
+    "            <div class=\"col-sm-3\">\n" +
+    "                <button class=\"btn btn-md btn-info\" type=\"button\" ng-click=\"updateTableData(true)\">Search</button>\n" +
+    "                <button class=\"btn btn-md btn-warning\" type=\"button\" ng-click=\"clearSearch()\">Clear</button>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "        <div class=\"table-wrapper table-responsive\">\n" +
+    "            <table class=\"table table-striped b-t b-light table-bordered\" ct-table-sort=\"sortField\" sort-order=\"sortType\" callback=\"applyProgramSort()\">\n" +
+    "                <thead>\n" +
+    "                    <tr>\n" +
+    "                        <th id=\"code\" class=\"sort-item\">Activity Code  &nbsp;<i class=\"fa fa-sort\"></i>\n" +
+    "                        <th id=\"name\" class=\"sort-item asc\" style=\"width:30%;\"> Activity Name &nbsp;<i class=\"fa fa-sort fa-sort-up\"></i>\n" +
+    "                        </th>\n" +
+    "                        <th id=\"billed\" class=\"sort-item asc\" > Billable  &nbsp;<i class=\"fa fa-sort fa-sort-up\"></i>\n" +
+    "                        </th>\n" +
+    "                        </th>\n" +
+    "                        <th id=\"status\" class=\"sort-item\">Status &nbsp;<i class=\"fa fa-sort\"></i>\n" +
+    "                        </th>\n" +
+    "                        <th>Action</th>\n" +
+    "                    </tr>\n" +
+    "                </thead>\n" +
+    "                <tbody infinite-scroll='getNextData()' infinite-scroll-disabled='disable_infinite_scroll' infinite-scroll-distance='0'>\n" +
+    "                    <tr ng-repeat=\"detail in activityCodeDetailList\" class=\"animate-repeat\">\n" +
+    "                       <td>{{detail.code}}</td>\n" +
+    "                        <td>{{detail.name}}</td>\n" +
+    "                        <td>{{detail.billed | yesOrNo }} </td>\n" +
+    "                        <td ng-bind-html=\"detail.status | checkstatus\">{{detail.status | checkstatus}}</td>\n" +
+    "                        <td>\n" +
+    "                            <button ng-click=\"enableEditView(detail.id)\" class=\"btn btn-rounded btn-sm btn-icon btn-default\"><i class=\"fa fa-pencil\"></i>\n" +
+    "                            </button>\n" +
+    "                            <button ng-click=\"enableDelete(detail.id)\" class=\"btn btn-rounded btn-sm btn-icon btn-default\"><i class=\"fa fa-trash-o\"></i>\n" +
+    "                            </button>\n" +
+    "                        </td>\n" +
+    "                    </tr>\n" +
+    "                    <tr ng-if=\"config.show_activityCodes_loader\">\n" +
+    "                        <td colspan=\"4\">\n" +
+    "                            <div show-loader=\"config.show_activityCodes_loader\"></div>\n" +
+    "                        </td>\n" +
+    "                    </tr>\n" +
+    "                    <tr ng-if=\"!config.show_activityCodes_loader && activityCodeDetailList.length==0\">\n" +
+    "                        <td colspan='4' class=\"alert alert-danger\">\n" +
+    "                            <center> No Records Found.</center>\n" +
+    "                        </td>\n" +
+    "                    </tr>\n" +
+    "\n" +
+    "                </tbody>\n" +
+    "\n" +
+    "            </table>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>");
+}]);
+
+angular.module("ct-app/manageLists/activityCodes/add-update-activityCode.tpl.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("ct-app/manageLists/activityCodes/add-update-activityCode.tpl.html",
+    "<div>\n" +
+    "    <div class=\"bg-light lter b-b wrapper-md\">\n" +
+    "        <h1 class=\"m-n font-thin h3\">{{pageTitle}} Activity Code</h1>\n" +
+    "    </div>\n" +
+    "    <div class=\"wrapper-md\" style=\"background:#FFF;\">\n" +
+    "        <div>\n" +
+    "            <p class=\"m-b\"><em class=\"text-danger\">Required fields are in Red</em>\n" +
+    "            </p>\n" +
+    "            <progressbar value=\"100\" class=\"progress-xs\" type=\"success\"></progressbar>\n" +
+    "            <form name=\"addUpdateActivityCodeForm\" class=\"form-validation form-horizontal general\" rc-submit=\"activityCodeManage()\" novalidate>\n" +
+    "                <div class=\"form-group\" ng-class=\"{'has-error': rc.addUpdateActivityCodeForm.needsAttention(addUpdateActivityCodeForm.code)}\">\n" +
+    "                    <label class=\"col-sm-2 control-label text-danger\">Activity Code</label>\n" +
+    "                    <div class=\"col-sm-10\">\n" +
+    "                        <input   ng-maxlength=\"4\" type=\"text\" class=\"form-control w-md\" capitalize required=\"\" placeholder=\"Activity Code\" name=\"code\" ng-model=\"activityCode.code\" ng-pattern=\"/^[0-9]+$/\">\n" +
+    "                        <span class=\"help-block\" ng-show=\"addUpdateActivityCodeForm.code.$error.required && rc.addUpdateActivityCodeForm.needsAttention(addUpdateActivityCodeForm.code)\">Activity Code  is required.</span>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "\n" +
+    "                <div class=\"form-group\" ng-class=\"{'has-error': rc.addUpdateActivityCodeForm.needsAttention(addUpdateActivityCodeForm.name)}\">\n" +
+    "                    <label class=\"col-sm-2 control-label text-danger\">Activity Name</label>\n" +
+    "                    <div class=\"col-sm-10\">\n" +
+    "                        <input type=\"text\" class=\"form-control w-md\" capitalize required=\"\" placeholder=\"Activity Name\" name=\"name\" ng-model=\"activityCode.name\">\n" +
+    "                        <span class=\"help-block\" ng-show=\"addUpdateActivityCodeForm.name.$error.required && rc.addUpdateActivityCodeForm.needsAttention(addUpdateActivityCodeForm.name)\">Activity name is required.</span>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <div class=\"form-group\">\n" +
+    "                    <label class=\"col-sm-2 control-label\">Activity Description</label>\n" +
+    "                    <div class=\"col-sm-10\">\n" +
+    "                         <textarea capitalize rows=\"4\" ng-model=\"activityCode.description\" cols=\"45\"></textarea>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <div class=\"form-group\">\n" +
+    "                    <label class=\"col-sm-2 control-label\">Billable</label>\n" +
+    "                    <div class=\"col-sm-10\">\n" +
+    "                        <label class=\"radio-inline i-checks\">\n" +
+    "                            <input type=\"radio\" name=\"billable\" value=\"1\" ng-model=\"activityCode.billed\"><i></i> Yes\n" +
+    "                        </label>\n" +
+    "                        <label class=\"radio-inline i-checks\">\n" +
+    "                            <input type=\"radio\" name=\"billable\" value=\"0\" ng-model=\"activityCode.billed\"><i></i> No\n" +
+    "                        </label>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "\n" +
+    "                <div class=\"form-group\">\n" +
+    "                    <label class=\"col-sm-2 control-label\">Status</label>\n" +
+    "                    <div class=\"col-sm-10\">\n" +
+    "                        <label class=\"radio-inline i-checks\">\n" +
+    "                            <input type=\"radio\" name=\"a\" value=\"1\" ng-model=\"activityCode.status\"><i></i> Active\n" +
+    "                        </label>\n" +
+    "                        <label class=\"radio-inline i-checks\">\n" +
+    "                            <input type=\"radio\" name=\"a\" value=\"0\" ng-model=\"activityCode.status\"><i></i> Inactive\n" +
+    "                        </label>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
+    "                <div class=\"form-group\">\n" +
+    "                    <div class=\"col-sm-12\">\n" +
+    "                        <button type=\"submit\" class=\"btn btn-primary  btn-rounded\" ng-disabled=\"savedisable == 1\">Save Changes</button>\n" +
+    "                        <button type=\"button\" ng-click='cancelActivityCode()' class=\"btn btn-default  btn-rounded pull-right\">Cancel</button>\n" +
+    "                        <span class=\"alert alert-{{ErrorClass}}\" ng-if=\"showerrorMsg\">{{ErrorMsg}}</span>\n" +
+    "                    </div>\n" +
+    "                </div>\n" +
+    "                <div class=\"form-group\" ng-show=\"activityCode_id\">\n" +
+    "                    <div class=\"col-sm-12\">\n" +
+    "                        <div class=\"alert alert-info\">\n" +
+    "                            <p>Created by: {{activityCode.created_by | AddEditUser}}, Created date is: <em class=\"ng-binding\">{{activityCode.created_on | date:'medium'}}</em>\n" +
+    "                            </p>\n" +
+    "                            <p ng-show=\"activityCode.editedOn\">\n" +
+    "                                Edited by: {{activityCode.edited_by | AddEditUser}}, Last Edited date is: <em class=\"ng-binding\">{{activityCode.editedOn | date:'medium' }}</em>\n" +
     "                            </p>\n" +
     "                        </div>\n" +
     "                    </div>\n" +
@@ -8301,7 +8551,7 @@ angular.module("ct-app/reports/jobTimecard/jobTimecard.tpl.html", []).run(["$tem
     "                 <wj-flex-grid-column header=\"(h m)\" is-read-only=\"true\" binding=\"work_duration_formated\" format=\"n2\" > </wj-flex-grid-column>\n" +
     "                 <wj-flex-grid-column header=\"Total Hrs(Rounded)\" is-read-only=\"true\" binding=\"work_duration_rounded_number\" format=\"n2\" aggregate=\"Sum\"> </wj-flex-grid-column>\n" +
     "                  <wj-flex-grid-column header=\"(h m)\" is-read-only=\"true\" binding=\"work_duration_rounded_formated\" format=\"n2\" > </wj-flex-grid-column>\n" +
-    "                 \n" +
+    "                 <wj-flex-grid-column header=\"Activity\" is-read-only=\"true\" binding=\"activities\"> </wj-flex-grid-column>\n" +
     "\n" +
     "\n" +
     "            </wj-flex-grid>\n" +
@@ -9102,6 +9352,7 @@ angular.module("ct-app/reports/timecardExport/timecardExport.tpl.html", []).run(
     "                <wj-flex-grid-column header=\"Job Code\" is-read-only=\"true\" binding=\"Job_code\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Clock In\" is-read-only=\"true\" binding=\"clockin\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Clock Out\" is-read-only=\"true\" binding=\"clockout\"> </wj-flex-grid-column>\n" +
+    "                 <wj-flex-grid-column header=\"Activity\" is-read-only=\"true\" binding=\"activities\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Total Hours\" is-read-only=\"true\" binding=\"work_duration_non_rounded_number\" format=\"n2\" aggregate=\"Sum\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"(h m)\" is-read-only=\"true\" binding=\"work_duration_formated\" format=\"n2\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Rounded Hrs\" ng-if=\"field.roundedhrs\" is-read-only=\"true\" binding=\"work_duration_rounded_number\" format=\"n2\" aggregate=\"Sum\"> </wj-flex-grid-column>\n" +
@@ -11070,6 +11321,13 @@ angular.module("partials/nav.tpl.html", []).run(["$templateCache", function($tem
     "        <a ui-sref=\"ctApp.observations\" data-access-level=\"accessLevels.observations\">\n" +
     "          <span>\n" +
     "            Observations\n" +
+    "          </span>\n" +
+    "        </a>\n" +
+    "      </li>\n" +
+    "      <li>\n" +
+    "        <a ui-sref=\"ctApp.activityCodes\" data-access-level=\"accessLevels.activityCodes\">\n" +
+    "          <span>\n" +
+    "            Activity Codes\n" +
     "          </span>\n" +
     "        </a>\n" +
     "      </li>\n" +

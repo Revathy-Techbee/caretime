@@ -51,7 +51,7 @@ angular.module('ctApp.jobTimecard', [
     $scope.reportFilters.endDate = moment(lastDay).format('YYYY-MM-DD');
     $scope.loadData = function (fdate, ldate, zone, job, offset) {
       var filterObj = {
-          'fields': 'employee_code,employee_name,Job_code,job_name,clockin,clockout,work_duration,work_duration_non_rounded_number,work_duration_rounded,work_duration_rounded_number',
+          'fields': 'employee_code,employee_name,Job_code,job_name,clockin,clockout,work_duration,work_duration_non_rounded_number,work_duration_rounded,work_duration_rounded_number,activity_name,activity_code',
           'limit': $scope.call_limit,
           'offset': offset,
           'include_count': true,
@@ -65,6 +65,10 @@ angular.module('ctApp.jobTimecard', [
       }
       Services.employeeActivitiesService.get(filterObj, function (data) {
         angular.forEach(data.record, function (item, key) {
+          $scope.activityCode = '';
+          if (item.activity_code) {
+            $scope.activityCode = item.activity_name + '(' + item.activity_code + ')';
+          }
           $scope.resultData.push({
             'employee_code': item.employee_code,
             'employee_name': item.employee_name + ' (' + item.employee_code + ')',
@@ -77,7 +81,8 @@ angular.module('ctApp.jobTimecard', [
             'work_duration_formated': item.work_duration_non_rounded_number ? HelperService.formating_hours(item.work_duration) : '(0h 0m)',
             'work_duration_rounded': item.work_duration_rounded,
             'work_duration_rounded_number': item.work_duration_rounded_number ? Number(parseFloat(item.work_duration_rounded_number.replace(',', ''))) : '0',
-            'work_duration_rounded_formated': item.work_duration_rounded ? HelperService.formating_hours(item.work_duration_rounded) : '(0h 0m)'
+            'work_duration_rounded_formated': item.work_duration_rounded ? HelperService.formating_hours(item.work_duration_rounded) : '(0h 0m)',
+            'activities': $scope.activityCode
           });
         });
         if (data.meta.count > offset + $scope.call_limit) {

@@ -306,7 +306,8 @@ angular.module('app', [
       tasksName: $resource(baseurl + '/rest/' + serviceName + '/tasks2/:id/?app_name=' + appName + '&fields=*', null, { 'update': { method: 'PUT' } }),
       alertService: $resource(baseurl + '/rest/' + serviceName + '/alerts/:id/?app_name=' + appName + '&fields=*', null, { 'update': { method: 'PUT' } }),
       updateEmployeeActivities: $resource(baseurl + '/rest/' + serviceName + '/employee_activities/:ref_id/?app_name=' + appName + '&fields=*', null, { 'update': { method: 'PUT' } }),
-      userLog: $resource(baseurl + '/rest/' + serviceName + '/user_log/:id/?app_name=' + appName + '&fields=*', null, { 'update': { method: 'PUT' } })
+      userLog: $resource(baseurl + '/rest/' + serviceName + '/user_log/:id/?app_name=' + appName + '&fields=*', null, { 'update': { method: 'PUT' } }),
+      activity_code: $resource(baseurl + '/rest/' + serviceName + '/activity_code/:id/?app_name=' + appName + '&fields=*', null, { 'update': { method: 'PUT' } })
     };
   }
 ]);

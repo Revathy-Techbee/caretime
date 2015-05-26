@@ -65,7 +65,7 @@ angular.module('ctApp.employeeActivity', [
 
         $scope.loadData = function(fdate, ldate, filterZone, filterName, filterCode, offset) {
             var filterObj = {
-                'fields': "employee_code,employee_name,Job_code,job_name,Zone_code,Zone_name,clockin,clockout,orig_clock_in,orig_clock_out,Call_status_IN,Call_status_OUT,work_duration,orig_work_duration",
+                'fields': "employee_code,employee_name,Job_code,job_name,Zone_code,Zone_name,clockin,clockout,orig_clock_in,orig_clock_out,Call_status_IN,Call_status_OUT,work_duration,orig_work_duration,activity_name,activity_code",
                 'limit': $scope.call_limit,
                 'offset': offset,
                 'include_count': true,
@@ -89,7 +89,15 @@ angular.module('ctApp.employeeActivity', [
 
 
             Services.employeeActivitiesService.get(filterObj, function(data) {
+
                 angular.forEach(data.record, function(item, key) {
+                     $scope.activityCode='';
+                    if(item.activity_code)
+                    {
+                        $scope.activityCode=item.activity_name+'('+item.activity_code+')';
+
+
+                    }
                     $scope.employeeActivityList.push({
                         "employee_code": item.employee_name + ' (' + item.employee_code + ')',
                         "job_code": item.job_name + ' (' + item.Job_code + ')',
@@ -101,7 +109,9 @@ angular.module('ctApp.employeeActivity', [
                         "Call_status_IN": item.Call_status_IN,
                         "Call_status_OUT": item.Call_status_OUT,
                         "work_duration": item.work_duration,
-                        "orig_work_duration": item.orig_work_duration
+                        "orig_work_duration": item.orig_work_duration,
+                        "activities":$scope.activityCode
+
                     });
 
 

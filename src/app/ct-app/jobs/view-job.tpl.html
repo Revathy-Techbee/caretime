@@ -178,6 +178,31 @@
                 </table>
             </div>
         </tab>
+         <tab>
+            <tab-heading>
+                <i class="glyphicon  glyphicon-plus"></i> Activity Code </tab-heading>
+            <div class="table-responsive">
+                <table class="table table-striped b-t b-light">
+                    <tr>
+                        <th colspan="2">
+                            Select Activity
+                        </th>
+                        <td colspan="2">
+                            {{job.activity_type | activity}}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">
+                            Default Activity
+                        </th>
+                        <td colspan="2">
+                            {{job.activity_detail  | parseToJson:0:'text'}}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </tab>
+
        <tab>
             <tab-heading>
                 <i class="glyphicon  glyphicon-plus"></i> Custom Prompts

@@ -453,6 +453,16 @@ angular.module('utils.ct.filters', []).filter('fromNow', function () {
       return '-';
     }
   };
+}).filter('activity', function () {
+  return function (data) {
+    if (data === 1) {
+      return 'Default Activity';
+    } else if (data === 2) {
+      return 'Prompt for code';
+    } else {
+      return 'None';
+    }
+  };
 });
 /*.filter('stripslashes', function() {
         return function(data) {

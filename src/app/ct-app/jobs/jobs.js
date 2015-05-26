@@ -364,6 +364,8 @@ angular.module('ctApp.jobs', [
             //$scope.jobnamecnt = 0;
             // $scope.job.country="United States";
             //$scope.timezonedata = 0;
+            $scope.job.activity = 0;
+            $scope.job.activityDetail='';
             $scope.jobcode_length = $localStorage.configCode.job;
             if ($localStorage.user_info.iszone_code) {
                 Services.getEmpZoneDetail().then(function(res) {
@@ -425,7 +427,12 @@ angular.module('ctApp.jobs', [
                             edited_by: $scope.jobDBField.edited_by,
                             last_scheduled: HelperService.converttimeZone($scope.jobDBField.last_scheduled_date),
                             last_clockedin: HelperService.converttimeZone($scope.jobDBField.last_clocked_in_date),
-                            jobgroup: $scope.jobDBField.jobgroup
+                            jobgroup: $scope.jobDBField.jobgroup,
+                            activity  : ($scope.jobDBField.activity_type?$scope.jobDBField.activity_type:"0"),
+                            activityDetail : ($scope.jobDBField.activity_detail?JSON.parse($scope.jobDBField.activity_detail):""),
+                           
+
+
                         });
                         if ($scope.jobDBField.prompt_logtype) {
                             $scope.job.logtype = $scope.jobDBField.prompt_logtype;
@@ -608,8 +615,20 @@ angular.module('ctApp.jobs', [
                     }, 3000);
                     return false;
                 }
+                 if (($scope.job.activity==1) && ($scope.job.activityDetail===null || $scope.job.activityDetail==='') ) {
+                    $scope.savedisable = 0;
+                    $scope.showerrorMsg = true;
+                    $scope.ErrorClass = "danger";
+                    $scope.ErrorMsg = "Default Activity is required !!!";
+                    jQuery(".personal .ng-invalid").addClass("ng-dirty");
+                    $timeout(function() {
+                        $scope.showerrorMsg = false;
+                    }, 3000);
+                    return false;
+                }
+                //console.log($scope.job.activity);
 
-               
+               //console.log($scope.job.activityDetail);
 
                 $scope.prompt_id = [];
                 angular.forEach($scope.job.customPrompt, function(item, key) {
@@ -691,8 +710,21 @@ angular.module('ctApp.jobs', [
                     $scope.jobDBField.jobgroup = $scope.job.jobgroup;
                     $scope.jobDBField.long = ($scope.job.long_lat?$scope.job.long_lat.long:"");
                     $scope.jobDBField.lat = ($scope.job.long_lat?$scope.job.long_lat.lat:"");
-                            
+                    $scope.jobDBField.activity_type = $scope.job.activity;
+                    if($scope.jobDBField.activity_type==1)
+                    {
+                        $scope.jobDBField.activity_detail = ($scope.job.activityDetail?JSON.stringify($scope.job.activityDetail):"");
+                        $scope.jobDBField.activity_id = ($scope.job.activityDetail?$scope.job.activityDetail.id:"");
+                    }
+                    else
+                    {
+                        $scope.jobDBField.activity_detail = "";
+                        $scope.jobDBField.activity_id = "";
+                    
+                    }
+                          
                     $scope.saveUpdateJob();
+                     
                     
 
 
@@ -1411,7 +1443,51 @@ angular.module('ctApp.jobs', [
 
                 }
             };
+            $scope.selectActivity = {
 
+                query: function(query) {
+
+                    $scope.activityObj = {
+                        fields: "name,code",
+                        filter: "status > 0 and agency_id = " + Services.getAgencyID(),
+                        order: 'name asc',
+                        limit: 5
+                    };
+                    if (query.term) {
+                        $scope.activity.filter += " and name like '%" + query.term + "%'";
+                    }
+
+                    Services.activity_code.get($scope.activityObj, function(remoteData) {
+                        $scope.activityData = {
+                            results: []
+                        };
+                        items = remoteData.record;
+                        if (items.length == '0') {
+                            query.callback($scope.activityData);
+                        } else {
+                            angular.forEach(items, function(item, key) {
+                                $scope.activityData.results.push({
+                                    "text": item.name+'('+item.code+')',
+                                    "id": item.code
+                                });
+                                query.callback($scope.activityData);
+                            });
+                        }
+
+                        return false;
+                    });
+
+                },
+                initSelection: function(element, callback) {
+                    if ($scope.job.activityDetail!=null && !angular.isUndefined($scope.job.activityDetail.id) && $scope.job.activityDetail.id) {
+                        return callback({
+                            "text": $scope.job.activityDetail.text,
+                            "id": $scope.job.activityDetail.id
+                        });
+                    }
+                }
+
+            };
             $scope.refreshSelectPrompt = function(name) {
                 $scope.promptObj = {
                     fields: "prompt_name,id,prompt_text,prompt_answers",

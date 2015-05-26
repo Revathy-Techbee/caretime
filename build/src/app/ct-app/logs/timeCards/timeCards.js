@@ -76,7 +76,7 @@ angular.module('ctApp.timeCard', [
     $scope.logFilters.endDate = moment(lastDay).format('YYYY-MM-DD');
     $scope.loadData = function (fdate, ldate, filterZone, filterName, filterCode, offset) {
       var filterObj = {
-          'fields': 'employee_code,job_code,id,log_type,call_duriation,timestamp,call_status,adjusted_timestamp,adjusted_call_duriation,created_by',
+          'fields': 'employee_code,job_code,id,log_type,call_duriation,timestamp,call_status,activity_code,adjusted_timestamp,adjusted_call_duriation,created_by',
           'limit': $scope.call_limit,
           'offset': offset,
           'include_count': true,
@@ -96,8 +96,10 @@ angular.module('ctApp.timeCard', [
         if (data.record.length !== 0) {
           $scope.empNameList = {};
           $scope.jobNameList = {};
+          $scope.actNameList = {};
           $scope.empCode = HelperService.getAsArray(data.record, 'employee_code');
           $scope.jobCode = HelperService.getAsArray(data.record, 'job_code');
+          $scope.actCode = HelperService.getAsArray(data.record, 'activity_code');
           $scope.empFilterObj = {
             'include_count': true,
             'fields': 'first_name,last_name,access_code',
@@ -120,34 +122,80 @@ angular.module('ctApp.timeCard', [
                   $scope.jobNameList[value.job_code] = value.job_name + ' (' + value.job_code + ')';
                 }
               });
-              angular.forEach(data.record, function (item, key) {
-                $scope.calllogList.push({
-                  'id': item.id,
-                  'employee_code': $scope.empNameList[item.employee_code],
-                  'job_code': $scope.jobNameList[item.job_code],
-                  'log_type': HelperService.logType(item.log_type),
-                  'call_duriation': item.call_duriation,
-                  'timestamp': HelperService.formatingDate(item.timestamp, $localStorage.user_info.country),
-                  'call_status': item.call_status,
-                  'adjusted_timestamp': HelperService.formatingDate(item.adjusted_timestamp, $localStorage.user_info.country),
-                  'adjusted_call_duriation': item.adjusted_call_duriation,
-                  'created_by': HelperService.AddEditUser(item.created_by)
-                });
-              });
-              if (data.meta.count > offset + $scope.call_limit) {
-                var nextOffset = offset + $scope.call_limit + 1;
-                $scope.loadData(fdate, ldate, filterZone, filterName, filterCode, nextOffset);
-              } else {
-                $scope.show_activities_loader = false;
-                $scope.noRecord = 0;
-                $scope.ctx = {
-                  flexGrid: null,
-                  data: $scope.calllogList,
-                  includeColumnHeader: true
+              if ($scope.actCode.length > 0) {
+                $scope.actFilterObj = {
+                  'include_count': true,
+                  'fields': 'name ,code',
+                  'filter': 'code   IN (' + $scope.actCode + ') and agency_id = ' + Services.getAgencyID()
                 };
-                $scope.calllogListDetail = new wijmo.collections.CollectionView($scope.calllogList);
-                $scope.calllogListDetail.pageSize = 10;
-                $scope.showRecord = 1;
+                Services.activity_code.get($scope.actFilterObj, function (actnameresult) {
+                  angular.forEach(actnameresult.record, function (value, key) {
+                    if (value.code) {
+                      $scope.actNameList[value.code] = value.name + ' (' + value.code + ')';
+                    }
+                  });
+                  angular.forEach(data.record, function (item, key) {
+                    $scope.calllogList.push({
+                      'id': item.id,
+                      'employee_code': $scope.empNameList[item.employee_code],
+                      'job_code': $scope.jobNameList[item.job_code],
+                      'log_type': HelperService.logType(item.log_type),
+                      'call_duriation': item.call_duriation,
+                      'timestamp': HelperService.formatingDate(item.timestamp, $localStorage.user_info.country),
+                      'call_status': item.call_status,
+                      'adjusted_timestamp': HelperService.formatingDate(item.adjusted_timestamp, $localStorage.user_info.country),
+                      'adjusted_call_duriation': item.adjusted_call_duriation,
+                      'created_by': HelperService.AddEditUser(item.created_by),
+                      'activity_code': $scope.actNameList[item.activity_code]
+                    });
+                  });
+                  if (data.meta.count > offset + $scope.call_limit) {
+                    var nextOffset = offset + $scope.call_limit + 1;
+                    $scope.loadData(fdate, ldate, filterZone, filterName, filterCode, nextOffset);
+                  } else {
+                    $scope.show_activities_loader = false;
+                    $scope.noRecord = 0;
+                    $scope.ctx = {
+                      flexGrid: null,
+                      data: $scope.calllogList,
+                      includeColumnHeader: true
+                    };
+                    $scope.calllogListDetail = new wijmo.collections.CollectionView($scope.calllogList);
+                    $scope.calllogListDetail.pageSize = 10;
+                    $scope.showRecord = 1;
+                  }
+                });
+              } else {
+                angular.forEach(data.record, function (item, key) {
+                  $scope.calllogList.push({
+                    'id': item.id,
+                    'employee_code': $scope.empNameList[item.employee_code],
+                    'job_code': $scope.jobNameList[item.job_code],
+                    'log_type': HelperService.logType(item.log_type),
+                    'call_duriation': item.call_duriation,
+                    'timestamp': HelperService.formatingDate(item.timestamp, $localStorage.user_info.country),
+                    'call_status': item.call_status,
+                    'adjusted_timestamp': HelperService.formatingDate(item.adjusted_timestamp, $localStorage.user_info.country),
+                    'adjusted_call_duriation': item.adjusted_call_duriation,
+                    'created_by': HelperService.AddEditUser(item.created_by),
+                    'activity_code': $scope.actNameList[item.activity_code]
+                  });
+                });
+                if (data.meta.count > offset + $scope.call_limit) {
+                  var nextOffset = offset + $scope.call_limit + 1;
+                  $scope.loadData(fdate, ldate, filterZone, filterName, filterCode, nextOffset);
+                } else {
+                  $scope.show_activities_loader = false;
+                  $scope.noRecord = 0;
+                  $scope.ctx = {
+                    flexGrid: null,
+                    data: $scope.calllogList,
+                    includeColumnHeader: true
+                  };
+                  $scope.calllogListDetail = new wijmo.collections.CollectionView($scope.calllogList);
+                  $scope.calllogListDetail.pageSize = 10;
+                  $scope.showRecord = 1;
+                }
               }
             });
           });

@@ -495,6 +495,83 @@
                     </form>
 
                 </tab>
+                <tab heading="Activity Code" disabled="basic.$invalid" active="jobSteps.activityCode" select="jobSteps.percent=75">
+
+                    <p class="m-b"><i class="fa fa-question-circle"></i> Add Activity Code.</p>
+
+                    <progressbar value="jobSteps.percent" class="progress-xs" type="success"></progressbar>
+
+                    <form name="activityCode" class="form-validation form-horizontal activityCode" ng-submit="jobManage('activityCode')" novalidate>
+
+                        <div class="form-group">
+
+                            <label class="col-sm-2 control-label">Select Activity</label>
+
+                            <div class="col-sm-10">
+                                 <label class="radio-inline i-checks">
+                                    <input type="radio" name="activity" value=0 ng-model="job.activity"><i></i> None
+                                </label>
+                                <label class="radio-inline i-checks">
+                                    <input type="radio" name="activity" value=1 ng-model="job.activity"><i></i> Default Activity
+                                </label>
+                                 <label class="radio-inline i-checks">
+                                    <input type="radio" name="activity" value=2 ng-model="job.activity"><i></i> Prompt for code 
+                                </label>
+                            </div>
+
+                        </div>
+                         <div class="form-group" ng-if="job.activity==1">
+
+                            <label class="col-sm-2 control-label">Default Activity</label>
+                            <div class="col-sm-10">
+                                <input class="w-md"  name="activityDetail" ui-select2="selectActivity" value=""  ng-model="job.activityDetail">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+
+                            <div class="col-sm-9">
+
+                                <button type="button" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded" ng-click="jobManagePrev('notes')">Prev</button>
+
+                                <button type="submit" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded">Next</button>
+                                <button type="button" ng-click="jobManage('notes', false)" class="btn btn-primary btn-rounded" ng-disabled="savedisable == 1">Save changes</button>
+
+                                <span class="alert alert-{{ErrorClass}}" ng-if="showerrorMsg">
+
+                                    {{ErrorMsg}}
+
+                                </span>
+
+                            </div>
+
+                            <div class="col-sm-3">
+                                <div class="pull-right">
+                                     <button type="button" ng-disabled="savedisable == 1" ng-show="job_id" class="btn btn-default btn-rounded" ng-click='deleteJob(job.job_code)'>Delete</button>
+                                    <button type="button" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded" ng-click='cancelJob()'>Cancel</button>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="form-group" ng-show="job_id">
+                            <div class="col-sm-12">
+                                <div class="alert alert-info">
+                                    <p>Job: <em class="ng-binding">{{job.job_name}} ({{job.job_code}}) </em>
+                                    </p>
+                                    <p>Created by: {{job.created_by | AddEditUser}}, Created date is: <em class="ng-binding">{{job.created_on | date:'medium'}}</em>
+                                    </p>
+                                    <p ng-show="job.editedOn">
+                                        Edited by: {{job.edited_by | AddEditUser}}, Last Edited date is: <em class="ng-binding">{{job.editedOn | date:'medium' }}</em>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+
+                </tab>
                 <tab heading="Custom Prompts" disabled="basic.$invalid" active="jobSteps.customPrompt" select="jobSteps.percent=85">
 
                     <p class="m-b"><i class="fa fa-question-circle"></i> If custom Prompts are required for this Job,select one or more prompts. The Order the Prompts are,will be the order the IVR will use.</p>

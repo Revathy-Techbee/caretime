@@ -99,6 +99,16 @@
           'OnCall',
           'Scheduler'
         ],
+        'activityCodes': [
+          'SuperAdmin',
+          'Admin',
+          'HR',
+          'Nursing',
+          'OfficeClerical',
+          'OfficeMgr',
+          'OnCall',
+          'Scheduler'
+        ],
         'zones': [
           'SuperAdmin',
           'Admin',

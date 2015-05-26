@@ -43,7 +43,8 @@ angular.module('app.ctApp', [
   'ctApp.jobList',
   'ctApp.authorizedVsActuall',
   'ctApp.mapReport',
-  'ctApp.timecardExport'
+  'ctApp.timecardExport',
+  'ctApp.activityCodes'
 ]).config([
   '$stateProvider',
   '$urlRouterProvider',
