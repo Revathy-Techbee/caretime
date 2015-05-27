@@ -44,7 +44,8 @@ angular.module('app.ctApp', [
   'ctApp.authorizedVsActuall',
   'ctApp.mapReport',
   'ctApp.timecardExport',
-  'ctApp.activityCodes'
+  'ctApp.activityCodes',
+  'ctApp.budgetVsActual'
 ]).config([
   '$stateProvider',
   '$urlRouterProvider',

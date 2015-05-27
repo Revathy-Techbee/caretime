@@ -56,7 +56,7 @@ angular.module('ctApp.jobTimecard', [
         $scope.loadData = function(fdate, ldate, zone, job, offset) {
              
             var filterObj = {
-                    'fields': "employee_code,employee_name,Job_code,job_name,clockin,clockout,work_duration,work_duration_non_rounded_number,work_duration_rounded,work_duration_rounded_number,activity_name,activity_code",
+                    'fields': "employee_code,employee_name,Job_code,job_name,clockin,clockout,work_duration,work_duration_non_rounded_number,work_duration_rounded,work_duration_rounded_number,activity_name,activity_code,phonenumber_IN,phonenumber_OUT",
                     'limit': $scope.call_limit,
                     'offset': offset,
                     'include_count': true,
@@ -95,8 +95,9 @@ angular.module('ctApp.jobTimecard', [
                             "work_duration_rounded": item.work_duration_rounded,
                             "work_duration_rounded_number": ((item.work_duration_rounded_number) ? Number(parseFloat(item.work_duration_rounded_number.replace(',', ''))) : "0"),
                             "work_duration_rounded_formated": ((item.work_duration_rounded) ? HelperService.formating_hours(item.work_duration_rounded) :"(0h 0m)"),
-                             "activities":$scope.activityCode
-
+                            "activities":$scope.activityCode,
+                            "clockinPhone": HelperService.phoneFormat(item.phonenumber_IN,$localStorage.user_info.country),
+                            "clockoutPhone": HelperService.phoneFormat(item.phonenumber_OUT,$localStorage.user_info.country),
                         }
 
 
@@ -332,14 +333,14 @@ angular.module('ctApp.jobTimecard', [
 
 
                     resultarray[value.Job_code].push([{
-                        colSpan: 2,
+                        colSpan: 3,
                         style: 'subheader',
                         text: name_id
-                    }, "", {
-                        colSpan: 2,
+                    }, "","", {
+                        colSpan: 3,
                         style: 'subheader',
                         text: non_rounded_total
-                    }, "", {
+                    }, "","", {
                         colSpan: 3,
                         style: 'subheader',
                         text: sum_total
@@ -371,6 +372,14 @@ angular.module('ctApp.jobTimecard', [
                         alignment: 'center'
                     }, {
                         text: '(h m)',
+                        style: 'tableHeader',
+                        alignment: 'center'
+                    }, {
+                        text: 'Clock In Phone',
+                        style: 'tableHeader',
+                        alignment: 'center'
+                    }, {
+                        text: 'Clock Out Phone',
                         style: 'tableHeader',
                         alignment: 'center'
                     }]);
@@ -421,6 +430,12 @@ angular.module('ctApp.jobTimecard', [
                 }, {
                     'text': roundtime,
                     'fillColor': '#E5E5E5'
+                }, {
+                    'text': value.clockinPhone,
+                    'fillColor': '#E5E5E5'
+                }, {
+                    'text': value.clockoutPhone,
+                    'fillColor': '#E5E5E5'
                 }]);
 
             });
@@ -454,10 +469,11 @@ angular.module('ctApp.jobTimecard', [
                         style: 'tableExample',
 
                         table: {
-                            widths: [80, 60, 70, 50, 50, 100, 40],
+                           // widths: [80, 60, 70, 50, 50, 100, 40],
+                           widths: [60, 60, 60, 30, 40, 50, 40,60,60],
                             body: resultarray[item]
                         },
-
+                        pageBreak: 'after',
                         layout: {
                             fillColor: '#E5E5E5',
                             hLineWidth: function(i, node) {

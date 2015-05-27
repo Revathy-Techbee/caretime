@@ -95,6 +95,7 @@
          
             'scheduleVsActuall': ['SuperAdmin','Admin','HR','Nursing','OfficeClerical','OfficeMgr','OnCall','CorporateBillingDepartment','Scheduler'],
             'authorizedVsActuall': ['SuperAdmin','Admin','HR','Nursing','OfficeClerical','OfficeMgr','OnCall','CorporateBillingDepartment','Scheduler'],
+            'budgetVsActual': ['SuperAdmin','Admin','HR','Nursing','OfficeClerical','OfficeMgr','OnCall','CorporateBillingDepartment','Scheduler'],
 
             'employeeList': ['SuperAdmin','Admin','HR','Nursing','OfficeClerical','OfficeMgr','OnCall','CorporateBillingDepartment','Scheduler'],
             'jobList': ['SuperAdmin','Admin','HR','Nursing','OfficeClerical','OfficeMgr','OnCall','CorporateBillingDepartment','Scheduler'],
@@ -103,7 +104,8 @@
 
             'updatePassword': ['SuperAdmin','Admin','HR','Nursing','OfficeClerical','OfficeMgr','OnCall','CorporateBillingDepartment','Scheduler','Basic'],
 
-            'adminAgency': ['SuperAdmin']
+            'adminAgency': ['SuperAdmin'],
+
             //'zoneRestriction': ['SuperAdmin','Admin']
 
         }

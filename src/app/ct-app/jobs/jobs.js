@@ -410,7 +410,7 @@ angular.module('ctApp.jobs', [
                             zip: $scope.jobDBField.job_zip,
                             county: $scope.jobDBField.job_county,
                             country: ($scope.jobDBField.country) ? $scope.jobDBField.country : "United States",
-                            budgeted_hours: $scope.jobDBField.budgeted_hours,
+                            //budgeted_hours: $scope.jobDBField.budgeted_hours,
                             status: $scope.jobDBField.status,
                             service_item: ($scope.jobDBField.service_item_detail) ? JSON.parse($scope.jobDBField.service_item_detail) : "",
                             pay_type: ($scope.jobDBField.pay_type_detail) ? JSON.parse($scope.jobDBField.pay_type_detail) : "",
@@ -430,7 +430,7 @@ angular.module('ctApp.jobs', [
                             jobgroup: $scope.jobDBField.jobgroup,
                             activity  : ($scope.jobDBField.activity_type?$scope.jobDBField.activity_type:"0"),
                             activityDetail : ($scope.jobDBField.activity_detail?JSON.parse($scope.jobDBField.activity_detail):""),
-                           
+                            budgetedHours: $scope.jobDBField.budgeted_hours
 
 
                         });
@@ -660,12 +660,12 @@ angular.module('ctApp.jobs', [
 
                     $scope.jobDBField.job_name = $scope.job.job_name;
                     $scope.jobDBField.agency_id = Services.getAgencyID();
-                    $scope.jobDBField.prompt_id = JSON.stringify($scope.prompt_id);
-                    $scope.jobDBField.prompt_details = JSON.stringify($scope.job.customPrompt);
+                    $scope.jobDBField.prompt_id = ($scope.prompt_id)?JSON.stringify($scope.prompt_id):"";
+                    $scope.jobDBField.prompt_details = ($scope.job.customPrompt)?JSON.stringify($scope.job.customPrompt):"";
                     $scope.jobDBField.prompt_logtype = $scope.job.logtype;
                     $scope.jobDBField.job_zone_detail = JSON.stringify($scope.job.job_zone);
                     $scope.jobDBField.job_zone = $scope.job.job_zone.id;
-                    $scope.jobDBField.visitonly = JSON.stringify($scope.job.visitonly);
+                    $scope.jobDBField.visitonly = ($scope.job.visitonly)?JSON.stringify($scope.job.visitonly):"";
                     $scope.jobDBField.employee_chart = $scope.job.employee_chart;
                     $scope.jobDBField.job_address1 = $scope.job.job_address1;
                     $scope.jobDBField.job_address2 = $scope.job.job_address2;
@@ -679,20 +679,20 @@ angular.module('ctApp.jobs', [
                     $scope.jobDBField.fax = $scope.job.fax;
                     $scope.jobDBField.contact_name = $scope.job.contact_name;
                     $scope.jobDBField.other_phone = JSON.stringify($scope.job.other_phone);
-                    $scope.jobDBField.budgeted_hours = $scope.job.budgeted_hours;
+                    //$scope.jobDBField.budgeted_hours = $scope.job.budgeted_hours;
 
                     $scope.jobDBField.status = $scope.job.status;
-                    $scope.jobDBField.service_item_detail = JSON.stringify($scope.job.service_item);
-                    $scope.jobDBField.service_item = $scope.job.service_item.id;
-                    $scope.jobDBField.pay_type_detail = JSON.stringify($scope.job.pay_type);
-                    $scope.jobDBField.pay_type = $scope.job.pay_type.id;
+                    $scope.jobDBField.service_item_detail = ($scope.job.service_item)?JSON.stringify($scope.job.service_item):"";
+                    $scope.jobDBField.service_item = ($scope.job.service_item)?$scope.job.service_item.id:"";
+                    $scope.jobDBField.pay_type_detail = ($scope.job.pay_type)?JSON.stringify($scope.job.pay_type):"";
+                    $scope.jobDBField.pay_type =($scope.job.pay_type)?$scope.job.pay_type.id:"";
                     $scope.jobDBField.map_url = $scope.job.url;
-                    $scope.jobDBField.long_lat = JSON.stringify($scope.job.long_lat);
+                    $scope.jobDBField.long_lat = ($scope.job.long_lat)?JSON.stringify($scope.job.long_lat):"";
 
-                    $scope.jobDBField.external_code = JSON.stringify($scope.job.external_code);
+                    $scope.jobDBField.external_code = ($scope.job.external_code)?JSON.stringify($scope.job.external_code):"";
                     $scope.jobDBField.late_notify = $scope.job.late_notify;
-
                     $scope.jobDBField.budgeted_type = $scope.job.budgeted_type;
+                    $scope.jobDBField.budgeted_hours = $scope.job.budgetedHours;
                     $scope.workphoneformat = [];
                     $scope.authphoneformat = [];
 

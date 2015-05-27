@@ -53,7 +53,7 @@ angular.module('ctApp.employeeTimecard', [
 
         $scope.loadData = function(fdate, ldate, zone, employee, offset) {
             var  filterObj = {
-                    'fields': "employee_code,employee_name,Job_code,job_name,clockin,clockout,work_duration,work_duration_non_rounded_number,work_duration_rounded,work_duration_rounded_number",
+                    'fields': "employee_code,employee_name,Job_code,job_name,clockin,clockout,work_duration,work_duration_non_rounded_number,work_duration_rounded,work_duration_rounded_number,activity_name,activity_code,phonenumber_IN,phonenumber_OUT",
                     'limit': $scope.call_limit,
                     'offset': offset,
                     'include_count': true,
@@ -70,6 +70,11 @@ angular.module('ctApp.employeeTimecard', [
             
             Services.employeeActivitiesService.get(filterObj, function(data) {
                 angular.forEach(data.record, function(item, key) {
+                    $scope.activityCode='';
+                    if(item.activity_code)
+                    {
+                        $scope.activityCode=item.activity_name+'('+item.activity_code+')';
+                    }
                     $scope.resultData.push({
                         "employee_code": item.employee_code,
                         "employee_name": item.employee_name + ' (' + item.employee_code + ')',
@@ -84,7 +89,11 @@ angular.module('ctApp.employeeTimecard', [
 
                         "work_duration_rounded": item.work_duration_rounded,
                         "work_duration_rounded_number": (item.work_duration_rounded_number) ? Number(parseFloat(item.work_duration_rounded_number.replace(',', ''))) : Number(0),
-                        "work_duration_rounded_formated": (item.work_duration_rounded) ? HelperService.formating_hours(item.work_duration_rounded) : "(0h 0m)"
+                        "work_duration_rounded_formated": (item.work_duration_rounded) ? HelperService.formating_hours(item.work_duration_rounded) : "(0h 0m)",
+                        "activities":$scope.activityCode,
+                        "clockinPhone": HelperService.phoneFormat(item.phonenumber_IN,$localStorage.user_info.country),
+                        "clockoutPhone": HelperService.phoneFormat(item.phonenumber_OUT,$localStorage.user_info.country),
+
                        // "work_duration_rounded_formated": (item.work_duration_rounded_number) ? HelperService.formating_hours(HelperService.floatToTime(parseFloat(item.work_duration_rounded_number.replace(',', '')))) : "(0h 0m)"
 
                     });
@@ -316,14 +325,14 @@ angular.module('ctApp.employeeTimecard', [
                     var name_id = value.employee_name;
 
                     resultarray[value.employee_code].push([{
-                        colSpan: 2,
+                        colSpan: 3,
                         style: 'subheader',
                         text: name_id
-                    }, "", {
-                        colSpan: 2,
+                    }, "","", {
+                        colSpan: 3,
                         style: 'subheader',
                         text: non_rounded_total
-                    }, "", {
+                    }, "","", {
                         colSpan: 3,
                         style: 'subheader',
                         text: sum_total
@@ -355,6 +364,14 @@ angular.module('ctApp.employeeTimecard', [
                         alignment: 'center'
                     }, {
                         text: '(h m)',
+                        style: 'tableHeader',
+                        alignment: 'center'
+                    }, {
+                        text: 'Clock In Phone',
+                        style: 'tableHeader',
+                        alignment: 'center'
+                    }, {
+                        text: 'Clock Out Phone',
                         style: 'tableHeader',
                         alignment: 'center'
                     }]);
@@ -405,6 +422,12 @@ angular.module('ctApp.employeeTimecard', [
                 }, {
                     'text': roundtime,
                     'fillColor': '#E5E5E5'
+                }, {
+                    'text': value.clockinPhone,
+                    'fillColor': '#E5E5E5'
+                }, {
+                    'text': value.clockoutPhone,
+                    'fillColor': '#E5E5E5'
                 }]);
 
 
@@ -435,9 +458,10 @@ angular.module('ctApp.employeeTimecard', [
                     $scope.docDefinition["content"].push({
                         style: 'tableExample',
                         table: {
-                            widths: [70, 70, 70, 50, 50, 100, 40],
+                            widths: [60, 60, 60, 30, 40, 50, 40,60,60],
                             body: resultarray[key]
                         },
+                        pageBreak: 'after',
                         layout: {
                             fillColor: '#E5E5E5',
                             hLineWidth: function(i, node) {

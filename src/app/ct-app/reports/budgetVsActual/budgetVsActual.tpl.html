@@ -1,5 +1,5 @@
 <div class="bg-light lter b-b wrapper-md">
-    <h1 class="m-n font-thin h3">Timecard Report by Job</h1>
+    <h1 class="m-n font-thin h3">Budget vs Actual Report</h1>
 
 </div>
 
@@ -59,9 +59,9 @@
                     <div class="col-sm-4"  ng-if="show_download_loader" >
                     <div ng-if="show_download_loader" show-loader="show_download_loader"></div>
                     </div>
-                    <a ng-disabled="noRecord==1" download="JobTimeCardReport.xlsx" class="btn btn-md btn-info" id="export" ng-click="exportExcel()">Export Excel</a>
+                    <a ng-disabled="noRecord==1" download="BudgetVsActualReport.xlsx" class="btn btn-md btn-info" id="export" ng-click="exportExcel()">Export Excel</a>
 
-                    <a ng-disabled="noRecord==1" class="btn btn-md btn-info"  ng-click="downloadpdf()">Download PDF</a>
+                   
                 </div>
             </div>
 
@@ -74,9 +74,15 @@
         </div>
 
         <div class="row wrapper" ng-if="showRecord==1">
-            <wj-flex-grid control="ctx.flexGrid" items-source="JobDetails">
+            <wj-flex-grid control="ctx.flexGrid" items-source="BudgetedDetails">
+                <wj-flex-grid-column header="Job Name" is-read-only="true" binding="jobDetail"  width="*"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Zone Name" is-read-only="true" binding="zoneDetail"  > </wj-flex-grid-column>
+                <wj-flex-grid-column header="Budgeted Hours" is-read-only="true" binding="budgetedHours"  > </wj-flex-grid-column>
+                <wj-flex-grid-column header="Actual Hours" is-read-only="true" binding="actualHours"> </wj-flex-grid-column>
+                <wj-flex-grid-column header=" Budgeted vs Actual" is-read-only="true" binding="difference"  ng-style="{color:getAmountColor($item.difference)}"> </wj-flex-grid-column>
+
                <!-- <wj-flex-grid-column header="Job Code " is-read-only="true" binding="job_name"> </wj-flex-grid-column> -->
-                  <wj-flex-grid-column header="Job Name" is-read-only="true" binding="job_name"  width="*"> </wj-flex-grid-column>
+                 <!-- <wj-flex-grid-column header="Job Name" is-read-only="true" binding="job_name"  width="*"> </wj-flex-grid-column>
                 <wj-flex-grid-column header="Employee Name" is-read-only="true" binding="employee_name" > </wj-flex-grid-column>
                 <wj-flex-grid-column header="Clock In" is-read-only="true" binding="clockin"> </wj-flex-grid-column>
                 <wj-flex-grid-column header="Clock Out" is-read-only="true" binding="clockout"> </wj-flex-grid-column>
@@ -84,14 +90,12 @@
                  <wj-flex-grid-column header="(h m)" is-read-only="true" binding="work_duration_formated" format="n2" > </wj-flex-grid-column>
                  <wj-flex-grid-column header="Total Hrs(Rounded)" is-read-only="true" binding="work_duration_rounded_number" format="n2" aggregate="Sum"> </wj-flex-grid-column>
                   <wj-flex-grid-column header="(h m)" is-read-only="true" binding="work_duration_rounded_formated" format="n2" > </wj-flex-grid-column>
-                 <wj-flex-grid-column header="Activity Code" is-read-only="true" binding="activities"> </wj-flex-grid-column>
-                 <wj-flex-grid-column header="Clock In Phone" is-read-only="true" binding="clockinPhone"> </wj-flex-grid-column>
-                 <wj-flex-grid-column header="Clock Out Phone" is-read-only="true" binding="clockoutPhone"> </wj-flex-grid-column>
+                 <wj-flex-grid-column header="Activity Code" is-read-only="true" binding="activities"> </wj-flex-grid-column>-->
 
 
             </wj-flex-grid>
             <div class="row wrapper">
-                <wj-menu value="JobDetails.pageSize" header="Rows per Page">
+                <wj-menu value="BudgetedDetails.pageSize" header="Rows per Page">
                     <wj-menu-item value="10"> 10</wj-menu-item>
                     <wj-menu-item value="25"> 25</wj-menu-item>
                     <wj-menu-item value="50"> 50</wj-menu-item>
@@ -101,12 +105,12 @@
 
 
 
-                <div class="btn-group col-md-8" ng-show="JobDetails.pageSize > 0">
-                    <button type="button" class="btn btn-default" ng-disabled="JobDetails.pageIndex <= 0" ng-click="JobDetails.moveToFirstPage()"> <span class="glyphicon glyphicon-fast-backward"></span> </button>
-                    <button type="button" class="btn btn-default" ng-disabled="JobDetails.pageIndex <= 0" ng-click="JobDetails.moveToPreviousPage()"> <span class="glyphicon glyphicon-step-backward"></span> </button>
-                    <button type="button" class="btn btn-default" disabled style="width:100px"> {{JobDetails.pageIndex+1}} / {{JobDetails.pageCount}} </button>
-                    <button type="button" class="btn btn-default" ng-disabled="JobDetails.pageIndex >= JobDetails.pageCount - 1" ng-click="JobDetails.moveToNextPage()"> <span class="glyphicon glyphicon-step-forward"></span> </button>
-                    <button type="button" class="btn btn-default" ng-disabled="JobDetails.pageIndex >= JobDetails.pageCount - 1" ng-click="JobDetails.moveToLastPage()"> <span class="glyphicon glyphicon-fast-forward"></span> </button>
+                <div class="btn-group col-md-8" ng-show="BudgetedDetails.pageSize > 0">
+                    <button type="button" class="btn btn-default" ng-disabled="BudgetedDetails.pageIndex <= 0" ng-click="BudgetedDetails.moveToFirstPage()"> <span class="glyphicon glyphicon-fast-backward"></span> </button>
+                    <button type="button" class="btn btn-default" ng-disabled="BudgetedDetails.pageIndex <= 0" ng-click="BudgetedDetails.moveToPreviousPage()"> <span class="glyphicon glyphicon-step-backward"></span> </button>
+                    <button type="button" class="btn btn-default" disabled style="width:100px"> {{BudgetedDetails.pageIndex+1}} / {{BudgetedDetails.pageCount}} </button>
+                    <button type="button" class="btn btn-default" ng-disabled="BudgetedDetails.pageIndex >= BudgetedDetails.pageCount - 1" ng-click="BudgetedDetails.moveToNextPage()"> <span class="glyphicon glyphicon-step-forward"></span> </button>
+                    <button type="button" class="btn btn-default" ng-disabled="BudgetedDetails.pageIndex >= BudgetedDetails.pageCount - 1" ng-click="BudgetedDetails.moveToLastPage()"> <span class="glyphicon glyphicon-fast-forward"></span> </button>
                 </div>
             </div>
         </div>  

@@ -139,22 +139,64 @@ angular.module('ctApp.timeCard', [
                                 $scope.jobNameList[value.job_code] = value.job_name + ' (' + value.job_code + ')';
                             }
                         });
-                        if($scope.actCode.length>0)
-                        {
+                        if ($scope.actCode.length > 0) {
 
 
-                    $scope.actFilterObj = {
-                        'include_count': true,
-                        'fields': 'name ,code',
-                        'filter': 'code   IN (' + $scope.actCode + ') and agency_id = ' + Services.getAgencyID()
-                    };
-                    Services.activity_code.get($scope.actFilterObj, function(actnameresult) {
+                            $scope.actFilterObj = {
+                                'include_count': true,
+                                'fields': 'name ,code',
+                                'filter': 'code   IN (' + $scope.actCode + ') and agency_id = ' + Services.getAgencyID()
+                            };
+                            Services.activity_code.get($scope.actFilterObj, function(actnameresult) {
 
-                        angular.forEach(actnameresult.record, function(value, key) {
-                            if (value.code) {
-                                $scope.actNameList[value.code] = value.name + ' (' + value.code + ')';
-                            }
-                        });
+                                angular.forEach(actnameresult.record, function(value, key) {
+                                    if (value.code) {
+                                        $scope.actNameList[value.code] = value.name + ' (' + value.code + ')';
+                                    }
+                                });
+                                angular.forEach(data.record, function(item, key) {
+
+                                    $scope.calllogList.push({
+                                            "id": item.id,
+                                            "employee_code": $scope.empNameList[item.employee_code],
+                                            "job_code": $scope.jobNameList[item.job_code],
+                                            "log_type": HelperService.logType(item.log_type),
+                                            "call_duriation": item.call_duriation,
+                                            "timestamp": HelperService.formatingDate(item.timestamp, $localStorage.user_info.country),
+                                            "call_status": item.call_status,
+                                            "adjusted_timestamp": HelperService.formatingDate(item.adjusted_timestamp, $localStorage.user_info.country),
+                                            "adjusted_call_duriation": item.adjusted_call_duriation,
+                                            "created_by": HelperService.AddEditUser(item.created_by),
+                                            "activity_code": $scope.actNameList[item.activity_code],
+                                        }
+
+
+                                    );
+
+
+                                });
+                                if (data.meta.count > (offset + $scope.call_limit)) {
+
+                                    var nextOffset = offset + $scope.call_limit + 1;
+                                    $scope.loadData(fdate, ldate, filterZone, filterName, filterCode, nextOffset);
+                                } else {
+                                    $scope.show_activities_loader = false;
+
+                                    $scope.noRecord = 0;
+                                    $scope.ctx = {
+                                        flexGrid: null,
+                                        data: $scope.calllogList,
+                                        includeColumnHeader: true
+                                    };
+                                    $scope.calllogListDetail = new wijmo.collections.CollectionView($scope.calllogList);
+                                    $scope.calllogListDetail.pageSize = 10;
+                                    $scope.showRecord = 1;
+
+
+                                }
+
+                            });
+                        } else {
                             angular.forEach(data.record, function(item, key) {
 
                                 $scope.calllogList.push({
@@ -168,7 +210,7 @@ angular.module('ctApp.timeCard', [
                                         "adjusted_timestamp": HelperService.formatingDate(item.adjusted_timestamp, $localStorage.user_info.country),
                                         "adjusted_call_duriation": item.adjusted_call_duriation,
                                         "created_by": HelperService.AddEditUser(item.created_by),
-                                        "activity_code": $scope.actNameList[item.activity_code],
+                                        "activity_code": "",
                                     }
 
 
@@ -196,52 +238,7 @@ angular.module('ctApp.timeCard', [
 
                             }
 
-                        });
-                        }
-                        else
-                        {
-                            angular.forEach(data.record, function(item, key) {
 
-                                $scope.calllogList.push({
-                                        "id": item.id,
-                                        "employee_code": $scope.empNameList[item.employee_code],
-                                        "job_code": $scope.jobNameList[item.job_code],
-                                        "log_type": HelperService.logType(item.log_type),
-                                        "call_duriation": item.call_duriation,
-                                        "timestamp": HelperService.formatingDate(item.timestamp, $localStorage.user_info.country),
-                                        "call_status": item.call_status,
-                                        "adjusted_timestamp": HelperService.formatingDate(item.adjusted_timestamp, $localStorage.user_info.country),
-                                        "adjusted_call_duriation": item.adjusted_call_duriation,
-                                        "created_by": HelperService.AddEditUser(item.created_by),
-                                        "activity_code": $scope.actNameList[item.activity_code],
-                                    }
-
-
-                                );
-
-
-                            });
-                            if (data.meta.count > (offset + $scope.call_limit)) {
-
-                                var nextOffset = offset + $scope.call_limit + 1;
-                                $scope.loadData(fdate, ldate, filterZone, filterName, filterCode, nextOffset);
-                            } else {
-                                $scope.show_activities_loader = false;
-
-                                $scope.noRecord = 0;
-                                $scope.ctx = {
-                                    flexGrid: null,
-                                    data: $scope.calllogList,
-                                    includeColumnHeader: true
-                                };
-                                $scope.calllogListDetail = new wijmo.collections.CollectionView($scope.calllogList);
-                                $scope.calllogListDetail.pageSize = 10;
-                                $scope.showRecord = 1;
-
-
-                            }
-
-                        
 
                         }
                     });
@@ -669,7 +666,7 @@ angular.module('ctApp.timeCard', [
                 var lastTimeUTC = moment.tz($scope.timecardDBField.timestamp, "UTC").format(); // set incoming time zone as UTC
                 $scope.timecard.current_date = moment(lastTimeUTC).format('YYYY-MM-DD hh:mm a');
                 $scope.timecardDBField.timestamp = lastTimeUTC;
-
+                $scope.timecard.activityCode = ($scope.timecardDBField.activity_code ? $scope.timecardDBField.activity_code : "");
 
                 $scope.last_date = moment($scope.timecardDBField.timestamp).toDate();
                 if ($scope.log_type == 1) {
@@ -684,6 +681,7 @@ angular.module('ctApp.timeCard', [
                     $scope.timecard.durOld = $scope.timecardDBField.call_duriation;
                     $scope.last_dur = $scope.timecardDBField.call_duriation;
                 }
+
                 $scope.timecard.authorization = ($scope.timecardDBField.authorization_id ? $scope.timecardDBField.authorization_id : "");
                 $scope.timecard.authorizationID = $scope.timecard.authorization;
                 $scope.timecard.authOld = $scope.timecard.authorization;
@@ -1019,7 +1017,8 @@ angular.module('ctApp.timeCard', [
 
                 var updatedur = '';
                 updatedur = {
-                    authorization_id: ($scope.timecard.authorization ? $scope.timecard.authorization.id : "")
+                    authorization_id: ($scope.timecard.authorization ? $scope.timecard.authorization.id : ""),
+                    activity_code: ($scope.timecard.activityCode ? $scope.timecard.activityCode.id : "")
                 };
                 if ($scope.log_type == 1) { //Edit clock In data
 
@@ -1034,7 +1033,8 @@ angular.module('ctApp.timeCard', [
                                 "user_id": $localStorage.user_info.user_id
                             }),
                             notes: $scope.timecard.notes,
-                            authorization_id: ($scope.timecard.authorization ? $scope.timecard.authorization.id : "")
+                            authorization_id: ($scope.timecard.authorization ? $scope.timecard.authorization.id : ""),
+                            activity_code: ($scope.timecard.activityCode ? $scope.timecard.activityCode.id : "")
                         };
 
                     } else {
@@ -1049,7 +1049,8 @@ angular.module('ctApp.timeCard', [
                                 "user_id": $localStorage.user_info.user_id
                             }),
                             notes: $scope.timecard.notes,
-                            authorization_id: ($scope.timecard.authorization ? $scope.timecard.authorization.id : "")
+                            authorization_id: ($scope.timecard.authorization ? $scope.timecard.authorization.id : ""),
+                            activity_code: ($scope.timecard.activityCode ? $scope.timecard.activityCode.id : "")
                         };
 
                     }
@@ -1067,6 +1068,7 @@ angular.module('ctApp.timeCard', [
                                     "user_id": $localStorage.user_info.user_id
                                 }),
                                 authorization_id: ($scope.timecard.authorization ? $scope.timecard.authorization.id : ""),
+                                activity_code: ($scope.timecard.activityCode ? $scope.timecard.activityCode.id : ""),
                                 timestamp: moment(newClockInOut.clockout).utc().format('YYYY-MM-DD HH:mm')
                             };
                         } else {
@@ -1083,6 +1085,7 @@ angular.module('ctApp.timeCard', [
                                     "user_id": $localStorage.user_info.user_id
                                 }),
                                 authorization_id: ($scope.timecard.authorization ? $scope.timecard.authorization.id : ""),
+                                activity_code: ($scope.timecard.activityCode ? $scope.timecard.activityCode.id : ""),
                                 timestamp: moment(newClockInOut.clockout).utc().format('YYYY-MM-DD HH:mm')
 
                             };
@@ -1104,7 +1107,8 @@ angular.module('ctApp.timeCard', [
                                 "user_id": $localStorage.user_info.user_id
                             }),
                             notes: $scope.timecard.notes,
-                            authorization_id: ($scope.timecard.authorization ? $scope.timecard.authorization.id : "")
+                            authorization_id: ($scope.timecard.authorization ? $scope.timecard.authorization.id : ""),
+                            activity_code: ($scope.timecard.activityCode ? $scope.timecard.activityCode.id : "")
 
 
                         };
@@ -1122,7 +1126,8 @@ angular.module('ctApp.timeCard', [
                                 "user_id": $localStorage.user_info.user_id
                             }),
                             notes: $scope.timecard.notes,
-                            authorization_id: ($scope.timecard.authorization ? $scope.timecard.authorization.id : "")
+                            authorization_id: ($scope.timecard.authorization ? $scope.timecard.authorization.id : ""),
+                            activity_code: ($scope.timecard.activityCode ? $scope.timecard.activityCode.id : "")
                         };
                     }
                 }
@@ -1137,14 +1142,13 @@ angular.module('ctApp.timeCard', [
                         "firstname": $localStorage.user_info.first_name,
                         "lastname": $localStorage.user_info.last_name,
                     });
-                    $scope.logger.action ="Update";
+                    $scope.logger.action = "Update";
                     $scope.logger.agency_id = Services.getAgencyID();
-                    $scope.logger.action_id =  data.id;
-                    $scope.logger.action_table ="time_log";
+                    $scope.logger.action_id = data.id;
+                    $scope.logger.action_table = "time_log";
                     $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
 
-                    Services.userLog.save({
-                    }, $scope.logger, function(data) {
+                    Services.userLog.save({}, $scope.logger, function(data) {
 
                     });
 
@@ -1160,14 +1164,13 @@ angular.module('ctApp.timeCard', [
                                 "firstname": $localStorage.user_info.first_name,
                                 "lastname": $localStorage.user_info.last_name,
                             });
-                            $scope.logger.action ="Update";
+                            $scope.logger.action = "Update";
                             $scope.logger.agency_id = Services.getAgencyID();
-                            $scope.logger.action_id =  data.id;
-                            $scope.logger.action_table ="time_log";
+                            $scope.logger.action_id = data.id;
+                            $scope.logger.action_table = "time_log";
                             $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
 
-                            Services.userLog.save({
-                            }, $scope.logger, function(data) {
+                            Services.userLog.save({}, $scope.logger, function(data) {
 
                             });
                             if (updatedur.authorization_id || $scope.timecard.authOld) {
@@ -1193,17 +1196,16 @@ angular.module('ctApp.timeCard', [
                                                 "firstname": $localStorage.user_info.first_name,
                                                 "lastname": $localStorage.user_info.last_name,
                                             });
-                                            $scope.logger.action ="Update";
+                                            $scope.logger.action = "Update";
                                             $scope.logger.agency_id = Services.getAgencyID();
-                                            $scope.logger.action_id =  data.id;
-                                            $scope.logger.action_table ="job_authorization";
+                                            $scope.logger.action_id = data.id;
+                                            $scope.logger.action_table = "job_authorization";
                                             $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
 
-                                            Services.userLog.save({
-                                            }, $scope.logger, function(data) {
+                                            Services.userLog.save({}, $scope.logger, function(data) {
 
                                             });
-                                                    
+
                                             if ($scope.newInOut.length > $scope.Splittimecnt) {
                                                 $scope.AddUpdatetimecard($scope.newInOut[$scope.Splittimecnt]);
                                             } else {
@@ -1227,100 +1229,98 @@ angular.module('ctApp.timeCard', [
                                         }, function(remoteData) {
                                             /*if (moment(moment(remoteData.record[0].authorization_end_date).format('MM/DD/YYYY')).isBefore(moment().format('MM/DD/YYYY'))) //check existing authorization is past date
                                             {*/
-                                                hours_used = (remoteData.record[0].hours_used ? remoteData.record[0].hours_used : 0);
-                                                newhours_used = (parseFloat(hours_used) - parseFloat(HelperService.timeToFloat($scope.timecard.durOld)));
-                                                Services.jobauthorizationService.update({
-                                                    id: $scope.timecard.authOld
-                                                }, {
-                                                    
-                                                    hours_used: newhours_used,
-                                                    hours_remaining: (parseFloat(remoteData.record[0].total_hours) - parseFloat(newhours_used)),
-                                                }, function(data) {
+                                            hours_used = (remoteData.record[0].hours_used ? remoteData.record[0].hours_used : 0);
+                                            newhours_used = (parseFloat(hours_used) - parseFloat(HelperService.timeToFloat($scope.timecard.durOld)));
+                                            Services.jobauthorizationService.update({
+                                                id: $scope.timecard.authOld
+                                            }, {
 
-                                                    $scope.logger = {};
-                                                    $scope.logger.userid = $localStorage.user_info.user_id;
-                                                    $scope.logger.user_detail = JSON.stringify({
-                                                        "username": $localStorage.user_info.username,
-                                                        "firstname": $localStorage.user_info.first_name,
-                                                        "lastname": $localStorage.user_info.last_name,
-                                                    });
-                                                    $scope.logger.action ="Update";
-                                                    $scope.logger.agency_id = Services.getAgencyID();
-                                                    $scope.logger.action_id =  data.id;
-                                                    $scope.logger.action_table ="job_authorization";
-                                                    $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
+                                                hours_used: newhours_used,
+                                                hours_remaining: (parseFloat(remoteData.record[0].total_hours) - parseFloat(newhours_used)),
+                                            }, function(data) {
 
-                                                    Services.userLog.save({
-                                                    }, $scope.logger, function(data) {
-
-                                                    });
-
-                                                    if (updatedur.authorization_id) {
-                                                        Services.jobauthorizationService.get({
-                                                            filter: "id='" + updatedur.authorization_id + "'",
-                                                            fields: "hours_used,hours_remaining,total_hours"
-                                                        }, function(remoteData) {
-                                                            hours_used = (remoteData.record[0].hours_used ? remoteData.record[0].hours_used : 0);
-                                                            newhours_used = (parseFloat(hours_used) + parseFloat(HelperService.timeToFloat(newClockInOut.duration)));
-
-                                                            Services.jobauthorizationService.update({
-                                                                id: updatedur.authorization_id
-                                                            }, {
-                                                                hours_used: newhours_used,
-                                                                hours_remaining: (parseFloat(remoteData.record[0].total_hours) - parseFloat(newhours_used)),
-                                                            }, function(data) {
-                                                                 $scope.logger = {};
-                                                                $scope.logger.userid = $localStorage.user_info.user_id;
-                                                                $scope.logger.user_detail = JSON.stringify({
-                                                                    "username": $localStorage.user_info.username,
-                                                                    "firstname": $localStorage.user_info.first_name,
-                                                                    "lastname": $localStorage.user_info.last_name,
-                                                                });
-                                                                $scope.logger.action ="Update";
-                                                                $scope.logger.agency_id = Services.getAgencyID();
-                                                                $scope.logger.action_id =  data.id;
-                                                                $scope.logger.action_table ="job_authorization";
-                                                                $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
-
-                                                                Services.userLog.save({
-                                                                }, $scope.logger, function(data) {
-
-                                                                });
-
-
-
-                                                                if ($scope.newInOut.length > $scope.Splittimecnt) {
-                                                                    $scope.AddUpdatetimecard($scope.newInOut[$scope.Splittimecnt]);
-                                                                } else {
-                                                                    $scope.savedisable = 0;
-                                                                    $scope.showerrorMsg = true;
-                                                                    $scope.ErrorClass = "success";
-                                                                    $scope.ErrorMsg = "Time card edited successfully !!!";
-                                                                    $timeout(function() {
-                                                                        $scope.showerrorMsg = false;
-                                                                        $scope.modelclose();
-                                                                    }, 3000);
-                                                                }
-                                                            });
-                                                        });
-
-                                                    } else {
-                                                        if ($scope.newInOut.length > $scope.Splittimecnt) {
-                                                            $scope.AddUpdatetimecard($scope.newInOut[$scope.Splittimecnt]);
-                                                        } else {
-                                                            $scope.savedisable = 0;
-                                                            $scope.showerrorMsg = true;
-                                                            $scope.ErrorClass = "success";
-                                                            $scope.ErrorMsg = "Time card edited successfully !!!";
-                                                            $timeout(function() {
-                                                                $scope.showerrorMsg = false;
-                                                                $scope.modelclose();
-                                                            }, 3000);
-                                                        }
-
-                                                    }
+                                                $scope.logger = {};
+                                                $scope.logger.userid = $localStorage.user_info.user_id;
+                                                $scope.logger.user_detail = JSON.stringify({
+                                                    "username": $localStorage.user_info.username,
+                                                    "firstname": $localStorage.user_info.first_name,
+                                                    "lastname": $localStorage.user_info.last_name,
                                                 });
-                                           // } 
+                                                $scope.logger.action = "Update";
+                                                $scope.logger.agency_id = Services.getAgencyID();
+                                                $scope.logger.action_id = data.id;
+                                                $scope.logger.action_table = "job_authorization";
+                                                $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
+
+                                                Services.userLog.save({}, $scope.logger, function(data) {
+
+                                                });
+
+                                                if (updatedur.authorization_id) {
+                                                    Services.jobauthorizationService.get({
+                                                        filter: "id='" + updatedur.authorization_id + "'",
+                                                        fields: "hours_used,hours_remaining,total_hours"
+                                                    }, function(remoteData) {
+                                                        hours_used = (remoteData.record[0].hours_used ? remoteData.record[0].hours_used : 0);
+                                                        newhours_used = (parseFloat(hours_used) + parseFloat(HelperService.timeToFloat(newClockInOut.duration)));
+
+                                                        Services.jobauthorizationService.update({
+                                                            id: updatedur.authorization_id
+                                                        }, {
+                                                            hours_used: newhours_used,
+                                                            hours_remaining: (parseFloat(remoteData.record[0].total_hours) - parseFloat(newhours_used)),
+                                                        }, function(data) {
+                                                            $scope.logger = {};
+                                                            $scope.logger.userid = $localStorage.user_info.user_id;
+                                                            $scope.logger.user_detail = JSON.stringify({
+                                                                "username": $localStorage.user_info.username,
+                                                                "firstname": $localStorage.user_info.first_name,
+                                                                "lastname": $localStorage.user_info.last_name,
+                                                            });
+                                                            $scope.logger.action = "Update";
+                                                            $scope.logger.agency_id = Services.getAgencyID();
+                                                            $scope.logger.action_id = data.id;
+                                                            $scope.logger.action_table = "job_authorization";
+                                                            $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
+
+                                                            Services.userLog.save({}, $scope.logger, function(data) {
+
+                                                            });
+
+
+
+                                                            if ($scope.newInOut.length > $scope.Splittimecnt) {
+                                                                $scope.AddUpdatetimecard($scope.newInOut[$scope.Splittimecnt]);
+                                                            } else {
+                                                                $scope.savedisable = 0;
+                                                                $scope.showerrorMsg = true;
+                                                                $scope.ErrorClass = "success";
+                                                                $scope.ErrorMsg = "Time card edited successfully !!!";
+                                                                $timeout(function() {
+                                                                    $scope.showerrorMsg = false;
+                                                                    $scope.modelclose();
+                                                                }, 3000);
+                                                            }
+                                                        });
+                                                    });
+
+                                                } else {
+                                                    if ($scope.newInOut.length > $scope.Splittimecnt) {
+                                                        $scope.AddUpdatetimecard($scope.newInOut[$scope.Splittimecnt]);
+                                                    } else {
+                                                        $scope.savedisable = 0;
+                                                        $scope.showerrorMsg = true;
+                                                        $scope.ErrorClass = "success";
+                                                        $scope.ErrorMsg = "Time card edited successfully !!!";
+                                                        $timeout(function() {
+                                                            $scope.showerrorMsg = false;
+                                                            $scope.modelclose();
+                                                        }, 3000);
+                                                    }
+
+                                                }
+                                            });
+                                            // } 
                                             /*else if (updatedur.authorization_id && moment($scope.timecard.authorization.enddate).isBefore(moment().format('MM/DD/YYYY'))) {
 
 
@@ -1352,21 +1352,22 @@ angular.module('ctApp.timeCard', [
                                                         }
                                                     });
                                                 });
-                                            }*//* else {
-                                                if ($scope.newInOut.length > $scope.Splittimecnt) {
-                                                    $scope.AddUpdatetimecard($scope.newInOut[$scope.Splittimecnt]);
-                                                } else {
-                                                    $scope.savedisable = 0;
-                                                    $scope.showerrorMsg = true;
-                                                    $scope.ErrorClass = "success";
-                                                    $scope.ErrorMsg = "Time card edited successfully !!!";
-                                                    $timeout(function() {
-                                                        $scope.showerrorMsg = false;
-                                                        $scope.modelclose();
-                                                    }, 3000);
-                                                }
-
                                             }*/
+                                            /* else {
+                                                                                            if ($scope.newInOut.length > $scope.Splittimecnt) {
+                                                                                                $scope.AddUpdatetimecard($scope.newInOut[$scope.Splittimecnt]);
+                                                                                            } else {
+                                                                                                $scope.savedisable = 0;
+                                                                                                $scope.showerrorMsg = true;
+                                                                                                $scope.ErrorClass = "success";
+                                                                                                $scope.ErrorMsg = "Time card edited successfully !!!";
+                                                                                                $timeout(function() {
+                                                                                                    $scope.showerrorMsg = false;
+                                                                                                    $scope.modelclose();
+                                                                                                }, 3000);
+                                                                                            }
+
+                                                                                        }*/
 
                                         });
                                     } else if (updatedur.authorization_id && moment($scope.timecard.authorization.enddate).isBefore(moment().format('MM/DD/YYYY'))) {
@@ -1392,14 +1393,13 @@ angular.module('ctApp.timeCard', [
                                                     "firstname": $localStorage.user_info.first_name,
                                                     "lastname": $localStorage.user_info.last_name,
                                                 });
-                                                $scope.logger.action ="Update";
+                                                $scope.logger.action = "Update";
                                                 $scope.logger.agency_id = Services.getAgencyID();
-                                                $scope.logger.action_id =  data.id;
-                                                $scope.logger.action_table ="job_authorization";
+                                                $scope.logger.action_id = data.id;
+                                                $scope.logger.action_table = "job_authorization";
                                                 $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
 
-                                                Services.userLog.save({
-                                                }, $scope.logger, function(data) {
+                                                Services.userLog.save({}, $scope.logger, function(data) {
 
                                                 });
 
@@ -1493,7 +1493,8 @@ angular.module('ctApp.timeCard', [
                     }),
                     notes: $scope.timecard.notes,
                     authorization_id: ($scope.timecard.authorization ? $scope.timecard.authorization.id : ""),
-                    agency_id: Services.getAgencyID()
+                    agency_id: Services.getAgencyID(),
+                    activity_code: ($scope.timecard.activityCode ? $scope.timecard.activityCode.id : "")
                         //add Auth
 
                 };
@@ -1530,14 +1531,13 @@ angular.module('ctApp.timeCard', [
                         "firstname": $localStorage.user_info.first_name,
                         "lastname": $localStorage.user_info.last_name,
                     });
-                    $scope.logger.action ="Add";
+                    $scope.logger.action = "Add";
                     $scope.logger.agency_id = Services.getAgencyID();
-                    $scope.logger.action_id =  data.id;
-                    $scope.logger.action_table ="time_log";
+                    $scope.logger.action_id = data.id;
+                    $scope.logger.action_table = "time_log";
                     $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
 
-                    Services.userLog.save({
-                    }, $scope.logger, function(data) {
+                    Services.userLog.save({}, $scope.logger, function(data) {
 
                     });
                     var clock_out = {
@@ -1558,7 +1558,8 @@ angular.module('ctApp.timeCard', [
                         }),
                         notes: $scope.timecard.notes,
                         authorization_id: ($scope.timecard.authorization ? $scope.timecard.authorization.id : ""),
-                        agency_id: Services.getAgencyID()
+                        agency_id: Services.getAgencyID(),
+                        activity_code: ($scope.timecard.activityCode ? $scope.timecard.activityCode.id : "")
                             //add Auth
                     };
                     if ($scope.timecardId) {
@@ -1591,14 +1592,13 @@ angular.module('ctApp.timeCard', [
                             "firstname": $localStorage.user_info.first_name,
                             "lastname": $localStorage.user_info.last_name,
                         });
-                        $scope.logger.action ="Add";
+                        $scope.logger.action = "Add";
                         $scope.logger.agency_id = Services.getAgencyID();
-                        $scope.logger.action_id =  data.id;
-                        $scope.logger.action_table ="time_log";
+                        $scope.logger.action_id = data.id;
+                        $scope.logger.action_table = "time_log";
                         $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
 
-                        Services.userLog.save({
-                        }, $scope.logger, function(data) {
+                        Services.userLog.save({}, $scope.logger, function(data) {
 
                         });
 
@@ -1623,14 +1623,13 @@ angular.module('ctApp.timeCard', [
                                         "firstname": $localStorage.user_info.first_name,
                                         "lastname": $localStorage.user_info.last_name,
                                     });
-                                    $scope.logger.action ="Update";
+                                    $scope.logger.action = "Update";
                                     $scope.logger.agency_id = Services.getAgencyID();
-                                    $scope.logger.action_id =  data.id;
-                                    $scope.logger.action_table ="job_authorization";
+                                    $scope.logger.action_id = data.id;
+                                    $scope.logger.action_table = "job_authorization";
                                     $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
 
-                                    Services.userLog.save({
-                                    }, $scope.logger, function(data) {
+                                    Services.userLog.save({}, $scope.logger, function(data) {
 
                                     });
                                     if ($scope.newInOut.length > $scope.Splittimecnt) {
@@ -1890,6 +1889,62 @@ angular.module('ctApp.timeCard', [
             }
 
         };
+        $scope.selectActivityCode = {
+            query: function(query) {
+                $scope.activityObj = {
+                    fields: "name,code",
+                    filter: "status > 0 and agency_id = " + Services.getAgencyID(),
+                    order: 'name asc',
+                    limit: 5
+                };
+                if (query.term) {
+                    $scope.activity.filter += " and name like '%" + query.term + "%'";
+                }
+
+                Services.activity_code.get($scope.activityObj, function(remoteData) {
+                    $scope.activityData = {
+                        results: []
+                    };
+                    items = remoteData.record;
+                    if (items.length == '0') {
+                        query.callback($scope.activityData);
+                    } else {
+                        angular.forEach(items, function(item, key) {
+                            $scope.activityData.results.push({
+                                "text": item.name + '(' + item.code + ')',
+                                "id": item.code
+                            });
+                            query.callback($scope.activityData);
+                        });
+                    }
+
+                    return false;
+                });
+            },
+            initSelection: function(element, callback) {
+                if (angular.isUndefined($scope.timecard.activityCode.id) && !angular.isUndefined($scope.timecard.activityCode) && $scope.timecard.activityCode) {
+                    Services.activity_code.get({
+                        fields: "name,code",
+                        filter: "code =" + $scope.timecard.activityCode + " and agency_id = " + Services.getAgencyID(),
+                        limit: 1
+                    }, function(remoteData) {
+                        item = remoteData.record[0];
+                        if (item) {
+                            return callback({
+                                "text": item.name + '(' + item.code + ')',
+                                "id": item.code
+                            });
+                        }
+
+                    });
+
+
+                }
+
+
+            }
+
+        };
         $scope.getAuthorizationNotes = function() {
 
             $scope.timecard.authorization_notes = $scope.timecard.authorization.notes;
@@ -2003,14 +2058,13 @@ angular.module('ctApp.timeCard', [
                     "firstname": $localStorage.user_info.first_name,
                     "lastname": $localStorage.user_info.last_name,
                 });
-                $scope.logger.action ="Update";
+                $scope.logger.action = "Update";
                 $scope.logger.agency_id = Services.getAgencyID();
-                $scope.logger.action_id =  data.id;
-                $scope.logger.action_table ="time_log";
+                $scope.logger.action_id = data.id;
+                $scope.logger.action_table = "time_log";
                 $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
 
-                Services.userLog.save({
-                }, $scope.logger, function(data) {
+                Services.userLog.save({}, $scope.logger, function(data) {
 
                 });
 
@@ -2024,14 +2078,13 @@ angular.module('ctApp.timeCard', [
                         "firstname": $localStorage.user_info.first_name,
                         "lastname": $localStorage.user_info.last_name,
                     });
-                    $scope.logger.action ="Update";
+                    $scope.logger.action = "Update";
                     $scope.logger.agency_id = Services.getAgencyID();
-                    $scope.logger.action_id =  data.id;
-                    $scope.logger.action_table ="time_log";
+                    $scope.logger.action_id = data.id;
+                    $scope.logger.action_table = "time_log";
                     $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
 
-                    Services.userLog.save({
-                    }, $scope.logger, function(data) {
+                    Services.userLog.save({}, $scope.logger, function(data) {
 
                     });
 
@@ -2065,14 +2118,13 @@ angular.module('ctApp.timeCard', [
                                             "firstname": $localStorage.user_info.first_name,
                                             "lastname": $localStorage.user_info.last_name,
                                         });
-                                        $scope.logger.action ="Update";
+                                        $scope.logger.action = "Update";
                                         $scope.logger.agency_id = Services.getAgencyID();
-                                        $scope.logger.action_id =  data.id;
-                                        $scope.logger.action_table ="job_authorization";
+                                        $scope.logger.action_id = data.id;
+                                        $scope.logger.action_table = "job_authorization";
                                         $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
 
-                                        Services.userLog.save({
-                                        }, $scope.logger, function(data) {
+                                        Services.userLog.save({}, $scope.logger, function(data) {
 
                                         });
                                         $scope.savedisable = 0;

@@ -5,8 +5,7 @@
  <tabset class="tab-container">
         <tab>
             <tab-heading>
-                <i class="glyphicon glyphicon-info-sign"></i> Basic Setup
-            </tab-heading>
+                <i class="glyphicon glyphicon-info-sign"></i>Basic Setup</tab-heading>
             <div class="table-responsive">
                 <table class="table table-striped b-t b-light">
                     <tr>
@@ -75,8 +74,7 @@
         </tab>
       <tab>
             <tab-heading>
-                <i class="glyphicon glyphicon-user"></i> Location
-            </tab-heading>
+                <i class="glyphicon glyphicon-user"></i>Location</tab-heading>
             <div class="table-responsive">
                 <table class="table table-striped b-t b-light">
                     <tr>
@@ -126,8 +124,7 @@
         </tab>
          <tab>
             <tab-heading>
-                <i class="glyphicon  glyphicon-plus"></i> Advanced
-            </tab-heading>
+                <i class="glyphicon  glyphicon-plus"></i>Advanced</tab-heading>
             <div class="table-responsive">
                 <table class="table table-striped b-t b-light">
                     <tr>
@@ -138,7 +135,14 @@
                             {{job.external_code | parseToJson}}
                         </td>
                     </tr>
-
+                    <tr>
+                        <th colspan="2">
+                            Budgeted Hours 
+                        </th>
+                        <td colspan="2">
+                            {{job.budgeted_hours }}
+                        </td>
+                    </tr>
                     <tr>
                         <th colspan="2">
                             Service Item
@@ -162,8 +166,7 @@
         </tab>
         <tab>
             <tab-heading>
-                <i class="glyphicon  glyphicon-plus"></i> Notes
-            </tab-heading>
+                <i class="glyphicon  glyphicon-plus"></i>Notes</tab-heading>
             <div class="table-responsive">
                 <table class="table table-striped b-t b-light">
                     <tr>
@@ -180,7 +183,7 @@
         </tab>
          <tab>
             <tab-heading>
-                <i class="glyphicon  glyphicon-plus"></i> Activity Code </tab-heading>
+                <i class="glyphicon  glyphicon-plus"></i>Activity Code</tab-heading>
             <div class="table-responsive">
                 <table class="table table-striped b-t b-light">
                     <tr>
@@ -205,8 +208,7 @@
 
        <tab>
             <tab-heading>
-                <i class="glyphicon  glyphicon-plus"></i> Custom Prompts
-            </tab-heading>
+                <i class="glyphicon  glyphicon-plus"></i>Custom Prompts</tab-heading>
             <div class="table-responsive">
                 <table class="table table-striped b-t b-light">
                     <tr>
@@ -234,8 +236,7 @@
 
          <tab>
             <tab-heading>
-                <i class="glyphicon  glyphicon-plus"></i> Authorization History
-            </tab-heading>
+                <i class="glyphicon  glyphicon-plus"></i>Authorization History</tab-heading>
             <div class="row wrapper" ng-if="job_authorization.length==0">
                 <div class="col-sm-12">
                     <div class="alert alert-danger">No Record Found </div>

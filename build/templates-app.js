@@ -1,4 +1,4 @@
-angular.module('templates-app', ['access/access.tpl.html', 'access/employeeLogin/employeeLogin.tpl.html', 'access/forgotPassword/forgotPassword.tpl.html', 'access/resetPassword/resetPassword.tpl.html', 'access/sign-in/sign-in.tpl.html', 'access/sign-up/sign-up.tpl.html', 'admin/admin.tpl.html', 'admin/agency/add-update-agency.tpl.html', 'admin/agency/agencies.tpl.html', 'admin/agency/mapDetailView.tpl.html', 'admin/updatePassword/updatePassword.tpl.html', 'ct-app/agency/add-update-agency.tpl.html', 'ct-app/agency/mapDetailView.tpl.html', 'ct-app/authorizations/add-update-authorizations.tpl.html', 'ct-app/authorizations/authorizations.tpl.html', 'ct-app/ct-app.tpl.html', 'ct-app/employees/add-update-employee.tpl.html', 'ct-app/employees/employee-dashboard.tpl.html', 'ct-app/employees/employee-dashboard_bk.tpl.html', 'ct-app/employees/employees.tpl.html', 'ct-app/employees/mapDetailView.tpl.html', 'ct-app/employees/upload-skeleton.tpl.html', 'ct-app/employees/view-employee.tpl.html', 'ct-app/jobs/add-update-job.tpl.html', 'ct-app/jobs/job-dashboard.tpl.html', 'ct-app/jobs/jobs.tpl.html', 'ct-app/jobs/mapDetailView.tpl.html', 'ct-app/jobs/view-job.tpl.html', 'ct-app/logs/alertLog/add-update-alertLog.tpl.html', 'ct-app/logs/alertLog/alertLog.tpl.html', 'ct-app/logs/callLog/callLogs.tpl.html', 'ct-app/logs/customPrompts/customPrompts.tpl.html', 'ct-app/logs/employeeActivities/employeeActivities.tpl.html', 'ct-app/logs/timeCards/InactiveTimeCard.tpl.html', 'ct-app/logs/timeCards/add-update-timeCard.tpl.html', 'ct-app/logs/timeCards/timeCards.tpl.html', 'ct-app/mainDashboard/mainDashboard.tpl.html', 'ct-app/manageLists/activities/activities.tpl.html', 'ct-app/manageLists/activities/add-update-activity.tpl.html', 'ct-app/manageLists/activityCodes/activityCodes.tpl.html', 'ct-app/manageLists/activityCodes/add-update-activityCode.tpl.html', 'ct-app/manageLists/customPrompts/add-update-customPrompt.tpl.html', 'ct-app/manageLists/customPrompts/customPrompts.tpl.html', 'ct-app/manageLists/observations/add-update-observation.tpl.html', 'ct-app/manageLists/observations/observations.tpl.html', 'ct-app/manageLists/payClasses/add-update-payClass.tpl.html', 'ct-app/manageLists/payClasses/payClasses.tpl.html', 'ct-app/manageLists/payTypes/add-update-payType.tpl.html', 'ct-app/manageLists/payTypes/payTypes.tpl.html', 'ct-app/manageLists/payors/add-update-payor.tpl.html', 'ct-app/manageLists/payors/payors.tpl.html', 'ct-app/manageLists/serviceItems/add-update-serviceItem.tpl.html', 'ct-app/manageLists/serviceItems/serviceItems.tpl.html', 'ct-app/manageLists/skills/add-update-skill.tpl.html', 'ct-app/manageLists/skills/skills.tpl.html', 'ct-app/manageLists/tasks/add-update-task.tpl.html', 'ct-app/manageLists/tasks/tasks.tpl.html', 'ct-app/mapView/mapView.tpl.html', 'ct-app/reports/accountActivities/accountActivities.tpl.html', 'ct-app/reports/activityReports/activityReports.tpl.html', 'ct-app/reports/authorizedVsActuall/authorizedVsActuall.tpl.html', 'ct-app/reports/dailyHoursChart/dailyHoursChart.tpl.html', 'ct-app/reports/employeeList/employeeList.tpl.html', 'ct-app/reports/employeeTimecard/employeeTimecard.tpl.html', 'ct-app/reports/employeeWeeklyHours/employeeWeeklyHours.tpl.html', 'ct-app/reports/inactivityEmployees/inactivityEmployees.tpl.html', 'ct-app/reports/jobList/jobList.tpl.html', 'ct-app/reports/jobNoSchedule/jobNoSchedule.tpl.html', 'ct-app/reports/jobObservation/jobObservation.tpl.html', 'ct-app/reports/jobTask/jobTask.tpl.html', 'ct-app/reports/jobTimecard/jobTimecard.tpl.html', 'ct-app/reports/jobWeeklyHours/jobWeeklyHours.tpl.html', 'ct-app/reports/mapReport/mapReport.tpl.html', 'ct-app/reports/scheduleReport/scheduleReport.tpl.html', 'ct-app/reports/scheduleVsActuall/scheduleVsActuall.tpl.html', 'ct-app/reports/timecardExport/timecardExport.tpl.html', 'ct-app/schedules/add-update-schedule.tpl.html', 'ct-app/schedules/schedules.tpl.html', 'ct-app/updatePassword/updatePassword.tpl.html', 'ct-app/zones/add-update-zone.tpl.html', 'ct-app/zones/zone-employee-dashboard.tpl.html', 'ct-app/zones/zones.tpl.html', 'partials/access_header.tpl.html', 'partials/admin_header.tpl.html', 'partials/admin_nav.tpl.html', 'partials/aside.tpl.html', 'partials/datepicker.tpl.html', 'partials/header.tpl.html', 'partials/nav.tpl.html', 'partials/page_footer.tpl.html', 'partials/settings.tpl.html', 'utils/directive-templates/dropdown.tpl.html', 'utils/directive-templates/inline-edit.tpl.html', 'utils/directive-templates/popover-html-unsafe-popup.tpl.html']);
+angular.module('templates-app', ['access/access.tpl.html', 'access/employeeLogin/employeeLogin.tpl.html', 'access/forgotPassword/forgotPassword.tpl.html', 'access/resetPassword/resetPassword.tpl.html', 'access/sign-in/sign-in.tpl.html', 'access/sign-up/sign-up.tpl.html', 'admin/admin.tpl.html', 'admin/agency/add-update-agency.tpl.html', 'admin/agency/agencies.tpl.html', 'admin/agency/mapDetailView.tpl.html', 'admin/updatePassword/updatePassword.tpl.html', 'ct-app/agency/add-update-agency.tpl.html', 'ct-app/agency/mapDetailView.tpl.html', 'ct-app/authorizations/add-update-authorizations.tpl.html', 'ct-app/authorizations/authorizations.tpl.html', 'ct-app/ct-app.tpl.html', 'ct-app/employees/add-update-employee.tpl.html', 'ct-app/employees/employee-dashboard.tpl.html', 'ct-app/employees/employee-dashboard_bk.tpl.html', 'ct-app/employees/employees.tpl.html', 'ct-app/employees/mapDetailView.tpl.html', 'ct-app/employees/upload-skeleton.tpl.html', 'ct-app/employees/view-employee.tpl.html', 'ct-app/jobs/add-update-job.tpl.html', 'ct-app/jobs/job-dashboard.tpl.html', 'ct-app/jobs/jobs.tpl.html', 'ct-app/jobs/mapDetailView.tpl.html', 'ct-app/jobs/view-job.tpl.html', 'ct-app/logs/alertLog/add-update-alertLog.tpl.html', 'ct-app/logs/alertLog/alertLog.tpl.html', 'ct-app/logs/callLog/callLogs.tpl.html', 'ct-app/logs/customPrompts/customPrompts.tpl.html', 'ct-app/logs/employeeActivities/employeeActivities.tpl.html', 'ct-app/logs/timeCards/InactiveTimeCard.tpl.html', 'ct-app/logs/timeCards/add-update-timeCard.tpl.html', 'ct-app/logs/timeCards/timeCards.tpl.html', 'ct-app/mainDashboard/mainDashboard.tpl.html', 'ct-app/manageLists/activities/activities.tpl.html', 'ct-app/manageLists/activities/add-update-activity.tpl.html', 'ct-app/manageLists/activityCodes/activityCodes.tpl.html', 'ct-app/manageLists/activityCodes/add-update-activityCode.tpl.html', 'ct-app/manageLists/customPrompts/add-update-customPrompt.tpl.html', 'ct-app/manageLists/customPrompts/customPrompts.tpl.html', 'ct-app/manageLists/observations/add-update-observation.tpl.html', 'ct-app/manageLists/observations/observations.tpl.html', 'ct-app/manageLists/payClasses/add-update-payClass.tpl.html', 'ct-app/manageLists/payClasses/payClasses.tpl.html', 'ct-app/manageLists/payTypes/add-update-payType.tpl.html', 'ct-app/manageLists/payTypes/payTypes.tpl.html', 'ct-app/manageLists/payors/add-update-payor.tpl.html', 'ct-app/manageLists/payors/payors.tpl.html', 'ct-app/manageLists/serviceItems/add-update-serviceItem.tpl.html', 'ct-app/manageLists/serviceItems/serviceItems.tpl.html', 'ct-app/manageLists/skills/add-update-skill.tpl.html', 'ct-app/manageLists/skills/skills.tpl.html', 'ct-app/manageLists/tasks/add-update-task.tpl.html', 'ct-app/manageLists/tasks/tasks.tpl.html', 'ct-app/mapView/mapView.tpl.html', 'ct-app/reports/accountActivities/accountActivities.tpl.html', 'ct-app/reports/activityReports/activityReports.tpl.html', 'ct-app/reports/authorizedVsActuall/authorizedVsActuall.tpl.html', 'ct-app/reports/budgetVsActual/budgetVsActual.tpl.html', 'ct-app/reports/dailyHoursChart/dailyHoursChart.tpl.html', 'ct-app/reports/employeeList/employeeList.tpl.html', 'ct-app/reports/employeeTimecard/employeeTimecard.tpl.html', 'ct-app/reports/employeeWeeklyHours/employeeWeeklyHours.tpl.html', 'ct-app/reports/inactivityEmployees/inactivityEmployees.tpl.html', 'ct-app/reports/jobList/jobList.tpl.html', 'ct-app/reports/jobNoSchedule/jobNoSchedule.tpl.html', 'ct-app/reports/jobObservation/jobObservation.tpl.html', 'ct-app/reports/jobTask/jobTask.tpl.html', 'ct-app/reports/jobTimecard/jobTimecard.tpl.html', 'ct-app/reports/jobWeeklyHours/jobWeeklyHours.tpl.html', 'ct-app/reports/mapReport/mapReport.tpl.html', 'ct-app/reports/scheduleReport/scheduleReport.tpl.html', 'ct-app/reports/scheduleVsActuall/scheduleVsActuall.tpl.html', 'ct-app/reports/timecardExport/timecardExport.tpl.html', 'ct-app/schedules/add-update-schedule.tpl.html', 'ct-app/schedules/schedules.tpl.html', 'ct-app/updatePassword/updatePassword.tpl.html', 'ct-app/zones/add-update-zone.tpl.html', 'ct-app/zones/zone-employee-dashboard.tpl.html', 'ct-app/zones/zones.tpl.html', 'partials/access_header.tpl.html', 'partials/admin_header.tpl.html', 'partials/admin_nav.tpl.html', 'partials/aside.tpl.html', 'partials/datepicker.tpl.html', 'partials/header.tpl.html', 'partials/nav.tpl.html', 'partials/page_footer.tpl.html', 'partials/settings.tpl.html', 'utils/directive-templates/dropdown.tpl.html', 'utils/directive-templates/inline-edit.tpl.html', 'utils/directive-templates/popover-html-unsafe-popup.tpl.html']);
 
 angular.module("access/access.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("access/access.tpl.html",
@@ -3590,7 +3590,7 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "\n" +
     "                        </div>\n" +
     "\n" +
-    "                        <div class=\"form-group\">\n" +
+    "                        <!--<div class=\"form-group\">\n" +
     "\n" +
     "                            <label class=\"col-sm-2 control-label\">External Code 3</label>\n" +
     "\n" +
@@ -3600,8 +3600,18 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "\n" +
     "                            </div>\n" +
     "\n" +
-    "                        </div>\n" +
+    "                        </div> -->\n" +
+    "                        <div class=\"form-group\">\n" +
     "\n" +
+    "                            <label class=\"col-sm-2 control-label\">Budgeted Hours</label>\n" +
+    "\n" +
+    "                            <div class=\"col-sm-10\">\n" +
+    "\n" +
+    "                                <input type=\"text\" class=\"form-control\" capitalize ng-model=\"job.budgetedHours\" placeholder=\"Budgeted Hours\" ng-pattern=\"/^[0-9]+(\\.[0-9]{1,2})?$/\">\n" +
+    "\n" +
+    "                            </div>\n" +
+    "\n" +
+    "                        </div>\n" +
     "\n" +
     "                        <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
     "                        <div class=\"form-group\">\n" +
@@ -4301,8 +4311,7 @@ angular.module("ct-app/jobs/view-job.tpl.html", []).run(["$templateCache", funct
     " <tabset class=\"tab-container\">\n" +
     "        <tab>\n" +
     "            <tab-heading>\n" +
-    "                <i class=\"glyphicon glyphicon-info-sign\"></i> Basic Setup\n" +
-    "            </tab-heading>\n" +
+    "                <i class=\"glyphicon glyphicon-info-sign\"></i>Basic Setup</tab-heading>\n" +
     "            <div class=\"table-responsive\">\n" +
     "                <table class=\"table table-striped b-t b-light\">\n" +
     "                    <tr>\n" +
@@ -4371,8 +4380,7 @@ angular.module("ct-app/jobs/view-job.tpl.html", []).run(["$templateCache", funct
     "        </tab>\n" +
     "      <tab>\n" +
     "            <tab-heading>\n" +
-    "                <i class=\"glyphicon glyphicon-user\"></i> Location\n" +
-    "            </tab-heading>\n" +
+    "                <i class=\"glyphicon glyphicon-user\"></i>Location</tab-heading>\n" +
     "            <div class=\"table-responsive\">\n" +
     "                <table class=\"table table-striped b-t b-light\">\n" +
     "                    <tr>\n" +
@@ -4422,8 +4430,7 @@ angular.module("ct-app/jobs/view-job.tpl.html", []).run(["$templateCache", funct
     "        </tab>\n" +
     "         <tab>\n" +
     "            <tab-heading>\n" +
-    "                <i class=\"glyphicon  glyphicon-plus\"></i> Advanced\n" +
-    "            </tab-heading>\n" +
+    "                <i class=\"glyphicon  glyphicon-plus\"></i>Advanced</tab-heading>\n" +
     "            <div class=\"table-responsive\">\n" +
     "                <table class=\"table table-striped b-t b-light\">\n" +
     "                    <tr>\n" +
@@ -4434,7 +4441,14 @@ angular.module("ct-app/jobs/view-job.tpl.html", []).run(["$templateCache", funct
     "                            {{job.external_code | parseToJson}}\n" +
     "                        </td>\n" +
     "                    </tr>\n" +
-    "\n" +
+    "                    <tr>\n" +
+    "                        <th colspan=\"2\">\n" +
+    "                            Budgeted Hours \n" +
+    "                        </th>\n" +
+    "                        <td colspan=\"2\">\n" +
+    "                            {{job.budgeted_hours }}\n" +
+    "                        </td>\n" +
+    "                    </tr>\n" +
     "                    <tr>\n" +
     "                        <th colspan=\"2\">\n" +
     "                            Service Item\n" +
@@ -4458,8 +4472,7 @@ angular.module("ct-app/jobs/view-job.tpl.html", []).run(["$templateCache", funct
     "        </tab>\n" +
     "        <tab>\n" +
     "            <tab-heading>\n" +
-    "                <i class=\"glyphicon  glyphicon-plus\"></i> Notes\n" +
-    "            </tab-heading>\n" +
+    "                <i class=\"glyphicon  glyphicon-plus\"></i>Notes</tab-heading>\n" +
     "            <div class=\"table-responsive\">\n" +
     "                <table class=\"table table-striped b-t b-light\">\n" +
     "                    <tr>\n" +
@@ -4476,7 +4489,7 @@ angular.module("ct-app/jobs/view-job.tpl.html", []).run(["$templateCache", funct
     "        </tab>\n" +
     "         <tab>\n" +
     "            <tab-heading>\n" +
-    "                <i class=\"glyphicon  glyphicon-plus\"></i> Activity Code </tab-heading>\n" +
+    "                <i class=\"glyphicon  glyphicon-plus\"></i>Activity Code</tab-heading>\n" +
     "            <div class=\"table-responsive\">\n" +
     "                <table class=\"table table-striped b-t b-light\">\n" +
     "                    <tr>\n" +
@@ -4501,8 +4514,7 @@ angular.module("ct-app/jobs/view-job.tpl.html", []).run(["$templateCache", funct
     "\n" +
     "       <tab>\n" +
     "            <tab-heading>\n" +
-    "                <i class=\"glyphicon  glyphicon-plus\"></i> Custom Prompts\n" +
-    "            </tab-heading>\n" +
+    "                <i class=\"glyphicon  glyphicon-plus\"></i>Custom Prompts</tab-heading>\n" +
     "            <div class=\"table-responsive\">\n" +
     "                <table class=\"table table-striped b-t b-light\">\n" +
     "                    <tr>\n" +
@@ -4530,8 +4542,7 @@ angular.module("ct-app/jobs/view-job.tpl.html", []).run(["$templateCache", funct
     "\n" +
     "         <tab>\n" +
     "            <tab-heading>\n" +
-    "                <i class=\"glyphicon  glyphicon-plus\"></i> Authorization History\n" +
-    "            </tab-heading>\n" +
+    "                <i class=\"glyphicon  glyphicon-plus\"></i>Authorization History</tab-heading>\n" +
     "            <div class=\"row wrapper\" ng-if=\"job_authorization.length==0\">\n" +
     "                <div class=\"col-sm-12\">\n" +
     "                    <div class=\"alert alert-danger\">No Record Found </div>\n" +
@@ -5136,7 +5147,7 @@ angular.module("ct-app/logs/employeeActivities/employeeActivities.tpl.html", [])
     "                 <wj-flex-grid-column header=\"Call Status OUT\" is-read-only=\"true\" binding=\"Call_status_OUT\"> </wj-flex-grid-column>\n" +
     "                  <wj-flex-grid-column header=\"Work Duration\" is-read-only=\"true\" binding=\"work_duration\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Original Work Duration\" is-read-only=\"true\" binding=\"orig_work_duration\"> </wj-flex-grid-column>\n" +
-    "                  <wj-flex-grid-column header=\"Activity\" is-read-only=\"true\" binding=\"activities\"> </wj-flex-grid-column>\n" +
+    "                  <wj-flex-grid-column header=\"Activity Code\" is-read-only=\"true\" binding=\"activities\"> </wj-flex-grid-column>\n" +
     "\n" +
     "\n" +
     "            </wj-flex-grid>\n" +
@@ -5383,6 +5394,16 @@ angular.module("ct-app/logs/timeCards/add-update-timeCard.tpl.html", []).run(["$
     "                    </div>\n" +
     "\n" +
     "                </div>\n" +
+    "\n" +
+    "                <div class=\"form-group\" >\n" +
+    "                    <label class=\"col-sm-2 control-label\"> Activity Code </label>\n" +
+    "                    <div class=\"col-sm-4\">\n" +
+    "                        <input class=\"form-control w-md\"  ui-select2=\"selectActivityCode\"  placeholder=\"Enter Activity Code\" ng-model=\"timecard.activityCode\">\n" +
+    "                        \n" +
+    "                    </div>                \n" +
+    "                    \n" +
+    "                </div>\n" +
+    "\n" +
     "                <div class=\"form-group\">\n" +
     "                    <label class=\"col-sm-2 control-label\">Notes</label>\n" +
     "                    <div class=\"col-sm-10\">\n" +
@@ -7449,6 +7470,134 @@ angular.module("ct-app/reports/authorizedVsActuall/authorizedVsActuall.tpl.html"
     "</div>");
 }]);
 
+angular.module("ct-app/reports/budgetVsActual/budgetVsActual.tpl.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("ct-app/reports/budgetVsActual/budgetVsActual.tpl.html",
+    "<div class=\"bg-light lter b-b wrapper-md\">\n" +
+    "    <h1 class=\"m-n font-thin h3\">Budget vs Actual Report</h1>\n" +
+    "\n" +
+    "</div>\n" +
+    "\n" +
+    "<div class=\"wrapper-md\">\n" +
+    "    <div class=\"panel panel-default\">\n" +
+    "        <div class=\"row wrapper\">\n" +
+    "            <div class=\"col-sm-3\">\n" +
+    "                <div class=\"form-control \" placeholder=\"Select zone\" ui-select2=\"selectZone\" value=\"\" ng-model=\"reportFilters.zone\">\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "            <div class=\"col-sm-3\">\n" +
+    "                <div>\n" +
+    "                    <input class=\"form-control \" placeholder=\"Select Job\" ui-select2=\"selectJob\" ng-model=\"reportFilters.job\" ng-disabled=\"reportFilters.zone==null || reportFilters.zone=='' || reportFilters.zone[0].id =='all'\">\n" +
+    "                </div>\n" +
+    "\n" +
+    "            </div>\n" +
+    "            <div class=\"col-sm-3\">\n" +
+    "\n" +
+    "                <div ng-controller=\"DatepickerDemoCtrl\">\n" +
+    "\n" +
+    "                    <div class=\"input-group\">\n" +
+    "                        <input type=\"text\" placeholder=\"Select Start Date\" class=\"form-control\" readonly datepicker-popup=\"{{format}}\" ng-model=\"reportFilters.startDate\" is-open=\"opened\" datepicker-options=\"dateOptions\" close-text=\"Close\" />\n" +
+    "                        <span class=\"input-group-btn\">\n" +
+    "                      <button type=\"button\" class=\"btn btn-default\" ng-click=\"open($event)\"><i class=\"glyphicon glyphicon-calendar\"></i></button>\n" +
+    "                    </span>\n" +
+    "                    </div>\n" +
+    "\n" +
+    "                </div>\n" +
+    "\n" +
+    "            </div>\n" +
+    "            <div class=\"col-sm-3\">\n" +
+    "\n" +
+    "                <div ng-controller=\"DatepickerDemoCtrl\">\n" +
+    "\n" +
+    "                    <div class=\"input-group\">\n" +
+    "                        <input type=\"text\" placeholder=\"Select End Date\" class=\"form-control\" readonly datepicker-popup=\"{{format}}\" ng-model=\"reportFilters.endDate\" is-open=\"opened\" datepicker-options=\"dateOptions\" close-text=\"Close\" />\n" +
+    "                        <span class=\"input-group-btn\">\n" +
+    "                      <button type=\"button\" class=\"btn btn-default\" ng-click=\"open($event)\"><i class=\"glyphicon glyphicon-calendar\"></i></button>\n" +
+    "                    </span>\n" +
+    "                    </div>\n" +
+    "\n" +
+    "                </div>\n" +
+    "\n" +
+    "            </div>\n" +
+    "\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <div class=\"row wrapper\">\n" +
+    "            <div class=\"col-sm-6\">\n" +
+    "                <button class=\"btn btn-md btn-info\" type=\"button\" ng-click=\"updateTableData()\">Search</button>\n" +
+    "                <button class=\"btn btn-md btn-warning\" type=\"button\" ng-click=\"clearSearch()\">Clear</button>\n" +
+    "                <span class=\"alert alert-danger\" ng-if=\"showerrorMsg\">{{error_msg}}</span>\n" +
+    "\n" +
+    "            </div>\n" +
+    "            <div class=\"col-sm-6\">\n" +
+    "                <div class=\" pull-right\">\n" +
+    "                    <div class=\"col-sm-4\"  ng-if=\"show_download_loader\" >\n" +
+    "                    <div ng-if=\"show_download_loader\" show-loader=\"show_download_loader\"></div>\n" +
+    "                    </div>\n" +
+    "                    <a ng-disabled=\"noRecord==1\" download=\"BudgetVsActualReport.xlsx\" class=\"btn btn-md btn-info\" id=\"export\" ng-click=\"exportExcel()\">Export Excel</a>\n" +
+    "\n" +
+    "                   \n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "        </div>\n" +
+    "        <div class=\"row wrapper\" ng-if=\"noRecord==1 || show_activities_loader\">\n" +
+    "            <div class=\"col-sm-12\">\n" +
+    "                <div ng-if=\"noRecord==1\" ng-bind-html=\"norecord\"> {{norecord }}</div>\n" +
+    "                <div ng-if=\"show_activities_loader\" show-loader=\"show_activities_loader\"></div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <div class=\"row wrapper\" ng-if=\"showRecord==1\">\n" +
+    "            <wj-flex-grid control=\"ctx.flexGrid\" items-source=\"BudgetedDetails\">\n" +
+    "                <wj-flex-grid-column header=\"Job Name\" is-read-only=\"true\" binding=\"jobDetail\"  width=\"*\"> </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"Zone Name\" is-read-only=\"true\" binding=\"zoneDetail\"  > </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"Budgeted Hours\" is-read-only=\"true\" binding=\"budgetedHours\"  > </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"Actual Hours\" is-read-only=\"true\" binding=\"actualHours\"> </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\" Budgeted vs Actual\" is-read-only=\"true\" binding=\"difference\"  ng-style=\"{color:getAmountColor($item.difference)}\"> </wj-flex-grid-column>\n" +
+    "\n" +
+    "               <!-- <wj-flex-grid-column header=\"Job Code \" is-read-only=\"true\" binding=\"job_name\"> </wj-flex-grid-column> -->\n" +
+    "                 <!-- <wj-flex-grid-column header=\"Job Name\" is-read-only=\"true\" binding=\"job_name\"  width=\"*\"> </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"Employee Name\" is-read-only=\"true\" binding=\"employee_name\" > </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"Clock In\" is-read-only=\"true\" binding=\"clockin\"> </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"Clock Out\" is-read-only=\"true\" binding=\"clockout\"> </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"Total Hours\" is-read-only=\"true\" binding=\"work_duration_non_rounded_number\" format=\"n2\" aggregate=\"Sum\"> </wj-flex-grid-column>\n" +
+    "                 <wj-flex-grid-column header=\"(h m)\" is-read-only=\"true\" binding=\"work_duration_formated\" format=\"n2\" > </wj-flex-grid-column>\n" +
+    "                 <wj-flex-grid-column header=\"Total Hrs(Rounded)\" is-read-only=\"true\" binding=\"work_duration_rounded_number\" format=\"n2\" aggregate=\"Sum\"> </wj-flex-grid-column>\n" +
+    "                  <wj-flex-grid-column header=\"(h m)\" is-read-only=\"true\" binding=\"work_duration_rounded_formated\" format=\"n2\" > </wj-flex-grid-column>\n" +
+    "                 <wj-flex-grid-column header=\"Activity Code\" is-read-only=\"true\" binding=\"activities\"> </wj-flex-grid-column>-->\n" +
+    "\n" +
+    "\n" +
+    "            </wj-flex-grid>\n" +
+    "            <div class=\"row wrapper\">\n" +
+    "                <wj-menu value=\"BudgetedDetails.pageSize\" header=\"Rows per Page\">\n" +
+    "                    <wj-menu-item value=\"10\"> 10</wj-menu-item>\n" +
+    "                    <wj-menu-item value=\"25\"> 25</wj-menu-item>\n" +
+    "                    <wj-menu-item value=\"50\"> 50</wj-menu-item>\n" +
+    "                    <wj-menu-item value=\"100\"> 100</wj-menu-item>\n" +
+    "                </wj-menu>\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "                <div class=\"btn-group col-md-8\" ng-show=\"BudgetedDetails.pageSize > 0\">\n" +
+    "                    <button type=\"button\" class=\"btn btn-default\" ng-disabled=\"BudgetedDetails.pageIndex <= 0\" ng-click=\"BudgetedDetails.moveToFirstPage()\"> <span class=\"glyphicon glyphicon-fast-backward\"></span> </button>\n" +
+    "                    <button type=\"button\" class=\"btn btn-default\" ng-disabled=\"BudgetedDetails.pageIndex <= 0\" ng-click=\"BudgetedDetails.moveToPreviousPage()\"> <span class=\"glyphicon glyphicon-step-backward\"></span> </button>\n" +
+    "                    <button type=\"button\" class=\"btn btn-default\" disabled style=\"width:100px\"> {{BudgetedDetails.pageIndex+1}} / {{BudgetedDetails.pageCount}} </button>\n" +
+    "                    <button type=\"button\" class=\"btn btn-default\" ng-disabled=\"BudgetedDetails.pageIndex >= BudgetedDetails.pageCount - 1\" ng-click=\"BudgetedDetails.moveToNextPage()\"> <span class=\"glyphicon glyphicon-step-forward\"></span> </button>\n" +
+    "                    <button type=\"button\" class=\"btn btn-default\" ng-disabled=\"BudgetedDetails.pageIndex >= BudgetedDetails.pageCount - 1\" ng-click=\"BudgetedDetails.moveToLastPage()\"> <span class=\"glyphicon glyphicon-fast-forward\"></span> </button>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "        </div>  \n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "      \n" +
+    "    </div>\n" +
+    "</div>");
+}]);
+
 angular.module("ct-app/reports/dailyHoursChart/dailyHoursChart.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("ct-app/reports/dailyHoursChart/dailyHoursChart.tpl.html",
     "<div class=\"bg-light lter b-b wrapper-md\">\n" +
@@ -7741,8 +7890,9 @@ angular.module("ct-app/reports/employeeTimecard/employeeTimecard.tpl.html", []).
     "                <wj-flex-grid-column header=\"(h m)\" is-read-only=\"true\" binding=\"work_duration_formated\" format=\"n2\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Total Hrs(Rounded)\" is-read-only=\"true\" binding=\"work_duration_rounded_number\" format=\"n2\" aggregate=\"Sum\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"(h m)\" is-read-only=\"true\" binding=\"work_duration_rounded_formated\" format=\"n2\"> </wj-flex-grid-column>\n" +
-    "\n" +
-    "\n" +
+    "                <wj-flex-grid-column header=\"Activity Code\" is-read-only=\"true\" binding=\"activities\"> </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"Clock In Phone\" is-read-only=\"true\" binding=\"clockinPhone\"> </wj-flex-grid-column>\n" +
+    "                 <wj-flex-grid-column header=\"Clock Out Phone\" is-read-only=\"true\" binding=\"clockoutPhone\"> </wj-flex-grid-column>\n" +
     "\n" +
     "            </wj-flex-grid>\n" +
     "            <div class=\"row wrapper\">\n" +
@@ -8551,7 +8701,9 @@ angular.module("ct-app/reports/jobTimecard/jobTimecard.tpl.html", []).run(["$tem
     "                 <wj-flex-grid-column header=\"(h m)\" is-read-only=\"true\" binding=\"work_duration_formated\" format=\"n2\" > </wj-flex-grid-column>\n" +
     "                 <wj-flex-grid-column header=\"Total Hrs(Rounded)\" is-read-only=\"true\" binding=\"work_duration_rounded_number\" format=\"n2\" aggregate=\"Sum\"> </wj-flex-grid-column>\n" +
     "                  <wj-flex-grid-column header=\"(h m)\" is-read-only=\"true\" binding=\"work_duration_rounded_formated\" format=\"n2\" > </wj-flex-grid-column>\n" +
-    "                 <wj-flex-grid-column header=\"Activity\" is-read-only=\"true\" binding=\"activities\"> </wj-flex-grid-column>\n" +
+    "                 <wj-flex-grid-column header=\"Activity Code\" is-read-only=\"true\" binding=\"activities\"> </wj-flex-grid-column>\n" +
+    "                 <wj-flex-grid-column header=\"Clock In Phone\" is-read-only=\"true\" binding=\"clockinPhone\"> </wj-flex-grid-column>\n" +
+    "                 <wj-flex-grid-column header=\"Clock Out Phone\" is-read-only=\"true\" binding=\"clockoutPhone\"> </wj-flex-grid-column>\n" +
     "\n" +
     "\n" +
     "            </wj-flex-grid>\n" +
@@ -9247,13 +9399,18 @@ angular.module("ct-app/reports/timecardExport/timecardExport.tpl.html", []).run(
     "                                    <i></i> Job Ext 2\n" +
     "                                </label>\n" +
     "                            </td>\n" +
-    "                            <td>\n" +
+    "                            <!--<td>\n" +
     "                                <label class=\"i-checks\">\n" +
     "                                    <input type=\"checkbox\" value=\"1\" ng-model=\"field.jobext3\">\n" +
     "                                    <i></i> Job Ext 3\n" +
     "                                </label>\n" +
+    "                            </td>-->\n" +
+    "                             <td>\n" +
+    "                                <label class=\"i-checks\">\n" +
+    "                                    <input type=\"checkbox\" value=\"1\" ng-model=\"field.ActivityCode\">\n" +
+    "                                    <i></i> Activity Code\n" +
+    "                                </label>\n" +
     "                            </td>\n" +
-    "\n" +
     "                        </tr>\n" +
     "                    </tbody>\n" +
     "                </table>\n" +
@@ -9352,11 +9509,12 @@ angular.module("ct-app/reports/timecardExport/timecardExport.tpl.html", []).run(
     "                <wj-flex-grid-column header=\"Job Code\" is-read-only=\"true\" binding=\"Job_code\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Clock In\" is-read-only=\"true\" binding=\"clockin\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Clock Out\" is-read-only=\"true\" binding=\"clockout\"> </wj-flex-grid-column>\n" +
-    "                 <wj-flex-grid-column header=\"Activity\" is-read-only=\"true\" binding=\"activities\"> </wj-flex-grid-column>\n" +
+    "                \n" +
     "                <wj-flex-grid-column header=\"Total Hours\" is-read-only=\"true\" binding=\"work_duration_non_rounded_number\" format=\"n2\" aggregate=\"Sum\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"(h m)\" is-read-only=\"true\" binding=\"work_duration_formated\" format=\"n2\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Rounded Hrs\" ng-if=\"field.roundedhrs\" is-read-only=\"true\" binding=\"work_duration_rounded_number\" format=\"n2\" aggregate=\"Sum\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"(h m)\" ng-if=\"field.roundedhrs\" is-read-only=\"true\" binding=\"work_duration_rounded_formated\" format=\"n2\"> </wj-flex-grid-column>\n" +
+    "                 <wj-flex-grid-column header=\"Activity Code\" is-read-only=\"true\"  ng-if=\"field.ActivityCode\" binding=\"activities\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Emp Name\" ng-if=\"field.empname\" is-read-only=\"true\" binding=\"employee_name\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Emp Level\" ng-if=\"field.level\" is-read-only=\"true\" binding=\"empLevel\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Emp Skill\" ng-if=\"field.skill\" is-read-only=\"true\" binding=\"empskill\"> </wj-flex-grid-column>\n" +
@@ -9380,7 +9538,7 @@ angular.module("ct-app/reports/timecardExport/timecardExport.tpl.html", []).run(
     "                <wj-flex-grid-column header=\"Job Group\" ng-if=\"field.jobgroup\" is-read-only=\"true\" binding=\"jobGroup\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Job Ext 1\" ng-if=\"field.jobext1\" is-read-only=\"true\" binding=\"jobext1\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Job Ext 2\" ng-if=\"field.jobext2\" is-read-only=\"true\" binding=\"jobext2\"> </wj-flex-grid-column>\n" +
-    "                <wj-flex-grid-column header=\"Job Ext 3\" ng-if=\"field.jobext3\" is-read-only=\"true\" binding=\"jobext3\"> </wj-flex-grid-column>\n" +
+    "                <!--<wj-flex-grid-column header=\"Job Ext 3\" ng-if=\"field.jobext3\" is-read-only=\"true\" binding=\"jobext3\"> </wj-flex-grid-column>-->\n" +
     "\n" +
     "            </wj-flex-grid>\n" +
     "            <div class=\"row wrapper\">\n" +
@@ -10952,6 +11110,13 @@ angular.module("partials/header.tpl.html", []).run(["$templateCache", function($
     "          <a ui-sref=\"ctApp.authorizedVsActuall\">\n" +
     "            <span>\n" +
     "             Authorized Vs Actual Report\n" +
+    "            </span>\n" +
+    "          </a>\n" +
+    "        </li>\n" +
+    "        <li data-access-level=\"accessLevels.budgetVsActual\">\n" +
+    "          <a ui-sref=\"ctApp.budgetVsActual\">\n" +
+    "            <span>\n" +
+    "             Budget vs Actual Report\n" +
     "            </span>\n" +
     "          </a>\n" +
     "        </li>\n" +

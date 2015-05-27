@@ -41,7 +41,8 @@ angular.module('utils.ct.filters', []).filter('fromNow', function () {
           });
           return temp.join(',');
         } else if (ifMe === 'zone' || ifMe === 'text') {
-          if (data) {
+          tempar = '';
+          if (data && data != 'null') {
             temp = JSON.parse(data);
             tempar = temp.text + ' (' + temp.id + ')';
             /* angular.forEach(temp, function(value, key) {
@@ -49,6 +50,7 @@ angular.module('utils.ct.filters', []).filter('fromNow', function () {
                      })*/
             return tempar;  //temp.join(",");
           }
+          return tempar;
         }
         if (fieldToShow) {
           temp = JSON.parse(data);

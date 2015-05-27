@@ -363,6 +363,17 @@
           'CorporateBillingDepartment',
           'Scheduler'
         ],
+        'budgetVsActual': [
+          'SuperAdmin',
+          'Admin',
+          'HR',
+          'Nursing',
+          'OfficeClerical',
+          'OfficeMgr',
+          'OnCall',
+          'CorporateBillingDepartment',
+          'Scheduler'
+        ],
         'employeeList': [
           'SuperAdmin',
           'Admin',

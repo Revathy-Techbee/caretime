@@ -46,7 +46,8 @@ angular.module('utils.ct.filters', [])
                     });
                     return temp.join(",");
                 }else if(ifMe === 'zone' || ifMe === 'text'){
-                    if(data)
+                  tempar="";
+                    if(data && data != 'null')
                     {
                         temp = JSON.parse(data);
                     tempar = temp.text+" ("+temp.id+")";
@@ -55,7 +56,7 @@ angular.module('utils.ct.filters', [])
                      })*/
                     return tempar;//temp.join(",");
                     }
-                    
+                    return tempar; 
                 }
 
                 if(fieldToShow){
