@@ -339,7 +339,7 @@ angular.module('ctApp.zones', ['ui.router']).config([
               $scope.savedisable = 0;
               $scope.showerrorMsg = true;
               $scope.ErrorClass = 'danger';
-              $scope.ErrorMsg = 'Zone Alread Exist!!!';
+              $scope.ErrorMsg = 'Zone name exists, type a different name!!!';
               jQuery('.basic .ng-invalid').addClass('ng-dirty');
               $scope.savedisable = 0;
               $timeout(function () {

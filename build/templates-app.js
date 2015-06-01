@@ -168,7 +168,7 @@ angular.module("access/sign-in/sign-in.tpl.html", []).run(["$templateCache", fun
     "        \n" +
     "        <div class=\"m-b-lg\">\n" +
     "            <div class=\"wrapper text-center\">\n" +
-    "                <strong>Enter your email address and Password to access the system</strong>\n" +
+    "                <strong>Enter your Username and Password to access the system</strong>\n" +
     "            </div>\n" +
     "            <form name=\"singInForm\" class=\"form-validation form-horizontal general\"\n" +
     "                  rc-submit=\"signInUser()\" novalidate>\n" +
@@ -3601,6 +3601,7 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "                            </div>\n" +
     "\n" +
     "                        </div> -->\n" +
+    "                        <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
     "                        <div class=\"form-group\">\n" +
     "\n" +
     "                            <label class=\"col-sm-2 control-label\">Budgeted Hours</label>\n" +
@@ -3783,7 +3784,8 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "                </tab>\n" +
     "                <tab heading=\"Activity Code\" disabled=\"basic.$invalid\" active=\"jobSteps.activityCode\" select=\"jobSteps.percent=75\">\n" +
     "\n" +
-    "                    <p class=\"m-b\"><i class=\"fa fa-question-circle\"></i> Add Activity Code.</p>\n" +
+    "                    <p class=\"m-b\"><i class=\"fa fa-question-circle\"></i> Use this tab to set up Activity Code. Select a default activity code if Job is associated with a particular activity (employee will not be required to enter activity code when clocking out). If more than one activity applies, select Prompt for Code and employee can enter code when clocking out.\n" +
+    "                        Note: Use Manage Lists, Activity Code to set up library of activities</p>\n" +
     "\n" +
     "                    <progressbar value=\"jobSteps.percent\" class=\"progress-xs\" type=\"success\"></progressbar>\n" +
     "\n" +
@@ -3814,11 +3816,13 @@ angular.module("ct-app/jobs/add-update-job.tpl.html", []).run(["$templateCache",
     "                            </div>\n" +
     "                        </div>\n" +
     "\n" +
+    "                        <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
+    "\n" +
     "                        <div class=\"form-group\">\n" +
     "\n" +
     "                            <div class=\"col-sm-9\">\n" +
     "\n" +
-    "                                <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\" ng-click=\"jobManagePrev('notes')\">Prev</button>\n" +
+    "                                <button type=\"button\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\" ng-click=\"jobManagePrev('activityCode')\">Prev</button>\n" +
     "\n" +
     "                                <button type=\"submit\" ng-disabled=\"savedisable == 1\" class=\"btn btn-default btn-rounded\">Next</button>\n" +
     "                                <button type=\"button\" ng-click=\"jobManage('notes', false)\" class=\"btn btn-primary btn-rounded\" ng-disabled=\"savedisable == 1\">Save changes</button>\n" +
@@ -7523,7 +7527,7 @@ angular.module("ct-app/reports/budgetVsActual/budgetVsActual.tpl.html", []).run(
     "\n" +
     "        <div class=\"row wrapper\">\n" +
     "            <div class=\"col-sm-6\">\n" +
-    "                <button class=\"btn btn-md btn-info\" type=\"button\" ng-click=\"updateTableData()\">Search</button>\n" +
+    "                <button class=\"btn btn-md btn-info\" type=\"button\" ng-click=\"updateTableData()\" ng-disabled=\"show_activities_loader\">Search</button>\n" +
     "                <button class=\"btn btn-md btn-warning\" type=\"button\" ng-click=\"clearSearch()\">Clear</button>\n" +
     "                <span class=\"alert alert-danger\" ng-if=\"showerrorMsg\">{{error_msg}}</span>\n" +
     "\n" +
@@ -9407,6 +9411,12 @@ angular.module("ct-app/reports/timecardExport/timecardExport.tpl.html", []).run(
     "                            </td>-->\n" +
     "                             <td>\n" +
     "                                <label class=\"i-checks\">\n" +
+    "                                    <input type=\"checkbox\" value=\"1\" ng-model=\"field.ActivityName\">\n" +
+    "                                    <i></i> Activity Name\n" +
+    "                                </label>\n" +
+    "                            </td>\n" +
+    "                            <td>\n" +
+    "                                <label class=\"i-checks\">\n" +
     "                                    <input type=\"checkbox\" value=\"1\" ng-model=\"field.ActivityCode\">\n" +
     "                                    <i></i> Activity Code\n" +
     "                                </label>\n" +
@@ -9515,6 +9525,7 @@ angular.module("ct-app/reports/timecardExport/timecardExport.tpl.html", []).run(
     "                <wj-flex-grid-column header=\"Rounded Hrs\" ng-if=\"field.roundedhrs\" is-read-only=\"true\" binding=\"work_duration_rounded_number\" format=\"n2\" aggregate=\"Sum\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"(h m)\" ng-if=\"field.roundedhrs\" is-read-only=\"true\" binding=\"work_duration_rounded_formated\" format=\"n2\"> </wj-flex-grid-column>\n" +
     "                 <wj-flex-grid-column header=\"Activity Code\" is-read-only=\"true\"  ng-if=\"field.ActivityCode\" binding=\"activities\"> </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"Activity Name\" is-read-only=\"true\"  ng-if=\"field.ActivityName\" binding=\"activitiesName\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Emp Name\" ng-if=\"field.empname\" is-read-only=\"true\" binding=\"employee_name\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Emp Level\" ng-if=\"field.level\" is-read-only=\"true\" binding=\"empLevel\"> </wj-flex-grid-column>\n" +
     "                <wj-flex-grid-column header=\"Emp Skill\" ng-if=\"field.skill\" is-read-only=\"true\" binding=\"empskill\"> </wj-flex-grid-column>\n" +

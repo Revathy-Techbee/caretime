@@ -543,6 +543,16 @@ angular.module('ctApp.jobs', [
                         $scope.savejobDetail();
                     } else {
                         $scope.savedisable = 0;
+                        $scope.jobSteps.activityCode = true;
+                    }
+                }
+
+                if (step == "activityCode") {
+                    if (submit === false) {
+                        $scope.savedisable = 1;
+                        $scope.savejobDetail();
+                    } else {
+                        $scope.savedisable = 0;
                         $scope.jobSteps.customPrompt = true;
                     }
 
@@ -832,7 +842,7 @@ angular.module('ctApp.jobs', [
                                
                                 
                                 $scope.modalInstance = $modal.open({
-                                template: '<div class="modal-body"><div class="alert alert-warning"> There is a job already in the system named '+$scope.job.job_name +'. Please make sure you are not creating a duplicate job.<br>Do you want to still continue creating new job '+$scope.job.job_name+'?</div></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">No</button><button class="btn btn-primary" ng-click="all()">Yes</button> </div>',
+                                template: '<div class="modal-body"><div class="alert alert-warning"> A job exists with the name '+$scope.job.job_name +'. Please make sure you are not creating a duplicate job.<br>Do you want to still continue creating new job '+$scope.job.job_name+'?</div></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">No</button><button class="btn btn-primary" ng-click="all()">Yes</button> </div>',
                                 controller: "JobNameCtrl"
 
                             });
@@ -879,7 +889,7 @@ angular.module('ctApp.jobs', [
                                
                                 
                                 $scope.modalInstance = $modal.open({
-                                template: '<div class="modal-body"><div class="alert alert-warning"> There is a job already have that address '+$scope.job.job_address1  +'. Please make sure you are not creating a duplicate address.<br>Do you want to still continue ?</div></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">No</button><button class="btn btn-primary" ng-click="all()">Yes</button> </div>',
+                                template: '<div class="modal-body"><div class="alert alert-warning"> A job exists with the address '+$scope.job.job_address1  +'. Please make sure you are not creating a duplicate address.<br>Do you want to still continue ?</div></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">No</button><button class="btn btn-primary" ng-click="all()">Yes</button> </div>',
                                 controller: "JobNameCtrl"
 
                             });
@@ -1451,10 +1461,10 @@ angular.module('ctApp.jobs', [
                         fields: "name,code",
                         filter: "status > 0 and agency_id = " + Services.getAgencyID(),
                         order: 'name asc',
-                        limit: 5
+                        limit: 20
                     };
                     if (query.term) {
-                        $scope.activity.filter += " and name like '%" + query.term + "%'";
+                        $scope.activityObj.filter += " and name like '%" + query.term + "%'";
                     }
 
                     Services.activity_code.get($scope.activityObj, function(remoteData) {
@@ -1530,6 +1540,7 @@ angular.module('ctApp.jobs', [
                     $scope.jobSteps.location = false;
                     $scope.jobSteps.basic = true;
                     $scope.jobSteps.advanced = false;
+                    $scope.jobSteps.activityCode = false;
                     $scope.jobSteps.customPrompt = false;
                 }
 
@@ -1538,6 +1549,7 @@ angular.module('ctApp.jobs', [
                     $scope.jobSteps.location = true;
                     $scope.jobSteps.basic = false;
                     $scope.jobSteps.advanced = false;
+                    $scope.jobSteps.activityCode = false;
                     $scope.jobSteps.customPrompt = false;
                 }
                 if (step == "schedule") {
@@ -1545,6 +1557,7 @@ angular.module('ctApp.jobs', [
                     $scope.jobSteps.schedule = false;
                     $scope.jobSteps.advanced = true;
                     $scope.jobSteps.basic = false;
+                    $scope.jobSteps.activityCode = false;
                     $scope.jobSteps.customPrompt = false;
                 }
                 if (step == "notes") {
@@ -1552,13 +1565,25 @@ angular.module('ctApp.jobs', [
                     $scope.jobSteps.schedule = false;
                     $scope.jobSteps.advanced = true;
                     $scope.jobSteps.notes = false;
+                    $scope.jobSteps.activityCode = false;
                     $scope.jobSteps.customPrompt = false;
                 }
-                if (step == "customPrompt") {
+
+                if (step == "activityCode") {
                     $scope.jobSteps.location = false;
                     $scope.jobSteps.schedule = false;
                     $scope.jobSteps.advanced = false;
                     $scope.jobSteps.notes = true;
+                    $scope.jobSteps.activityCode = false;
+                    $scope.jobSteps.customPrompt = false;
+                }
+
+                if (step == "customPrompt") {
+                    $scope.jobSteps.location = false;
+                    $scope.jobSteps.schedule = false;
+                    $scope.jobSteps.advanced = false;
+                    $scope.jobSteps.notes = false;
+                    $scope.jobSteps.activityCode = true;
                     $scope.jobSteps.customPrompt = false;
                 }
             };

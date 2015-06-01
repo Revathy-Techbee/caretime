@@ -174,6 +174,12 @@
                             </td>-->
                              <td>
                                 <label class="i-checks">
+                                    <input type="checkbox" value="1" ng-model="field.ActivityName">
+                                    <i></i> Activity Name
+                                </label>
+                            </td>
+                            <td>
+                                <label class="i-checks">
                                     <input type="checkbox" value="1" ng-model="field.ActivityCode">
                                     <i></i> Activity Code
                                 </label>
@@ -282,6 +288,7 @@
                 <wj-flex-grid-column header="Rounded Hrs" ng-if="field.roundedhrs" is-read-only="true" binding="work_duration_rounded_number" format="n2" aggregate="Sum"> </wj-flex-grid-column>
                 <wj-flex-grid-column header="(h m)" ng-if="field.roundedhrs" is-read-only="true" binding="work_duration_rounded_formated" format="n2"> </wj-flex-grid-column>
                  <wj-flex-grid-column header="Activity Code" is-read-only="true"  ng-if="field.ActivityCode" binding="activities"> </wj-flex-grid-column>
+                <wj-flex-grid-column header="Activity Name" is-read-only="true"  ng-if="field.ActivityName" binding="activitiesName"> </wj-flex-grid-column>
                 <wj-flex-grid-column header="Emp Name" ng-if="field.empname" is-read-only="true" binding="employee_name"> </wj-flex-grid-column>
                 <wj-flex-grid-column header="Emp Level" ng-if="field.level" is-read-only="true" binding="empLevel"> </wj-flex-grid-column>
                 <wj-flex-grid-column header="Emp Skill" ng-if="field.skill" is-read-only="true" binding="empskill"> </wj-flex-grid-column>

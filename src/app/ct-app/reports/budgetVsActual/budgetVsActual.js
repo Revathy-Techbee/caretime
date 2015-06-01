@@ -84,26 +84,28 @@ angular.module('ctApp.budgetVsActual', [
                     'fields': 'budgeted_hours,job_code',
                     'filter': 'job_code   IN (' + $scope.jobCode + ') and agency_id = ' + Services.getAgencyID()
                 };
-                Services.jobService.get($scope.jobFilterObj, function(jobnameresult) {
 
-                    angular.forEach(jobnameresult.record, function(value, key) {
-                        if (value.job_code) {
-                            $scope.jobNameList[value.job_code] = value.budgeted_hours;
-                        }
-                    });
-                   // console.log($scope.jobNameList);
-                    angular.forEach($scope.activitiesResult, function(item, key) {
-                        //console.log(item.Job_code);
-                       // console.log($scope.jobNameList[item.Job_code]);
-                         $scope.budgetedHours=($scope.jobNameList[item.Job_code])?$scope.jobNameList[item.Job_code]:0;
-                        $scope.difference=($scope.budgetedHours)-(item["sum(work_duration_non_rounded_number)"]);
+                if(data.record.length >0) {
+                    Services.jobService.get($scope.jobFilterObj, function (jobnameresult) {
 
-                        $scope.resultData.push({
+                        angular.forEach(jobnameresult.record, function (value, key) {
+                            if (value.job_code) {
+                                $scope.jobNameList[value.job_code] = value.budgeted_hours;
+                            }
+                        });
+                        // console.log($scope.jobNameList);
+                        angular.forEach($scope.activitiesResult, function (item, key) {
+                            //console.log(item);
+                            // console.log($scope.jobNameList[item.Job_code]);
+                            $scope.budgetedHours = ($scope.jobNameList[item.Job_code]) ? $scope.jobNameList[item.Job_code] : 0;
+                            $scope.difference = ($scope.budgetedHours) - (item["sum(work_duration_non_rounded_number)"]);
+
+                            $scope.resultData.push({
                                 "actualHours": ((item["sum(work_duration_non_rounded_number)"]) ? Number(parseFloat(item["sum(work_duration_non_rounded_number)"].replace(',', '')).toFixed(2)) : "0"),
                                 "jobCode": item.Job_code,
                                 "jobDetail": item.job_name + ' (' + item.Job_code + ')',
-                                "budgetedHours":parseFloat($scope.budgetedHours).toFixed(2),
-                                "zoneDetail": item.job_name + ' (' + item.Job_code + ')',
+                                "budgetedHours": parseFloat($scope.budgetedHours).toFixed(2),
+                                "zoneDetail": item.Zone_name + ' (' + item.Zone_code + ')',
                                 "difference": parseFloat($scope.difference).toFixed(2)
 
                                 /* "employee_code": item.employee_code,
@@ -119,50 +121,55 @@ angular.module('ctApp.budgetVsActual', [
                                  "work_duration_rounded": item.work_duration_rounded,
                                  "work_duration_rounded_number": ((item.work_duration_rounded_number) ? Number(parseFloat(item.work_duration_rounded_number.replace(',', ''))) : "0"),
                                  "work_duration_rounded_formated": ((item.work_duration_rounded) ? HelperService.formating_hours(item.work_duration_rounded) :"(0h 0m)"),
-                                  "activities":$scope.activityCode*/
+                                 "activities":$scope.activityCode*/
 
                             });
 
-                    });
-                
-                    if (data.meta.count > (offset + $scope.call_limit)) {
+                        });
 
-                        var nextOffset = offset + $scope.call_limit + 1;
-                        $scope.loadData(fdate, ldate, zone, job, nextOffset);
-                    } else {
-                        $scope.show_activities_loader = false;
-                        if ($scope.resultData.length !== 0) {
-                            $scope.noRecord = 0;
-                            $scope.showRecord = 1;
-                            $scope.ctx = {
-                                flexGrid: null,
-                                data: $scope.resultData,
-                                includeColumnHeader: true
-                            };
-                            $scope.BudgetedDetails = new wijmo.collections.CollectionView($scope.resultData);
-                            $scope.BudgetedDetails.pageSize = 10;
-                            /*$scope.groupBy = 'Job_code';
-                            var cv = $scope.BudgetedDetails;
-                            cv.groupDescriptions.clear(); // clear current groups
-                            if ($scope.groupBy) {
-                                var groupNames = $scope.groupBy.split(',');
-                                for (var i = 0; i < groupNames.length; i++) {
-                                    var groupName = groupNames[i];
-                                    var groupDesc = new wijmo.collections.PropertyGroupDescription(groupName);
-                                    cv.groupDescriptions.push(groupDesc);
+                        if (data.meta.count > (offset + $scope.call_limit)) {
 
-                                }
-                            }*/
-
-
-
+                            var nextOffset = offset + $scope.call_limit + 1;
+                            $scope.loadData(fdate, ldate, zone, job, nextOffset);
                         } else {
-                            $scope.noRecord = 1;
-                            $scope.norecord = HelperService.errorMsg('alert-danger', 'No Record Found');
-                        }
+                            $scope.show_activities_loader = false;
+                            if ($scope.resultData.length !== 0) {
+                                $scope.noRecord = 0;
+                                $scope.showRecord = 1;
+                                $scope.ctx = {
+                                    flexGrid: null,
+                                    data: $scope.resultData,
+                                    includeColumnHeader: true
+                                };
+                                $scope.BudgetedDetails = new wijmo.collections.CollectionView($scope.resultData);
+                                $scope.BudgetedDetails.pageSize = 10;
+                                /*$scope.groupBy = 'Job_code';
+                                 var cv = $scope.BudgetedDetails;
+                                 cv.groupDescriptions.clear(); // clear current groups
+                                 if ($scope.groupBy) {
+                                 var groupNames = $scope.groupBy.split(',');
+                                 for (var i = 0; i < groupNames.length; i++) {
+                                 var groupName = groupNames[i];
+                                 var groupDesc = new wijmo.collections.PropertyGroupDescription(groupName);
+                                 cv.groupDescriptions.push(groupDesc);
 
-                    }
-                });
+                                 }
+                                 }*/
+
+
+                            } else {
+                                $scope.show_activities_loader = false;
+                                $scope.noRecord = 1;
+                                $scope.norecord = HelperService.errorMsg('alert-danger', 'No Record Found');
+                            }
+
+                        }
+                    });
+                }else {
+                    $scope.show_activities_loader = false;
+                    $scope.noRecord = 1;
+                    $scope.norecord = HelperService.errorMsg('alert-danger', 'No Record Found');
+                }
             });
 
         };
@@ -194,6 +201,8 @@ angular.module('ctApp.budgetVsActual', [
         };
 
         $scope.updateTableData = function(isFilter) { // on limit change
+
+            $scope.resultData = [];
 
             if ($scope.reportFilters.startDate && $scope.reportFilters.endDate) {
 

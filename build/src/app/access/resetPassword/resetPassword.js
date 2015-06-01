@@ -26,7 +26,8 @@ angular.module('access.resetPassword', ['ui.router']).config([
   '$rootScope',
   function ($scope, Services, $state, $timeout, $http, $stateParams, $rootScope) {
     $timeout(function () {
-      $scope.agencyName = $rootScope.dfAgencyNameVariable;
+      //$scope.agencyName = $rootScope.dfAgencyNameVariable;
+      $scope.agencyName = angular.isString($rootScope.dfAgencyNameVariable) ? $rootScope.dfAgencyNameVariable : '';
       $scope.$on('AgencyNameVariable', function () {
         $scope.agencyName = $rootScope.dfAgencyNameVariable;
       });

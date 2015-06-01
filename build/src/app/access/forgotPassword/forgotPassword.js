@@ -26,7 +26,8 @@ angular.module('access.forgotPassword', ['ui.router']).config([
   '$rootScope',
   function ($scope, Services, $state, $timeout, $http, $localStorage, $rootScope) {
     $scope.savedisable = 0;
-    $scope.agencyName = $rootScope.dfAgencyNameVariable;
+    //$scope.agencyName = $rootScope.dfAgencyNameVariable;
+    $scope.agencyName = angular.isString($rootScope.dfAgencyNameVariable) ? $rootScope.dfAgencyNameVariable : '';
     $scope.$on('AgencyNameVariable', function () {
       $scope.agencyName = $rootScope.dfAgencyNameVariable;
     });

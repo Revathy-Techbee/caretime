@@ -26,7 +26,8 @@ angular.module('access.employeeLogin', ['ui.router']).config([
   '$stateParams',
   function ($scope, $rootScope, $http, Services, $state, $timeout, $stateParams) {
     $scope.updateuser = false;
-    $scope.agencyName = $rootScope.dfAgencyNameVariable;
+    //$scope.agencyName = $rootScope.dfAgencyNameVariable;
+    $scope.agencyName = angular.isString($rootScope.dfAgencyNameVariable) ? $rootScope.dfAgencyNameVariable : '';
     $scope.$on('AgencyNameVariable', function () {
       $scope.agencyName = $rootScope.dfAgencyNameVariable;
     });

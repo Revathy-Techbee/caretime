@@ -890,7 +890,7 @@ angular.module('ctApp.employees', [
         Services.employeeService.get(filterObj, function (data) {
           if (data.record.length > 0) {
             $scope.modalInstance = $modal.open({
-              template: '<div class="modal-body"><div class="alert alert-warning"> There is a employee already in the system named ' + $scope.employee.firstname + ' ' + $scope.employee.lastname + '. Please make sure you are not creating a duplicate employee.<br>Do you want to still continue creating new employee ' + $scope.employee.firstname + ' ' + $scope.employee.lastname + '?</div></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">No</button><button class="btn btn-primary" ng-click="all()">Yes</button> </div>',
+              template: '<div class="modal-body"><div class="alert alert-warning"> An employee exists with the name ' + $scope.employee.firstname + ' ' + $scope.employee.lastname + '. Please make sure you are not creating a duplicate employee.<br>Do you want to still continue creating new employee ' + $scope.employee.firstname + ' ' + $scope.employee.lastname + '?</div></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">No</button><button class="btn btn-primary" ng-click="all()">Yes</button> </div>',
               controller: 'EmpNameCtrl'
             });
             $scope.modalInstance.result.then(function (id) {
@@ -922,7 +922,7 @@ angular.module('ctApp.employees', [
         Services.employeeService.get(filterObj, function (data) {
           if (data.record.length > 0) {
             $scope.modalInstance = $modal.open({
-              template: '<div class="modal-body"><div class="alert alert-warning"> There is a employee already have that address ' + $scope.employee.address1 + '. Please make sure you are not creating a duplicate address.<br>Do you want to still continue ?</div></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">No</button><button class="btn btn-primary" ng-click="all()">Yes</button> </div>',
+              template: '<div class="modal-body"><div class="alert alert-warning"> An employee exists with the  address ' + $scope.employee.address1 + '. Please make sure you are not creating a duplicate address.<br>Do you want to still continue ?</div></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">No</button><button class="btn btn-primary" ng-click="all()">Yes</button> </div>',
               controller: 'EmpNameCtrl'
             });
             $scope.modalInstance.result.then(function (id) {

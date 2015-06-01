@@ -1593,7 +1593,7 @@ angular.module('ctApp.timeCard', [
           limit: 5
         };
         if (query.term) {
-          $scope.activity.filter += ' and name like \'%' + query.term + '%\'';
+          $scope.activityObj.filter += ' and name like \'%' + query.term + '%\'';
         }
         Services.activity_code.get($scope.activityObj, function (remoteData) {
           $scope.activityData = { results: [] };

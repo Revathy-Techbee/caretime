@@ -325,6 +325,7 @@
                             </div>
 
                         </div> -->
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
                         <div class="form-group">
 
                             <label class="col-sm-2 control-label">Budgeted Hours</label>
@@ -507,7 +508,8 @@
                 </tab>
                 <tab heading="Activity Code" disabled="basic.$invalid" active="jobSteps.activityCode" select="jobSteps.percent=75">
 
-                    <p class="m-b"><i class="fa fa-question-circle"></i> Add Activity Code.</p>
+                    <p class="m-b"><i class="fa fa-question-circle"></i> Use this tab to set up Activity Code. Select a default activity code if Job is associated with a particular activity (employee will not be required to enter activity code when clocking out). If more than one activity applies, select Prompt for Code and employee can enter code when clocking out.
+                        Note: Use Manage Lists, Activity Code to set up library of activities</p>
 
                     <progressbar value="jobSteps.percent" class="progress-xs" type="success"></progressbar>
 
@@ -538,11 +540,13 @@
                             </div>
                         </div>
 
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+
                         <div class="form-group">
 
                             <div class="col-sm-9">
 
-                                <button type="button" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded" ng-click="jobManagePrev('notes')">Prev</button>
+                                <button type="button" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded" ng-click="jobManagePrev('activityCode')">Prev</button>
 
                                 <button type="submit" ng-disabled="savedisable == 1" class="btn btn-default btn-rounded">Next</button>
                                 <button type="button" ng-click="jobManage('notes', false)" class="btn btn-primary btn-rounded" ng-disabled="savedisable == 1">Save changes</button>

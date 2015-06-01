@@ -49,7 +49,7 @@
 
         <div class="row wrapper">
             <div class="col-sm-6">
-                <button class="btn btn-md btn-info" type="button" ng-click="updateTableData()">Search</button>
+                <button class="btn btn-md btn-info" type="button" ng-click="updateTableData()" ng-disabled="show_activities_loader">Search</button>
                 <button class="btn btn-md btn-warning" type="button" ng-click="clearSearch()">Clear</button>
                 <span class="alert alert-danger" ng-if="showerrorMsg">{{error_msg}}</span>
 

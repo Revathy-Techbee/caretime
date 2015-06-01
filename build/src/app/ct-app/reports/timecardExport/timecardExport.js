@@ -119,7 +119,9 @@ angular.module('ctApp.timecardExport', [
               angular.forEach(data.record, function (item, key) {
                 $scope.activityCode = '';
                 if (item.activity_code) {
-                  $scope.activityCode = item.activity_name + '(' + item.activity_code + ')';
+                  $scope.activityCode = item.activity_code;
+                  //item.activity_name+'('+item.activity_code+')';
+                  $scope.activityName = item.activity_name;  //item.activity_name+'('+item.activity_code+')';
                 }
                 $scope.resultData.push({
                   'employee_code': item.employee_code,
@@ -156,7 +158,8 @@ angular.module('ctApp.timecardExport', [
                   'jobext1': $scope.jobData[item.Job_code] ? $scope.jobData[item.Job_code].jobext1 : '',
                   'jobext2': $scope.jobData[item.Job_code] ? $scope.jobData[item.Job_code].jobext2 : '',
                   'jobext3': $scope.jobData[item.Job_code] ? $scope.jobData[item.Job_code].jobext3 : '',
-                  'activities': $scope.activityCode
+                  'activities': $scope.activityCode,
+                  'activitiesName': $scope.activityName
                 });
               });
               if (data.meta.count > offset + $scope.call_limit) {

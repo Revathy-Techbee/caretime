@@ -22,10 +22,12 @@ angular.module('access.signIn', [
     .controller("SignInCtrl", ["$scope", "$rootScope", "Services", "$state", "$timeout", "Auth",
         function($scope, $rootScope, Services, $state, $timeout, Auth) {
             $scope.user = {};
-            $scope.agencyName = $rootScope.dfAgencyNameVariable;
-
+            $scope.agencyName = ((angular.isString($rootScope.dfAgencyNameVariable))?$rootScope.dfAgencyNameVariable:"");
+            //console.log($rootScope.dfAgencyNameVariable);
             $scope.$on('AgencyNameVariable', function() {
-            $scope.agencyName = $rootScope.dfAgencyNameVariable;
+
+               // console.log($rootScope.dfAgencyNameVariable);
+                $scope.agencyName = $rootScope.dfAgencyNameVariable;
 
             });
 
