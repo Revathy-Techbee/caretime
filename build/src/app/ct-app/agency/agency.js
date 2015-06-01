@@ -77,7 +77,9 @@ angular.module('ctApp.agency', ['ui.router']).config([
         $scope.agency.editedOn = HelperService.convertUTCtoMytimeZone($scope.agencyDBField.edited_on);
         $scope.agency.edited_by = $scope.agencyDBField.edited_by;
         $scope.agency.created_on = HelperService.convertUTCtoMytimeZone($scope.agencyDBField.created_on);
-        $scope.agency.created_by = $scope.agencyDBField.created_by;  /*
+        $scope.agency.created_by = $scope.agencyDBField.created_by;
+        $scope.agency.default_view = $scope.agencyDBField.default_view ? $scope.agencyDBField.default_view : '0';
+        $scope.agency.populateShift = $scope.agencyDBField.populate_shift ? $scope.agencyDBField.populate_shift : '0';  /*
             $scope.generateAgencyCode = function(lastIdDB) {
 
                 var temp = lastIdDB;
@@ -97,6 +99,8 @@ angular.module('ctApp.agency', ['ui.router']).config([
           status: '1'
         }];
       $scope.agency.payclasses.addshow = -1;
+      $scope.agency.default_view = '0';
+      $scope.agency.populateShift = '0';
     }
     $scope.agencyManage = function (step) {
       if (step == 'general') {
@@ -176,6 +180,8 @@ angular.module('ctApp.agency', ['ui.router']).config([
         $scope.agencyDBField.pay_period = $scope.agency.pay_period;
         $scope.agencyDBField.work_week = $scope.agency.work_week;
         $scope.agencyDBField.notify_interval = $scope.agency.notify_interval;
+        $scope.agencyDBField.default_view = $scope.agency.default_view;
+        $scope.agencyDBField.populate_shift = $scope.agency.populateShift;
         if (!angular.isUndefined($stateParams.agencyId) && $stateParams.agencyId) {
           // means it is in edit state 
           //	console.log("muni",$localStorage);

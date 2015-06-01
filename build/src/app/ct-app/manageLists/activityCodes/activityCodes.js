@@ -173,120 +173,133 @@ angular.module('ctApp.activityCodes', ['ui.router']).config([
     $scope.getActivityCodeDetail();
     $scope.activityCodeManage = function () {
       $scope.showerrorMsg = false;
-      if ($scope.addUpdateActivityCodeForm.$valid) {
-        $scope.show_activityCode_form_loader = true;
-        $scope.savedisable = 1;
-        $scope.filterObj = {
-          field: 'id',
-          filter: '(name="' + $scope.activityCode.name + '"  or code ="' + $scope.activityCode.code + '") and  agency_id = ' + Services.getAgencyID()
-        };
-        if (!angular.isUndefined($scope.activityCode_id) && $scope.activityCode_id) {
-          $scope.filterObj.filter += ' and id <>' + $scope.activityCode_id;
-        }
-        Services.activity_code.get($scope.filterObj, function (data) {
-          if (data.record.length > 0) {
-            if (data.record[0].code == $scope.activityCode.code) {
-              $scope.show_activityCode_form_loader = false;
-              $scope.savedisable = 0;
-              $scope.showerrorMsg = true;
-              $scope.ErrorClass = 'danger';
-              $scope.ErrorMsg = 'Activity Code Alread Exist!!!';
-              jQuery('.basic .ng-invalid').addClass('ng-dirty');
-              $timeout(function () {
-                $scope.showerrorMsg = false;
-              }, 3000);
+      if ($scope.activityCode.code > 0) {
+        if ($scope.addUpdateActivityCodeForm.$valid) {
+          $scope.show_activityCode_form_loader = true;
+          $scope.savedisable = 1;
+          $scope.filterObj = {
+            field: 'id',
+            filter: '(name="' + $scope.activityCode.name + '"  or code ="' + $scope.activityCode.code + '") and  agency_id = ' + Services.getAgencyID()
+          };
+          if (!angular.isUndefined($scope.activityCode_id) && $scope.activityCode_id) {
+            $scope.filterObj.filter += ' and id <>' + $scope.activityCode_id;
+          }
+          Services.activity_code.get($scope.filterObj, function (data) {
+            if (data.record.length > 0) {
+              if (data.record[0].code == $scope.activityCode.code) {
+                $scope.show_activityCode_form_loader = false;
+                $scope.savedisable = 0;
+                $scope.showerrorMsg = true;
+                $scope.ErrorClass = 'danger';
+                $scope.ErrorMsg = 'Activity Code Alread Exist!!!';
+                jQuery('.basic .ng-invalid').addClass('ng-dirty');
+                $timeout(function () {
+                  $scope.showerrorMsg = false;
+                }, 3000);
+                return false;
+              } else {
+                $scope.show_activityCode_form_loader = false;
+                $scope.savedisable = 0;
+                $scope.showerrorMsg = true;
+                $scope.ErrorClass = 'danger';
+                $scope.ErrorMsg = 'Activity Name Alread Exist!!!';
+                jQuery('.basic .ng-invalid').addClass('ng-dirty');
+                $timeout(function () {
+                  $scope.showerrorMsg = false;
+                }, 3000);
+              }
               return false;
             } else {
-              $scope.show_activityCode_form_loader = false;
-              $scope.savedisable = 0;
-              $scope.showerrorMsg = true;
-              $scope.ErrorClass = 'danger';
-              $scope.ErrorMsg = 'Activity Name Alread Exist!!!';
-              jQuery('.basic .ng-invalid').addClass('ng-dirty');
-              $timeout(function () {
-                $scope.showerrorMsg = false;
-              }, 3000);
-            }
-            return false;
-          } else {
-            $scope.activityCodeDBField = {
-              code: $scope.activityCode.code,
-              name: $scope.activityCode.name,
-              description: $scope.activityCode.description,
-              billed: $scope.activityCode.billed,
-              status: $scope.activityCode.status,
-              agency_id: Services.getAgencyID()
-            };
-            if ($scope.activityCode_id) {
-              // means it is in edit state
-              $scope.activityCodeDBField.edited_on = moment().utc();
-              $scope.activityCodeDBField.edited_by = JSON.stringify({
-                'username': $localStorage.user_info.username,
-                'firstname': $localStorage.user_info.first_name,
-                'lastname': $localStorage.user_info.last_name,
-                'user_id': $localStorage.user_info.user_id
-              });
-            } else {
-              $scope.activityCodeDBField.agency_id = Services.getAgencyID();
-              $scope.activityCodeDBField.created_on = moment().utc();
-              $scope.activityCodeDBField.created_by = JSON.stringify({
-                'username': $localStorage.user_info.username,
-                'firstname': $localStorage.user_info.first_name,
-                'lastname': $localStorage.user_info.last_name,
-                'user_id': $localStorage.user_info.user_id
-              });
-            }
-            if ($scope.activityCode_id) {
-              Services.activity_code.update({ id: $stateParams.activityCodeId }, $scope.activityCodeDBField, function (data) {
-                $scope.logger = {};
-                $scope.logger.userid = $localStorage.user_info.user_id;
-                $scope.logger.user_detail = JSON.stringify({
+              $scope.activityCodeDBField = {
+                code: $scope.activityCode.code,
+                name: $scope.activityCode.name,
+                description: $scope.activityCode.description,
+                billed: $scope.activityCode.billed,
+                status: $scope.activityCode.status,
+                agency_id: Services.getAgencyID()
+              };
+              if ($scope.activityCode_id) {
+                // means it is in edit state
+                $scope.activityCodeDBField.edited_on = moment().utc();
+                $scope.activityCodeDBField.edited_by = JSON.stringify({
                   'username': $localStorage.user_info.username,
                   'firstname': $localStorage.user_info.first_name,
-                  'lastname': $localStorage.user_info.last_name
+                  'lastname': $localStorage.user_info.last_name,
+                  'user_id': $localStorage.user_info.user_id
                 });
-                $scope.logger.action = 'Update';
-                $scope.logger.agency_id = Services.getAgencyID();
-                $scope.logger.action_id = data.id;
-                $scope.logger.action_table = 'activity_code';
-                $scope.logger.timestamp = moment().utc().format('YYYY-MM-DD HH:mm:ss');
-                Services.userLog.save({}, $scope.logger, function (data) {
-                });
-                $scope.show_activityCode_form_loader = false;
-                showMessageFunc('ActivityCode detail edited successfully.', 'success', function () {
-                  $timeout(function () {
-                    $scope.showerrorMsg = false;
-                    $state.go('ctApp.activityCodes');
-                  }, 3000);
-                });
-              });
-            } else {
-              Services.activity_code.save($scope.activityCodeDBField, function (data) {
-                $scope.logger = {};
-                $scope.logger.userid = $localStorage.user_info.user_id;
-                $scope.logger.user_detail = JSON.stringify({
+              } else {
+                $scope.activityCodeDBField.agency_id = Services.getAgencyID();
+                $scope.activityCodeDBField.created_on = moment().utc();
+                $scope.activityCodeDBField.created_by = JSON.stringify({
                   'username': $localStorage.user_info.username,
                   'firstname': $localStorage.user_info.first_name,
-                  'lastname': $localStorage.user_info.last_name
+                  'lastname': $localStorage.user_info.last_name,
+                  'user_id': $localStorage.user_info.user_id
                 });
-                $scope.logger.action = 'Add';
-                $scope.logger.agency_id = Services.getAgencyID();
-                $scope.logger.action_id = data.id;
-                $scope.logger.action_table = 'activity_code';
-                $scope.logger.timestamp = moment().utc().format('YYYY-MM-DD HH:mm:ss');
-                Services.userLog.save({}, $scope.logger, function (data) {
-                });
-                showMessageFunc('New ActivityCode added successfully.', 'success', function () {
+              }
+              if ($scope.activityCode_id) {
+                Services.activity_code.update({ id: $stateParams.activityCodeId }, $scope.activityCodeDBField, function (data) {
+                  $scope.logger = {};
+                  $scope.logger.userid = $localStorage.user_info.user_id;
+                  $scope.logger.user_detail = JSON.stringify({
+                    'username': $localStorage.user_info.username,
+                    'firstname': $localStorage.user_info.first_name,
+                    'lastname': $localStorage.user_info.last_name
+                  });
+                  $scope.logger.action = 'Update';
+                  $scope.logger.agency_id = Services.getAgencyID();
+                  $scope.logger.action_id = data.id;
+                  $scope.logger.action_table = 'activity_code';
+                  $scope.logger.timestamp = moment().utc().format('YYYY-MM-DD HH:mm:ss');
+                  Services.userLog.save({}, $scope.logger, function (data) {
+                  });
                   $scope.show_activityCode_form_loader = false;
-                  $timeout(function () {
-                    $scope.showerrorMsg = false;
-                    $state.go('ctApp.activityCodes');
-                  }, 3000);
+                  showMessageFunc('ActivityCode detail edited successfully.', 'success', function () {
+                    $timeout(function () {
+                      $scope.showerrorMsg = false;
+                      $state.go('ctApp.activityCodes');
+                    }, 3000);
+                  });
                 });
-              });
+              } else {
+                Services.activity_code.save($scope.activityCodeDBField, function (data) {
+                  $scope.logger = {};
+                  $scope.logger.userid = $localStorage.user_info.user_id;
+                  $scope.logger.user_detail = JSON.stringify({
+                    'username': $localStorage.user_info.username,
+                    'firstname': $localStorage.user_info.first_name,
+                    'lastname': $localStorage.user_info.last_name
+                  });
+                  $scope.logger.action = 'Add';
+                  $scope.logger.agency_id = Services.getAgencyID();
+                  $scope.logger.action_id = data.id;
+                  $scope.logger.action_table = 'activity_code';
+                  $scope.logger.timestamp = moment().utc().format('YYYY-MM-DD HH:mm:ss');
+                  Services.userLog.save({}, $scope.logger, function (data) {
+                  });
+                  showMessageFunc('New ActivityCode added successfully.', 'success', function () {
+                    $scope.show_activityCode_form_loader = false;
+                    $timeout(function () {
+                      $scope.showerrorMsg = false;
+                      $state.go('ctApp.activityCodes');
+                    }, 3000);
+                  });
+                });
+              }
             }
-          }
-        });
+          });
+        }
+      } else {
+        $scope.show_activityCode_form_loader = false;
+        $scope.savedisable = 0;
+        $scope.showerrorMsg = true;
+        $scope.ErrorClass = 'danger';
+        $scope.ErrorMsg = 'Activity code must be greater then 0 !!!';
+        jQuery('.basic .ng-invalid').addClass('ng-dirty');
+        $timeout(function () {
+          $scope.showerrorMsg = false;
+        }, 3000);
+        return false;
       }
     };
     var showMessageFunc = function (error_msg, error_class, callback) {

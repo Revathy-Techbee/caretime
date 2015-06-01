@@ -686,6 +686,35 @@ angular.module("admin/agency/add-update-agency.tpl.html", []).run(["$templateCac
     "			            </div>\n" +
     "			          </div>\n" +
     "			        </div>		\n" +
+    "			        <div class=\"form-group\">\n" +
+    "                        <label class=\"col-sm-2 control-label\">Schedule Default View</label>\n" +
+    "                        <div class=\"col-sm-10\">\n" +
+    "                            <label class=\"radio-inline i-checks\">\n" +
+    "                                <input type=\"radio\" name=\"default_view\" value=\"0\" ng-model=\"agency.default_view\"><i></i> Today\n" +
+    "                            </label>\n" +
+    "                            <label class=\"radio-inline i-checks\">\n" +
+    "                                <input type=\"radio\" name=\"default_view\" value=\"1\" ng-model=\"agency.default_view\"><i></i> Day\n" +
+    "                            </label>\n" +
+    "                            <label class=\"radio-inline i-checks\">\n" +
+    "                                <input type=\"radio\" name=\"default_view\" value=\"2\" ng-model=\"agency.default_view\"><i></i> Week\n" +
+    "                            </label>\n" +
+    "                            <label class=\"radio-inline i-checks\">\n" +
+    "                                <input type=\"radio\" name=\"default_view\" value=\"3\" ng-model=\"agency.default_view\"><i></i> Month\n" +
+    "                            </label>\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "                     <div class=\"form-group\">\n" +
+    "                        <label class=\"col-sm-2 control-label\">Populate Shift</label>\n" +
+    "                        <div class=\"col-sm-10\">\n" +
+    "                            <label class=\"radio-inline i-checks\">\n" +
+    "                                <input type=\"radio\" name=\"populateShift\" value=\"1\" ng-model=\"agency.populateShift\"><i></i> Yes\n" +
+    "                            </label>\n" +
+    "                            <label class=\"radio-inline i-checks\">\n" +
+    "                                <input type=\"radio\" name=\"populateShift\" value=\"0\" ng-model=\"agency.populateShift\"><i></i> No\n" +
+    "                            </label>\n" +
+    "                            \n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
     "			        <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
     "			        \n" +
     "			        <div class=\"form-group\">\n" +
@@ -1231,6 +1260,36 @@ angular.module("ct-app/agency/add-update-agency.tpl.html", []).run(["$templateCa
     "                            </div>\n" +
     "                        </div>\n" +
     "                    </div>\n" +
+    "                    <div class=\"form-group\">\n" +
+    "                        <label class=\"col-sm-2 control-label\">Schedule Default View</label>\n" +
+    "                        <div class=\"col-sm-10\">\n" +
+    "                            <label class=\"radio-inline i-checks\">\n" +
+    "                                <input type=\"radio\" name=\"default_view\" value=\"0\" ng-model=\"agency.default_view\"><i></i> Today\n" +
+    "                            </label>\n" +
+    "                            <label class=\"radio-inline i-checks\">\n" +
+    "                                <input type=\"radio\" name=\"default_view\" value=\"1\" ng-model=\"agency.default_view\"><i></i> Day\n" +
+    "                            </label>\n" +
+    "                            <label class=\"radio-inline i-checks\">\n" +
+    "                                <input type=\"radio\" name=\"default_view\" value=\"2\" ng-model=\"agency.default_view\"><i></i> Week\n" +
+    "                            </label>\n" +
+    "                            <label class=\"radio-inline i-checks\">\n" +
+    "                                <input type=\"radio\" name=\"default_view\" value=\"3\" ng-model=\"agency.default_view\"><i></i> Month\n" +
+    "                            </label>\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "                     <div class=\"form-group\">\n" +
+    "                        <label class=\"col-sm-2 control-label\">Populate Shift</label>\n" +
+    "                        <div class=\"col-sm-10\">\n" +
+    "                            <label class=\"radio-inline i-checks\">\n" +
+    "                                <input type=\"radio\" name=\"populateShift\" value=\"1\" ng-model=\"agency.populateShift\"><i></i> Yes\n" +
+    "                            </label>\n" +
+    "                            <label class=\"radio-inline i-checks\">\n" +
+    "                                <input type=\"radio\" name=\"populateShift\" value=\"0\" ng-model=\"agency.populateShift\"><i></i> No\n" +
+    "                            </label>\n" +
+    "                            \n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "\n" +
     "                    <div class=\"line line-dashed b-b line-lg pull-in\"></div>\n" +
     "\n" +
     "                    <div class=\"form-group\">\n" +
@@ -10107,7 +10166,7 @@ angular.module("ct-app/schedules/schedules.tpl.html", []).run(["$templateCache",
     "            <div class=\"m-t-sm\">{{event.url}}</div>\n" +
     "          </div>\n" +
     "        </div>\n" +
-    "        <div class=\"calendar schduleCal\" ng-model=\"eventSources\" calendar=\"calendar1\" id=\"calendar\" config=\"uiConfig.calendar\" ui-calendar=\"uiConfig.calendar\">\n" +
+    "        <div class=\"calendar schduleCal\" ng-model=\"eventSources\" calendar=\"calendar1\" id=\"calendar\" config=\"uiConfig.calendar\" ui-calendar=\"uiConfig.calendar\" ng-if=\"loadCalender\">\n" +
     "	        \n" +
     "        </div>\n" +
     "      </div>\n" +

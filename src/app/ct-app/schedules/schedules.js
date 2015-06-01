@@ -45,333 +45,450 @@ angular.module('ctApp.schedules', [
         loaded_all_records: false,
         show_schedules_loader: true
     };
-    $scope.showerrorMsg = false;
-    $scope.mapbox = {};
-    $scope.yourTime = moment().format('YYYY-MM-DD HH:mm');
-    $scope.UTCTime = moment().utc().format('YYYY-MM-DD HH:mm');
+    $scope.loadCalender = false;
+    //$scope.exeCount = 0;
+    // Services.getAgencyDetail().then(function(res) {
+    //$scope.default_View = res.data.record[0]["default_view"];
 
-
-    $scope.shiftFilters = {};
-    $scope.filterName = [];
-    $scope.shiftFilters.filterValue = "";
-    $scope.shiftFilters.filterName = "";
-    $scope.shiftFilters.zoneName = "";
-    if ($localStorage.user_info.iszone_code) {
-
-        Services.getEmpZoneDetail().then(function(res) {
-
-            $scope.shiftFilters.zoneName = {
-                "text": res.data.record[0]["zone_name"],
-                "id": res.data.record[0]["zone_code"]
-            };
-
-        });
-    }
-    $scope.filterZoneName = [];
-    $scope.filterName = [{
-        id: 'employee_code',
-        name: 'Employee'
-    }, {
-        id: 'job_id',
-        name: 'Job'
-    }];
-
-    $scope.events = [];
-    $scope.eventSource = [];
-    $scope.eventSource = [$scope.events];
-    $scope.buildShiftList = function(data, calendar) {
-
-
-        if (calendar) {
-            $scope.events.splice(0, $scope.events.length);
-
-        }
-        for (var i = 0; i < data.length; i++) {
-            $scope.value = {};
-            $scope.value.id = data[i]['id'];
-            $scope.value.in_date = data[i]['in_date']; // mm-dd-yyyy
-            $scope.value.in_time = data[i]['in_time'];
-            $scope.value.in_at = data[i]['in_at'];
-            $scope.value.out_date = data[i]['out_date'];
-            $scope.value.out_time = data[i]['out_time'];
-            $scope.value.out_at = data[i]['out_at'];
-            $scope.value.job = data[i]['job'];
-            $scope.value.notes = data[i]['notes'];
-            $scope.value.shift_code = data[i]['shift_code'];
-            $scope.value.recurrence = data[i]['is_recurrence'];
-            $scope.value.duriation = data[i]['duriation'];
-            $scope.value.employee = data[i]['employee'];
-
-            $scope.tempStart = moment($scope.value.in_at).toDate();
-            $scope.tempEnd = moment($scope.value.out_at).toDate();
-
-            $scope.Notes = "Duriation : " + HelperService.floatToTime($scope.value.duriation) + " hrs, " + (($scope.value.notes) ? " Notes : " + $scope.value.notes : "");
-
-            $scope.class_name = 'b-l b-2x b-info';
-            $scope.currentdate = moment().utc().format('YYYY-MM-DD HH:mm');
-            $scope.shift_date = moment(data[i]['ref_in_at']).format('YYYY-MM-DD HH:mm');
-            $scope.new_date = moment(moment(data[i]['ref_in_at']).add(10, 'minutes')).format('YYYY-MM-DD HH:mm');
-            $scope.clock_in_time = moment(data[i]['clock_in_time']).format('YYYY-MM-DD HH:mm');
-            if ((moment($scope.shift_date).unix()) < (moment($scope.currentdate).unix())) {
-                if (data[i]['clock_in_status'] == '0' || data[i]['clock_in_status'] === 0) {
-                    $scope.class_name = 'b-l b-2x b-danger';
-                } else if (data[i]['clock_in_status'] == 1 && ((moment($scope.shift_date).unix()) >= (moment($scope.clock_in_time).unix())) || ((moment($scope.new_date).unix()) >= (moment($scope.clock_in_time).unix()))) {
-                    $scope.class_name = 'b-l b-2x b-success';
-                } else {
-                    $scope.class_name = 'b-l b-2x b-warning';
-                }
-
-            }
-            shotname = "";
-            if ($scope.value.employee) {
-                temp = JSON.parse($scope.value.employee).text;
-                if(temp=='Any Employee')
-                {
-                    shotname = temp;
-                }
-                else
-                {
-                    
-                    str = temp.split(",");
-                    shotname = str[1] +" "+str[0].charAt(0);
-                }
-                
-            }
-
-            $scope.events[i] = {
-                id: $scope.value.id,
-                code: $scope.value.shift_code,
-                recurrence: $scope.value.recurrence,
-                title: JSON.parse($scope.value.job).text + "  <br> EE : " + shotname,
-                start: $scope.tempStart,
-                end: $scope.tempEnd,
-                className: [$scope.class_name],
-                location: 'demo',
-                info: $scope.Notes,
-                allDay: false
-            };
-
-
+     Services.agencyDetail.get({
+        fields: "default_view,populate_shift",
+        filter: "id = " + Services.getAgencyID()
+    }, function(res) {
+        $scope.default_View = (res.record[0]["default_view"])?res.record[0]["default_view"]:0;
+        $scope.populate_shift = (res.record[0]["populate_shift"])?res.record[0]["populate_shift"]:0;
+        $scope.loadCalender = true;
+        if ($scope.default_View == 2) {
+            $scope.config.default_View = "agendaWeek";
+        } else if ($scope.default_View == 3) {
+            $scope.config.default_View = "month";
+        } else {
+            $scope.config.default_View = "agendaDay";
         }
 
-        if (calendar) {
+
+        $scope.showerrorMsg = false;
+        $scope.mapbox = {};
+        $scope.yourTime = moment().format('YYYY-MM-DD HH:mm');
+        $scope.UTCTime = moment().utc().format('YYYY-MM-DD HH:mm');
 
 
-        }
+        $scope.shiftFilters = {};
+        $scope.filterName = [];
+        $scope.shiftFilters.filterValue = "";
+        $scope.shiftFilters.filterName = "";
+        $scope.shiftFilters.zoneName = "";
+        if ($localStorage.user_info.iszone_code) {
 
-        $scope.eventSources = [$scope.events];
+            Services.getEmpZoneDetail().then(function(res) {
 
-    };
+                $scope.shiftFilters.zoneName = {
+                    "text": res.data.record[0]["zone_name"],
+                    "id": res.data.record[0]["zone_code"]
+                };
 
-
-
-    $scope.alertOnEventClick = function(event, jsEvent, view) {
-        Services.setModelTempVar(event);
-
-        if ($scope.event.recurrence == '"1"') {
-
-            $scope.modalInstance = $modal.open({
-                template: '<div class="modal-header"> <h3 class="modal-title">Edit Options</h3></div><div class="modal-body"><b> Would you like to edit the current Shift or all the recurrence Shifts?</b></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">Cancel</button><button class="btn btn-primary" ng-click="all()">All Shifts</button> <button class="btn btn-primary" ng-click="single()">Current Shift</button></div>',
-                controller: "recurrenceShiftCtrl"
             });
+        }
+        $scope.filterZoneName = [];
+        $scope.filterName = [{
+            id: 'employee_code',
+            name: 'Employee'
+        }, {
+            id: 'job_id',
+            name: 'Job'
+        }];
 
-            $scope.modalInstance.result.then(function(event) {
-                $scope.allshiftId = [];
-                var single = event[0].single;
+        $scope.events = [];
+        $scope.eventSource = [];
+        $scope.eventSource = [$scope.events];
 
-                if (single == "yes") {
-                    $scope.allshiftId = "";
+        $scope.buildShiftList = function(data, calendar) {
+            //$scope.exeCount++;
 
-                } else {
+            if (calendar) {
+                $scope.events.splice(0, $scope.events.length);
+
+            }
+            for (var i = 0; i < data.length; i++) {
+                $scope.value = {};
+                $scope.value.id = data[i]['id'];
+                $scope.value.in_date = data[i]['in_date']; // mm-dd-yyyy
+                $scope.value.in_time = data[i]['in_time'];
+                $scope.value.in_at = data[i]['in_at'];
+                $scope.value.out_date = data[i]['out_date'];
+                $scope.value.out_time = data[i]['out_time'];
+                $scope.value.out_at = data[i]['out_at'];
+                $scope.value.job = data[i]['job'];
+                $scope.value.notes = data[i]['notes'];
+                $scope.value.shift_code = data[i]['shift_code'];
+                $scope.value.recurrence = data[i]['is_recurrence'];
+                $scope.value.duriation = data[i]['duriation'];
+                $scope.value.employee = data[i]['employee'];
+
+                $scope.tempStart = moment($scope.value.in_at).toDate();
+                $scope.tempEnd = moment($scope.value.out_at).toDate();
+
+                $scope.Notes = "Duriation : " + HelperService.floatToTime($scope.value.duriation) + " hrs, " + (($scope.value.notes) ? " Notes : " + $scope.value.notes : "");
+
+                $scope.class_name = 'b-l b-2x b-info';
+                $scope.currentdate = moment().utc().format('YYYY-MM-DD HH:mm');
+                $scope.shift_date = moment(data[i]['ref_in_at']).format('YYYY-MM-DD HH:mm');
+                $scope.new_date = moment(moment(data[i]['ref_in_at']).add(10, 'minutes')).format('YYYY-MM-DD HH:mm');
+                $scope.clock_in_time = moment(data[i]['clock_in_time']).format('YYYY-MM-DD HH:mm');
+                if ((moment($scope.shift_date).unix()) < (moment($scope.currentdate).unix())) {
+                    if (data[i]['clock_in_status'] == '0' || data[i]['clock_in_status'] === 0) {
+                        $scope.class_name = 'b-l b-2x b-danger';
+                    } else if (data[i]['clock_in_status'] == 1 && ((moment($scope.shift_date).unix()) >= (moment($scope.clock_in_time).unix())) || ((moment($scope.new_date).unix()) >= (moment($scope.clock_in_time).unix()))) {
+                        $scope.class_name = 'b-l b-2x b-success';
+                    } else {
+                        $scope.class_name = 'b-l b-2x b-warning';
+                    }
+
+                }
+                shotname = "";
+                if ($scope.value.employee) {
+                    temp = JSON.parse($scope.value.employee).text;
+                    if (temp == 'Any Employee') {
+                        shotname = temp;
+                    } else {
+
+                        str = temp.split(",");
+                        shotname = str[1] + " " + str[0].charAt(0);
+                    }
+
+                }
+
+                $scope.events[i] = {
+                    id: $scope.value.id,
+                    code: $scope.value.shift_code,
+                    recurrence: $scope.value.recurrence,
+                    title: JSON.parse($scope.value.job).text + "  <br> EE : " + shotname,
+                    start: $scope.tempStart,
+                    end: $scope.tempEnd,
+                    className: [$scope.class_name],
+                    location: 'demo',
+                    info: $scope.Notes,
+                    allDay: false
+                };
+
+
+            }
+
+            if (calendar) {
+
+
+            }
+
+            $scope.eventSources = [$scope.events];
+
+        };
+
+
+
+        $scope.alertOnEventClick = function(event, jsEvent, view) {
+            Services.setModelTempVar(event);
+
+            if ($scope.event.recurrence == '"1"') {
+
+                $scope.modalInstance = $modal.open({
+                    template: '<div class="modal-header"> <h3 class="modal-title">Edit Options</h3></div><div class="modal-body"><b> Would you like to edit the current Shift or all the recurrence Shifts?</b></div><div class="modal-footer"> <button class="btn btn-default" ng-click="cancel()">Cancel</button><button class="btn btn-primary" ng-click="all()">All Shifts</button> <button class="btn btn-primary" ng-click="single()">Current Shift</button></div>',
+                    controller: "recurrenceShiftCtrl"
+                });
+
+                $scope.modalInstance.result.then(function(event) {
                     $scope.allshiftId = [];
-                    Services.shiftService.get({
-                        fields: "id",
-                        filter: "shift_code='" + $scope.event.code + "' and status > 0 and agency_id = " + Services.getAgencyID()
-                    }, function(remoteData) {
+                    var single = event[0].single;
 
-                        angular.forEach(remoteData.record, function(item, key) {
-                            $scope.allshiftId.push({
-                                "id": item.id
+                    if (single == "yes") {
+                        $scope.allshiftId = "";
+
+                    } else {
+                        $scope.allshiftId = [];
+                        Services.shiftService.get({
+                            fields: "id",
+                            filter: "shift_code='" + $scope.event.code + "' and status > 0 and agency_id = " + Services.getAgencyID()
+                        }, function(remoteData) {
+
+                            angular.forEach(remoteData.record, function(item, key) {
+                                $scope.allshiftId.push({
+                                    "id": item.id
+                                });
                             });
                         });
-                    });
-                }
-                $scope.addEvent(event[0].id, event[0].code, $scope.allshiftId);
-            }, function() {});
-        } else {
-            var shiftId = $scope.event.id;
-            var shiftCode = $scope.event.code;
-            var allShiftID = "";
-            $scope.addEvent(shiftId, shiftCode, allShiftID);
-        }
+                    }
+                    $scope.addEvent(event[0].id, event[0].code, $scope.allshiftId);
+                }, function() {});
+            } else {
+                var shiftId = $scope.event.id;
+                var shiftCode = $scope.event.code;
+                var allShiftID = "";
+                $scope.addEvent(shiftId, shiftCode, allShiftID);
+            }
 
 
 
-    };
+        };
 
-    /* alert on Drop */
-    $scope.alertOnDrop = function(event, delta, revertFunc, jsEvent, ui, view) {
-        $scope.alertMessage = ('Event Droped to make dayDelta ' + delta);
-    };
-    /* alert on Resize */
-    $scope.alertOnResize = function(event, delta, revertFunc, jsEvent, ui, view) {
-        $scope.alertMessage = ('Event Resized to make dayDelta ' + delta);
-    };
+        /* alert on Drop */
+        $scope.alertOnDrop = function(event, delta, revertFunc, jsEvent, ui, view) {
+            $scope.alertMessage = ('Event Droped to make dayDelta ' + delta);
+        };
+        /* alert on Resize */
+        $scope.alertOnResize = function(event, delta, revertFunc, jsEvent, ui, view) {
+            $scope.alertMessage = ('Event Resized to make dayDelta ' + delta);
+        };
 
-    $scope.overlay = $('.fc-overlay');
-    $scope.alertOnMouseOver = function(event, jsEvent, view) {
-        $scope.event = event;
-        $scope.overlay.removeClass('left right').find('.arrow').removeClass('left right top pull-up');
-        var wrap = $(jsEvent.target).closest('.fc-event');
-        var cal = wrap.closest('.calendar');
-        var left = wrap.offset().left - cal.offset().left;
-        var right = cal.width() - (wrap.offset().left - cal.offset().left + wrap.width());
-        if (right > $scope.overlay.width()) {
-            $scope.overlay.addClass('left').find('.arrow').addClass('left pull-up');
-        } else if (left > $scope.overlay.width()) {
-            $scope.overlay.addClass('right').find('.arrow').addClass('right pull-up');
-        } else {
-            $scope.overlay.find('.arrow').addClass('top');
-        }
-        //(wrap.find('.fc-overlay').length === 0) && wrap.append($scope.overlay);
-    };
+        $scope.overlay = $('.fc-overlay');
+        $scope.alertOnMouseOver = function(event, jsEvent, view) {
+            $scope.event = event;
+            $scope.overlay.removeClass('left right').find('.arrow').removeClass('left right top pull-up');
+            var wrap = $(jsEvent.target).closest('.fc-event');
+            var cal = wrap.closest('.calendar');
+            var left = wrap.offset().left - cal.offset().left;
+            var right = cal.width() - (wrap.offset().left - cal.offset().left + wrap.width());
+            if (right > $scope.overlay.width()) {
+                $scope.overlay.addClass('left').find('.arrow').addClass('left pull-up');
+            } else if (left > $scope.overlay.width()) {
+                $scope.overlay.addClass('right').find('.arrow').addClass('right pull-up');
+            } else {
+                $scope.overlay.find('.arrow').addClass('top');
+            }
+            //(wrap.find('.fc-overlay').length === 0) && wrap.append($scope.overlay);
+        };
 
-    /* config object */
+        /* config object */
 
-    var knowItFirstCall = "yes";
-    $scope.uiConfigF = function() {
-        $scope.uiConfig = {
-            calendar: {
-                height: 450,
-                editable: false,
-                defaultView: 'agendaDay',
-                header: {
-                    left: 'prev',
-                    center: 'title',
-                    right: 'today,agendaDay,agendaWeek,month,next'
-                },
-                buttonText: {
-                    prev: "<span class='fc-text-arrow'>&lsaquo;</span>",
-                    next: "<span class='fc-text-arrow'>&rsaquo;</span>",
-                    today: 'Today',
-                    month: 'Month',
-                    week: 'Week',
-                    day: 'Day'
-                },
-                loading: function(isLoading, view) {
-                    //Codeed By Revathy
-                    //BEGIN
-                    $viewname = view.name;
-                    if (view.name == 'agendaDay' || (!angular.isUndefined($scope.shiftFilters.filterValue.id) && $scope.shiftFilters.filterValue.id)) {
+        var knowItFirstCall = "yes";
+        $scope.uiConfigF = function() {
+            $scope.uiConfig = {
+                calendar: {
+                    height: 450,
+                    editable: false,
+                    //defaultView: 'agendaDay',
+                    defaultView: $scope.config.default_View,
+                    header: {
+                        left: 'prev',
+                        center: 'title',
+                        right: 'today,agendaDay,agendaWeek,month,next'
+                    },
+                    buttonText: {
+                        prev: "<span class='fc-text-arrow'>&lsaquo;</span>",
+                        next: "<span class='fc-text-arrow'>&rsaquo;</span>",
+                        today: 'Today',
+                        month: 'Month',
+                        week: 'Week',
+                        day: 'Day'
+                    },
+                    loading: function(isLoading, view) {
+                        //Codeed By Revathy
+                        //BEGIN
+                        $viewname = view.name;
+                        //if ((view.name == 'agendaDay' || (!angular.isUndefined($scope.shiftFilters.filterValue.id) && $scope.shiftFilters.filterValue.id)) && ($scope.populate_shift==1)) 
+                            if($scope.populate_shift==1)
+                            {
+                                if (isLoading) {
+                                    $('#calendar').append('<div id="progress"  class="calprogress"><div  aria-valuetext="90%" ng-style="{width: 100 %}" aria-valuemax="100" aria-valuemin="0" aria-valuenow="90" role="progressbar"  class="progress-bar active progress-striped progress-bar-success hide" style="width: 100%;"><i class="ng-scope">loading </i></div></div>');
+                                } else {
+                                    $('#progress').remove();
+                                }
+                            }
 
+
+                       // }
+                        //End
+
+                        /*
                         if (isLoading) {
                             $('#calendar').append('<div id="progress"  class="calprogress"><div  aria-valuetext="90%" ng-style="{width: 100 %}" aria-valuemax="100" aria-valuemin="0" aria-valuenow="90" role="progressbar"  class="progress-bar active progress-striped progress-bar-success hide" style="width: 100%;"><i class="ng-scope">loading </i></div></div>');
                         } else {
                             $('#progress').remove();
                         }
+                        */
 
-
-                    }
-                    //End
-
-                    /*
-                    if (isLoading) {
-                        $('#calendar').append('<div id="progress"  class="calprogress"><div  aria-valuetext="90%" ng-style="{width: 100 %}" aria-valuemax="100" aria-valuemin="0" aria-valuenow="90" role="progressbar"  class="progress-bar active progress-striped progress-bar-success hide" style="width: 100%;"><i class="ng-scope">loading </i></div></div>');
-                    } else {
-                        $('#progress').remove();
-                    }
-                    */
-
-                },
-                events: function(start, end, callback) {
+                    },
+                    events: function(start, end, callback) {
 
 
 
-                    if (moment(start).isSame(moment($scope.startDate)) && moment(end).isSame(moment($scope.endDate))) { // to prevent second call
+                        if (moment(start).isSame(moment($scope.startDate)) && moment(end).isSame(moment($scope.endDate))) { // to prevent second call
 
 
-                        if (knowItFirstCall == "yes") {
+                            if (knowItFirstCall == "yes") {
 
-                            $scope.getNewShifts(start, end, callback);
-                            knowItFirstCall = "no";
+                                $scope.getNewShifts(start, end, callback);
+                                knowItFirstCall = "no";
+
+                            } else {
+                                var events = [];
+                                callback(events);
+
+                            }
 
                         } else {
-                            var events = [];
-                            callback(events);
+
+                            $scope.getNewShifts(start, end, callback);
+
 
                         }
 
-                    } else {
-
-                        $scope.getNewShifts(start, end, callback);
-
-
-                    }
 
 
 
+                    },
+                    eventClick: $scope.alertOnEventClick,
+                    eventDrop: $scope.alertOnDrop,
+                    eventResize: $scope.alertOnResize,
+                    eventMouseover: $scope.alertOnMouseOver,
+                    timeFormat: '[h(:mm)t] - {h(:mm)t}'
+                }
+            };
+        };
+        $scope.uiConfigF();
+        /* add custom event*/
+        $scope.buildShiftList([]); // call the listStyl
 
-                },
-                eventClick: $scope.alertOnEventClick,
-                eventDrop: $scope.alertOnDrop,
-                eventResize: $scope.alertOnResize,
-                eventMouseover: $scope.alertOnMouseOver,
-                timeFormat: '[h(:mm)t] - {h(:mm)t}'
+        $scope.addEvent = function(shiftId, shiftCode, allshiftId) {
+
+            if ($scope.mapbox) {
+                $scope.mapbox = $scope.mapbox;
+            }
+            Services.setModelTempVar({
+                "shiftId": shiftId,
+                "shiftCode": shiftCode,
+                "allshiftId": allshiftId
+            });
+
+
+            $scope.modalInstance = $modal.open({
+                templateUrl: 'ct-app/schedules/add-update-schedule.tpl.html',
+                size: 'lg',
+                controller: "AddUpdateScheduleCtrl"
+            });
+            $scope.modalInstance.result.then(function(selectedItem) {
+                $scope.getNewShifts($scope.startDate, $scope.endDate, '', calendar);
+
+            }, function() {});
+
+
+
+        };
+
+        /* remove event */
+        $scope.remove = function(index) {
+            $scope.events.splice(index, 1);
+        };
+
+        /* Change View */
+        $scope.changeView = function(view) {
+            //console.log(calendar);
+            calendar.fullCalendar('changeView', view);
+        };
+
+        $scope.today = function() {
+            calendar.fullCalendar('today');
+        };
+
+        $scope.renderCalender = function(calendar) {
+            if (calendar) {
+                calendar.fullCalendar('render');
             }
         };
-    };
-    $scope.uiConfigF();
-    /* add custom event*/
-    $scope.buildShiftList([]); // call the listStyl
-
-    $scope.addEvent = function(shiftId, shiftCode, allshiftId) {
-
-        if ($scope.mapbox) {
-            $scope.mapbox = $scope.mapbox;
-        }
-        Services.setModelTempVar({
-            "shiftId": shiftId,
-            "shiftCode": shiftCode,
-            "allshiftId": allshiftId
-        });
 
 
-        $scope.modalInstance = $modal.open({
-            templateUrl: 'ct-app/schedules/add-update-schedule.tpl.html',
-            size: 'lg',
-            controller: "AddUpdateScheduleCtrl"
-        });
-        $scope.modalInstance.result.then(function(selectedItem) {
+
+
+        $scope.getNewShifts = function(start, end, callback, calendar) {
+
+            $scope.startDate = start;
+            $scope.endDate = end;
+
+            // Coded By revathy Begin
+            //if (($viewname == 'agendaDay' || (!angular.isUndefined($scope.shiftFilters.filterValue.id) && $scope.shiftFilters.filterValue.id)) && ($scope.populate_shift==1)) 
+            if($scope.populate_shift==1)
+            {
+                start = moment(start).utc().format('YYYY-MM-DD HH:mm');
+                end = moment(end).utc().format('YYYY-MM-DD HH:mm');
+                var filterObj = {
+                    "fields": "id,in_at,out_at,job,notes,shift_code,is_recurrence,duriation,ref_in_at,clock_in_time,clock_in_status,employee",
+                    "filter": 'ref_in_at between "' + start + '" and "' + end + '" and agency_id = ' + Services.getAgencyID()
+                };
+                if ($scope.shiftFilters.filterName.id != 'all' && $scope.shiftFilters.filterValue.id) {
+
+                    filterObj.filter = filterObj.filter + ' and ' + $scope.shiftFilters.filterName.id + '="' + $scope.shiftFilters.filterValue.code + '"';
+
+
+                } else if ($scope.shiftFilters.zoneName && $scope.shiftFilters.zoneName.id != 'all') {
+
+                    filterObj.filter = filterObj.filter + ' and zone_id="' + $scope.shiftFilters.zoneName.id + '"';
+
+                }
+
+                Services.shiftService.get(filterObj, function(data) {
+                    $scope.eventSource = [];
+
+                    $scope.buildShiftList(data.record, calendar);
+                    if (callback) {
+                        var events = [];
+                        callback(events);
+                    }
+                });
+           } else {
+                $scope.eventSource = [];
+                record = [];
+                $scope.buildShiftList(record, 'calendar1');
+            }
+
+        };
+
+        $scope.filterCalender = function(calendar) {
+            if ((($scope.shiftFilters.zoneName === "" || $scope.shiftFilters.filterName === "" || $scope.shiftFilters.filterValue === "") && ($scope.shiftFilters.zoneName.id !== "all" && $scope.shiftFilters.filterName.id !== "all")) || ($scope.shiftFilters.filterName.id !== "all" && $scope.shiftFilters.filterValue.id === "")) {
+
+                $scope.showerrorMsg = true;
+                $scope.error_msg = "Please use the required filters";
+                $timeout(function() {
+                    $scope.showerrorMsg = false;
+                }, 3000);
+
+                return false;
+
+            }
+            $scope.populate_shift=1;
             $scope.getNewShifts($scope.startDate, $scope.endDate, '', calendar);
-
-        }, function() {});
-
+            return false;
 
 
-    };
+        };
 
-    /* remove event */
-    $scope.remove = function(index) {
-        $scope.events.splice(index, 1);
-    };
+        $scope.clearSearch = function(calender) {
+            $scope.shiftFilters.filterValue = "";
+            $scope.shiftFilters.filterName = "";
+            $scope.populate_shift=1;
+            if ($localStorage.user_info.iszone_code) {
 
-    /* Change View */
-    $scope.changeView = function(view) {
-        //console.log(calendar);
-        calendar.fullCalendar('changeView', view);
-    };
+                Services.getEmpZoneDetail().then(function(res) {
 
-    $scope.today = function() {
-        calendar.fullCalendar('today');
-    };
+                    $scope.shiftFilters.zoneName = {
+                        "text": res.data.record[0]["zone_name"],
+                        "id": res.data.record[0]["zone_code"]
+                    };
+                    $scope.getNewShifts($scope.startDate, $scope.endDate, '', calendar);
 
-    $scope.renderCalender = function(calendar) {
-        if (calendar) {
-            calendar.fullCalendar('render');
+
+                });
+            } else {
+                $scope.shiftFilters.zoneName = "";
+
+                $scope.getNewShifts($scope.startDate, $scope.endDate, '', calendar);
+
+            }
+        };
+
+        $scope.enableEdit = function() {};
+
+        if ($scope.mapbox.zoneid && $scope.mapbox.jobid && $scope.mapbox.empid) {
+            $scope.addEvent();
         }
-    };
 
-
+    });
 
     $scope.shiftZoneOptions = {
 
@@ -517,7 +634,7 @@ angular.module('ctApp.schedules', [
                     limit: 20
                 };
                 if (query.term) {
-                    $scope.empObj.filter +='  and (last_name like "%' + query.term + '%" or first_name like "%' + query.term + '%")';
+                    $scope.empObj.filter += '  and (last_name like "%' + query.term + '%" or first_name like "%' + query.term + '%")';
                 }
                 Services.employeeService.get($scope.empObj, function(remoteData) {
                     items = remoteData.record;
@@ -548,100 +665,6 @@ angular.module('ctApp.schedules', [
         initSelection: function(element, callback) {}
     };
 
-
-
-    $scope.getNewShifts = function(start, end, callback, calendar) {
-
-        $scope.startDate = start;
-        $scope.endDate = end;
-
-        // Coded By revathy Begin
-        if ($viewname == 'agendaDay' || (!angular.isUndefined($scope.shiftFilters.filterValue.id) && $scope.shiftFilters.filterValue.id)) {
-
-            start = moment(start).utc().format('YYYY-MM-DD HH:mm');
-            end = moment(end).utc().format('YYYY-MM-DD HH:mm');
-            var filterObj = {
-                "fields": "id,in_at,out_at,job,notes,shift_code,is_recurrence,duriation,ref_in_at,clock_in_time,clock_in_status,employee",
-                "filter": 'ref_in_at between "' + start + '" and "' + end + '" and agency_id = ' + Services.getAgencyID()
-            };
-            if ($scope.shiftFilters.filterName.id != 'all' && $scope.shiftFilters.filterValue.id) {
-
-                filterObj.filter = filterObj.filter + ' and ' + $scope.shiftFilters.filterName.id + '="' + $scope.shiftFilters.filterValue.code + '"';
-
-
-            } else if ($scope.shiftFilters.zoneName && $scope.shiftFilters.zoneName.id != 'all') {
-
-                filterObj.filter = filterObj.filter + ' and zone_id="' + $scope.shiftFilters.zoneName.id + '"';
-
-            }
-
-            Services.shiftService.get(filterObj, function(data) {
-                $scope.eventSource = [];
-
-                $scope.buildShiftList(data.record, calendar);
-                if (callback) {
-                    var events = [];
-                    callback(events);
-                }
-            });
-        } else {
-            $scope.eventSource = [];
-            record = [];
-            $scope.buildShiftList(record, 'calendar1');
-        }
-
-    };
-
-    $scope.filterCalender = function(calendar) {
-        if ((($scope.shiftFilters.zoneName === "" || $scope.shiftFilters.filterName === "" || $scope.shiftFilters.filterValue === "") && ($scope.shiftFilters.zoneName.id !== "all" && $scope.shiftFilters.filterName.id !== "all")) || ($scope.shiftFilters.filterName.id !== "all" && $scope.shiftFilters.filterValue.id === "")) {
-
-            $scope.showerrorMsg = true;
-            $scope.error_msg = "Please use the required filters";
-            $timeout(function() {
-                $scope.showerrorMsg = false;
-            }, 3000);
-
-            return false;
-
-        }
-        $scope.getNewShifts($scope.startDate, $scope.endDate, '', calendar);
-        return false;
-
-
-    };
-
-    $scope.clearSearch = function(calender) {
-        $scope.shiftFilters.filterValue = "";
-        $scope.shiftFilters.filterName = "";
-        if ($localStorage.user_info.iszone_code) {
-
-            Services.getEmpZoneDetail().then(function(res) {
-
-                $scope.shiftFilters.zoneName = {
-                    "text": res.data.record[0]["zone_name"],
-                    "id": res.data.record[0]["zone_code"]
-                };
-                $scope.getNewShifts($scope.startDate, $scope.endDate, '', calendar);
-
-
-            });
-        } else {
-            $scope.shiftFilters.zoneName = "";
-
-            $scope.getNewShifts($scope.startDate, $scope.endDate, '', calendar);
-
-        }
-    };
-
-    $scope.enableEdit = function() {};
-
-    if ($scope.mapbox.zoneid && $scope.mapbox.jobid && $scope.mapbox.empid) {
-        $scope.addEvent();
-    }
-
-
-
-
 }])
 
 /*
@@ -651,7 +674,7 @@ angular.module('ctApp.schedules', [
 
 .controller("AddUpdateScheduleCtrl", ["$scope", "Services", "$state", "$stateParams", "$timeout", "HelperService", "$localStorage", "$modal", "$sce", "$window", "$modalInstance",
     function($scope, Services, $state, $stateParams, $timeout, HelperService, $localStorage, $modal, $sce, $window, $modalInstance) {
-        $scope.empCountry=$localStorage.user_info.country;
+        $scope.empCountry = $localStorage.user_info.country;
         $scope.ok = function() {
             $modalInstance.close("takethisvalue");
         };
@@ -660,8 +683,8 @@ angular.module('ctApp.schedules', [
             $modalInstance.dismiss('cancel');
 
         };
-        
-       
+
+
 
         $scope.empSteps = {};
         $scope.savedisable = 0;
@@ -1185,7 +1208,7 @@ angular.module('ctApp.schedules', [
         $scope.checkShiftcode = function() {
             $scope.generateShiftcode_count++;
             if ($scope.generateShiftcode_count < 5) {
-                 $scope.shift.shift_code = $window.Math.floor($window.Math.random() * 10000);
+                $scope.shift.shift_code = $window.Math.floor($window.Math.random() * 10000);
 
                 Services.shiftService.get({
                     fields: "id",
@@ -1193,9 +1216,9 @@ angular.module('ctApp.schedules', [
                     'include_count': true,
                 }, function(remoteData) {
                     if (remoteData.meta.count !== 0) {
-                          $scope.checkShiftcode();
+                        $scope.checkShiftcode();
                     } else {
-                      
+
                         angular.forEach($scope.shiftDBField, function(item, key) {
                             $scope.shiftDBField[key].shift_code = JSON.stringify($scope.shift.shift_code);
                         });
@@ -1205,18 +1228,17 @@ angular.module('ctApp.schedules', [
                                     $scope.log_shiftId = HelperService.getAsArray(data.record, "id");
                                     $scope.logger = {};
                                     $scope.logger.userid = $localStorage.user_info.user_id;
-                                    $scope.logger.user_detail =JSON.stringify({
+                                    $scope.logger.user_detail = JSON.stringify({
                                         "username": $localStorage.user_info.username,
                                         "firstname": $localStorage.user_info.first_name,
                                         "lastname": $localStorage.user_info.last_name,
                                     });
-                                    $scope.logger.action ="Update";
+                                    $scope.logger.action = "Update";
                                     $scope.logger.agency_id = Services.getAgencyID();
-                                    $scope.logger.action_id =  $scope.log_shiftId;
-                                    $scope.logger.action_table ="job_shifts";
+                                    $scope.logger.action_id = $scope.log_shiftId;
+                                    $scope.logger.action_table = "job_shifts";
                                     $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
-                                    Services.userLog.save({
-                                    }, $scope.logger, function(data) {
+                                    Services.userLog.save({}, $scope.logger, function(data) {
 
                                     });
 
@@ -1234,22 +1256,21 @@ angular.module('ctApp.schedules', [
                                 });
                             });
                         } else {
-                            Services.shiftService.save($scope.shiftDBField, function(data) {                                
+                            Services.shiftService.save($scope.shiftDBField, function(data) {
                                 $scope.log_shiftId = HelperService.getAsArray(data.record, "id");
                                 $scope.logger = {};
                                 $scope.logger.userid = $localStorage.user_info.user_id;
-                                $scope.logger.user_detail =JSON.stringify({
+                                $scope.logger.user_detail = JSON.stringify({
                                     "username": $localStorage.user_info.username,
                                     "firstname": $localStorage.user_info.first_name,
                                     "lastname": $localStorage.user_info.last_name,
                                 });
-                                $scope.logger.action ="Add";
+                                $scope.logger.action = "Add";
                                 $scope.logger.agency_id = Services.getAgencyID();
-                                $scope.logger.action_id =  $scope.log_shiftId;
-                                $scope.logger.action_table ="job_shifts";
+                                $scope.logger.action_id = $scope.log_shiftId;
+                                $scope.logger.action_table = "job_shifts";
                                 $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
-                                Services.userLog.save({
-                                }, $scope.logger, function(data) {
+                                Services.userLog.save({}, $scope.logger, function(data) {
 
                                 });
 
@@ -1294,8 +1315,8 @@ angular.module('ctApp.schedules', [
                 /* $scope.savedisable = 1;
                  $scope.checkShiftcode();
                  */
-                 $scope.savedisable = 0;
-                 
+                $scope.savedisable = 0;
+
                 $scope.empSteps.recurrence = true;
 
             }
@@ -1415,7 +1436,7 @@ angular.module('ctApp.schedules', [
                 $scope.shiftDBField[0].alert_out_date = JSON.stringify($scope.shift.alerts);
                 $scope.shiftDBField[0].agency_id = Services.getAgencyID();
 
-               // $scope.shiftDBField[0].shift_code = $scope.shift.shift_code;
+                // $scope.shiftDBField[0].shift_code = $scope.shift.shift_code;
 
                 $scope.shiftDBField[0].recurrence = JSON.stringify($scope.shift.recurrence);
                 //Revathy
@@ -1500,7 +1521,7 @@ angular.module('ctApp.schedules', [
                                 $scope.shiftDBField[key].alert_in_date = JSON.stringify($scope.shift.alerts);
                                 $scope.shiftDBField[key].alert_out_min = JSON.stringify($scope.shift.alerts);
                                 $scope.shiftDBField[key].alert_out_date = JSON.stringify($scope.shift.alerts);
-                              // $scope.shiftDBField[key].shift_code = JSON.stringify($scope.shift.shift_code);
+                                // $scope.shiftDBField[key].shift_code = JSON.stringify($scope.shift.shift_code);
                                 $scope.shiftDBField[key].recurrence = JSON.stringify($scope.shift.recurrence);
                                 $scope.shiftDBField[key].auth_detail = JSON.stringify($scope.shift.authorization);
                                 $scope.shiftDBField[key].auth_id = $scope.shift.authorization.id;
@@ -1549,7 +1570,7 @@ angular.module('ctApp.schedules', [
 
                 if (($scope.tempoutputDates) && ($scope.shift.recurrence.is == 1)) {
 
-                lastDateR = moment($scope.tempoutputDates[length - 1] + " " + moment($scope.shift.outAt).format("HH:mm")).utc().format("YYYY-MM-DD HH:mm:ss");
+                    lastDateR = moment($scope.tempoutputDates[length - 1] + " " + moment($scope.shift.outAt).format("HH:mm")).utc().format("YYYY-MM-DD HH:mm:ss");
                 }
                 $scope.checkshiftObj = {
                     fields: "ref_in_at,ref_out_at",
@@ -1557,9 +1578,9 @@ angular.module('ctApp.schedules', [
                     include_count: true
 
                 };
-               /* Date already allocated [04/27/2015 03:00 pm - 04/27/2015 09:00 pm, 05/04/2015 03:00 pm - 05/04/2015 09:00 pm,
-                05/11/2015 03:00 pm - 05/11/2015 09:00 pm, 05/18/2015 03:00 pm - 05/18/2015 09:00 pm,
-                05/25/2015 03:00 pm - 05/25/2015 09:00 pm] */
+                /* Date already allocated [04/27/2015 03:00 pm - 04/27/2015 09:00 pm, 05/04/2015 03:00 pm - 05/04/2015 09:00 pm,
+                 05/11/2015 03:00 pm - 05/11/2015 09:00 pm, 05/18/2015 03:00 pm - 05/18/2015 09:00 pm,
+                 05/25/2015 03:00 pm - 05/25/2015 09:00 pm] */
                 if ($scope.shiftId !== "") { // update 
 
                     if ($scope.allshiftId === "") { // update single
@@ -1568,7 +1589,7 @@ angular.module('ctApp.schedules', [
                             filter: "id='" + $scope.shiftId + "'"
                         };
                     } else { // update all
-                        $scope.checkshiftObj.filter += " and  shift_code!='" + $scope.eventcode+ "'";
+                        $scope.checkshiftObj.filter += " and  shift_code!='" + $scope.eventcode + "'";
                         $scope.deleteObj = {
                             filter: "shift_code='" + $scope.eventcode + "'"
                         };
@@ -1580,7 +1601,7 @@ angular.module('ctApp.schedules', [
                     Services.shiftService.get($scope.checkshiftObj, function(remoteData) {
                         var recurrenceflag = true;
 
-                       // console.log($scope.tempoutputDates);
+                        // console.log($scope.tempoutputDates);
 
                         if (($scope.tempoutputDates) && ($scope.shift.recurrence.is == 1)) {
 
@@ -1603,34 +1624,34 @@ angular.module('ctApp.schedules', [
                                     var outtime = Date.parse(datesOT); //datesOT already in MM/DD/YYYY HH:mm:ss format
 
 
-                                   // console.log("----",datesT + ' ' + in_time);
-                                   // console.log(outtime);
-                                   // console.log(datesT + ' ' + out_time);
-                                   // console.log(outtime);
+                                    // console.log("----",datesT + ' ' + in_time);
+                                    // console.log(outtime);
+                                    // console.log(datesT + ' ' + out_time);
+                                    // console.log(outtime);
 
-                                   /* console.log("before UTC",dates);
-                                    console.log("after UTC",datesT);
-                                    console.log(datesT , ' ', in_time);
-                                    console.log(intime);
-                                    before UTC 04/28/2015
-                                    schedules.js (line 1563)
-                                    after UTC 04/28/2015
-                                    schedules.js (line 1564)
-                                    04/28/2015  23:00:00
-                                    schedules.js (line 1565)
-                                    1430276400000
+                                    /* console.log("before UTC",dates);
+                                     console.log("after UTC",datesT);
+                                     console.log(datesT , ' ', in_time);
+                                     console.log(intime);
+                                     before UTC 04/28/2015
+                                     schedules.js (line 1563)
+                                     after UTC 04/28/2015
+                                     schedules.js (line 1564)
+                                     04/28/2015  23:00:00
+                                     schedules.js (line 1565)
+                                     1430276400000
 
-                                    if (((intime >= dbintime) && (intime < dbouttime))){
-                                        console.log("in 1576");
-                                    }
-                                    if (((outtime > dbintime) && (outtime <= dbouttime))){
-                                       // console.log("in 1579");
-                                       // console.log(outtime);
-                                       // console.log(dbintime);
-                                    }
-                                    if (((intime <= dbintime) && (outtime >= dbouttime))){
-                                        console.log("in 1582");
-                                    }*/
+                                     if (((intime >= dbintime) && (intime < dbouttime))){
+                                         console.log("in 1576");
+                                     }
+                                     if (((outtime > dbintime) && (outtime <= dbouttime))){
+                                        // console.log("in 1579");
+                                        // console.log(outtime);
+                                        // console.log(dbintime);
+                                     }
+                                     if (((intime <= dbintime) && (outtime >= dbouttime))){
+                                         console.log("in 1582");
+                                     }*/
                                     if (((intime >= dbintime) && (intime < dbouttime)) ||
                                         ((outtime > dbintime) && (outtime <= dbouttime)) ||
                                         ((intime <= dbintime) && (outtime >= dbouttime))) {
@@ -1638,7 +1659,7 @@ angular.module('ctApp.schedules', [
 
 
 
-                                        err_date += HelperService.formatingDate(item.ref_in_at,$localStorage.user_info.country) + ' - ' + HelperService.formatingDate(item.ref_out_at,$localStorage.user_info.country) + ', ';
+                                        err_date += HelperService.formatingDate(item.ref_in_at, $localStorage.user_info.country) + ' - ' + HelperService.formatingDate(item.ref_out_at, $localStorage.user_info.country) + ', ';
                                         recurrenceflag = false;
 
 
@@ -1648,7 +1669,7 @@ angular.module('ctApp.schedules', [
 
                         } else {
                             angular.forEach(remoteData.record, function(item, key) {
-                                err_date += HelperService.formatingDate(item.ref_in_at,$localStorage.user_info.country) + ' - ' + HelperService.formatingDate(item.ref_out_at,$localStorage.user_info.country) + ', ';
+                                err_date += HelperService.formatingDate(item.ref_in_at, $localStorage.user_info.country) + ' - ' + HelperService.formatingDate(item.ref_out_at, $localStorage.user_info.country) + ', ';
                                 recurrenceflag = false;
                             });
                         }
@@ -1660,7 +1681,7 @@ angular.module('ctApp.schedules', [
                         } else {
                             $scope.savedisable = 0;
                             $scope.showShiftError = true;
-                            $scope.ShiftErrorMsg =  err_date.substring(0, err_date.length - 2) ;
+                            $scope.ShiftErrorMsg = err_date.substring(0, err_date.length - 2);
                             /*$timeout(function() {
                                 $scope.showShiftError = false;
                             }, 5000);
@@ -1669,9 +1690,7 @@ angular.module('ctApp.schedules', [
                         }
 
                     });
-                }
-                else
-                {
+                } else {
                     $scope.savedisable = 1;
                     $scope.checkShiftcode();
                 }
@@ -2114,8 +2133,8 @@ angular.module('ctApp.schedules', [
             }
 
         };
-         $scope.ShiftErrorClose = function() {
-           $scope.showShiftError=false;
+        $scope.ShiftErrorClose = function() {
+            $scope.showShiftError = false;
         };
 
         $scope.removeShifts = function() {
@@ -2154,18 +2173,17 @@ angular.module('ctApp.schedules', [
                         $scope.log_shiftId = HelperService.getAsArray(remoteData.record, "id");
                         $scope.logger = {};
                         $scope.logger.userid = $localStorage.user_info.user_id;
-                        $scope.logger.user_detail =JSON.stringify({
+                        $scope.logger.user_detail = JSON.stringify({
                             "username": $localStorage.user_info.username,
                             "firstname": $localStorage.user_info.first_name,
                             "lastname": $localStorage.user_info.last_name,
                         });
-                        $scope.logger.action ="Update";
+                        $scope.logger.action = "Update";
                         $scope.logger.agency_id = Services.getAgencyID();
-                        $scope.logger.action_id =  $scope.log_shiftId;
-                        $scope.logger.action_table ="job_shifts";
+                        $scope.logger.action_id = $scope.log_shiftId;
+                        $scope.logger.action_table = "job_shifts";
                         $scope.logger.timestamp = moment().utc().format("YYYY-MM-DD HH:mm:ss");
-                        Services.userLog.save({
-                        }, $scope.logger, function(data) {
+                        Services.userLog.save({}, $scope.logger, function(data) {
 
                         });
 
