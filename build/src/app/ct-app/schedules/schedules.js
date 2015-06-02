@@ -369,18 +369,22 @@ angular.module('ctApp.schedules', [
       $scope.clearSearch = function (calender) {
         $scope.shiftFilters.filterValue = '';
         $scope.shiftFilters.filterName = '';
-        $scope.populate_shift = 1;
+        $scope.populate_shift = 0;
         if ($localStorage.user_info.iszone_code) {
           Services.getEmpZoneDetail().then(function (res) {
             $scope.shiftFilters.zoneName = {
               'text': res.data.record[0]['zone_name'],
               'id': res.data.record[0]['zone_code']
             };
-            $scope.getNewShifts($scope.startDate, $scope.endDate, '', calendar);
+            $scope.eventSource = [];
+            record = [];
+            $scope.buildShiftList(record, 'calendar1');  //  $scope.getNewShifts($scope.startDate, $scope.endDate, '', calendar);
           });
         } else {
           $scope.shiftFilters.zoneName = '';
-          $scope.getNewShifts($scope.startDate, $scope.endDate, '', calendar);
+          $scope.eventSource = [];
+          record = [];
+          $scope.buildShiftList(record, 'calendar1');  //$scope.getNewShifts($scope.startDate, $scope.endDate, '', calendar);
         }
       };
       $scope.enableEdit = function () {
@@ -388,6 +392,13 @@ angular.module('ctApp.schedules', [
       if ($scope.mapbox.zoneid && $scope.mapbox.jobid && $scope.mapbox.empid) {
         $scope.addEvent();
       }
+      $scope.$on('close-edit-modal', function () {
+        // $scope.modalInstance.close('takethisvalue');
+        $scope.modalInstance.dismiss('cancel');
+      });
+      $scope.$on('ok-edit-modal', function () {
+        $scope.modalInstance.close('takethisvalue');
+      });
     });
     $scope.shiftZoneOptions = {
       query: function (query) {
@@ -548,15 +559,20 @@ angular.module('ctApp.schedules', [
   '$modal',
   '$sce',
   '$window',
-  '$modalInstance',
-  function ($scope, Services, $state, $stateParams, $timeout, HelperService, $localStorage, $modal, $sce, $window, $modalInstance) {
+  '$rootScope',
+  function ($scope, Services, $state, $stateParams, $timeout, HelperService, $localStorage, $modal, $sce, $window, $rootScope) {
     $scope.empCountry = $localStorage.user_info.country;
     $scope.ok = function () {
-      $modalInstance.close('takethisvalue');
+      //  $modalInstance.close("takethisvalue");
+      $rootScope.$broadcast('ok-edit-modal');
     };
     $scope.cancel = function () {
       Services.setModelMapView('');
-      $modalInstance.dismiss('cancel');
+      // $modalInstance.dismiss('cancel');
+      $rootScope.$broadcast('close-edit-modal');
+    };
+    $scope.addCancel = function () {
+      $state.go('ctApp.schedules');
     };
     $scope.empSteps = {};
     $scope.savedisable = 0;
@@ -1033,9 +1049,7 @@ angular.module('ctApp.schedules', [
                 $scope.ErrorClass = 'success';
                 $scope.ErrorMsg = 'Shift successfully added !!!';
                 $timeout(function () {
-                  $scope.showerrorMsg = false;
-                  $state.go('ctApp.schedules');
-                  $scope.ok();
+                  $scope.showerrorMsg = false;  // $state.go("ctApp.schedules");
                 }, 5000);
               });
             }

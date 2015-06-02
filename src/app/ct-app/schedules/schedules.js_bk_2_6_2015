@@ -493,14 +493,7 @@ angular.module('ctApp.schedules', [
         if ($scope.mapbox.zoneid && $scope.mapbox.jobid && $scope.mapbox.empid) {
             $scope.addEvent();
         }
-         $scope.$on('close-edit-modal', function() {
-            // $scope.modalInstance.close('takethisvalue');
-        $scope.modalInstance.dismiss('cancel');
 
-        });
-        $scope.$on('ok-edit-modal', function() { 
-                    $scope.modalInstance.close("takethisvalue");
-        });
     });
 
     $scope.shiftZoneOptions = {
@@ -685,22 +678,17 @@ angular.module('ctApp.schedules', [
  * Schedule Controller....
  * **/
 
-.controller("AddUpdateScheduleCtrl", ["$scope", "Services", "$state", "$stateParams", "$timeout", "HelperService", "$localStorage", "$modal", "$sce", "$window","$rootScope",
-    function($scope, Services, $state, $stateParams, $timeout, HelperService, $localStorage, $modal, $sce, $window,$rootScope) {
+.controller("AddUpdateScheduleCtrl", ["$scope", "Services", "$state", "$stateParams", "$timeout", "HelperService", "$localStorage", "$modal", "$sce", "$window", "$modalInstance",
+    function($scope, Services, $state, $stateParams, $timeout, HelperService, $localStorage, $modal, $sce, $window, $modalInstance) {
         $scope.empCountry = $localStorage.user_info.country;
         $scope.ok = function() {
-          //  $modalInstance.close("takethisvalue");
-            $rootScope.$broadcast('ok-edit-modal');
+            $modalInstance.close("takethisvalue");
         };
         $scope.cancel = function() {
             Services.setModelMapView('');
-           // $modalInstance.dismiss('cancel');
-            $rootScope.$broadcast('close-edit-modal');
+            $modalInstance.dismiss('cancel');
 
         };
-         $scope.addCancel = function() {
-                $state.go("ctApp.schedules");
-            };
 
 
 
@@ -1299,7 +1287,9 @@ angular.module('ctApp.schedules', [
                                 $scope.ErrorMsg = "Shift successfully added !!!";
                                 $timeout(function() {
                                     $scope.showerrorMsg = false;
-                                   // $state.go("ctApp.schedules");
+
+                                    $state.go("ctApp.schedules");
+                                    $scope.ok();
                                 }, 5000);
 
                             });

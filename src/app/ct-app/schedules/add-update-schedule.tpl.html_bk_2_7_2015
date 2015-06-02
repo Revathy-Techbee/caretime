@@ -1,9 +1,9 @@
 <div>
-    <div class="bg-light lter b-b wrapper-md">
-        <h1 class="m-n font-thin h3">{{shiftTitle}} Shift</h1>
+    <div class="modal-header">
+        <h3 class="modal-title">{{shiftTitle}} Shift</h3>
     </div>
-    <div class="wrapper-md" style="background:#FFF;">
-          <tabset class="tab-container">
+    <div class="modal-body">
+        <tabset class="tab-container">
             <tab heading="Time and Employee" disabled="basic.$invalid" active="empSteps.basic">
                 <form name="basic" class="form-validation form-horizontal basic" rc-submit="scheduleManage('basic')" novalidate>
 
@@ -119,8 +119,8 @@
                           </span>
                         </div>
                         <div class="col-sm-2">
-                             <button ng-if="shiftTitle=='Add'" type="button" class="btn btn-default btn-rounded" ng-click='addCancel()'>Go to schedule</button>
-                            <button ng-if="shiftTitle!='Add'" type="button" class="btn btn-default btn-rounded" ng-click='cancel()'>Cancel</button>
+
+                            <button type="button" class="btn btn-default btn-rounded" ng-click='cancel()'>Cancel</button>
 
                         </div>
                     </div>
@@ -388,8 +388,7 @@
                         </div>
                         <div class="col-sm-2">
 
-                             <button ng-if="shiftTitle=='Add'" type="button" class="btn btn-default btn-rounded" ng-click='addCancel()'>Go to schedule</button>
-                            <button ng-if="shiftTitle!='Add'" type="button" class="btn btn-default btn-rounded" ng-click='cancel()'>Cancel</button>
+                            <button type="button" class="btn btn-default btn-rounded" ng-click='cancel()'>Cancel</button>
 
                         </div>
 
@@ -431,7 +430,7 @@
         </tabset>
 
 
-        <div>
+        <div class="modal-body">
 
             <h3>Summary</h3>
             <ul>

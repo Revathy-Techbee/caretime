@@ -9635,11 +9635,11 @@ angular.module("ct-app/reports/timecardExport/timecardExport.tpl.html", []).run(
 angular.module("ct-app/schedules/add-update-schedule.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("ct-app/schedules/add-update-schedule.tpl.html",
     "<div>\n" +
-    "    <div class=\"modal-header\">\n" +
-    "        <h3 class=\"modal-title\">{{shiftTitle}} Shift</h3>\n" +
+    "    <div class=\"bg-light lter b-b wrapper-md\">\n" +
+    "        <h1 class=\"m-n font-thin h3\">{{shiftTitle}} Shift</h1>\n" +
     "    </div>\n" +
-    "    <div class=\"modal-body\">\n" +
-    "        <tabset class=\"tab-container\">\n" +
+    "    <div class=\"wrapper-md\" style=\"background:#FFF;\">\n" +
+    "          <tabset class=\"tab-container\">\n" +
     "            <tab heading=\"Time and Employee\" disabled=\"basic.$invalid\" active=\"empSteps.basic\">\n" +
     "                <form name=\"basic\" class=\"form-validation form-horizontal basic\" rc-submit=\"scheduleManage('basic')\" novalidate>\n" +
     "\n" +
@@ -9755,8 +9755,8 @@ angular.module("ct-app/schedules/add-update-schedule.tpl.html", []).run(["$templ
     "                          </span>\n" +
     "                        </div>\n" +
     "                        <div class=\"col-sm-2\">\n" +
-    "\n" +
-    "                            <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancel()'>Cancel</button>\n" +
+    "                             <button ng-if=\"shiftTitle=='Add'\" type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='addCancel()'>Go to schedule</button>\n" +
+    "                            <button ng-if=\"shiftTitle!='Add'\" type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancel()'>Cancel</button>\n" +
     "\n" +
     "                        </div>\n" +
     "                    </div>\n" +
@@ -10024,7 +10024,8 @@ angular.module("ct-app/schedules/add-update-schedule.tpl.html", []).run(["$templ
     "                        </div>\n" +
     "                        <div class=\"col-sm-2\">\n" +
     "\n" +
-    "                            <button type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancel()'>Cancel</button>\n" +
+    "                             <button ng-if=\"shiftTitle=='Add'\" type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='addCancel()'>Go to schedule</button>\n" +
+    "                            <button ng-if=\"shiftTitle!='Add'\" type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancel()'>Cancel</button>\n" +
     "\n" +
     "                        </div>\n" +
     "\n" +
@@ -10066,7 +10067,7 @@ angular.module("ct-app/schedules/add-update-schedule.tpl.html", []).run(["$templ
     "        </tabset>\n" +
     "\n" +
     "\n" +
-    "        <div class=\"modal-body\">\n" +
+    "        <div>\n" +
     "\n" +
     "            <h3>Summary</h3>\n" +
     "            <ul>\n" +
@@ -10123,11 +10124,11 @@ angular.module("ct-app/schedules/schedules.tpl.html", []).run(["$templateCache",
     "    <div class=\"col wrapper-md\">\n" +
     "      <div class=\"clearfix m-b\">\n" +
     "      \n" +
-    "      <div class=\"pull-left\">\n" +
+    "    <!--  <div class=\"pull-left\">\n" +
     "        <button type=\"button\" class=\"btn btn-sm btn-primary btn-addon\" ng-click=\"addEvent()\">\n" +
     "          <i class=\"fa fa-plus\"></i>Add\n" +
     "        </button>\n" +
-    "        </div> \n" +
+    "        </div> -->\n" +
     "      <div class=\"col-sm-8\">\n" +
     "          <div class=\"col-sm-3\" >\n" +
     "              <input  class=\"form-control\"  ui-select2=\"shiftZoneOptions\" value=\"\"  ng-model=\"shiftFilters.zoneName\" placeholder=\"Select a Zone\">\n" +
@@ -11627,6 +11628,15 @@ angular.module("partials/nav.tpl.html", []).run(["$templateCache", function($tem
     "      </i>\n" +
     "      <span>\n" +
     "        SCHEDULING\n" +
+    "      </span>\n" +
+    "    </a>\n" +
+    "  </li>\n" +
+    "  <li data-access-level=\"accessLevels.schedules\">\n" +
+    "    <a ui-sref=\"ctApp.addUpdateSchedule\">\n" +
+    "      <i class=\"glyphicon glyphicon-calendar icon text-primary-dker\">\n" +
+    "      </i>\n" +
+    "      <span>\n" +
+    "        ADD SHIFT\n" +
     "      </span>\n" +
     "    </a>\n" +
     "  </li>\n" +
