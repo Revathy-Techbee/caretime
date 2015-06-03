@@ -293,7 +293,8 @@ angular.module('ctApp.schedules', [
         Services.setModelTempVar({
           'shiftId': shiftId,
           'shiftCode': shiftCode,
-          'allshiftId': allshiftId
+          'allshiftId': allshiftId,
+          'modelview': '1'
         });
         $scope.modalInstance = $modal.open({
           templateUrl: 'ct-app/schedules/add-update-schedule.tpl.html',
@@ -613,6 +614,7 @@ angular.module('ctApp.schedules', [
     //  $scope.authorizationErrorDate=[];
     $scope.showShiftError = false;
     $scope.WarningClass = false;
+    $scope.modelView = 0;
     var shift_detail = Services.getModelTempVar();
     Services.setModelTempVar('');
     var getmapview = Services.getModelMapView();
@@ -622,6 +624,7 @@ angular.module('ctApp.schedules', [
       $scope.shift.empZone = getmapview.zone;
       $scope.shift.employee = getmapview.empid;
       $scope.shift.job = getmapview.job;
+      $scope.modelView = 1;
     } else if ($localStorage.user_info.iszone_code) {
       Services.getEmpZoneDetail().then(function (res) {
         $scope.shift.zone = {
@@ -632,6 +635,7 @@ angular.module('ctApp.schedules', [
     }
     if (shift_detail) {
       $scope.allshiftId = shift_detail.allshiftId;
+      $scope.modelView = shift_detail.modelview;
       if (shift_detail.shiftId) {
         $scope.shiftId = shift_detail.shiftId;
       } else {
@@ -1049,7 +1053,8 @@ angular.module('ctApp.schedules', [
                 $scope.ErrorClass = 'success';
                 $scope.ErrorMsg = 'Shift successfully added !!!';
                 $timeout(function () {
-                  $scope.showerrorMsg = false;  // $state.go("ctApp.schedules");
+                  $scope.showerrorMsg = false;
+                  $scope.ok();  // $state.go("ctApp.schedules");
                 }, 5000);
               });
             }
@@ -1070,6 +1075,7 @@ angular.module('ctApp.schedules', [
     $scope.scheduleManage = function (step) {
       $scope.savedisable = 1;
       $scope.showerrorMsg = false;
+      $scope.showShiftError = false;
       var length;
       if (step == 'basic') {
         /* $scope.savedisable = 1;

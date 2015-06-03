@@ -119,8 +119,8 @@
                           </span>
                         </div>
                         <div class="col-sm-2">
-                             <button ng-if="shiftTitle=='Add'" type="button" class="btn btn-default btn-rounded" ng-click='addCancel()'>Go to schedule</button>
-                            <button ng-if="shiftTitle!='Add'" type="button" class="btn btn-default btn-rounded" ng-click='cancel()'>Cancel</button>
+                             <button ng-if="shiftTitle=='Add' && modelView==0" type="button" class="btn btn-default btn-rounded" ng-click='addCancel()'>Go to schedule</button>
+                            <button ng-if="modelView==1" type="button" class="btn btn-default btn-rounded" ng-click='cancel()'>Cancel</button>
 
                         </div>
                     </div>
@@ -388,8 +388,8 @@
                         </div>
                         <div class="col-sm-2">
 
-                             <button ng-if="shiftTitle=='Add'" type="button" class="btn btn-default btn-rounded" ng-click='addCancel()'>Go to schedule</button>
-                            <button ng-if="shiftTitle!='Add'" type="button" class="btn btn-default btn-rounded" ng-click='cancel()'>Cancel</button>
+                             <button ng-if="shiftTitle=='Add' && modelView==0" type="button" class="btn btn-default btn-rounded" ng-click='addCancel()'>Go to schedule</button>
+                            <button ng-if="modelView==1" type="button" class="btn btn-default btn-rounded" ng-click='cancel()'>Cancel</button>
 
                         </div>
 

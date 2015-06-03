@@ -453,7 +453,14 @@ angular.module('ctApp.mapView', [
 
 
     };
+    //Close shift model
+    $scope.$on('close-edit-modal', function() {
+        $scope.modalInstance.dismiss('cancel');
 
+        });
+    $scope.$on('ok-edit-modal', function() { 
+                    $scope.modalInstance.close("takethisvalue");
+        });
 
     /* -------------------- mapbox direction -------------------- */
     $scope.format = function(waypoint) {

@@ -105,7 +105,8 @@
             'updatePassword': ['SuperAdmin','Admin','HR','Nursing','OfficeClerical','OfficeMgr','OnCall','CorporateBillingDepartment','Scheduler','Basic'],
 
             'adminAgency': ['SuperAdmin'],
-
+            'customPromptReport':['SuperAdmin','Admin','HR','Nursing','OfficeClerical','OfficeMgr','OnCall','CorporateBillingDepartment','Scheduler']
+            
             //'zoneRestriction': ['SuperAdmin','Admin']
 
         }

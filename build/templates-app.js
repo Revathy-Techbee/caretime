@@ -1,4 +1,4 @@
-angular.module('templates-app', ['access/access.tpl.html', 'access/employeeLogin/employeeLogin.tpl.html', 'access/forgotPassword/forgotPassword.tpl.html', 'access/resetPassword/resetPassword.tpl.html', 'access/sign-in/sign-in.tpl.html', 'access/sign-up/sign-up.tpl.html', 'admin/admin.tpl.html', 'admin/agency/add-update-agency.tpl.html', 'admin/agency/agencies.tpl.html', 'admin/agency/mapDetailView.tpl.html', 'admin/updatePassword/updatePassword.tpl.html', 'ct-app/agency/add-update-agency.tpl.html', 'ct-app/agency/mapDetailView.tpl.html', 'ct-app/authorizations/add-update-authorizations.tpl.html', 'ct-app/authorizations/authorizations.tpl.html', 'ct-app/ct-app.tpl.html', 'ct-app/employees/add-update-employee.tpl.html', 'ct-app/employees/employee-dashboard.tpl.html', 'ct-app/employees/employee-dashboard_bk.tpl.html', 'ct-app/employees/employees.tpl.html', 'ct-app/employees/mapDetailView.tpl.html', 'ct-app/employees/upload-skeleton.tpl.html', 'ct-app/employees/view-employee.tpl.html', 'ct-app/jobs/add-update-job.tpl.html', 'ct-app/jobs/job-dashboard.tpl.html', 'ct-app/jobs/jobs.tpl.html', 'ct-app/jobs/mapDetailView.tpl.html', 'ct-app/jobs/view-job.tpl.html', 'ct-app/logs/alertLog/add-update-alertLog.tpl.html', 'ct-app/logs/alertLog/alertLog.tpl.html', 'ct-app/logs/callLog/callLogs.tpl.html', 'ct-app/logs/customPrompts/customPrompts.tpl.html', 'ct-app/logs/employeeActivities/employeeActivities.tpl.html', 'ct-app/logs/timeCards/InactiveTimeCard.tpl.html', 'ct-app/logs/timeCards/add-update-timeCard.tpl.html', 'ct-app/logs/timeCards/timeCards.tpl.html', 'ct-app/mainDashboard/mainDashboard.tpl.html', 'ct-app/manageLists/activities/activities.tpl.html', 'ct-app/manageLists/activities/add-update-activity.tpl.html', 'ct-app/manageLists/activityCodes/activityCodes.tpl.html', 'ct-app/manageLists/activityCodes/add-update-activityCode.tpl.html', 'ct-app/manageLists/customPrompts/add-update-customPrompt.tpl.html', 'ct-app/manageLists/customPrompts/customPrompts.tpl.html', 'ct-app/manageLists/observations/add-update-observation.tpl.html', 'ct-app/manageLists/observations/observations.tpl.html', 'ct-app/manageLists/payClasses/add-update-payClass.tpl.html', 'ct-app/manageLists/payClasses/payClasses.tpl.html', 'ct-app/manageLists/payTypes/add-update-payType.tpl.html', 'ct-app/manageLists/payTypes/payTypes.tpl.html', 'ct-app/manageLists/payors/add-update-payor.tpl.html', 'ct-app/manageLists/payors/payors.tpl.html', 'ct-app/manageLists/serviceItems/add-update-serviceItem.tpl.html', 'ct-app/manageLists/serviceItems/serviceItems.tpl.html', 'ct-app/manageLists/skills/add-update-skill.tpl.html', 'ct-app/manageLists/skills/skills.tpl.html', 'ct-app/manageLists/tasks/add-update-task.tpl.html', 'ct-app/manageLists/tasks/tasks.tpl.html', 'ct-app/mapView/mapView.tpl.html', 'ct-app/reports/accountActivities/accountActivities.tpl.html', 'ct-app/reports/activityReports/activityReports.tpl.html', 'ct-app/reports/authorizedVsActuall/authorizedVsActuall.tpl.html', 'ct-app/reports/budgetVsActual/budgetVsActual.tpl.html', 'ct-app/reports/dailyHoursChart/dailyHoursChart.tpl.html', 'ct-app/reports/employeeList/employeeList.tpl.html', 'ct-app/reports/employeeTimecard/employeeTimecard.tpl.html', 'ct-app/reports/employeeWeeklyHours/employeeWeeklyHours.tpl.html', 'ct-app/reports/inactivityEmployees/inactivityEmployees.tpl.html', 'ct-app/reports/jobList/jobList.tpl.html', 'ct-app/reports/jobNoSchedule/jobNoSchedule.tpl.html', 'ct-app/reports/jobObservation/jobObservation.tpl.html', 'ct-app/reports/jobTask/jobTask.tpl.html', 'ct-app/reports/jobTimecard/jobTimecard.tpl.html', 'ct-app/reports/jobWeeklyHours/jobWeeklyHours.tpl.html', 'ct-app/reports/mapReport/mapReport.tpl.html', 'ct-app/reports/scheduleReport/scheduleReport.tpl.html', 'ct-app/reports/scheduleVsActuall/scheduleVsActuall.tpl.html', 'ct-app/reports/timecardExport/timecardExport.tpl.html', 'ct-app/schedules/add-update-schedule.tpl.html', 'ct-app/schedules/schedules.tpl.html', 'ct-app/updatePassword/updatePassword.tpl.html', 'ct-app/zones/add-update-zone.tpl.html', 'ct-app/zones/zone-employee-dashboard.tpl.html', 'ct-app/zones/zones.tpl.html', 'partials/access_header.tpl.html', 'partials/admin_header.tpl.html', 'partials/admin_nav.tpl.html', 'partials/aside.tpl.html', 'partials/datepicker.tpl.html', 'partials/header.tpl.html', 'partials/nav.tpl.html', 'partials/page_footer.tpl.html', 'partials/settings.tpl.html', 'utils/directive-templates/dropdown.tpl.html', 'utils/directive-templates/inline-edit.tpl.html', 'utils/directive-templates/popover-html-unsafe-popup.tpl.html']);
+angular.module('templates-app', ['access/access.tpl.html', 'access/employeeLogin/employeeLogin.tpl.html', 'access/forgotPassword/forgotPassword.tpl.html', 'access/resetPassword/resetPassword.tpl.html', 'access/sign-in/sign-in.tpl.html', 'access/sign-up/sign-up.tpl.html', 'admin/admin.tpl.html', 'admin/agency/add-update-agency.tpl.html', 'admin/agency/agencies.tpl.html', 'admin/agency/mapDetailView.tpl.html', 'admin/updatePassword/updatePassword.tpl.html', 'ct-app/agency/add-update-agency.tpl.html', 'ct-app/agency/mapDetailView.tpl.html', 'ct-app/authorizations/add-update-authorizations.tpl.html', 'ct-app/authorizations/authorizations.tpl.html', 'ct-app/ct-app.tpl.html', 'ct-app/employees/add-update-employee.tpl.html', 'ct-app/employees/employee-dashboard.tpl.html', 'ct-app/employees/employee-dashboard_bk.tpl.html', 'ct-app/employees/employees.tpl.html', 'ct-app/employees/mapDetailView.tpl.html', 'ct-app/employees/upload-skeleton.tpl.html', 'ct-app/employees/view-employee.tpl.html', 'ct-app/jobs/add-update-job.tpl.html', 'ct-app/jobs/job-dashboard.tpl.html', 'ct-app/jobs/jobs.tpl.html', 'ct-app/jobs/mapDetailView.tpl.html', 'ct-app/jobs/view-job.tpl.html', 'ct-app/logs/alertLog/add-update-alertLog.tpl.html', 'ct-app/logs/alertLog/alertLog.tpl.html', 'ct-app/logs/callLog/callLogs.tpl.html', 'ct-app/logs/customPrompts/customPrompts.tpl.html', 'ct-app/logs/employeeActivities/employeeActivities.tpl.html', 'ct-app/logs/timeCards/InactiveTimeCard.tpl.html', 'ct-app/logs/timeCards/add-update-timeCard.tpl.html', 'ct-app/logs/timeCards/timeCards.tpl.html', 'ct-app/mainDashboard/mainDashboard.tpl.html', 'ct-app/manageLists/activities/activities.tpl.html', 'ct-app/manageLists/activities/add-update-activity.tpl.html', 'ct-app/manageLists/activityCodes/activityCodes.tpl.html', 'ct-app/manageLists/activityCodes/add-update-activityCode.tpl.html', 'ct-app/manageLists/customPrompts/add-update-customPrompt.tpl.html', 'ct-app/manageLists/customPrompts/customPrompts.tpl.html', 'ct-app/manageLists/observations/add-update-observation.tpl.html', 'ct-app/manageLists/observations/observations.tpl.html', 'ct-app/manageLists/payClasses/add-update-payClass.tpl.html', 'ct-app/manageLists/payClasses/payClasses.tpl.html', 'ct-app/manageLists/payTypes/add-update-payType.tpl.html', 'ct-app/manageLists/payTypes/payTypes.tpl.html', 'ct-app/manageLists/payors/add-update-payor.tpl.html', 'ct-app/manageLists/payors/payors.tpl.html', 'ct-app/manageLists/serviceItems/add-update-serviceItem.tpl.html', 'ct-app/manageLists/serviceItems/serviceItems.tpl.html', 'ct-app/manageLists/skills/add-update-skill.tpl.html', 'ct-app/manageLists/skills/skills.tpl.html', 'ct-app/manageLists/tasks/add-update-task.tpl.html', 'ct-app/manageLists/tasks/tasks.tpl.html', 'ct-app/mapView/mapView.tpl.html', 'ct-app/reports/accountActivities/accountActivities.tpl.html', 'ct-app/reports/activityReports/activityReports.tpl.html', 'ct-app/reports/authorizedVsActuall/authorizedVsActuall.tpl.html', 'ct-app/reports/budgetVsActual/budgetVsActual.tpl.html', 'ct-app/reports/customPrompt/customPrompt.tpl.html', 'ct-app/reports/dailyHoursChart/dailyHoursChart.tpl.html', 'ct-app/reports/employeeList/employeeList.tpl.html', 'ct-app/reports/employeeTimecard/employeeTimecard.tpl.html', 'ct-app/reports/employeeWeeklyHours/employeeWeeklyHours.tpl.html', 'ct-app/reports/inactivityEmployees/inactivityEmployees.tpl.html', 'ct-app/reports/jobList/jobList.tpl.html', 'ct-app/reports/jobNoSchedule/jobNoSchedule.tpl.html', 'ct-app/reports/jobObservation/jobObservation.tpl.html', 'ct-app/reports/jobTask/jobTask.tpl.html', 'ct-app/reports/jobTimecard/jobTimecard.tpl.html', 'ct-app/reports/jobWeeklyHours/jobWeeklyHours.tpl.html', 'ct-app/reports/mapReport/mapReport.tpl.html', 'ct-app/reports/scheduleReport/scheduleReport.tpl.html', 'ct-app/reports/scheduleVsActuall/scheduleVsActuall.tpl.html', 'ct-app/reports/timecardExport/timecardExport.tpl.html', 'ct-app/schedules/add-update-schedule.tpl.html', 'ct-app/schedules/schedules.tpl.html', 'ct-app/updatePassword/updatePassword.tpl.html', 'ct-app/zones/add-update-zone.tpl.html', 'ct-app/zones/zone-employee-dashboard.tpl.html', 'ct-app/zones/zones.tpl.html', 'partials/access_header.tpl.html', 'partials/admin_header.tpl.html', 'partials/admin_nav.tpl.html', 'partials/aside.tpl.html', 'partials/datepicker.tpl.html', 'partials/header.tpl.html', 'partials/nav.tpl.html', 'partials/page_footer.tpl.html', 'partials/settings.tpl.html', 'utils/directive-templates/dropdown.tpl.html', 'utils/directive-templates/inline-edit.tpl.html', 'utils/directive-templates/popover-html-unsafe-popup.tpl.html']);
 
 angular.module("access/access.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("access/access.tpl.html",
@@ -7661,6 +7661,120 @@ angular.module("ct-app/reports/budgetVsActual/budgetVsActual.tpl.html", []).run(
     "</div>");
 }]);
 
+angular.module("ct-app/reports/customPrompt/customPrompt.tpl.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("ct-app/reports/customPrompt/customPrompt.tpl.html",
+    "<div class=\"bg-light lter b-b wrapper-md\">\n" +
+    "    <h1 class=\"m-n font-thin h3\">Custom Prompt Report</h1>\n" +
+    "\n" +
+    "</div>\n" +
+    "\n" +
+    "<div class=\"wrapper-md\">\n" +
+    "    <div class=\"panel panel-default\">\n" +
+    "        <div class=\"row wrapper\">\n" +
+    "            <div class=\"col-sm-2 \">\n" +
+    "                <div>\n" +
+    "                    <input class=\"form-control \" placeholder=\"Select Job/Employee\" ui-select2=\"Selectfield\" ng-model=\"logFilters.filterName\">\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "            <div class=\"col-sm-2\">\n" +
+    "                <div class=\"form-control \" placeholder=\"Select zone\" ui-select2=\"selectZoneOptions\" value=\"\" ng-model=\"logFilters.zoneName\" ng-disabled=\"logFilters.filterName.id =='all'\"></div>\n" +
+    "            </div>\n" +
+    "            <div class=\"col-sm-2\">\n" +
+    "                <div>\n" +
+    "                    <input class=\"form-control \" placeholder=\"Select Value\" ui-select2=\"getFilterValue\" ng-model=\"logFilters.filterValue\" ng-disabled=\"logFilters.filterName=='' || logFilters.zoneName=='' || logFilters.zoneName==null || logFilters.zoneName[0].id =='all' || logFilters.filterName.id=='all'\">\n" +
+    "\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "            <div class=\"col-sm-3\">\n" +
+    "\n" +
+    "                <div ng-controller=\"DatepickerDemoCtrl\">\n" +
+    "\n" +
+    "                    <div class=\"input-group\">\n" +
+    "                        <input type=\"text\" class=\"form-control\" readonly placeholder=\"Select Start Date\" datepicker-popup=\"{{format}}\" ng-model=\"logFilters.startDate\" is-open=\"opened\" datepicker-options=\"dateOptions\" close-text=\"Close\" />\n" +
+    "                        <span class=\"input-group-btn\">\n" +
+    "                      <button type=\"button\" class=\"btn btn-default\" ng-click=\"open($event)\"><i class=\"glyphicon glyphicon-calendar\"></i></button>\n" +
+    "                    </span>\n" +
+    "                    </div>\n" +
+    "\n" +
+    "                </div>\n" +
+    "\n" +
+    "            </div>\n" +
+    "            <div class=\"col-sm-3\">\n" +
+    "\n" +
+    "                <div ng-controller=\"DatepickerDemoCtrl\">\n" +
+    "\n" +
+    "                    <div class=\"input-group\">\n" +
+    "                        <input type=\"text\" class=\"form-control\" readonly placeholder=\"Select End Date\" datepicker-popup=\"{{format}}\" ng-model=\"logFilters.endDate\" is-open=\"opened\" datepicker-options=\"dateOptions\" close-text=\"Close\" />\n" +
+    "                        <span class=\"input-group-btn\">\n" +
+    "                      <button type=\"button\" class=\"btn btn-default\" ng-click=\"open($event)\"><i class=\"glyphicon glyphicon-calendar\"></i></button>\n" +
+    "                    </span>\n" +
+    "                    </div>\n" +
+    "\n" +
+    "                </div>\n" +
+    "\n" +
+    "            </div>\n" +
+    "\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <div class=\"row wrapper\">\n" +
+    "            <div class=\"col-sm-6\">\n" +
+    "                <button class=\"btn btn-md btn-info\" type=\"button\" ng-click=\"updateTableData(true)\">Search</button>\n" +
+    "                <button class=\"btn btn-md btn-warning\" type=\"button\" ng-click=\"clearSearch()\">Clear</button>\n" +
+    "                <span class=\"alert alert-danger\" ng-if=\"showerrorMsg\">{{error_msg}}</span>\n" +
+    "\n" +
+    "            </div>\n" +
+    "            <div class=\"col-sm-6\">\n" +
+    "                <div class=\" pull-right\">\n" +
+    "                    <a ng-disabled=\"noRecord==1\" download=\"EmployeeActivityLog.xlsx\" class=\"btn btn-md btn-info\" id=\"export\" ng-click=\"exportExcel()\">Export Excel</a>\n" +
+    "\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "\n" +
+    "        </div>\n" +
+    "        <div class=\"row wrapper\" ng-if=\"noRecord==1 || show_activities_loader\">\n" +
+    "            <div class=\"col-sm-12\">\n" +
+    "                <div ng-if=\"noRecord==1\" ng-bind-html=\"norecord\"> {{norecord }}</div>\n" +
+    "                <div ng-if=\"show_activities_loader\" show-loader=\"show_activities_loader\"></div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <div class=\"row wrapper\" ng-if=\"showRecord==1\">\n" +
+    "            <wj-flex-grid control=\"ctx.flexGrid\" items-source=\"customPromptDetails\">\n" +
+    "\n" +
+    "                <wj-flex-grid-column header=\"Job Name\" is-read-only=\"true\" binding=\"job_name\" width=\"*\"> </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"Employee Name\" is-read-only=\"true\" binding=\"employee_name\"> </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"Clock In\" is-read-only=\"true\" binding=\"clockin\"> </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"Clock Out\" is-read-only=\"true\" binding=\"clockout\"> </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"Duration\" is-read-only=\"true\" binding=\"work_duration\"> </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"When\" is-read-only=\"true\" binding=\"prompt_type\"> </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"Prompt Question\" is-read-only=\"true\" binding=\"prompt_text\"> </wj-flex-grid-column>\n" +
+    "                <wj-flex-grid-column header=\"Response\" is-read-only=\"true\" binding=\"prompt_answers\"> </wj-flex-grid-column>\n" +
+    "\n" +
+    "            </wj-flex-grid>\n" +
+    "            <div class=\"row wrapper\">\n" +
+    "                <wj-menu value=\"customPromptDetails.pageSize\" header=\"Rows per Page\">\n" +
+    "                    <wj-menu-item value=\"10\"> 10</wj-menu-item>\n" +
+    "                    <wj-menu-item value=\"25\"> 25</wj-menu-item>\n" +
+    "                    <wj-menu-item value=\"50\"> 50</wj-menu-item>\n" +
+    "                    <wj-menu-item value=\"100\"> 100</wj-menu-item>\n" +
+    "                </wj-menu>\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "                <div class=\"btn-group col-md-8\" ng-show=\"customPromptDetails.pageSize > 0\">\n" +
+    "                    <button type=\"button\" class=\"btn btn-default\" ng-disabled=\"customPromptDetails.pageIndex <= 0\" ng-click=\"customPromptDetails.moveToFirstPage()\"> <span class=\"glyphicon glyphicon-fast-backward\"></span> </button>\n" +
+    "                    <button type=\"button\" class=\"btn btn-default\" ng-disabled=\"customPromptDetails.pageIndex <= 0\" ng-click=\"customPromptDetails.moveToPreviousPage()\"> <span class=\"glyphicon glyphicon-step-backward\"></span> </button>\n" +
+    "                    <button type=\"button\" class=\"btn btn-default\" disabled style=\"width:100px\"> {{customPromptDetails.pageIndex+1}} / {{customPromptDetails.pageCount}} </button>\n" +
+    "                    <button type=\"button\" class=\"btn btn-default\" ng-disabled=\"customPromptDetails.pageIndex >= customPromptDetails.pageCount - 1\" ng-click=\"customPromptDetails.moveToNextPage()\"> <span class=\"glyphicon glyphicon-step-forward\"></span> </button>\n" +
+    "                    <button type=\"button\" class=\"btn btn-default\" ng-disabled=\"customPromptDetails.pageIndex >= customPromptDetails.pageCount - 1\" ng-click=\"customPromptDetails.moveToLastPage()\"> <span class=\"glyphicon glyphicon-fast-forward\"></span> </button>\n" +
+    "                </div>\n" +
+    "            </div>\n" +
+    "        </div>\n" +
+    "    </div>\n" +
+    "</div>");
+}]);
+
 angular.module("ct-app/reports/dailyHoursChart/dailyHoursChart.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("ct-app/reports/dailyHoursChart/dailyHoursChart.tpl.html",
     "<div class=\"bg-light lter b-b wrapper-md\">\n" +
@@ -9755,8 +9869,8 @@ angular.module("ct-app/schedules/add-update-schedule.tpl.html", []).run(["$templ
     "                          </span>\n" +
     "                        </div>\n" +
     "                        <div class=\"col-sm-2\">\n" +
-    "                             <button ng-if=\"shiftTitle=='Add'\" type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='addCancel()'>Go to schedule</button>\n" +
-    "                            <button ng-if=\"shiftTitle!='Add'\" type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancel()'>Cancel</button>\n" +
+    "                             <button ng-if=\"shiftTitle=='Add' && modelView==0\" type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='addCancel()'>Go to schedule</button>\n" +
+    "                            <button ng-if=\"modelView==1\" type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancel()'>Cancel</button>\n" +
     "\n" +
     "                        </div>\n" +
     "                    </div>\n" +
@@ -10024,8 +10138,8 @@ angular.module("ct-app/schedules/add-update-schedule.tpl.html", []).run(["$templ
     "                        </div>\n" +
     "                        <div class=\"col-sm-2\">\n" +
     "\n" +
-    "                             <button ng-if=\"shiftTitle=='Add'\" type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='addCancel()'>Go to schedule</button>\n" +
-    "                            <button ng-if=\"shiftTitle!='Add'\" type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancel()'>Cancel</button>\n" +
+    "                             <button ng-if=\"shiftTitle=='Add' && modelView==0\" type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='addCancel()'>Go to schedule</button>\n" +
+    "                            <button ng-if=\"modelView==1\" type=\"button\" class=\"btn btn-default btn-rounded\" ng-click='cancel()'>Cancel</button>\n" +
     "\n" +
     "                        </div>\n" +
     "\n" +
@@ -10124,11 +10238,11 @@ angular.module("ct-app/schedules/schedules.tpl.html", []).run(["$templateCache",
     "    <div class=\"col wrapper-md\">\n" +
     "      <div class=\"clearfix m-b\">\n" +
     "      \n" +
-    "    <!--  <div class=\"pull-left\">\n" +
+    "     <div class=\"pull-left\">\n" +
     "        <button type=\"button\" class=\"btn btn-sm btn-primary btn-addon\" ng-click=\"addEvent()\">\n" +
     "          <i class=\"fa fa-plus\"></i>Add\n" +
     "        </button>\n" +
-    "        </div> -->\n" +
+    "        </div> \n" +
     "      <div class=\"col-sm-8\">\n" +
     "          <div class=\"col-sm-3\" >\n" +
     "              <input  class=\"form-control\"  ui-select2=\"shiftZoneOptions\" value=\"\"  ng-model=\"shiftFilters.zoneName\" placeholder=\"Select a Zone\">\n" +
@@ -11219,7 +11333,13 @@ angular.module("partials/header.tpl.html", []).run(["$templateCache", function($
     "            </span>\n" +
     "          </a>\n" +
     "        </li>\n" +
-    "\n" +
+    "         <li data-access-level=\"accessLevels.customPromptReport\">\n" +
+    "            <a ui-sref=\"ctApp.customPromptReport\">\n" +
+    "              <span>\n" +
+    "                Custom Prompt Report\n" +
+    "              </span>\n" +
+    "            </a>\n" +
+    "          </li>\n" +
     "        <li class=\"divider\">\n" +
     "        </li>\n" +
     "\n" +

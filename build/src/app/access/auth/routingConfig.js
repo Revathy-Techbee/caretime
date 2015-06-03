@@ -430,7 +430,18 @@
           'Scheduler',
           'Basic'
         ],
-        'adminAgency': ['SuperAdmin']
+        'adminAgency': ['SuperAdmin'],
+        'customPromptReport': [
+          'SuperAdmin',
+          'Admin',
+          'HR',
+          'Nursing',
+          'OfficeClerical',
+          'OfficeMgr',
+          'OnCall',
+          'CorporateBillingDepartment',
+          'Scheduler'
+        ]
       }
     };
   exports.userRoles = buildRoles(config.roles);
